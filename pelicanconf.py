@@ -28,7 +28,7 @@ PAGE_SAVE_AS = '{slug}/index.html'
 DEFAULT_LANG = 'en'
 LOCALE = 'en_GB'
 
-THEME = "mg/"
+THEME = "theme/"
 
 # Social widget
 SOCIAL = (('linkedin','https://linkedin.com/in/bryantravissmith'),
