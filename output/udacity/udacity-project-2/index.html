@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="en" class="no-js lt-ie9 lt-ie8 lt-ie7" prefix="og: http://ogp.me/ns#" itemscope itemtype="http://schema.org/BlogPosting"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" class="no-js lt-ie9 lt-ie8" prefix="og: http://ogp.me/ns#" itemscope itemtype="http://schema.org/BlogPosting"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" class="no-js lt-ie9" prefix="og: http://ogp.me/ns#" itemscope itemtype="http://schema.org/BlogPosting"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" class="no-js" prefix="og: http://ogp.me/ns#" itemscope itemtype="http://schema.org/BlogPosting"> <!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Udacity - Data Analysis NanoDegree - Project 2</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="My passing submission project 1 for Udacity Data Analysis Nanodegree">
+<link rel="shortcut icon" href="http://www.bryantravissmith.com/" type="">
+<meta name="author" content="Bryan Smith">
+<meta name="copyright" content="Bryan Smith">
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@bryantravissmit" />
+<meta property="og:site_name" content="Bryan Travis Smith, Ph.D" />
+
+<meta property="og:title" content="Udacity - data analysis nanodegree - project 2" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://www.bryantravissmith.com/udacity/udacity-project-2/" />
+<meta name="twitter:title" content="Udacity - data analysis nanodegree - project 2" />
+<meta name="twitter:url" content="http://www.bryantravissmith.com/udacity/udacity-project-2/" />
+<meta itemprop="url" content="http://www.bryantravissmith.com/udacity/udacity-project-2/" />
+<meta property="og:description" content="My passing submission project 1 for Udacity Data Analysis Nanodegree" />
+<meta name="twitter:description" content="My passing submission project 1 for Udacity Data Analysis Nanodegree" />
+<meta property="og:article:published_time" content="2015-01-31" />
+<meta property="og:article:modified_time" content="2015-05-15">
+<meta itemprop="dateModified" content="2015-01-31" />
+<meta property="og:article:author" content="Bryan Smith" >
+<meta property="og:article:tag" content="udacity">
+<meta property="og:article:tag" content="data-analysis">
+<meta property="og:article:tag" content="nanodegree">
+<meta property="og:article:tag" content="project">
+<meta property="og:image" content="http://www.bryantravissmith.com/img/bryan.jpeg" />
+<meta property="og:image:type" content="image/jpeg" />
+<meta name="twitter:image" content="http://www.bryantravissmith.com/img/bryan.jpeg" />
+<meta itemprop="image" content="http://www.bryantravissmith.com/img/bryan.jpeg" />
+
+<link href="http://www.bryantravissmith.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Bryan Travis Smith, Ph.D ATOM Feed"/>
+<link href='http://fonts.googleapis.com/css?family=Merriweather:400,300italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/uikit/2.15.0/css/uikit.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/uikit/2.15.0/css/components/search.min.css">
+<link rel="stylesheet" href="/theme/css/tipuesearch.css">
+<link rel="stylesheet" href="/theme/css/solarized.css">
+<link rel="stylesheet" href="/theme/css/main.css">
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+</head>
+<body>
+<!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+<header class=" mg-header uk-navbar uk-navbar-attached">
+
+    <div class="uk-container uk-container-center">
+        <div class="uk-grid" data-uk-grid-margin>
+
+            <a class="mg-brand uk-navbar-brand uk-hidden-small" href="http://www.bryantravissmith.com">Bryan Travis Smith, Ph.D</a>
+            <div class="mg-tagline uk-navbar-content uk-hidden-small">Physicist, Data Scientist, Martial Artist, & Life Enthusiast</div>
+            <a class="uk-navbar-toggle uk-visible-small" href="#mg-offcanvas" data-uk-offcanvas></a>
+            <a class="mg-brand uk-navbar-brand uk-navbar-center uk-visible-small" href="http://www.bryantravissmith.com">Bryan Travis Smith, Ph.D</a>
+
+        </div>
+    </div>
+</header>
+
+<main class="mg-main">
+
+<div class="uk-container uk-container-center">
+
+    <div class="uk-grid" data-uk-grid-margin>
+        
+<div class="mg-container-social uk-width-medium-1-10 uk-hidden-small">
+
+    <div class="uk-panel" id="mg-panel-social">
+        <ul class="uk-nav uk-nav-side">
+            <li>
+            <a href="https://www.facebook.com/sharer/sharer.php?u=http://www.bryantravissmith.com/udacity/udacity-project-2/" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');return false;" taget="_blank" class="uk-button"><i class="uk-icon-facebook-square"></i> Share</a>
+            </li>
+            <li>
+            <a href="https://twitter.com/intent/tweet?text=Udacity%20-%20Data%20Analysis%20NanoDegree%20-%20Project%202&url=http://www.bryantravissmith.com/udacity/udacity-project-2/&via=bryantravissmit" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" class="uk-button" target="_blank"><i class="uk-icon-twitter"></i> Tweet</a>
+            </li>
+            <li>
+            <a href="https://plus.google.com/share?url=http://www.bryantravissmith.com/udacity/udacity-project-2/" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank" class="uk-button"><i class="uk-icon-google-plus-square"></i> Share</a>
+            </li>
+            <li>
+            <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://www.bryantravissmith.com/udacity/udacity-project-2/&title=Udacity - Data Analysis NanoDegree - Project 2" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank" class="uk-button"><i class="uk-icon-linkedin-square"></i> Share</a>
+            </li>
+        </ul>
+    </div>
+
+</div>
+
+<div class="uk-width-medium-7-10">
+
+    <article class="uk-article">
+        <h1 class="uk-heading-large uk-article-title" itemprop="name">Udacity - Data Analysis NanoDegree - Project 2</h1>
+        <p class="uk-article-meta"><time datetime="2015-01-31" itemprop="datePublished">Sat 31 January 2015</time> in <a href="http://www.bryantravissmith.com/category/udacity.html">Udacity</a>, <br class="uk-visible-small"><i class="uk-icon-comment"></i> <a href="http://www.bryantravissmith.com/udacity/udacity-project-2/#disqus_thread" itemprop="discussionUrl"></a></p>
+
+        <a href="https://www.facebook.com/sharer/sharer.php?u=http://www.bryantravissmith.com/udacity/udacity-project-2/" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');return false;" taget="_blank" class="uk-button uk-visible-small"><i class="uk-icon-facebook-square"></i> Share</a>
+        <a href="https://twitter.com/intent/tweet?text=Udacity%20-%20Data%20Analysis%20NanoDegree%20-%20Project%202&url=http://www.bryantravissmith.com/udacity/udacity-project-2/&via=bryantravissmit" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" class="uk-button uk-visible-small" target="_blank"><i class="uk-icon-twitter"></i> Tweet</a>
+        <a href="https://plus.google.com/share?url=http://www.bryantravissmith.com/udacity/udacity-project-2/" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank" class="uk-button uk-visible-small"><i class="uk-icon-google-plus-square"></i> Share</a>
+
+        <!--<p class="uk-article-lead" itemprop="description">My passing submission project 1 for Udacity Data Analysis Nanodegree</p>!-->
+        <section itemprop="articleBody"><h1>Udacity - Data Analysis NanoDegree</h1>
+<h2>Project 2 - Data Mugging</h2>
+<p>The goal of this project is to read in data from openstreetmap.com stored in an XML format, reformat the data into JSON, load it into a MongoDB database, and audit the data for cleanliness and consistency.  The dataset I used is of Colorado Springs CO, a place I have visited several times to see family and friends.   The data set can be found <a href="https://s3.amazonaws.com/metro-extracts.mapzen.com/colorado-springs_colorado.osm.bz2">here</a>.   A summary of the OpenStreetMap format and structur can be found on their <a href="http://wiki.openstreetmap.org/wiki/OSM_XML">documentation page</a></p>
+<p>The openstreetmap.com OSM XML file consists of three types of primitive elements: nodes, ways, and relations.   Nodes are gps coordinates on a map, and they are used to identify features in a city or, in collections, use to construct ways.  Nodes could have features, and these features are stored in subtags called “tag”.  Ways, as just suggested, are a collection of nodes that create a path.   Ways also have descriptions that are stored in “tag” subtags.  Relations are a collection of ways, nodes, and relations that describe features of the map.  They can be routes, restrictions, and multipolygon boundaries.  </p>
+<p>The Colorado Springs data is contained in a 103 MB file that has the following numbers of each primitive element.</p>
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+    <thead>
+        <tr>
+            <th> Element Type</th>
+            <th> No Sub-Elements </th>
+            <th> Total Elements </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td> Node </td>
+            <td> 468,637 </td>
+            <td> 480,216 </td>
+        </tr>
+        <tr>
+            <td> Ways </td>
+            <td> 0 </td>
+            <td> 55,926 </td>
+        </tr>
+        <tr>
+            <td> Relations </td>
+            <td> 0 </td>
+            <td> 153 </td>
+        </tr>
+</table>
+</div>
+
+<p>Most of the nodes being empty signify that most nodes are likely to be used solely for defining ways.   This is something that can be checked for consistency.  There are two following up questions that one could explore here:</p>
+<p>Does the node for each way exist in this dataset?
+Is each node referenced in this data set?   </p>
+<p>These questions are computational expensive, but could be necessary depending on the ultimate purpose of this data set.</p>
+<p>Since both ways and relationship are collections of subelements, it would not make sense that these elements are empty.  Finding that any of them are empty would be a sign that there is something about the data the needs to be fixed.  The documentation for these primitives states that ways and relationships are collections of 2 or more elements, something that will be checked later.</p>
+<h3>Nodes</h3>
+<p>Of the 11,624 nodes with subelement tags, 10,206 of them have a single description tag.  Most of them are minimal descriptions with keys of “highway” (8185) and “power” (1204).  There are some that are clearly incomplete.    There are 157 nodes with the sole tag descriptions is “addr:house number.”   Since an address usually consists of a number, street name, and a zip code, it seems clear that these 157 nodes are incomplete descriptions of a feature with an address.  </p>
+<p>There is also one node with a key value “FIXME” and the value of “Denver area needs work.” The google maps of the position coordinates associated with this node shows that this is St. Francis Hospital in Colorado Springs.   It is not clear why user “AMY-jin” put this information here because this hospital is 65 miles from Denver, Co.  This is 1 of 4 contributions this user made  </p>
+<p>There are only 1418 nodes with multi-tag descriptions.</p>
+<h3>Ways</h3>
+<p>Of the 35,928 ways, 24 of them only contain a single “nd” tag.  The documentation defines a way of a polyline between 2 and 2000 nodes.  These ways only contain 1 node.   Thus there are 24 ways that are needed to be either updated or removed from the data set. </p>
+<h3>Relations</h3>
+<p>Of the 153 relations, 10 of them contain a single “member” tag.   The documentation defines a relation between 2 or more members consisting of ways, nodes, or relationships.   A relation with only 1 member is ill defined.   Therefor there are 10 relationship that need to be updated or removed from the dataset.</p>
+<h3>Problem Character</h3>
+<p>Problems characters are defined as characters that have issues associated with storage in a database.  These characters consists of the following:</p>
+<blockquote>
+<p>= + / &amp; &lt; &gt; ; ' " ? % # $ @ , . \t \r \n</p>
+</blockquote>
+<p>There were no problem characters with any of the elements’ key-values.   Of all the element values associated with the previously mentioned keys, there were 1,716 values that had problem characters associated with them.  These values will be dropped before the data is inserted into the MongoDB Database</p>
+<h2>MongoDB</h2>
+<p>The nodes and ways from the dataset was formatted into the following JSON form,</p>
+<div class="highlight"><pre>{
+ &quot;id&quot;: &quot;2406124091&quot;,
+ &quot;type&quot;: &quot;node&quot;,
+ &quot;visible&quot;:&quot;true&quot;,
+ &quot;created&quot;: 
+    {
+        &quot;version&quot;:&quot;2&quot;, 
+        &quot;changeset&quot;:&quot;17206049&quot;,          
+        &quot;timestamp&quot;:&quot;2013-08-03T16:43:42Z&quot;,    
+        &quot;user&quot;:&quot;linuxUser16&quot;, 
+        &quot;uid&quot;:&quot;1219059&quot;
+    },
+  &quot;pos&quot;: [41.9757030, -87.6921867],
+  &quot;address&quot;: 
+  {
+        &quot;housenumber&quot;: &quot;5157&quot;, 
+        &quot;postcode&quot;: &quot;60625&quot;, &quot;street&quot;: &quot;North Lincoln Ave&quot;
+    },
+    &quot;key1&quot;:&quot;val1&quot;, 
+    &quot;key2&quot;:&quot;val2&quot;, 
+}
+</pre></div>
+
+
+<p>and inserted into a local MongoDB database.   As measured in the previous section, key/value pairs with problem characters were dropped from database.</p>
+<p>The following commands using the pymongo library:</p>
+<div class="highlight"><pre>c = MongoClient()
+db = c[&#39;test-database&#39;]
+osm = db.osm
+osm.count()
+osm.find({&#39;type&#39;:&#39;node&#39;}).count()
+osm.find({&#39;type&#39;:&#39;way&#39;}).count()
+</pre></div>
+
+
+<p>Of the 536,142 nodes and ways listed in the original xml files, all 536,142 appeared in the database.  The count of elements with type “ways” is 480216, and the count of elements with type “ways” is 55926.  These values are consistent with the original examination of the XML file. </p>
+<h3>Address - Street</h3>
+<p>Looking at the address information we can find with the following commands that 5689 entries contain an “address” field and 5453 of these elements contain a subfield of “street”.</p>
+<div class="highlight"><pre><span class="x">pipeline = [</span><span class="err">{</span><span class="x">&quot;</span><span class="p">$</span><span class="nv">match</span><span class="x">&quot;:</span><span class="err">{</span><span class="x">&quot;address&quot;:</span><span class="err">{</span><span class="x">&quot;</span><span class="p">$</span><span class="nv">exists</span><span class="x">&quot;:1}}}]</span>
+<span class="x">print len(osm.aggregate(pipeline)[&#39;result&#39;])</span>
+
+<span class="x">pipeline = [</span><span class="err">{</span><span class="x">&quot;</span><span class="p">$</span><span class="nv">match</span><span class="x">&quot;:</span><span class="err">{</span><span class="x">&quot;address.street&quot;:</span><span class="err">{</span><span class="x">&quot;</span><span class="p">$</span><span class="nv">exists</span><span class="x">&quot;:1}}}]</span>
+<span class="x">print len(osm.aggregate(pipeline)[&#39;result&#39;])</span>
+</pre></div>
+
+
+<p>An examination of the street fields shows that the data is mostly consistently formatted and clean.  The street names do not generally have abbreviations, though there are some exceptions.   Only 10 of the 5689 data points have values that are not just street names:</p>
+<div class="highlight"><pre><span class="s-Atom">pipeline</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;$match&quot;</span><span class="s-Atom">:</span><span class="p">{</span><span class="s2">&quot;address.street&quot;</span><span class="s-Atom">:</span><span class="p">{</span><span class="s2">&quot;$exists&quot;</span><span class="s-Atom">:</span><span class="mi">1</span><span class="p">}}},</span>
+        <span class="p">{</span><span class="s2">&quot;$group&quot;</span><span class="s-Atom">:</span><span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="s-Atom">:</span><span class="s2">&quot;$address.street&quot;</span><span class="p">,</span><span class="s2">&quot;count&quot;</span><span class="s-Atom">:</span><span class="p">{</span><span class="s2">&quot;$sum&quot;</span><span class="s-Atom">:</span><span class="mi">1</span><span class="p">}}},</span>
+        <span class="p">{</span><span class="s2">&quot;$sort&quot;</span><span class="s-Atom">:</span><span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:-</span><span class="mi">1</span><span class="p">}}]</span>
+
+<span class="s-Atom">street_descriptions</span> <span class="o">=</span> <span class="nf">set</span><span class="p">()</span>
+<span class="s-Atom">for</span> <span class="s-Atom">x</span> <span class="s-Atom">in</span> <span class="s-Atom">osm</span><span class="p">.</span><span class="nf">aggregate</span><span class="p">(</span><span class="s-Atom">pipeline</span><span class="p">)[</span><span class="s-Atom">&#39;result&#39;</span><span class="p">]</span><span class="s-Atom">:</span>
+  <span class="s-Atom">print</span> <span class="s-Atom">x</span><span class="p">[</span><span class="s-Atom">&#39;_id&#39;</span><span class="p">]</span>
+  <span class="s-Atom">street_split</span> <span class="o">=</span> <span class="s-Atom">x</span><span class="p">[</span><span class="s-Atom">&#39;_id&#39;</span><span class="p">].</span><span class="nf">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+  <span class="s-Atom">length</span> <span class="o">=</span> <span class="nf">len</span><span class="p">(</span><span class="s-Atom">street_split</span><span class="p">)</span>
+  <span class="s-Atom">street_descriptions</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="s-Atom">street_split</span><span class="p">[</span><span class="s-Atom">length</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="s-Atom">for</span> <span class="s-Atom">y</span> <span class="s-Atom">in</span> <span class="s-Atom">street_descriptions:</span>
+  <span class="s-Atom">print</span> <span class="s-Atom">y</span>
+</pre></div>
+
+
+<p>The common inconsistencies in the street names are abbreviations.  Some examples are that “Dr.” is used for “Drive”, “E.” is used for “East”, and “Ave” is used for “Avenue”.  These values are exceptions, surprisingly. </p>
+<h3>Users</h3>
+<p>The dataset was produced by 300 users, the top user named “FrozenFlame22” contributing 424,585 of the 536,142 data entries (79.1%).  The top users are:</p>
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+    <thead>
+        <tr>
+            <th> Username</th>
+            <th> Number of Entries Associated with User </th>
+            <th> Percent of Dataset </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td> FrozenFlame22 </td>
+            <td> 424,585 </td>
+            <td> 79.8% </td>
+        </tr>
+        <tr>
+            <td> CS_Mur </td>
+            <td> 20185 </td>
+            <td> 3.79% </td>
+        </tr>
+        <tr>
+            <td> Jason R Surrat </td>
+            <td> 15930 </td>
+            <td> 3.0% </td>
+        </tr>
+        <tr>
+            <td> Your Village Maps </td>
+            <td> 15628 </td>
+            <td> 2.94% </td>
+        </tr>
+        <tr>
+            <td> GPS_dr </td>
+            <td> 12643 </td>
+            <td> 2.38% </td>
+        </tr>
+        <tr>
+            <td> Chris CA</td>
+            <td> 7194 </td>
+            <td> 1.35% </td>
+        </tr>
+        <tr>
+            <td> Mark Newnham </td>
+            <td> 3108 </td>
+            <td> 0.58% </td>
+        </tr>
+        <tr>
+            <td> SpenSmith </td>
+            <td> 2738 </td>
+            <td> 0.51% </td>
+        </tr>
+        <tr>
+            <td> woodpeck_fixbo </td>
+            <td> 2566 </td>
+            <td> 0.48% </td>
+        </tr>
+</table>
+</div>
+
+<p>This information was generated with the following code:</p>
+<div class="highlight"><pre><span class="s-Atom">pipeline</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;$group&quot;</span><span class="s-Atom">:</span><span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="s-Atom">:</span><span class="s2">&quot;$created.user&quot;</span><span class="p">,</span><span class="s2">&quot;count&quot;</span><span class="s-Atom">:</span><span class="p">{</span><span class="s2">&quot;$sum&quot;</span><span class="s-Atom">:</span><span class="mi">1</span><span class="p">}}},</span>
+        <span class="p">{</span><span class="s2">&quot;$sort&quot;</span><span class="s-Atom">:</span><span class="p">{</span><span class="s2">&quot;count&quot;</span><span class="p">:-</span><span class="mi">1</span><span class="p">}}]</span>
+<span class="s-Atom">result</span> <span class="o">=</span> <span class="s-Atom">osm</span><span class="p">.</span><span class="nf">aggregate</span><span class="p">(</span><span class="s-Atom">pipeline</span><span class="p">)[</span><span class="s-Atom">&#39;result&#39;</span><span class="p">]</span>
+<span class="s-Atom">sum</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="s-Atom">for</span> <span class="s-Atom">x</span> <span class="s-Atom">in</span> <span class="nn">result</span><span class="p">:</span>
+  <span class="s-Atom">print</span> <span class="s-Atom">x</span><span class="p">,</span> <span class="s-Atom">x</span><span class="p">[</span><span class="s-Atom">&#39;count&#39;</span><span class="p">]</span><span class="o">/</span><span class="mf">536142.0</span>
+  <span class="s-Atom">sum</span> <span class="s-Atom">+=</span> <span class="s-Atom">x</span><span class="p">[</span><span class="s-Atom">&#39;count&#39;</span><span class="p">]</span>
+
+<span class="s-Atom">print</span> <span class="s-Atom">sum</span><span class="o">/</span><span class="mf">536142.0</span>
+<span class="s-Atom">print</span> <span class="nf">len</span><span class="p">(</span><span class="s-Atom">result</span><span class="p">)</span>
+</pre></div>
+
+
+<p>It is possible that a majority of these users are cleaning data, and not generating data, for openstreetmap.  Whenever a new data point is entered the server automatically generates it with version of “1”.   Looking at the subset of entries with version equal to 1 shows the following top 10 users.</p>
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+    <thead>
+        <tr>
+            <th> Username</th>
+            <th> New Entries </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td> FrozenFlame22 </td>
+            <td> 343854 </td>
+        </tr>
+        <tr>
+            <td> Jason R Surrat </td>
+            <td> 14780 </td>
+        </tr>
+        <tr>
+            <td> CS_Mur </td>
+            <td> 12646 </td>
+        </tr>
+
+        <tr>
+            <td> Your Village Maps </td>
+            <td> 10684 </td>
+        </tr>
+        <tr>
+            <td> GPS_dr </td>
+            <td> 9486 </td>
+        </tr>
+        <tr>
+            <td> Chris CA</td>
+            <td> 4036 </td>
+        </tr>
+        <tr>
+            <td> Mark Newnham </td>
+            <td> 3034 </td>
+        </tr>
+        <tr>
+            <td> SpenSmith </td>
+            <td> 2430 </td>
+        </tr>
+        <tr>
+            <td> gps_pilot</td>
+            <td> 2187 </td>
+        </tr>
+        <tr>
+            <td> Rub21 </td>
+            <td> 1615 </td>
+        </tr>
+</table>
+</div>
+
+<p>The 9 of the 10 top-ten contributes to the osm data are also the top-ten original generators of edits of Colorado Springs dataset.  </p>
+<div class="highlight"><pre><span class="s-Atom">pipeline</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;$match&quot;</span><span class="s-Atom">:</span><span class="p">{</span><span class="s2">&quot;created.version&quot;</span><span class="s-Atom">:</span><span class="s2">&quot;1&quot;</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">&quot;$group&quot;</span><span class="s-Atom">:</span><span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="s-Atom">:</span><span class="s2">&quot;$created.user&quot;</span><span class="p">,</span><span class="s2">&quot;count&quot;</span><span class="s-Atom">:</span><span class="p">{</span><span class="s2">&quot;$sum&quot;</span><span class="s-Atom">:</span><span class="mi">1</span><span class="p">}}},</span>
+        <span class="p">{</span><span class="s2">&quot;$sort&quot;</span><span class="s-Atom">:</span><span class="p">{</span><span class="s2">&quot;count&quot;</span><span class="p">:-</span><span class="mi">1</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">&quot;$limit&quot;</span><span class="s-Atom">:</span><span class="mi">10</span><span class="p">}]</span>
+<span class="s-Atom">result</span> <span class="o">=</span> <span class="s-Atom">osm</span><span class="p">.</span><span class="nf">aggregate</span><span class="p">(</span><span class="s-Atom">pipeline</span><span class="p">)[</span><span class="s-Atom">&#39;result&#39;</span><span class="p">]</span>
+
+<span class="s-Atom">for</span> <span class="s-Atom">x</span> <span class="s-Atom">in</span> <span class="nn">result</span><span class="p">:</span>
+  <span class="s-Atom">print</span> <span class="s-Atom">x</span><span class="p">,</span> <span class="s-Atom">x</span><span class="p">[</span><span class="s-Atom">&#39;count&#39;</span><span class="p">]</span>
+</pre></div>
+
+
+<h3>Fences</h3>
+<p>Fences are way to enforce a boundary around a given area.  Given there is a military base in Colorado springs, one would expect to find a number of barbed wire fences.   </p>
+<div class="highlight"><pre><span class="n">pipeline</span> <span class="o">=</span> <span class="p">[{</span><span class="s">&quot;$match&quot;</span><span class="p">:{</span><span class="s">&quot;fence_type&quot;</span><span class="p">:{</span><span class="s">&quot;$exists&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">}}},</span>
+        <span class="p">{</span><span class="s">&quot;$group&quot;</span><span class="p">:{</span><span class="s">&quot;_id&quot;</span><span class="p">:</span><span class="s">&quot;$fence_type&quot;</span><span class="p">,</span><span class="s">&quot;count&quot;</span><span class="p">:{</span><span class="s">&quot;$sum&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">}}}]</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">osm</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">pipeline</span><span class="p">)[</span><span class="s">&#39;result&#39;</span><span class="p">]</span>
+
+<span class="n">fences</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">counts</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+  <span class="k">print</span> <span class="n">x</span>
+  <span class="n">fences</span><span class="o">.</span><span class="kp">append</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s">&#39;_id&#39;</span><span class="p">])</span>
+  <span class="n">counts</span><span class="o">.</span><span class="kp">append</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s">&#39;count&#39;</span><span class="p">])</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fences</span><span class="p">))</span>    <span class="c"># the x locations for the groups</span>
+<span class="n">width</span> <span class="o">=</span> <span class="mf">0.35</span>       <span class="c"># the width of the bars: can also be len(x) sequence</span>
+
+<span class="n">p1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="kp">array</span><span class="p">(</span><span class="n">counts</span><span class="p">),</span><span class="n">width</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Fence Count&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Count of Fences in Colorado Springs, CO&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">ind</span><span class="o">+</span><span class="n">width</span><span class="o">/</span><span class="mf">2.</span><span class="p">,</span> <span class="n">fences</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">10</span> <span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p>The previous code generate the following plot.   </p>
+<p><img alt="Fence Count by Category" src="http://www.bryantravissmith.com/img/udacity/udacity-project2.png" /></p>
+<p>The most cataloged fence in the dataset is a pole fence.   There are only 2 barbed wire fences.  I know for fact that this is far from a full catalog of the fences in Colorado Spring.  My visit to the military base there showed me there is infact more than 2 fences with barbed wire.   This is one clear aspect of the map in need of improvement.   </p>
+<p>The fact that fences are ways, and not nodes, is consistent with the definition of ways being paths and a collection of nodes.     </p>
+<div class="highlight"><pre><span class="x">pipeline = [</span><span class="err">{</span><span class="x">&quot;</span><span class="p">$</span><span class="nv">match</span><span class="x">&quot;:</span><span class="err">{</span><span class="x">&quot;fence_type&quot;:&quot;barbed_wire&quot;}}]</span>
+<span class="x">result = osm.aggregate(pipeline)[&#39;result&#39;]</span>
+
+<span class="x">for nd in result[0][&#39;node_refs&#39;]:</span>
+<span class="x">  for y in osm.find(</span><span class="err">{</span><span class="x">&quot;id&quot;:nd}):</span>
+<span class="x">     print y[&#39;pos&#39;]</span>
+
+<span class="x">print &#39;next&#39;</span>
+<span class="x">for nd in result[1][&#39;node_refs&#39;]:</span>
+<span class="x">  for y in osm.find(</span><span class="err">{</span><span class="x">&quot;id&quot;:nd}):</span>
+<span class="x">     print y[&#39;pos&#39;]</span>
+</pre></div>
+
+
+<p>The first barbed wire fence in the dataset is around the Zebulon Pike Detention Center, and the second barbed wire fence is also around the same Zebulon Pike Detention Center.  These two fences could be the same fence around the complex, or two sub fences around buildings.   The google street view of the area shows that there appears to be a single short barbed wire fence around the property.   </p>
+<p>This highlights one of the major issues I see with auditing the openstreetmap data.   Nodes are points, but ways are collections of points.   Two ways may have different number of nodes, likes the barbed wire fences, use a difference collection of nodes, like the two barbed wire fences, but are attempting to describe the same feature.  </p>
+<p>An examination of the user that created these two separate features shows that it was the same user, Jason R Surratt.</p>
+<p>If the same user is capable of double describing the same feature for a map, then it highlights an issues with openstreetmap’s ability to uniquely describe features in an area or on a map that are a collection of points.  </p>
+<h2>Conclusion</h2>
+<p>Raw data is messy.  Even with a dataset that has been ‘cleaned’ by dozens of users, like the dataset used in this paper, there are hundreds of issues and inconsistency.  Before the data could be loaded into MongoDB there are over 1700 key/values with invalid characters.   Additionally there are dozens of ways and relationships with only a single subelement.</p>
+<p>A review of the address data showed that there was inconsistencies with the street names.   This data was obviously previously cleaned, and there are still aspects that escaped being cleaned.   It is important to realizing that any cleaning process will not catch all the inconsistencies in a dataset.   </p>
+<p>Additionally the dataset has relationships, and with relationship produce an additional layer of complexity.   Relationships need to be correctly and consistently formatted.  The examination of barbed wire fences in the Colorado Spring dataset showed that even in the case of data entered/edited by the same user can lead to the same fence being imputed twice with complete different sets of nodes.  There are doubtlessly a number of features in this data yet undiscovered that will have the same problem.</p></section>
+        <hr class="uk-article-divider">
+    </article>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'bryansmithphd'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+     dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+     })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+</div>
+ 
+    
+        <div class="uk-width-medium-1-5 uk-hidden-small">
+            
+            <div class="uk-panel uk-panel-box">
+                <form class="uk-search" action="search.html" data-uk-search>
+                    <input class="uk-search-field tipue_search" type="search" name="q" id="tipue_search_input" autocomplete="off" placeholder="Search...">
+                </form>
+            </div>
+
+            <div class="uk-panel uk-panel-box">
+                <ul class="uk-nav uk-nav-side">
+                    <li class="uk-nav-header">Categories</li>
+                    <li class="uk-active"><a href="http://www.bryantravissmith.com/category/udacity.html">Udacity</a></li>
+                    <li class="uk-nav-header">Pages</li>
+                    
+                    <li >
+                        <a href="http://www.bryantravissmith.com/about/">About</a>
+                    </li>
+                    
+
+                    <li class="uk-nav-divider"></li>
+                    <li ><a href="http://www.bryantravissmith.com/archives.html">Archives</a></li>
+                </ul>
+            </div>
+
+            <div class="uk-panel uk-panel-box">
+                <h3 class="uk-panel-title">Receive Updates</h3>
+                <a rel="alternate" type="application/atom+xml" href="http://www.bryantravissmith.com/feeds/all.atom.xml" class="mg-feed"><i class="uk-icon-rss uk-icon-medium"></i> ATOM</a>
+            </div>
+            
+            <div class="uk-panel uk-panel-box">
+                <h3 class="uk-panel-title">Contacts</h3>
+                <a class="mg-icon-link" href="https://linkedin.com/in/bryantravissmith">
+                    <i class="uk-icon-linkedin uk-icon-medium"></i>
+                </a>
+                <a class="mg-icon-link" href="https://github.com/bryantravissmith">
+                    <i class="uk-icon-github uk-icon-medium"></i>
+                </a>
+                <a class="mg-icon-link" href="https://plus.google.com/+BryanSmithPhD">
+                    <i class="uk-icon-google-plus-square uk-icon-medium"></i>
+                </a>
+                <a class="mg-icon-link" href="https://twitter.com/bryantravissmit">
+                    <i class="uk-icon-twitter uk-icon-medium"></i>
+                </a>
+                <a class="mg-icon-link" href="https://instagram.com/bryantravissmith/">
+                    <i class="uk-icon-instagram uk-icon-medium"></i>
+                </a>
+                <a class="mg-icon-link" href="mailto:bryantravissmith@gmail.com">
+                    <i class="uk-icon-envelope uk-icon-medium"></i>
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</main>
+
+<footer class="mg-footer">
+    <div class="uk-container uk-container-center uk-text-center">
+
+        <div class="mg-icons-small uk-subnav uk-visible-small">
+            <li><a rel="alternate" type="application/atom+xml" href="http://www.bryantravissmith.com/feeds/all.atom.xml" class="uk-icon-button uk-icon-rss"></a></li>
+            <li>
+                <a href="https://linkedin.com/in/bryantravissmith" class="uk-icon-button uk-icon-linkedin"></a>
+            </li>
+            <li>
+                <a href="https://github.com/bryantravissmith" class="uk-icon-button uk-icon-github"></a>
+            </li>
+            <li>
+                <a href="https://plus.google.com/+BryanSmithPhD" class="uk-icon-button uk-icon-google-plus"></a>
+            </li>
+            <li>
+                <a href="https://twitter.com/bryantravissmit" class="uk-icon-button uk-icon-twitter"></a>
+            </li>
+            <li>
+                <a href="https://instagram.com/bryantravissmith/" class="uk-icon-button uk-icon-instagram"></a>
+            </li>
+            <li>
+                <a href="mailto:bryantravissmith@gmail.com" class="uk-icon-button uk-icon-envelope"></a>
+            </li>
+        </div>
+
+        <div class="mg-author uk-panel">
+            <p>&copy; 2015 Bryan Smith. All rights reserved.<br>Code snippets in the pages are released under <a href="http://opensource.org/licenses/MIT" target="_blank">The MIT License</a>, unless otherwise specified.</p>
+
+            <p>Powered by <a href="http://blog.getpelican.com">Pelican</a>.<br class="uk-visible-small"> Theme <a href="https://github.com/lucachr/pelican-mg">mg</a> by <a href="https://github.com/lucachr">Luca Chiricozzi</a>.</p>
+        </div>
+    </div> 
+</footer>
+
+<div id="mg-offcanvas" class="uk-offcanvas">
+    <div class="uk-offcanvas-bar">
+
+        <form class="uk-search" action="search.html" data-uk-search>
+            <input class="uk-search-field" type="search" name="q" id="tipue_search_input" autocomplete="off" placeholder="Search...">
+        </form>
+
+        <ul class="uk-nav uk-nav-offcanvas" data-uk-nav>
+            <li class="uk-nav-header">Categories</li>
+            <li class="uk-active"><a href="http://www.bryantravissmith.com/category/udacity.html">Udacity</a></li>
+            <li class="uk-nav-header">Pages</li>        
+            <li >
+                <a href="http://www.bryantravissmith.com/about/">About</a>
+            </li>
+                    
+
+            <li class="uk-nav-divider"></li>
+            <li><a href="http://www.bryantravissmith.com/">Archives</a></li>
+        </ul>
+    </div>
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')</script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/uikit/2.15.0/js/uikit.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/uikit/2.15.0/js/components/search.min.js"></script>
+<script src="/theme/js/jquery.sticky-kit.js"></script>
+<script src="/theme/js/tipuesearch_set.js"></script>
+<script src="/theme/js/tipuesearch.js"></script>
+<script src="/theme/js/plugins.js"></script>
+<script src="/theme/js/main.js"></script>
+
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'bryansmithphd'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function () {
+ var s = document.createElement('script'); s.async = true;
+ s.type = 'text/javascript';
+ s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+ (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+ }());
+</script>
+
+<script>
+(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+                                                        function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+ e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+ e.src='//www.google-analytics.com/analytics.js';
+ r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-24340005-3');ga('send','pageview');
+</script>
+
+</body>
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+</html>

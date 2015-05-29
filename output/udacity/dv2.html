@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css"/>
+<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css"/>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<!--<script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script> -->
+
+  
+</head>
+<body>
+
+<style>
+html{
+  height:100%;
+  min-height: 100%;
+}
+
+body {
+  display:block;
+  height:100%;
+  font-family: sans-serif;
+  font-weight: 100;
+  letter-spacing: 0.01em;
+  line-height: 1.6;
+}
+
+.menu{
+  background: black;
+}
+
+li.pure-menu-item{
+  padding-left: 20px;
+}
+
+li.pure-menu-selected{
+  background: steelBlue;
+  
+}
+
+
+.pure-menu-selected .pure-menu-link, .pure-menu-selected, .pure-menu-selected a {
+  color: #FFF;
+}
+.pure-menu-selected .pure-menu-link, .pure-menu-selected .pure-menu-link:visited {
+  color:#FFF;
+}
+
+.pure-menu-selected .pure-menu-link, .pure-menu-selected .pure-menu-link:visited {
+  color:#FFF;
+}
+
+li.pure-menu-item a{
+  color:#fff;
+}
+
+.bar rect {
+  fill: steelblue;
+  shpae-rendering: crispEdges;
+}
+
+.redbar rect {
+  fill: red;
+  opacity: 0.5;
+  shpae-rendering: crispEdges;
+}
+
+.whitebar rect{
+  fill: yellow;
+  opacity: 0.5;
+  shpae-rendering: crispEdges;
+}
+
+.bar text{
+  fill: #fff;
+}
+
+.axis path, .axis line{
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+#variable2{
+  display: none;
+}
+
+.header {
+  text-align: left;
+  font-size: 2em;
+}
+
+.description{
+  padding-left: 20px;
+  padding-right: 20px;
+  text-align: left;
+  font-size: 1.2em;
+}
+
+.line {
+  fill: none;
+  stroke: steelBlue;
+  stroke-width: 1.5px;
+}
+
+#layout,
+#menu,
+.menu-link {
+    -webkit-transition: all 0.2s ease-out;
+    -moz-transition: all 0.2s ease-out;
+    -ms-transition: all 0.2s ease-out;
+    -o-transition: all 0.2s ease-out;
+    transition: all 0.2s ease-out;
+}
+
+/*
+This is the parent `<div>` that contains the menu and the content area.
+*/
+#layout {
+    position: relative;
+    padding-left: 0;
+}
+
+    #layout.active #menu {
+        left: 150px;
+        width: 150px;
+    }
+
+    #layout.active .menu-link {
+        left: 150px;
+    }
+
+#menu {
+    margin-left: -150px; /* "#menu" width */
+    width: 150px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1000; /* so the menu or its navicon stays above all content */
+    background: #191818;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.menu-link {
+    position: fixed;
+    display: block; /* show this only on small screens */
+    top: 0;
+    left: 0; /* "#menu width" */
+    background: #fff;
+    background: rgba(0,0,0,0.7);
+    font-size: 10px; /* change this value to increase/decrease button size */
+    z-index: 10;
+    width: 2em;
+    height: auto;
+    padding: 2.1em 1.6em;
+}
+
+    .menu-link:hover,
+    .menu-link:focus {
+        background: #000;
+    }
+
+    .menu-link span {
+        position: relative;
+        display: block;
+    }
+
+    .menu-link span,
+    .menu-link span:before,
+    .menu-link span:after {
+        background-color: #fff;
+        width: 100%;
+        height: 0.2em;
+    }
+
+        .menu-link span:before,
+        .menu-link span:after {
+            position: absolute;
+            margin-top: -0.6em;
+            content: " ";
+        }
+
+        .menu-link span:after {
+            margin-top: 0.6em;
+        }
+
+
+    .header,
+    .content {
+        padding-left: 2em;
+        padding-right: 2em;
+    }
+
+    #layout {
+        padding-left: 150px; /* left col width "#menu" */
+        left: 0;
+    }
+    #menu {
+        left: 150px;
+    }
+
+.pure-menu-active>.pure-menu-link, .pure-menu-link:hover, .pure-menu-link:focus {
+  background: #000;
+  background: transparent;
+}
+
+.control-buttons{
+  width:100%;
+  text-align: center;
+}
+
+</style>
+<div id="layout" class="pure-g">
+  <div id="menu">
+    <div class="pure-menu pure-u-4-24 menu">
+        <span class="pure-menu-heading">Chart Type</span>
+
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item pure-menu-selected histogram plotmenu" onclick="selectHistorgram()"><a href="#" class="pure-menu-link">Histogram</a></li>
+            <li class="pure-menu-item scatter plotmenu" onclick="selectScatter()"><a href="#" class="pure-menu-link">Scatter</a></li>
+            <li class="pure-menu-item trend-line plotmenu" onclick="selectTrendLine()"><a hred="#" class="pure-menu-link">Trend Line</a></li>
+        </ul>
+
+        <div id="variable1">
+          <span class="pure-menu-heading"> Variable 1</span>
+
+          <select onChange="changeFirstVariable(this.value,this.options[this.selectedIndex].innerHTML)" id="var1Select">
+            <option value="alcohol">Alcohol (%/Vol)</option>
+            <option value="chlorides" id="chlorides-option">Chlorides (g/L)</option>
+            <option value="citric.acid">Citric Acid (g/L)</option>
+            <option value="density">Density (g/L)</option>
+            <option value="fixed.acidity">Fixed Acidity (g/L)</option>
+            <option value="free.sulfur.dioxide">Free Sulfur Dioxide (g/L)</option>
+            <option value="pH">pH</option>
+            <option value="residual.sugar">Residual Sugar (g/L)</option>
+            <option value="sulphates">Sulphates (g/L)</option>
+            <option value="total.sulfur.dioxide">Total Sulfur Dioxide (g/L)</option>
+            <option value="volatile.acidity">Volatile Acidity (g/L)</option>
+            <option value="quality">Quality</option>
+          </select>
+        </div>
+
+        <div id="variable2">
+          <span class="pure-menu-heading"> Variable 2</span>
+
+          <select onChange="changeSecondVariable(this.value,this.options[this.selectedIndex].innerHTML)" id="var2Select">
+            <option value="alcohol">Alcohol (%/Vol)</option>
+            <option value="chlorides">Chlorides (g/L)</option>
+            <option value="citric.acid">Citric Acid (g/L)</option>
+            <option value="density">Density (g/L)</option>
+            <option value="fixed.acidity">Fixed Acidity (g/L)</option>
+            <option value="free.sulfur.dioxide">Free Sulfur Dioxide (g/L)</option>
+            <option value="pH">pH</option>
+            <option value="residual.sugar">Residual Sugar (g/L)</option>
+            <option value="sulphates">Sulphates (g/L)</option>
+            <option value="total.sulfur.dioxide">Total Sulfur Dioxide (g/L)</option>
+            <option value="volatile.acidity">Volatile Acidity (g/L)</option>
+          </select>
+        </div>
+              
+
+        <span class="pure-menu-heading">Wine Type</span>
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item pure-menu-selected red-wine-button" id="red-wine-button" onclick='clickRedWine()'><a href="#" class="pure-menu-link">Red Wine</a></li>
+            <li class="pure-menu-item pure-menu-selected white-wine-button" onclick='clickWhiteWine()'><a href="#" class="pure-menu-link">White Wine</a></li>
+        </ul>
+
+        <span class="pure-menu-heading">Avg Wine Score</span>
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item pure-menu-selected three-button" onclick='click3Wine()'><a href="#" class="pure-menu-link">3</a></li>
+            <li class="pure-menu-item pure-menu-selected four-button" onclick='click4Wine()'><a href="#" class="pure-menu-link">4</a></li>
+            <li class="pure-menu-item pure-menu-selected five-button" onclick='click5Wine()'><a href="#" class="pure-menu-link">5</a></li>
+            <li class="pure-menu-item pure-menu-selected six-button" onclick='click6Wine()'><a href="#" class="pure-menu-link">6</a></li>
+            <li class="pure-menu-item pure-menu-selected seven-button" onclick='click7Wine()'><a href="#" class="pure-menu-link">7</a></li>
+            <li class="pure-menu-item pure-menu-selected eight-button" onclick='click8Wine()'><a href="#" class="pure-menu-link">8</a></li>
+            <li class="pure-menu-item pure-menu-selected nine-button" onclick='click9Wine()'><a href="#" class="pure-menu-link">9</a></li>
+        </ul>
+    </div>
+  </div>
+
+  <div class="right-content pure-u-20-24">
+    <!--
+    <div class='header'>
+      Wine Quality
+    </div>
+    !-->
+    <div class='content'>
+
+    </div>
+    <div class='description'>
+      <p>
+      Welcome!  
+    </p>
+    <p>
+      We're going to explore some wine data to get a feel for what chemical properties affect the quality of a wine.  We're also going to see what makes red wines different from white wine.
+    </p>
+    <p>
+      I've currently disabled the side bar.  You can click next to take the guided story I have made for you, or you can click skip to start exploring the data yourself.
+    </p>
+    </div>
+    
+
+    
+    <div class='control-buttons'>
+      <a class='prev-button pure-button'>Prev</a>
+      <a class='skip-button pure-button'>Skip</a>
+      <a class='next-button pure-button'>Next</a>
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+<script type="text/javascript">
+
+    "use strict";
+
+
+    //Store the types of valid wines and quality scores
+    var wine_types = ["red","white"];
+    var quality_types = [3,4,5,6,7,8,9];
+    var skip_pressed = false;
+
+    //Create global variables that can be altered by uer interactions to subset data
+    var redwineon = true;
+    var whitewineon = true;
+    var threeon = true;
+    var fouron = true;
+    var fiveon = true;
+    var sixon = true;
+    var sevenon = true;
+    var eighton = true;
+    var nineon = true;
+
+    var xAxisText = "Alcohol (%/Vol)";
+    var yAxisText = "Alcohol (%/Vol)";
+
+    var drawingHistogram = true;
+    var drawingScatter = false;
+
+    var currentVariable1 = 'alcohol';
+    var currentVariable2 = 'alcohol';
+
+    var storyIndex = 0;
+
+    var include_types = ["red","white"];
+    var include_qualities = [1,2,3,4,5,6,7,8,9,10];
+    var use_percentage = false;
+    var data_variables = ["alcohol", 
+                          "chlorides", 
+                          "citric.acid",
+                          "density",
+                          "fixed.acidity",
+                          "free.sulfur.dioxide",
+                          "pH",
+                          "residual.sugar",
+                          "sulphates",
+                          "total.sulfur.dioxide",
+                          "volatile.acidity",
+                          "quality"]
+
+    //variables to score genetric description for the interactive plots
+    var plot_descriptions = {"histogram":"A histogram shows the distribution of values of a given quality.  The hight is proportional to the number of data points that fall with in the range of values for a given bin.",
+                              "scatter":"A scatter plot shows each data point where the horizontial and vertical positions represent the values of the quanties listed on the axis.   The size of each point is related to the quality of the wine.  Red points are for red wine, and yellow points are for white wines.",
+                              "trend-line":"A trend line shows how the average  vertical (solid) values and one standard deviation above and below the average (dashed) vary over the horizontial values."}
+    var var_descriptions = { "density":"Denisty of the wine is how much mass a given volume of wine has.  Water has a density of 1000 g/L",
+                          "fixed.acidity":"Tartaric acid is found in higher concentrations in wines where grapes come from cooler climates. It is associated with the sourness of a wine.",
+                          "volatile.acidity":"Volatile acidity is acetic acid usually caused by bacteria. This chemical is associated with a vinegar taste in wines.",
+                          "citric.acid":"Citric acid is associated with fruitiness or liveliness of a wine. Wines low is citric acid tend to be considered 'flat'.",
+                          "pH":"pH is the total measure of acidity of a wine that runs from 1 (acid) to 14 (base). To avoid spoilage most wines need to have a pH below 4.",
+                          "residual.sugar":"Residual sugar is associated with the sweetness of the wine. White wines tend to have higher amounts of residual sugar compared to red wines.",
+                          "chlorides":"Chlorides is a measure of sodium chlorides (salt) found in the wine. The effect of salt is disputed on wines, but 'moderate' amounts tend to 'smooth-out' the wine.",
+                          "free.sulfur.dioxide":"Sulfur dioxide can bind with odor producing chemicals and be an antibiotic agent. It also reacts with a number of other chemicals found in wines, so it is used gingerly.",
+                          "total.sulfur.dioxide":"Sulfur dioxide can bind with odor producing chemicals and be an antibiotic agent. It also reacts with a number of other chemicals found in wines, so it is used gingerly.",
+                          "sulphates":"Sulites (data set states sulfates incorrectly) are added to wine to limit microbial growth.",
+                          "alcohol":"Alcohol is the intoxicating agent in wine.  Its why we drink it.",
+                          "quality":"Quality is the average rating of 3 wine experts on a scale from 0 to 10."}
+    /*
+    Create Click Functions For Subsetting Data and changing class
+    */
+
+    function updateText(){
+      if (drawingHistogram){
+        $(".description").html("<p>"+
+          plot_descriptions["histogram"]+
+          "</p><p>"+
+          var_descriptions[currentVariable1]+
+          "</p>");
+      } else if(drawingScatter){
+        $(".description").html("<p>"+
+          plot_descriptions["scatter"]+
+          "</p><p>"+
+          var_descriptions[currentVariable1]+
+          "</p><p>"+
+          var_descriptions[currentVariable2]+
+          "</p>");
+      } else {
+         $(".description").html("<p>"+
+          plot_descriptions["trend-line"]+
+          "</p><p>"+
+          var_descriptions[currentVariable1]+
+          "</p><p>"+
+          var_descriptions[currentVariable2]+
+          "</p>");
+      }
+    }
+
+
+    //Click funciton for when a histogram is selected
+    function selectHistorgram(){
+      drawingHistogram = true;
+      drawingScatter = false;
+      d3.select('.trend-line').classed("pure-menu-selected",false);
+      d3.select('.scatter').classed("pure-menu-selected",false);
+      d3.select('.histogram').classed("pure-menu-selected",true);
+      d3.select("#variable2").style("display","none");
+      drawPlot();
+    }
+
+    //Click funciton for when a scatter is selected
+    function selectScatter(){
+      drawingHistogram = false;
+      drawingScatter = true;
+      d3.select('.trend-line').classed("pure-menu-selected",false);
+      d3.select('.scatter').classed("pure-menu-selected",true);
+      d3.select('.histogram').classed("pure-menu-selected",false);
+      d3.select("#variable2").style("display","inline");
+      drawPlot();
+    }
+
+    //Click funciton for when a trend-line is selected
+    function selectTrendLine(){
+      drawingHistogram = false;
+      drawingScatter = false;
+      d3.select('.trend-line').classed("pure-menu-selected",true);
+      d3.select('.scatter').classed("pure-menu-selected",false);
+      d3.select('.histogram').classed("pure-menu-selected",false);
+      d3.select("#variable2").style("display","inline");
+      drawPlot();
+    }
+
+    //General function to handed selections
+    function drawPlot(){
+      if (drawingHistogram){
+        drawHistogram(currentVariable1);
+      } else if(drawingScatter){
+        drawScatter(currentVariable1,currentVariable2);
+      } else {
+        drawAverages(currentVariable1,currentVariable2);
+      }
+      updateText();
+    }
+
+    //Handles inclduing and excluding different wine qualities
+    function click3Wine(){
+      if (threeon == true){
+        threeon = false;
+        d3.select(".three-button").classed("pure-menu-selected", false);
+        var index = include_qualities.indexOf(3);
+        include_qualities.splice(index,1);
+      } else {
+        threeon = true;
+        d3.select(".three-button").classed("pure-menu-selected", true);
+        include_qualities.push(3);
+      }
+      drawPlot();
+    }
+
+    function click4Wine(){
+      if (fouron == true){
+        fouron = false;
+        d3.select(".four-button").classed("pure-menu-selected", false);
+        var index = include_qualities.indexOf(4);
+        include_qualities.splice(index,1);
+        
+      } else {
+        fouron = true;
+        d3.select(".four-button").classed("pure-menu-selected", true);
+        include_qualities.push(4);
+      } 
+      drawPlot();
+    }
+
+    function click5Wine(){
+      if (fiveon == true){
+        fiveon = false;
+        d3.select(".five-button").classed("pure-menu-selected", false);
+        var index = include_qualities.indexOf(5);
+        include_qualities.splice(index,1);
+      } else {
+        fiveon = true;
+        d3.select(".five-button").classed("pure-menu-selected", true);
+        include_qualities.push(5);
+      }
+      drawPlot();
+    }
+
+    function click6Wine(){
+      if (sixon == true){
+        sixon = false;
+        d3.select(".six-button").classed("pure-menu-selected", false);
+        var index = include_qualities.indexOf(6);
+        include_qualities.splice(index,1);
+        
+      } else {
+        sixon = true;
+        d3.select(".six-button").classed("pure-menu-selected", true);
+        include_qualities.push(6);
+      } 
+      drawPlot();
+    }
+
+    function click7Wine(){
+      if (sevenon == true){
+        sevenon = false;
+        d3.select(".seven-button").classed("pure-menu-selected", false);
+        var index = include_qualities.indexOf(7);
+        include_qualities.splice(index,1);
+      } else {
+        sevenon = true;
+        d3.select(".seven-button").classed("pure-menu-selected", true);
+        include_qualities.push(7);
+      } 
+      drawPlot();
+    }
+
+    function click8Wine(){
+      if (eighton == true){
+        eighton = false;
+        d3.select(".eight-button").classed("pure-menu-selected", false);
+        var index = include_qualities.indexOf(8);
+        include_qualities.splice(index,1);
+      } else {
+        eighton = true;
+        d3.select(".eight-button").classed("pure-menu-selected", true);
+        include_qualities.push(8);
+      } 
+      drawPlot();
+    }
+
+    function click9Wine(){
+      if (nineon == true){
+        nineon = false;
+        d3.select(".nine-button").classed("pure-menu-selected", false);
+        var index = include_qualities.indexOf(9);
+        include_qualities.splice(index,1);
+      } else {
+        nineon = true;
+        d3.select(".nine-button").classed("pure-menu-selected", true);
+        include_qualities.push(9);
+      } 
+      drawPlot();
+    }
+
+    //Handles wine clicks for including and excluding wine types
+    function clickRedWine(){
+      if (redwineon == true){
+        redwineon = false;
+        d3.select(".red-wine-button").classed("pure-menu-selected", false);
+        var index = include_types.indexOf('red');
+        include_types.splice(index,1);
+      } else {
+        redwineon = true;
+        d3.select(".red-wine-button").classed("pure-menu-selected", true);
+        include_types.push('red');
+      }
+      drawPlot();
+      
+    }
+
+    function clickWhiteWine(){
+      if (whitewineon == true){
+        whitewineon = false;
+        d3.select(".white-wine-button").classed("pure-menu-selected", false);
+        var index = include_types.indexOf('white');
+        include_types.splice(index,1);
+      } else {
+        whitewineon = true;
+        d3.select(".white-wine-button").classed("pure-menu-selected", true);
+        include_types.push('white');
+      }
+      drawPlot();
+      
+    }
+
+    //Select functions for the variable that is chosen
+    function changeFirstVariable(selectVariable,selectText){
+      xAxisText = selectText;
+      currentVariable1 = selectVariable;
+      drawPlot();
+    }
+
+    function changeSecondVariable(selectVariable,selectText){
+      yAxisText = selectText;
+      currentVariable2 = selectVariable;
+      drawPlot();
+    }
+    
+    
+
+    //Create Variable to Store Wine Data
+    var wine_data = null;
+
+    //Variables for resizing the windows and plots
+    var w = window,
+        d = document,
+        e = d.documentElement,
+        g = d.getElementsByTagName('body')[0],
+        x = w.innerWidth || e.clientWidth || g.clientWidth,
+        y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+
+    //Set Dimentions for Graphics
+    var margin = 48,
+        width = 1024 - 2*margin,
+        height = 668 - margin;
+
+    //Function called one window resize to keep plot visible in window
+    function updateWindow(){
+      x = w.innerWidth || e.clientWidth || g.clientWidth;
+      y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+
+      width = x - 150 - 2*margin;
+      height = Math.round(768*y/1024) - margin;
+      svg.attr("width", width).attr("height", height);
+      d3.select("svg").attr("width", width).attr("height", height+margin);
+      //alert(x + "," + y);
+      if(skip_pressed){
+        drawPlot();
+      } else {
+        story(storyIndex);
+      }
+
+    }
+
+    window.onresize = updateWindow;
+
+    //Format for displaying numbers
+    var formatCount = d3.format(",.0f");
+ 
+    //Create varaible for SVG and add SVG to page
+    var svg = d3.select(".content")
+          .append("svg")
+            .attr("width", width + 2*margin)
+            .attr("height", height + margin)
+          .append('g')
+              .attr('class','chart');
+
+    //Removes data visualizations from svg
+    function remove(){
+      removeHistogram();
+      removeScatter();
+      removeAverage();
+    };
+
+    function removeHistogram(){
+      d3.selectAll(".bar").remove();
+      d3.selectAll(".x").remove();
+    };
+
+    function removeScatter(){
+      d3.selectAll(".x").remove();
+      d3.selectAll(".y").remove();
+      d3.selectAll("circle").remove();
+    };
+
+    function removeAverage(){
+      d3.selectAll(".line").remove();
+    }
+
+
+    //Returns data that is consistent with selections
+    function getFilteredData(){
+      
+      var filtered_data = wine_data.filter(function(d) {
+
+        return include_types.indexOf(d['type']) > -1 && include_qualities.indexOf(+d['quality']) > -1
+                      
+      });
+
+      return filtered_data
+    }
+
+    //Subset datas for type and quality
+    function getRedWineData(data){
+      var red_data = data.filter(function(d){
+        return d['type'] == "red"
+      });
+      return red_data;
+    }
+
+    function getWhiteWineData(data){
+      var white_data = data.filter(function(d){
+        return d['type'] == "white"
+      });
+      return white_data;
+    }
+
+    function getGoodWineData(data){
+      var good_data = data.filter(function(d){
+        return +d['quality'] > 6;
+      });
+      return good_data;
+    }
+
+    function getBadWineData(data){
+      var bad_data = data.filter(function(d){
+        return +d['quality'] <= 6;
+      });
+      return bad_data;
+    }
+
+    //fuction to call when plotting a scatter plot
+    function drawScatter(variable1,variable2){
+      
+      var currentData = getFilteredData();
+      var extentX = d3.extent(wine_data,function(d){
+        return +d[variable1];
+      });
+      var extentY = d3.extent(wine_data,function(d){
+        return +d[variable2];
+      });
+
+      var valuesX = [];
+      var valuesY = [];
+
+      currentData.forEach(function(d){
+        valuesX.push(+d[variable1]);
+        valuesY.push(+d[variable2]);
+      });
+
+      remove();
+
+      var x = d3.scale.linear().domain(extentX).range([2*margin,width]);
+      var y = d3.scale.linear().domain(extentY).range([height,margin]);
+
+      var hist_data_x = d3.layout.histogram().bins(x.ticks(20))(valuesX);
+      var number_of_x_points = d3.sum(hist_data_x,function(d){ return d.y; });
+
+
+      var hist_data_y = d3.layout.histogram().bins(x.ticks(20))(valuesY);
+      var number_of_y_points = d3.sum(hist_data_y,function(d){ return d.y; });
+
+      if (number_of_x_points > 0 && number_of_y_points > 0){
+        var xAxis = d3.svg.axis().scale(x).orient('bottom');
+        var yAxis = d3.svg.axis().scale(y).orient('left');
+
+        svg.append("g")
+            .attr("class",'x axis')
+            .attr('transform','translate(0,'+height+')')
+            .call(xAxis)
+
+        svg.append("g")
+            .attr("class",'y axis')
+            .attr('transform','translate('+2*margin+',0)')
+            .call(yAxis)
+
+        svg.append("text")
+          .attr('transform','translate('+width/2+','+(40+height)+')')
+          .attr("class","x")
+          .style("text-anchor", "middle")
+          .text(xAxisText);
+
+        svg.append("text")
+          .attr("transform", "translate("+margin+","+height/2+") rotate(-90)")
+          .attr("class","y")
+          .style("text-anchor", "middle")
+          .text(yAxisText); 
+
+        svg.selectAll("circle")
+              .data(currentData)
+              .enter()
+              .append("circle")
+
+        d3.selectAll("circle")
+            .attr('cx',function(d){
+              return x(+d[variable1].replace(",",""));
+            })
+            .attr('cy',function(d){
+              return y(+d[variable2].replace(",",""))
+            })
+            .attr('r',function(d){
+              return d['quality']
+            })
+            .attr('fill',function(d){
+              if( d['type'] == 'red' ){
+                return '#8B0000'
+              } else {
+                return '#F8DE7E'
+              }
+            })
+            .attr('opacity',0.25)
+            .attr('stroke','gray')
+            .attr('stroke-width',1);
+
+        
+
+      }
+    }
+
+    //Function to call when making a trend line plot
+    function drawAverages(variable1,variable2){
+
+      var currentData = getFilteredData();
+      var extentX = d3.extent(wine_data,function(d){
+        return +d[variable1];
+      });
+      var extentY = d3.extent(wine_data,function(d){
+        return +d[variable2];
+      });
+
+      var step_size = 7;
+      var dx = (extentX[1]-extentX[0])/step_size;
+
+      var line = [];
+      var line25 = [];
+      var line75 = [];
+
+      for(var i = 0; i < step_size; i++){
+        var this_data = currentData.filter(function(d){
+          return d[variable1] >= extentX[0]+i*dx && d[variable1] < extentX[0]+(i+1)*dx;
+        });
+        var avg_y = d3.mean(this_data,function(d){return +d[variable2];});
+        var avg_x = d3.mean(this_data,function(d){return +d[variable1];});
+        var y_dev = d3.deviation(this_data,function(d){return +d[variable2];});
+        if (avg_x != null && avg_y != null && y_dev !=null){
+          line.push({x:avg_x,y:avg_y});
+          line25.push({x:avg_x,y:avg_y-y_dev});
+          line75.push({x:avg_x,y:avg_y+y_dev});
+        }
+        
+        
+        
+      }
+      remove();
+
+      var x = d3.scale.linear().domain(extentX).range([2*margin,width]);
+      var y = d3.scale.linear().domain(extentY).range([height,margin]);
+
+      
+      if (currentData.length > 0){
+
+        var xAxis = d3.svg.axis().scale(x).orient('bottom');
+        var yAxis = d3.svg.axis().scale(y).orient('left');
+
+        svg.append("g")
+            .attr("class",'x axis')
+            .attr('transform','translate(0,'+height+')')
+            .call(xAxis)
+
+        svg.append("g")
+            .attr("class",'y axis')
+            .attr('transform','translate('+2*margin+',0)')
+            .call(yAxis)
+
+        svg.append("text")
+          .attr('transform','translate('+width/2+','+(40+height)+')')
+          .attr("class","x")
+          .style("text-anchor", "middle")
+          .text(xAxisText);
+
+        svg.append("text")
+          .attr("transform", "translate("+margin+","+height/2+") rotate(-90)")
+          .attr("class","y")
+          .style("text-anchor", "middle")
+          .text(yAxisText); 
+
+        var svg_line = d3.svg.line()
+                              .x(function(d){ return x(d.x);})
+                              .y(function(d){ return y(d.y);})
+
+        svg.append("path")
+            .attr("class","line")
+            .attr("d",svg_line(line));
+
+        svg.append("path")
+            .attr("class","line")
+            .style("stroke-dasharray",("3,3"))
+            .attr("d",svg_line(line25));
+
+        svg.append("path")
+            .attr("class","line")
+            .style("stroke-dasharray",("3,3"))
+            .attr("d",svg_line(line75));
+
+        
+      }
+    };
+
+    //Function to handle plotting a histogram
+    function drawHistogram(variable){
+
+      var currentData = getFilteredData();
+      var extent = d3.extent(wine_data,function(d){
+        return +d[variable];
+      });
+
+      var values = [];
+
+      currentData.forEach(function(d){
+        values.push(+d[variable])
+      });
+
+      remove();
+
+      var x = d3.scale.linear().domain(extent).range([margin,width]);
+
+      var hist_data = d3.layout.histogram().bins(x.ticks(20))(values);
+
+      var number_of_points = d3.sum(hist_data,function(d){ return d.y; });
+
+      if (number_of_points > 0){
+
+        var max_value = d3.max(hist_data,function(d){ return d.y});
+
+
+        //var y = d3.scale.linear().domain([0,d3.max(hist_data,function(d){ return d.y; })]).range([height,margin]);
+        var y = d3.scale.linear().domain([0,max_value/number_of_points]).range([height,margin]);
+        var xAxis = d3.svg.axis().scale(x).orient('bottom');
+
+        var bar = svg.selectAll('.bar')
+          .data(hist_data)
+          .enter()
+          .append('g')
+          .attr('class','bar')
+          .attr('transform',function(d) { return 'translate(' +x(d.x) + "," + y(d.y/number_of_points) + ")";});
+
+        
+        bar.append('rect')
+          .attr('x',1)
+          .attr('width',width/21)
+          .attr('height',function(d) { return height - y(d.y/number_of_points);});
+
+        bar.append("text")
+          .attr("dy",".75em")
+          .attr('y',6)
+          .attr('x', width/40 - 5)
+          .attr('text-anchor','middle')
+          .text(function(d) { return formatCount(d.y*100/number_of_points)+"%";});
+
+        svg.append("g")
+          .attr('class', 'x axis')
+          .attr('transform','translate(0,'+height+')')
+          .call(xAxis);
+
+        svg.append("text")
+          .attr("x", width / 2 )
+          .attr("y",  y(0) + 40 )
+          .attr("class","x")
+          .style("text-anchor", "middle")
+          .text(xAxisText);
+        
+      }
+    };
+    var intervalGraph = null;
+
+    //Fucntion that gets called intially when data is loaded
+    function draw(data) {
+      wine_data = data;
+      $('.prev-button').hide();
+      $('.skip-button').click(function(){
+        document.getElementById("menu").style.pointerEvents = 'auto';
+        $('.control-buttons').remove()
+        skip_pressed = true;
+        d3.select("svg").attr("height",height);
+        drawHistogram(currentVariable1);
+        updateWindow();
+        clearInterval(intervalGraph);
+        include_types = ['red','white'];
+
+        $(".red-wine-button").addClass('pure-menu-selected');
+        $(".white-wine-button").toggleClass('add-menu-selected');
+
+      });
+      $('.next-button').click(function(){
+        storyIndex++;
+        if(storyIndex == 1){
+          d3.select("svg").attr("height",height);
+          $('.prev-button').show();
+        }
+        updateWindow();
+      });
+      $('.prev-button').click(function(){
+        if(storyIndex > 0){
+          storyIndex--;
+        }
+        if(storyIndex == 0){
+          $('.prev-button').hide();
+          d3.select("svg").attr("height",0);
+        }
+        updateWindow();
+      });
+      document.getElementById("menu").style.pointerEvents = 'none';
+      d3.select("svg").attr("height",0);
+    };
+
+    
+    //function to control data story
+    function story(index){
+      svg.attr("width", width).attr("height", height);
+      d3.select("svg").attr("width", width).attr("height", height+margin);
+      if(index==0){
+
+      d3.select("svg").attr("width", width).attr("height", 0);
+        $('.description').html("<p>Welcome!</p><p>We're going to explore some wine data to get a feel for what chemical properties affect the quality of a wine.  We're also going to see what makes red wines different from white wine.</p><p>I've currently disabled the side bar.  You can click next to take the guided story I have made for you, or you can click skip to start exploring the data yourself.</p>");
+      } else if( index == 1){
+        $("#var1Select").val('quality').change();
+        drawHistogram('quality')
+        $('.description').html("<p>This data set has 1599 red wines and 4898 white wines.  Most of the wines have an average rating of 5 or 6.  Exceptionally good and bad wines are rare in this data set.</p>");
+      } else if( index == 2){
+        $("#var1Select").val('pH').change();
+        drawHistogram('pH')
+        $('.description').html("<p>Wines tend to be aciditic, having a pH less than 7.   Wines must have a pH less than 4 to avoid spoilage.</p>");
+        clearInterval(intervalGraph);
+      } else if( index == 3) {
+        clearInterval(intervalGraph);
+        include_types = ["red"];
+        drawHistogram('pH')
+        $(".red-wine-button").toggleClass('pure-menu-selected');
+        $('.description').html("<p>Red wines are more aciditic than white wines</p>");
+        intervalGraph = setInterval(function(){
+          $(".red-wine-button").toggleClass('pure-menu-selected');
+          $(".white-wine-button").toggleClass('pure-menu-selected');
+          if( include_types.indexOf("red") > -1){
+            include_types = ['white'];
+            drawHistogram('pH');
+          } else {
+            include_types = ['red'];
+            drawHistogram('pH');
+          }
+        },2000);
+      } else if (index == 4){
+        clearInterval(intervalGraph);
+        $("#var1Select").val('density').change();
+        include_types = ["red"];
+        drawHistogram('density')
+        $('.description').html("<p>Red wines also tend to be higher in density than white wines</p>");
+        intervalGraph = setInterval(function(){
+          
+          if( include_types.indexOf("red") > -1){
+            $(".red-wine-button").removeClass('pure-menu-selected');
+            $(".white-wine-button").addClass('pure-menu-selected');
+            include_types = ['white'];
+            drawHistogram('density');
+          } else {
+            $(".red-wine-button").addClass('pure-menu-selected');
+            $(".white-wine-button").removeClass('pure-menu-selected');
+            include_types = ['red'];
+            drawHistogram('density');
+          }
+        },2000);
+      } else if (index == 5){
+        clearInterval(intervalGraph);
+        drawingHistogram = true;
+        drawingScatter = false;
+        d3.select('.trend-line').classed("pure-menu-selected",true);
+        d3.select('.scatter').classed("pure-menu-selected",false);
+        d3.select('.histogram').classed("pure-menu-selected",false);
+        d3.select("#variable2").style("display","none");
+        $("#var1Select").val('total.sulfur.dioxide').change();
+        include_types = ["red"];
+        drawHistogram('total.sulfur.dioxide')
+        $('.description').html("<p>White wines tend to have more sulfer dioxide gas included and disolved in the wine.</p>");
+        intervalGraph = setInterval(function(){
+          
+          if( include_types.indexOf("red") > -1){
+            $(".red-wine-button").removeClass('pure-menu-selected');
+            $(".white-wine-button").addClass('pure-menu-selected');
+            include_types = ['white'];
+            drawHistogram('total.sulfur.dioxide');
+          } else {
+            $(".red-wine-button").addClass('pure-menu-selected');
+            $(".white-wine-button").removeClass('pure-menu-selected');
+            include_types = ['red'];
+            drawHistogram('total.sulfur.dioxide');
+          }
+        },2000);
+      } else if (index == 6){
+        clearInterval(intervalGraph);
+        drawingHistogram = false;
+        drawingScatter = true;
+        d3.select('.trend-line').classed("pure-menu-selected",false);
+        d3.select('.scatter').classed("pure-menu-selected",true);
+        d3.select('.histogram').classed("pure-menu-selected",false);
+        $(".red-wine-button").addClass('pure-menu-selected');
+        $(".white-wine-button").addClass('pure-menu-selected');
+        d3.select("#variable2").style("display","inline");
+        include_types = ["red",'white'];
+        $("#var1Select").val('density').change();
+        $("#var2Select").val('total.sulfur.dioxide').change();
+        drawScatter('density','total.sulfur.dioxide');
+        $('.description').html("<p>A scatter plot of density and Sulfer Dioxide show that red wines (red) and white wines (yellow) tend to take up different but neighboring spaces.</p><p> Sulfer Dioxide also reduces the denisty of a any liquid because it is nautrally a gas and room temperature</p>");
+      } else if (index == 7){
+        d3.select('.trend-line').classed("pure-menu-selected",false);
+        d3.select('.scatter').classed("pure-menu-selected",true);
+        d3.select('.histogram').classed("pure-menu-selected",false);
+        $("#var1Select").val('density').change();
+        $("#var2Select").val('alcohol').change();
+        drawScatter('density','alcohol');
+        $('.description').html("<p>A scatter plot of density and alcohol by volume also shows that more alcohol leads to less density.  This is because alcohol has a density of about 730 g/L.</p>");
+      } else if (index == 8){
+        drawingHistogram = false;
+        drawingScatter = false;
+        d3.select('.trend-line').classed("pure-menu-selected",true);
+        d3.select('.scatter').classed("pure-menu-selected",false);
+        d3.select('.histogram').classed("pure-menu-selected",false);
+        drawAverages('density','alcohol');
+        $('.description').html("<p>A trend line shows this better.  The average (solid) and 1 standard deviation (dashed) shows lower density wines have higher alcohol content.</p>");
+      } else if (index == 9) {
+
+        $("#var1Select").val('quality').change();
+        drawAverages('quality','alcohol');
+        $('.description').html("<p>A trend line of quality vs alcohol content shows that better rated wines tend to be more alcoholic.</p>");
+      }  else if (index == 10) {
+        include_types = ['red']
+        $('.white-wine-button').removeClass("pure-menu-selected");
+        $("#var2Select").val('citric.acid').change();
+        drawAverages('quality','citric.acid');
+        $('.description').html("<p>Good red wines tends to be fruitier, hence have more citric acid</p>");
+      } else if (index == 11) {
+        d3.select('.trend-line').classed("pure-menu-selected",true);
+        d3.select('.scatter').classed("pure-menu-selected",false);
+        d3.select('.histogram').classed("pure-menu-selected",false);
+        d3.select('.white-wine-button').classed("pure-menu-selected",false);
+        include_types = ['red']
+        $("#var2Select").val('volatile.acidity').change();
+        drawAverages('quality','volatile.acidity');
+        $('.description').html("<p>Good red wines tend to be less vineragry, so they have less volatile acidity.</p>");
+        $('.next-button').show();
+      } else if (index == 12) {
+        drawingHistogram = true;
+        drawingScatter = false;
+        d3.select('.trend-line').classed("pure-menu-selected",false);
+        d3.select('.scatter').classed("pure-menu-selected",false);
+        d3.select('.histogram').classed("pure-menu-selected",true);
+        d3.select('.white-wine-button').classed("pure-menu-selected",true);
+        include_types = ['red','white']
+        d3.select("#variable2").style("display","none");
+        currentVariable1 = 'quality'
+        drawHistogram('quality');
+        $(".next-button").hide()
+        $('.description').html("<p>Now its your turn to explore the data.  Press skip to being exporing, or prev to go back and review.</p>");
+      }
+    }
+
+      
+    </script>
+    <script type="text/javascript">
+
+
+  /* Load Wine Data */
+  d3.csv("http://www.bryantravissmith.com/files/wine.csv",draw);
+
+</script>
+</html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="en" class="no-js lt-ie9 lt-ie8 lt-ie7" prefix="og: http://ogp.me/ns#" itemscope itemtype="http://schema.org/BlogPosting"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" class="no-js lt-ie9 lt-ie8" prefix="og: http://ogp.me/ns#" itemscope itemtype="http://schema.org/BlogPosting"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" class="no-js lt-ie9" prefix="og: http://ogp.me/ns#" itemscope itemtype="http://schema.org/BlogPosting"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" class="no-js" prefix="og: http://ogp.me/ns#" itemscope itemtype="http://schema.org/BlogPosting"> <!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Udacity - Data Analysis NanoDegree - Project 5</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="My passing submission project 5 for Udacity Data Analysis Nanodegree">
+<link rel="shortcut icon" href="http://www.bryantravissmith.com/" type="">
+<meta name="author" content="Bryan Smith">
+<meta name="copyright" content="Bryan Smith">
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@bryantravissmit" />
+<meta property="og:site_name" content="Bryan Travis Smith, Ph.D" />
+
+<meta property="og:title" content="Udacity - data analysis nanodegree - project 5" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://www.bryantravissmith.com/udacity/udacity-project-5/" />
+<meta name="twitter:title" content="Udacity - data analysis nanodegree - project 5" />
+<meta name="twitter:url" content="http://www.bryantravissmith.com/udacity/udacity-project-5/" />
+<meta itemprop="url" content="http://www.bryantravissmith.com/udacity/udacity-project-5/" />
+<meta property="og:description" content="My passing submission project 5 for Udacity Data Analysis Nanodegree" />
+<meta name="twitter:description" content="My passing submission project 5 for Udacity Data Analysis Nanodegree" />
+<meta property="og:article:published_time" content="2015-05-15" />
+<meta property="og:article:modified_time" content="2015-05-22">
+<meta itemprop="dateModified" content="2015-05-15" />
+<meta property="og:article:author" content="Bryan Smith" >
+<meta property="og:article:tag" content="udacity">
+<meta property="og:article:tag" content="data-analysis">
+<meta property="og:article:tag" content="nanodegree">
+<meta property="og:article:tag" content="project">
+<meta property="og:image" content="http://www.bryantravissmith.com/img/bryan.jpeg" />
+<meta property="og:image:type" content="image/jpeg" />
+<meta name="twitter:image" content="http://www.bryantravissmith.com/img/bryan.jpeg" />
+<meta itemprop="image" content="http://www.bryantravissmith.com/img/bryan.jpeg" />
+
+<link href="http://www.bryantravissmith.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Bryan Travis Smith, Ph.D ATOM Feed"/>
+<link href='http://fonts.googleapis.com/css?family=Merriweather:400,300italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/uikit/2.15.0/css/uikit.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/uikit/2.15.0/css/components/search.min.css">
+<link rel="stylesheet" href="/theme/css/tipuesearch.css">
+<link rel="stylesheet" href="/theme/css/solarized.css">
+<link rel="stylesheet" href="/theme/css/main.css">
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+</head>
+<body>
+<!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+<header class=" mg-header uk-navbar uk-navbar-attached">
+
+    <div class="uk-container uk-container-center">
+        <div class="uk-grid" data-uk-grid-margin>
+
+            <a class="mg-brand uk-navbar-brand uk-hidden-small" href="http://www.bryantravissmith.com">Bryan Travis Smith, Ph.D</a>
+            <div class="mg-tagline uk-navbar-content uk-hidden-small">Physicist, Data Scientist, Martial Artist, & Life Enthusiast</div>
+            <a class="uk-navbar-toggle uk-visible-small" href="#mg-offcanvas" data-uk-offcanvas></a>
+            <a class="mg-brand uk-navbar-brand uk-navbar-center uk-visible-small" href="http://www.bryantravissmith.com">Bryan Travis Smith, Ph.D</a>
+
+        </div>
+    </div>
+</header>
+
+<main class="mg-main">
+
+<div class="uk-container uk-container-center">
+
+    <div class="uk-grid" data-uk-grid-margin>
+        
+<div class="mg-container-social uk-width-medium-1-10 uk-hidden-small">
+
+    <div class="uk-panel" id="mg-panel-social">
+        <ul class="uk-nav uk-nav-side">
+            <li>
+            <a href="https://www.facebook.com/sharer/sharer.php?u=http://www.bryantravissmith.com/udacity/udacity-project-5/" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');return false;" taget="_blank" class="uk-button"><i class="uk-icon-facebook-square"></i> Share</a>
+            </li>
+            <li>
+            <a href="https://twitter.com/intent/tweet?text=Udacity%20-%20Data%20Analysis%20NanoDegree%20-%20Project%205&url=http://www.bryantravissmith.com/udacity/udacity-project-5/&via=bryantravissmit" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" class="uk-button" target="_blank"><i class="uk-icon-twitter"></i> Tweet</a>
+            </li>
+            <li>
+            <a href="https://plus.google.com/share?url=http://www.bryantravissmith.com/udacity/udacity-project-5/" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank" class="uk-button"><i class="uk-icon-google-plus-square"></i> Share</a>
+            </li>
+            <li>
+            <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://www.bryantravissmith.com/udacity/udacity-project-5/&title=Udacity - Data Analysis NanoDegree - Project 5" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank" class="uk-button"><i class="uk-icon-linkedin-square"></i> Share</a>
+            </li>
+        </ul>
+    </div>
+
+</div>
+
+<div class="uk-width-medium-7-10">
+
+    <article class="uk-article">
+        <h1 class="uk-heading-large uk-article-title" itemprop="name">Udacity - Data Analysis NanoDegree - Project 5</h1>
+        <p class="uk-article-meta"><time datetime="2015-05-15" itemprop="datePublished">Fri 15 May 2015</time> in <a href="http://www.bryantravissmith.com/category/udacity.html">Udacity</a>, <br class="uk-visible-small"><i class="uk-icon-comment"></i> <a href="http://www.bryantravissmith.com/udacity/udacity-project-5/#disqus_thread" itemprop="discussionUrl"></a></p>
+
+        <a href="https://www.facebook.com/sharer/sharer.php?u=http://www.bryantravissmith.com/udacity/udacity-project-5/" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');return false;" taget="_blank" class="uk-button uk-visible-small"><i class="uk-icon-facebook-square"></i> Share</a>
+        <a href="https://twitter.com/intent/tweet?text=Udacity%20-%20Data%20Analysis%20NanoDegree%20-%20Project%205&url=http://www.bryantravissmith.com/udacity/udacity-project-5/&via=bryantravissmit" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" class="uk-button uk-visible-small" target="_blank"><i class="uk-icon-twitter"></i> Tweet</a>
+        <a href="https://plus.google.com/share?url=http://www.bryantravissmith.com/udacity/udacity-project-5/" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank" class="uk-button uk-visible-small"><i class="uk-icon-google-plus-square"></i> Share</a>
+
+        <!--<p class="uk-article-lead" itemprop="description">My passing submission project 5 for Udacity Data Analysis Nanodegree</p>!-->
+        <section itemprop="articleBody"><h1>Project 5 - Data Visualization with D3.js</h1>
+<h2>Summary</h2>
+<p>My data visualization is highlighting the chemical properties of wine that are associated with the ranking of the wine.   The data comes from <a href="http://www3.dsi.uminho.pt/pcortez/wine/">http://www3.dsi.uminho.pt/pcortez/wine/</a> and is a ranking of 6000+ red and white wines from Portugal along with 11 chemical properties.   The visualization guides the user through some interesting graphics, then allows the user to explore the data themselves at the end of a guided story.  </p>
+<h2>Final Visualization</h2>
+<p><a href="http://www.bryantravissmith.com/udacity/dv1.html">Wine Story Visualization</a></p>
+<h2>Explore All Data Visualization</h2>
+<p><a href="http://www.bryantravissmith.com/udacity/dv2.html">Wine Data Visualization</a></p>
+<h2>Design</h2>
+<p>My initial goal was to guild an simple way to see visualization of all the wine data.  I wanted to make it easy for someone new to see the trends and patterns in all the data, and to explore it, without needs to do coding.  I thought my story would be to show some of the interesting associations between quality and chemical properties.</p>
+<p>My initial design was a sketch of the User Interface that I showed on of my students who has built and sold numerous mobile apps.  He liked the separation of the menu and graphics, but suggested that I move the menu to the left side.  He said most sights have menus on the left side.  Additionally he suggest using a css framework.  After reviewing some I decided to use Pure CSS.</p>
+<p>I wanted to let the user subset data so they can decide to plot only wines of a certain quality or of a specific type.   For instance, only white wines with quality greater than 6.   This required that I have a way to both subset the data and visual indicate the which data is selected.   This was done using the Pure CSS styling options, and initially with the D3.select.  As the page grew more than 500 lines of code, I decided to switch to jQuery for the user interactions because it was easier to choose and change properties on the page, as well as to simulate users selections for the guided story.</p>
+<p>In the initial implementation,  I implanted a percent/density visualization in the histograms because of feedback from my wife.  She was confused why some numbers changed when putting in the count, but seemed to describe the distributions accurately when they were displayed as percentages.   She also found the side menu intuitive, but didn't understand what the variables meant. I added the description under the graphic to help give the user context to the data and to develop a narrative during the initial animation.  </p>
+<p>My wife also did not like the colors I used for the scatter plots.  She called them ugly.   We settled on the yellow and reds used the final product.  </p>
+<p>My friend Travis thought some trend lines would help digest the information better than the scatter plots.   He also had some formatting issues when he looked at in on his computer.   I decided to add another plot option of to show the average and 1 standard deviation, as well as make the plot resize in the browser.</p>
+<p>After the Udacity review, it was clear to me that I had build something for exploring instead of explaining the data.  My scope was too big, and my goal unfocused.   I decided I would focus on red wine, which the data has some relatively strong association with quality and chemical properties.   The results also match the intuition one gets for reds if they read any wine literature.</p>
+<p>I decided to refocus on the story - good wines are alcoholic and fruity, and they are not yet vinegar.  I limited the variables I would display, and allow the user to control, to alcohol, citric.acid, volatile.acidity, and quality.   I also remove the control bar for the first half of the story, not showing it until it added new information, and did not give the option for the user to skip it.</p>
+<p>Every graphic in the story supports the idea that well rated reds tend to be fruiter, alcoholic, and not vinegary.   </p>
+<h1>Feedback</h1>
+<p>My feed back was gaged in person where I asked people near me to "look at this" and guided them through the final story I have implemented.   This conversation were less then 15 minutes.  </p>
+<h2>1</h2>
+<p>A student suggested that I use a css framework and move the menu from the right side of the graphic to the left side of the graphic. </p>
+<h2>2</h2>
+<p>My wife examined an early version of the visualization.  She thought I should use percentages instead of raw counts for displaying the values in the histogram bars, and to add descriptions of the variables/graphs below each graph.  She liked the sidebar menu to control the visualization.  She was also sure that drinking wine is better then making graphs of wine.  </p>
+<h2>3</h2>
+<p>My friend Travis said that there were too many points to get a feel for trends and would have liked to added a best fit line.  He also said the plot was not fitting in his browser.  He was very interested in the wine, being a self professed 'Wino', and expressed that he would like to see this again if I found similar data for California wines.    </p>
+<h1>4</h1>
+<p>Udacity review stated that I have given too much control to the user, and that dozens of plots can be generated with current setup.  I should focus on an explanatory story instead of an exploratory setup.  I did not tell a specific enough story, and should focus on one story with a few key variables and plots.</p>
+<h1>Resources</h1>
+<h2>http://bl.ocks.org/mbostock/3048166</h2>
+<p>I used this site for the initial design and implementation of the histogram.</p>
+<h2>Stack Overflow</h2>
+<p>I used stack overflow to look up any specific issues in trying to implement my visualization.   More often than not it was syntax or not being currently familiar with javascript methods of interacting with different datatypes.  </p>
+<h2>Pure CSS - http://purecss.io/</h2>
+<p>I ended up using this framework because it was externally hosted, light weight, and easy to use.  </p></section>
+        <hr class="uk-article-divider">
+    </article>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'bryansmithphd'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+     dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+     })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+</div>
+ 
+    
+        <div class="uk-width-medium-1-5 uk-hidden-small">
+            
+            <div class="uk-panel uk-panel-box">
+                <form class="uk-search" action="search.html" data-uk-search>
+                    <input class="uk-search-field tipue_search" type="search" name="q" id="tipue_search_input" autocomplete="off" placeholder="Search...">
+                </form>
+            </div>
+
+            <div class="uk-panel uk-panel-box">
+                <ul class="uk-nav uk-nav-side">
+                    <li class="uk-nav-header">Categories</li>
+                    <li class="uk-active"><a href="http://www.bryantravissmith.com/category/udacity.html">Udacity</a></li>
+                    <li class="uk-nav-header">Pages</li>
+                    
+                    <li >
+                        <a href="http://www.bryantravissmith.com/about/">About</a>
+                    </li>
+                    
+
+                    <li class="uk-nav-divider"></li>
+                    <li ><a href="http://www.bryantravissmith.com/archives.html">Archives</a></li>
+                </ul>
+            </div>
+
+            <div class="uk-panel uk-panel-box">
+                <h3 class="uk-panel-title">Receive Updates</h3>
+                <a rel="alternate" type="application/atom+xml" href="http://www.bryantravissmith.com/feeds/all.atom.xml" class="mg-feed"><i class="uk-icon-rss uk-icon-medium"></i> ATOM</a>
+            </div>
+            
+            <div class="uk-panel uk-panel-box">
+                <h3 class="uk-panel-title">Contacts</h3>
+                <a class="mg-icon-link" href="https://linkedin.com/in/bryantravissmith">
+                    <i class="uk-icon-linkedin uk-icon-medium"></i>
+                </a>
+                <a class="mg-icon-link" href="https://github.com/bryantravissmith">
+                    <i class="uk-icon-github uk-icon-medium"></i>
+                </a>
+                <a class="mg-icon-link" href="https://plus.google.com/+BryanSmithPhD">
+                    <i class="uk-icon-google-plus-square uk-icon-medium"></i>
+                </a>
+                <a class="mg-icon-link" href="https://twitter.com/bryantravissmit">
+                    <i class="uk-icon-twitter uk-icon-medium"></i>
+                </a>
+                <a class="mg-icon-link" href="https://instagram.com/bryantravissmith/">
+                    <i class="uk-icon-instagram uk-icon-medium"></i>
+                </a>
+                <a class="mg-icon-link" href="mailto:bryantravissmith@gmail.com">
+                    <i class="uk-icon-envelope uk-icon-medium"></i>
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</main>
+
+<footer class="mg-footer">
+    <div class="uk-container uk-container-center uk-text-center">
+
+        <div class="mg-icons-small uk-subnav uk-visible-small">
+            <li><a rel="alternate" type="application/atom+xml" href="http://www.bryantravissmith.com/feeds/all.atom.xml" class="uk-icon-button uk-icon-rss"></a></li>
+            <li>
+                <a href="https://linkedin.com/in/bryantravissmith" class="uk-icon-button uk-icon-linkedin"></a>
+            </li>
+            <li>
+                <a href="https://github.com/bryantravissmith" class="uk-icon-button uk-icon-github"></a>
+            </li>
+            <li>
+                <a href="https://plus.google.com/+BryanSmithPhD" class="uk-icon-button uk-icon-google-plus"></a>
+            </li>
+            <li>
+                <a href="https://twitter.com/bryantravissmit" class="uk-icon-button uk-icon-twitter"></a>
+            </li>
+            <li>
+                <a href="https://instagram.com/bryantravissmith/" class="uk-icon-button uk-icon-instagram"></a>
+            </li>
+            <li>
+                <a href="mailto:bryantravissmith@gmail.com" class="uk-icon-button uk-icon-envelope"></a>
+            </li>
+        </div>
+
+        <div class="mg-author uk-panel">
+            <p>&copy; 2015 Bryan Smith. All rights reserved.<br>Code snippets in the pages are released under <a href="http://opensource.org/licenses/MIT" target="_blank">The MIT License</a>, unless otherwise specified.</p>
+
+            <p>Powered by <a href="http://blog.getpelican.com">Pelican</a>.<br class="uk-visible-small"> Theme <a href="https://github.com/lucachr/pelican-mg">mg</a> by <a href="https://github.com/lucachr">Luca Chiricozzi</a>.</p>
+        </div>
+    </div> 
+</footer>
+
+<div id="mg-offcanvas" class="uk-offcanvas">
+    <div class="uk-offcanvas-bar">
+
+        <form class="uk-search" action="search.html" data-uk-search>
+            <input class="uk-search-field" type="search" name="q" id="tipue_search_input" autocomplete="off" placeholder="Search...">
+        </form>
+
+        <ul class="uk-nav uk-nav-offcanvas" data-uk-nav>
+            <li class="uk-nav-header">Categories</li>
+            <li class="uk-active"><a href="http://www.bryantravissmith.com/category/udacity.html">Udacity</a></li>
+            <li class="uk-nav-header">Pages</li>        
+            <li >
+                <a href="http://www.bryantravissmith.com/about/">About</a>
+            </li>
+                    
+
+            <li class="uk-nav-divider"></li>
+            <li><a href="http://www.bryantravissmith.com/">Archives</a></li>
+        </ul>
+    </div>
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')</script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/uikit/2.15.0/js/uikit.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/uikit/2.15.0/js/components/search.min.js"></script>
+<script src="/theme/js/jquery.sticky-kit.js"></script>
+<script src="/theme/js/tipuesearch_set.js"></script>
+<script src="/theme/js/tipuesearch.js"></script>
+<script src="/theme/js/plugins.js"></script>
+<script src="/theme/js/main.js"></script>
+
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'bryansmithphd'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function () {
+ var s = document.createElement('script'); s.async = true;
+ s.type = 'text/javascript';
+ s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+ (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+ }());
+</script>
+
+<script>
+(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+                                                        function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+ e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+ e.src='//www.google-analytics.com/analytics.js';
+ r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-24340005-3');ga('send','pageview');
+</script>
+
+</body>
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+</html>
