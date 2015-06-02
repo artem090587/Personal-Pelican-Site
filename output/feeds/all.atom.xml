@@ -1,5 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Bryan Travis Smith, Ph.D</title><link href="http://www.bryantravissmith.com/" rel="alternate"></link><link href="http://www.bryantravissmith.com/feeds/all.atom.xml" rel="self"></link><id>http://www.bryantravissmith.com/</id><updated>2015-05-22T19:30:00-07:00</updated><entry><title>Udacity - Data Analysis NanoDegree - Project 5</title><link href="http://www.bryantravissmith.com/udacity/udacity-project-5/" rel="alternate"></link><updated>2015-05-22T19:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-05-15:udacity/udacity-project-5/</id><summary type="html">&lt;h1&gt;Project 5 - Data Visualization with D3.js&lt;/h1&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Bryan Travis Smith, Ph.D</title><link href="http://www.bryantravissmith.com/" rel="alternate"></link><link href="http://www.bryantravissmith.com/feeds/all.atom.xml" rel="self"></link><id>http://www.bryantravissmith.com/</id><updated>2015-06-01T10:30:00-07:00</updated><entry><title>Galvanize - Week 01 - Day 1</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-01-01/" rel="alternate"></link><updated>2015-06-01T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-01:galvanize/galvanize-data-science-01-01/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
+&lt;h2&gt;Week 1 - Day 1&lt;/h2&gt;
+&lt;p&gt;Today is my first day attending Galvanize's Immersive Data Science Program in San Francisco, CA.   The program is a 12 week program that is approximately 10 hours a day of learning and activities to reinforce and refine the learning.   I am very excited to be a part of this program.&lt;/p&gt;
+&lt;h2&gt;My Background&lt;/h2&gt;
+&lt;p&gt;I have a Ph.d in Theoretical High Energy Particle Physics and Cosmology, earned a Data Analysis Nano-degree from Udacity.com, and also am current working on a M.S. in Computer Science from GA Tech.    I have also spent the last 8 years teaching high school physics and robotics.   &lt;/p&gt;
+&lt;p&gt;I will likely have some strength with math and theory, but I have no doubt that my programming will significantly improve over the next 12 weeks.   Everyone in the program is well educated and intelligent, and each one of them have strengths in some areas and room for improvements in others.  It seems to be a strength for this program.   No matter your weakness, there are students that have that as a strength.&lt;/p&gt;
+&lt;h2&gt;Summary of the Day&lt;/h2&gt;
+&lt;p&gt;The first half of the day is getting to know our instructors, hour cohort, and the amazingly nice galvanize complex.  It is a 5 story building filled with startup companies, work spaces, galvanize students, and other tech visitors.   I found this to be an impressive building.&lt;/p&gt;
+&lt;p&gt;After about an hour of getting to know everyone, we were given a presentation.  That was followed by a tour of the galvanize building.  We were then given an assessment on the pre-course material that was given to us before we showed up.&lt;/p&gt;
+&lt;p&gt;After lunch, we had an 90 minute lecture, then worked on a paired sprint assignment for about 3 hours.   This assignment involved...&lt;/p&gt;
+&lt;p&gt;After we finished the sprint, we were invited to a Galvanize happy hour to socialize over beer and wine.   I feel very lucky to be apart of this program, and have been impressed with my cohort, the instructors, and Galvanize.  &lt;/p&gt;
+&lt;h2&gt;The Test&lt;/h2&gt;
+&lt;p&gt;The pre-course material required us to complete material on the following topics:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Python&lt;/li&gt;
+&lt;li&gt;Linear Algebra&lt;/li&gt;
+&lt;li&gt;SQL&lt;/li&gt;
+&lt;li&gt;Numpy/Pandas&lt;/li&gt;
+&lt;li&gt;Probability&lt;/li&gt;
+&lt;li&gt;Statistics&lt;/li&gt;
+&lt;li&gt;Hypothesis Testing&lt;/li&gt;
+&lt;li&gt;Web Awareness&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The initial assessment we were given was a 120 minute test on the first 5 topics.  It was an 'open book' test, but that does not mean it was easy.  A majority of my peers did not finish within the allotted time.   &lt;/p&gt;
+&lt;p&gt;I am not going to post details on the test because I would hate to ruin the thrill of discovery for potential future students.&lt;/p&gt;
+&lt;h2&gt;LUNCH!!!!&lt;/h2&gt;
+&lt;p&gt;They provide us a lunch on the first day, but most days we have an 75 minute break for lunch.  There are kitchen, fridges, storage for us to use if we wish.   The lunch was nice, from a local Thai place.   &lt;/p&gt;
+&lt;h2&gt;Lecture&lt;/h2&gt;
+&lt;p&gt;The lecture, in my opinion, was a little redundant with the course material.  It seemed structure under the assumption that you didn't read or review the python pre-course materials.  I understand its important that everyone is on the same starting point, but I wish we got to jump in a little deeper.&lt;/p&gt;
+&lt;p&gt;I did learn and see the importance of using generators when possible.   It save both memory and time.   &lt;/p&gt;
+&lt;h2&gt;Paired programming&lt;/h2&gt;
+&lt;p&gt;After the lecture we grouped up for a paired programming assignment.   We trade off roles of being the driver and the navigator in 20 to 30 minute rotations for a 3 hour block of programming.  We start of by forking the day's assignment from a Github repo and cloning it locally.  Today we then worked two projects.  The first project was completing a list of functions based on a description of the function, including inputs and outputs.  The second project was fixing inefficiently running code.&lt;/p&gt;
+&lt;p&gt;A simple example is checking if a key is in a dictionary.   Before today I might have checked to see if it was in the keys() results, but we can see that for medium size dictionaries that it is almost 40x slower than just using in in the dictionary.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;collections&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Counter&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;random&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;randint&lt;/span&gt;
+
+&lt;span class="n"&gt;cnt&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Counter&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="n"&gt;randint&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;10000&lt;/span&gt;&lt;span class="p"&gt;)])&lt;/span&gt;
+&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;timeit&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;cnt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;keys&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;timeit&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;cnt&lt;/span&gt;
+
+&lt;span class="mi"&gt;100000&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;best&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mf"&gt;4.17&lt;/span&gt; &lt;span class="err"&gt;µ&lt;/span&gt;&lt;span class="n"&gt;s&lt;/span&gt; &lt;span class="n"&gt;per&lt;/span&gt; &lt;span class="n"&gt;loop&lt;/span&gt;
+&lt;span class="mi"&gt;10000000&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;best&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;111&lt;/span&gt; &lt;span class="n"&gt;ns&lt;/span&gt; &lt;span class="n"&gt;per&lt;/span&gt; &lt;span class="n"&gt;loop&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;We saw similar results for iter compared to iteritems, range to xrange, and izip to zip.   It was a useful assignment for the content and the practice of collaborating with someone else.&lt;/p&gt;
+&lt;h2&gt;After reception&lt;/h2&gt;
+&lt;p&gt;Galvanize SF now runs two cohorts 6 weeks apart.  We had a mixer with previous cohort, enjoying beer, wine, and conversation on the roof of the building.  &lt;/p&gt;
+&lt;p&gt;After 11 hours at Galvanize, I decided it was time to head home.   Definitely looking forward to day 2. &lt;/p&gt;</summary><category term="data-science"></category><category term="galvanize"></category><category term="python"></category></entry><entry><title>Udacity - Data Analysis NanoDegree - Project 5</title><link href="http://www.bryantravissmith.com/udacity/udacity-project-5/" rel="alternate"></link><updated>2015-05-22T19:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-05-15:udacity/udacity-project-5/</id><summary type="html">&lt;h1&gt;Project 5 - Data Visualization with D3.js&lt;/h1&gt;
 &lt;h2&gt;Summary&lt;/h2&gt;
 &lt;p&gt;My data visualization is highlighting the chemical properties of wine that are associated with the ranking of the wine.   The data comes from &lt;a href="http://www3.dsi.uminho.pt/pcortez/wine/"&gt;http://www3.dsi.uminho.pt/pcortez/wine/&lt;/a&gt; and is a ranking of 6000+ red and white wines from Portugal along with 11 chemical properties.   The visualization guides the user through some interesting graphics, then allows the user to explore the data themselves at the end of a guided story.  &lt;/p&gt;
 &lt;h2&gt;Final Visualization&lt;/h2&gt;
