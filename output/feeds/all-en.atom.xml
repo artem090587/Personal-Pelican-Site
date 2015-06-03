@@ -1,5 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Bryan Travis Smith, Ph.D</title><link href="http://www.bryantravissmith.com/" rel="alternate"></link><link href="http://www.bryantravissmith.com/feeds/all-en.atom.xml" rel="self"></link><id>http://www.bryantravissmith.com/</id><updated>2015-06-01T10:30:00-07:00</updated><entry><title>Galvanize - Week 01 - Day 1</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-01-01/" rel="alternate"></link><updated>2015-06-01T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-01:galvanize/galvanize-data-science-01-01/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Bryan Travis Smith, Ph.D</title><link href="http://www.bryantravissmith.com/" rel="alternate"></link><link href="http://www.bryantravissmith.com/feeds/all-en.atom.xml" rel="self"></link><id>http://www.bryantravissmith.com/</id><updated>2015-06-02T10:30:00-07:00</updated><entry><title>Galvanize - Week 01 - Day 2</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-01-02/" rel="alternate"></link><updated>2015-06-02T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-02:galvanize/galvanize-data-science-01-02/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
+&lt;h2&gt;Week 1 - Day 2&lt;/h2&gt;
+&lt;p&gt;Today was he first 'regular' day in the program.  I showed up about 90 minutes before the mini-quiz to review the readings for the day's lecture on Object Oriented Programming (OOP).   At 9:30 we started the mini-quiz on SQL statements and results.  I found it rather simple.  We were given 30 minutes to complete it, and I finished in about 10 minutes.  Most the topics involved analogs in pandas that I am familiar with, so I think that's why I finished rather quickly.&lt;/p&gt;
+&lt;h2&gt;Lecture&lt;/h2&gt;
+&lt;p&gt;We had two lectures today.  The first lecture was on object oriented structures, and how to implement them in python.  The afternoon lecture was on scoping in python, and a little bit of debugging.  We were introduced to pdb, but told that the use of debuggers is not well integrated in the data science community.&lt;/p&gt;
+&lt;h3&gt;LEGB&lt;/h3&gt;
+&lt;p&gt;We were told the variables are looked for in the order of local, enclosing function, global, and python build-in.   I made a set of functions to try to illustrate it for myself.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nx"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;
+&lt;span class="nx"&gt;def&lt;/span&gt; &lt;span class="nx"&gt;printer&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="nx"&gt;print&lt;/span&gt; &lt;span class="nx"&gt;x&lt;/span&gt;  &lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="nx"&gt;globally&lt;/span&gt; &lt;span class="nx"&gt;finds&lt;/span&gt; &lt;span class="nx"&gt;x&lt;/span&gt;
+&lt;span class="nx"&gt;printer&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="nx"&gt;def&lt;/span&gt; &lt;span class="nx"&gt;printer1&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="nx"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;
+    &lt;span class="nx"&gt;print&lt;/span&gt; &lt;span class="nx"&gt;x&lt;/span&gt;  &lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="nx"&gt;locally&lt;/span&gt; &lt;span class="nx"&gt;finds&lt;/span&gt; &lt;span class="nx"&gt;x&lt;/span&gt;
+&lt;span class="nx"&gt;printer1&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="nx"&gt;def&lt;/span&gt; &lt;span class="nx"&gt;printer2&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="nx"&gt;def&lt;/span&gt; &lt;span class="nx"&gt;innerprinter&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        &lt;span class="nx"&gt;print&lt;/span&gt; &lt;span class="nx"&gt;x&lt;/span&gt;  &lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="nx"&gt;globally&lt;/span&gt; &lt;span class="nx"&gt;finds&lt;/span&gt; &lt;span class="nx"&gt;x&lt;/span&gt;
+    &lt;span class="nx"&gt;innerprinter&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="nx"&gt;printer2&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="nx"&gt;def&lt;/span&gt; &lt;span class="nx"&gt;printer3&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="nx"&gt;x&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;
+    &lt;span class="nx"&gt;def&lt;/span&gt; &lt;span class="nx"&gt;innerprinter&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        &lt;span class="nx"&gt;print&lt;/span&gt; &lt;span class="nx"&gt;x&lt;/span&gt; &lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="nx"&gt;encapsulating&lt;/span&gt; &lt;span class="kd"&gt;function&lt;/span&gt; &lt;span class="nx"&gt;finds&lt;/span&gt; &lt;span class="nx"&gt;x&lt;/span&gt;
+    &lt;span class="nx"&gt;innerprinter&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="nx"&gt;printer3&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="nx"&gt;def&lt;/span&gt; &lt;span class="nx"&gt;printer4&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="nx"&gt;def&lt;/span&gt; &lt;span class="nx"&gt;innerprinter&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        &lt;span class="nx"&gt;print&lt;/span&gt; &lt;span class="kr"&gt;int&lt;/span&gt; &lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="nx"&gt;built&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="kd"&gt;function&lt;/span&gt; &lt;span class="nx"&gt;finds&lt;/span&gt; &lt;span class="kr"&gt;int&lt;/span&gt;
+    &lt;span class="nx"&gt;innerprinter&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="nx"&gt;printer4&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="nx"&gt;def&lt;/span&gt; &lt;span class="nx"&gt;printer5&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="kr"&gt;int&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;
+    &lt;span class="nx"&gt;def&lt;/span&gt; &lt;span class="nx"&gt;innerprinter&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        &lt;span class="nx"&gt;print&lt;/span&gt; &lt;span class="kr"&gt;int&lt;/span&gt; &lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="nx"&gt;encapsulating&lt;/span&gt; &lt;span class="kd"&gt;function&lt;/span&gt; &lt;span class="nx"&gt;finds&lt;/span&gt; &lt;span class="kr"&gt;int&lt;/span&gt;
+    &lt;span class="nx"&gt;innerprinter&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="nx"&gt;printer5&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="kr"&gt;int&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;6&lt;/span&gt;
+&lt;span class="nx"&gt;def&lt;/span&gt; &lt;span class="nx"&gt;printer6&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="nx"&gt;def&lt;/span&gt; &lt;span class="nx"&gt;innerprinter&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        &lt;span class="nx"&gt;print&lt;/span&gt; &lt;span class="kr"&gt;int&lt;/span&gt; &lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="nx"&gt;globally&lt;/span&gt; &lt;span class="nx"&gt;finds&lt;/span&gt; &lt;span class="kr"&gt;int&lt;/span&gt;
+    &lt;span class="nx"&gt;innerprinter&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="nx"&gt;printer6&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="mi"&gt;5&lt;/span&gt;
+&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;span class="mi"&gt;5&lt;/span&gt;
+&lt;span class="mi"&gt;3&lt;/span&gt;
+&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nx"&gt;type&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;int&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="mi"&gt;3&lt;/span&gt;
+&lt;span class="mi"&gt;6&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Paired Programming Sprint&lt;/h2&gt;
+&lt;p&gt;Today's project involved programming a text based game of black jack with a dealer and 1 number of players.  We also had the extra credit options adding n-players, AI/Bot players, double down, and split.  I am happy to report that we that my partner and I were able to complete the first three, but ran out of time before implementing split.&lt;/p&gt;
+&lt;p&gt;We started off with pencil and paper using the noun,verb method of abstraction.   We settled on making a Deck, a Player, and Hand, and Game, and an AI.    Its clear at the end that we should have abstracted the game more, and given the Hand class more responsibilities to best implement the split method.&lt;/p&gt;
+&lt;p&gt;After we finished we had our dealer hit until 17 or above, while our AI bot hit until soft 17 below.   We also had it implement a doubling bettering strategy.   In our sample, the AI agent one more often then not came out ahead from this setup.   It added a little credence to the ways dealer's seem to play in Las Vegas.&lt;/p&gt;
+&lt;p&gt;The repo is currently private, because it could be a project for future cohorts.   I do not want to make a copy public, but will if they give permission.&lt;/p&gt;</summary><category term="data-science"></category><category term="galvanize"></category><category term="python"></category></entry><entry><title>Galvanize - Week 01 - Day 1</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-01-01/" rel="alternate"></link><updated>2015-06-01T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-01:galvanize/galvanize-data-science-01-01/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
 &lt;h2&gt;Week 1 - Day 1&lt;/h2&gt;
 &lt;p&gt;Today is my first day attending Galvanize's Immersive Data Science Program in San Francisco, CA.   The program is a 12 week program that is approximately 10 hours a day of learning and activities to reinforce and refine the learning.   I am very excited to be a part of this program.&lt;/p&gt;
 &lt;h2&gt;My Background&lt;/h2&gt;
