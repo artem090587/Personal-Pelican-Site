@@ -696,8 +696,6 @@ The A's lost Jason Giambi (`giambja01`), Johnny Damon (`damonjo01`), Jason Isrin
 
 These player need to replaced with similar player that bat, in total, as much as these guys, get on base as often as these guys, and can be payed less than these guys.  
 
-![](images/3ballplayers.png)
-
 
 
     my_mask = mergeddf['playerID'].isin(['giambja01','damonjo01','isrinja01','saenzol01'])

@@ -654,7 +654,6 @@ Name: OBP, dtype: float64
 
 &lt;p&gt;The A's lost Jason Giambi (&lt;code&gt;giambja01&lt;/code&gt;), Johnny Damon (&lt;code&gt;damonjo01&lt;/code&gt;), Jason Isringhausen (&lt;code&gt;isrinja01&lt;/code&gt;), and Rainer Gustavo "Ray" Olmedo (&lt;code&gt;'saenzol01'&lt;/code&gt;).&lt;/p&gt;
 &lt;p&gt;These player need to replaced with similar player that bat, in total, as much as these guys, get on base as often as these guys, and can be payed less than these guys.  &lt;/p&gt;
-&lt;p&gt;&lt;img alt="" src="images/3ballplayers.png" /&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;my_mask = mergeddf[&amp;#39;playerID&amp;#39;].isin([&amp;#39;giambja01&amp;#39;,&amp;#39;damonjo01&amp;#39;,&amp;#39;isrinja01&amp;#39;,&amp;#39;saenzol01&amp;#39;])
 lostboysdf = mergeddf[my_mask]
 imp_var = [&amp;#39;playerID&amp;#39;, &amp;#39;teamID_x&amp;#39;,&amp;#39;AB&amp;#39;,&amp;#39;HR&amp;#39;, &amp;#39;OBP&amp;#39;, &amp;#39;SLG&amp;#39;, &amp;#39;salary&amp;#39;]
