@@ -1,5 +1,922 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Bryan Travis Smith, Ph.D</title><link href="http://www.bryantravissmith.com/" rel="alternate"></link><link href="http://www.bryantravissmith.com/feeds/galvanize.atom.xml" rel="self"></link><id>http://www.bryantravissmith.com/</id><updated>2015-06-04T10:30:00-07:00</updated><entry><title>Galvanize - Week 01 - Day 4</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-01-04/" rel="alternate"></link><updated>2015-06-04T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-04:galvanize/galvanize-data-science-01-04/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Bryan Travis Smith, Ph.D</title><link href="http://www.bryantravissmith.com/" rel="alternate"></link><link href="http://www.bryantravissmith.com/feeds/galvanize.atom.xml" rel="self"></link><id>http://www.bryantravissmith.com/</id><updated>2015-06-05T10:30:00-07:00</updated><entry><title>Galvanize - Week 01 - Day 5</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-01-05/" rel="alternate"></link><updated>2015-06-05T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-05:galvanize/galvanize-data-science-01-05/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
+&lt;h2&gt;Week 1 - Day 5&lt;/h2&gt;
+&lt;p&gt;This morning we started with a reflection about the week, and completed a survey about our progress and thoughts on the program.   I think it is a very strong, hands-on program so far.&lt;/p&gt;
+&lt;p&gt;The morning lesson and sprint was on using (pandas)[http://pandas.pydata.org/].   We were given some hospital data in a CSV format, read in the data, and answered a number of questions about most common diseases, most expensive procedures, the post profitable hospitals, and various subsets of these question on different conditions.  It was a simple exercise that gave us practice making new variables, grouping, and subsetting to look massage the data into a form that allowed us to answer the questions.&lt;/p&gt;
+&lt;p&gt;During our lunch we had a presentation on learning, and the approach and attitudes that facilitate the bests learning.  It was partly motivational and partly reflective.  If you are familiar with Carol Dweck's work and the research it created, then you have a feeling for the talk.&lt;/p&gt;
+&lt;p&gt;After lunch we did a fun assignment that was to recreate the MoneyBall movie where we are trying to get a set of three players that in aggregate replace the 3 key players that were just lost.   &lt;/p&gt;
+&lt;p&gt;The data we used is hosted (here)[http://www.seanlahman.com/baseball-archive/statistics/]&lt;/p&gt;
+&lt;h2&gt;Money Ball&lt;/h2&gt;
+&lt;p&gt;We first started by downloading the dataset and loading it into Pandas.  We started with the batting data:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;matplotlib&lt;/span&gt; &lt;span class="n"&gt;inline&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;numpy&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;np&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;matplotlib&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;pyplot&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;plt&lt;/span&gt;
+
+&lt;span class="n"&gt;batting&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read_csv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;data/baseball-csvs/Batting.csv&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;batting&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;head&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;playerID&lt;/th&gt;
+      &lt;th&gt;yearID&lt;/th&gt;
+      &lt;th&gt;stint&lt;/th&gt;
+      &lt;th&gt;teamID&lt;/th&gt;
+      &lt;th&gt;lgID&lt;/th&gt;
+      &lt;th&gt;G&lt;/th&gt;
+      &lt;th&gt;G_batting&lt;/th&gt;
+      &lt;th&gt;AB&lt;/th&gt;
+      &lt;th&gt;R&lt;/th&gt;
+      &lt;th&gt;H&lt;/th&gt;
+      &lt;th&gt;...&lt;/th&gt;
+      &lt;th&gt;SB&lt;/th&gt;
+      &lt;th&gt;CS&lt;/th&gt;
+      &lt;th&gt;BB&lt;/th&gt;
+      &lt;th&gt;SO&lt;/th&gt;
+      &lt;th&gt;IBB&lt;/th&gt;
+      &lt;th&gt;HBP&lt;/th&gt;
+      &lt;th&gt;SH&lt;/th&gt;
+      &lt;th&gt;SF&lt;/th&gt;
+      &lt;th&gt;GIDP&lt;/th&gt;
+      &lt;th&gt;G_old&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;aardsda01&lt;/td&gt;
+      &lt;td&gt;2004&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;SFN&lt;/td&gt;
+      &lt;td&gt;NL&lt;/td&gt;
+      &lt;td&gt;11&lt;/td&gt;
+      &lt;td&gt;11&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;11&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;aardsda01&lt;/td&gt;
+      &lt;td&gt;2006&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;CHN&lt;/td&gt;
+      &lt;td&gt;NL&lt;/td&gt;
+      &lt;td&gt;45&lt;/td&gt;
+      &lt;td&gt;43&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;45&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;aardsda01&lt;/td&gt;
+      &lt;td&gt;2007&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;CHA&lt;/td&gt;
+      &lt;td&gt;AL&lt;/td&gt;
+      &lt;td&gt;25&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;aardsda01&lt;/td&gt;
+      &lt;td&gt;2008&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;BOS&lt;/td&gt;
+      &lt;td&gt;AL&lt;/td&gt;
+      &lt;td&gt;47&lt;/td&gt;
+      &lt;td&gt;5&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;5&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;aardsda01&lt;/td&gt;
+      &lt;td&gt;2009&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;SEA&lt;/td&gt;
+      &lt;td&gt;AL&lt;/td&gt;
+      &lt;td&gt;73&lt;/td&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;5 rows × 24 columns&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;p&gt;We then loaded the salaryd data:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;salary = pd.read_csv(&amp;#39;data/baseball-csvs/Salaries.csv&amp;#39;)
+salary.head()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;yearID&lt;/th&gt;
+      &lt;th&gt;teamID&lt;/th&gt;
+      &lt;th&gt;lgID&lt;/th&gt;
+      &lt;th&gt;playerID&lt;/th&gt;
+      &lt;th&gt;salary&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;1985&lt;/td&gt;
+      &lt;td&gt;BAL&lt;/td&gt;
+      &lt;td&gt;AL&lt;/td&gt;
+      &lt;td&gt;murraed02&lt;/td&gt;
+      &lt;td&gt;1472819&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;1985&lt;/td&gt;
+      &lt;td&gt;BAL&lt;/td&gt;
+      &lt;td&gt;AL&lt;/td&gt;
+      &lt;td&gt;lynnfr01&lt;/td&gt;
+      &lt;td&gt;1090000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;1985&lt;/td&gt;
+      &lt;td&gt;BAL&lt;/td&gt;
+      &lt;td&gt;AL&lt;/td&gt;
+      &lt;td&gt;ripkeca01&lt;/td&gt;
+      &lt;td&gt;800000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;1985&lt;/td&gt;
+      &lt;td&gt;BAL&lt;/td&gt;
+      &lt;td&gt;AL&lt;/td&gt;
+      &lt;td&gt;lacyle01&lt;/td&gt;
+      &lt;td&gt;725000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;1985&lt;/td&gt;
+      &lt;td&gt;BAL&lt;/td&gt;
+      &lt;td&gt;AL&lt;/td&gt;
+      &lt;td&gt;flanami01&lt;/td&gt;
+      &lt;td&gt;641667&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;salary[salary.yearID==2001].salary.describe()
+
+
+
+
+count         860.000000
+mean      2279841.061628
+std       2907710.250521
+min        200000.000000
+25%        269375.000000
+50%        925000.000000
+75%       3250000.000000
+max      22000000.000000
+Name: salary, dtype: float64
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;In the year 2001, the year we are concerned with, the minimum salary was $200,000.&lt;/p&gt;
+&lt;p&gt;The next thing we did was merged the two dataframes and limited the data to 2001.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mergeddf = batting.merge(salary,on=[&amp;#39;playerID&amp;#39;,&amp;#39;yearID&amp;#39;],how=&amp;#39;left&amp;#39;)
+mergeddf = mergeddf[mergeddf.yearID==2001]
+mergeddf.head()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;playerID&lt;/th&gt;
+      &lt;th&gt;yearID&lt;/th&gt;
+      &lt;th&gt;stint&lt;/th&gt;
+      &lt;th&gt;teamID_x&lt;/th&gt;
+      &lt;th&gt;lgID_x&lt;/th&gt;
+      &lt;th&gt;G&lt;/th&gt;
+      &lt;th&gt;G_batting&lt;/th&gt;
+      &lt;th&gt;AB&lt;/th&gt;
+      &lt;th&gt;R&lt;/th&gt;
+      &lt;th&gt;H&lt;/th&gt;
+      &lt;th&gt;...&lt;/th&gt;
+      &lt;th&gt;SO&lt;/th&gt;
+      &lt;th&gt;IBB&lt;/th&gt;
+      &lt;th&gt;HBP&lt;/th&gt;
+      &lt;th&gt;SH&lt;/th&gt;
+      &lt;th&gt;SF&lt;/th&gt;
+      &lt;th&gt;GIDP&lt;/th&gt;
+      &lt;th&gt;G_old&lt;/th&gt;
+      &lt;th&gt;teamID_y&lt;/th&gt;
+      &lt;th&gt;lgID_y&lt;/th&gt;
+      &lt;th&gt;salary&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;13&lt;/th&gt;
+      &lt;td&gt;abadan01&lt;/td&gt;
+      &lt;td&gt;2001&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;OAK&lt;/td&gt;
+      &lt;td&gt;AL&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;23&lt;/th&gt;
+      &lt;td&gt;abbotje01&lt;/td&gt;
+      &lt;td&gt;2001&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;FLO&lt;/td&gt;
+      &lt;td&gt;NL&lt;/td&gt;
+      &lt;td&gt;28&lt;/td&gt;
+      &lt;td&gt;28&lt;/td&gt;
+      &lt;td&gt;42&lt;/td&gt;
+      &lt;td&gt;5&lt;/td&gt;
+      &lt;td&gt;11&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;7&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;28&lt;/td&gt;
+      &lt;td&gt;FLO&lt;/td&gt;
+      &lt;td&gt;NL&lt;/td&gt;
+      &lt;td&gt;300000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;44&lt;/th&gt;
+      &lt;td&gt;abbotku01&lt;/td&gt;
+      &lt;td&gt;2001&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;ATL&lt;/td&gt;
+      &lt;td&gt;NL&lt;/td&gt;
+      &lt;td&gt;6&lt;/td&gt;
+      &lt;td&gt;6&lt;/td&gt;
+      &lt;td&gt;9&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;6&lt;/td&gt;
+      &lt;td&gt;ATL&lt;/td&gt;
+      &lt;td&gt;NL&lt;/td&gt;
+      &lt;td&gt;600000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;56&lt;/th&gt;
+      &lt;td&gt;abbotpa01&lt;/td&gt;
+      &lt;td&gt;2001&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;SEA&lt;/td&gt;
+      &lt;td&gt;AL&lt;/td&gt;
+      &lt;td&gt;28&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;4&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;SEA&lt;/td&gt;
+      &lt;td&gt;AL&lt;/td&gt;
+      &lt;td&gt;1700000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;64&lt;/th&gt;
+      &lt;td&gt;abernbr01&lt;/td&gt;
+      &lt;td&gt;2001&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;TBA&lt;/td&gt;
+      &lt;td&gt;AL&lt;/td&gt;
+      &lt;td&gt;79&lt;/td&gt;
+      &lt;td&gt;79&lt;/td&gt;
+      &lt;td&gt;304&lt;/td&gt;
+      &lt;td&gt;43&lt;/td&gt;
+      &lt;td&gt;82&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;35&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;79&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;5 rows × 27 columns&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;p&gt;We can see some of the salaries are missing.  There are players that can be aquired, but are not on a payroll.   If we pick them up we have to pay them 200,000.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mergeddf.salary = mergeddf.salary.fillna(200000)
+mergeddf.head()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;playerID&lt;/th&gt;
+      &lt;th&gt;yearID&lt;/th&gt;
+      &lt;th&gt;stint&lt;/th&gt;
+      &lt;th&gt;teamID_x&lt;/th&gt;
+      &lt;th&gt;lgID_x&lt;/th&gt;
+      &lt;th&gt;G&lt;/th&gt;
+      &lt;th&gt;G_batting&lt;/th&gt;
+      &lt;th&gt;AB&lt;/th&gt;
+      &lt;th&gt;R&lt;/th&gt;
+      &lt;th&gt;H&lt;/th&gt;
+      &lt;th&gt;...&lt;/th&gt;
+      &lt;th&gt;SO&lt;/th&gt;
+      &lt;th&gt;IBB&lt;/th&gt;
+      &lt;th&gt;HBP&lt;/th&gt;
+      &lt;th&gt;SH&lt;/th&gt;
+      &lt;th&gt;SF&lt;/th&gt;
+      &lt;th&gt;GIDP&lt;/th&gt;
+      &lt;th&gt;G_old&lt;/th&gt;
+      &lt;th&gt;teamID_y&lt;/th&gt;
+      &lt;th&gt;lgID_y&lt;/th&gt;
+      &lt;th&gt;salary&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;13&lt;/th&gt;
+      &lt;td&gt;abadan01&lt;/td&gt;
+      &lt;td&gt;2001&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;OAK&lt;/td&gt;
+      &lt;td&gt;AL&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;200000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;23&lt;/th&gt;
+      &lt;td&gt;abbotje01&lt;/td&gt;
+      &lt;td&gt;2001&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;FLO&lt;/td&gt;
+      &lt;td&gt;NL&lt;/td&gt;
+      &lt;td&gt;28&lt;/td&gt;
+      &lt;td&gt;28&lt;/td&gt;
+      &lt;td&gt;42&lt;/td&gt;
+      &lt;td&gt;5&lt;/td&gt;
+      &lt;td&gt;11&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;7&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;28&lt;/td&gt;
+      &lt;td&gt;FLO&lt;/td&gt;
+      &lt;td&gt;NL&lt;/td&gt;
+      &lt;td&gt;300000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;44&lt;/th&gt;
+      &lt;td&gt;abbotku01&lt;/td&gt;
+      &lt;td&gt;2001&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;ATL&lt;/td&gt;
+      &lt;td&gt;NL&lt;/td&gt;
+      &lt;td&gt;6&lt;/td&gt;
+      &lt;td&gt;6&lt;/td&gt;
+      &lt;td&gt;9&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;6&lt;/td&gt;
+      &lt;td&gt;ATL&lt;/td&gt;
+      &lt;td&gt;NL&lt;/td&gt;
+      &lt;td&gt;600000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;56&lt;/th&gt;
+      &lt;td&gt;abbotpa01&lt;/td&gt;
+      &lt;td&gt;2001&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;SEA&lt;/td&gt;
+      &lt;td&gt;AL&lt;/td&gt;
+      &lt;td&gt;28&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;4&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;SEA&lt;/td&gt;
+      &lt;td&gt;AL&lt;/td&gt;
+      &lt;td&gt;1700000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;64&lt;/th&gt;
+      &lt;td&gt;abernbr01&lt;/td&gt;
+      &lt;td&gt;2001&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;TBA&lt;/td&gt;
+      &lt;td&gt;AL&lt;/td&gt;
+      &lt;td&gt;79&lt;/td&gt;
+      &lt;td&gt;79&lt;/td&gt;
+      &lt;td&gt;304&lt;/td&gt;
+      &lt;td&gt;43&lt;/td&gt;
+      &lt;td&gt;82&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;35&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;79&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;200000&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;5 rows × 27 columns&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Now we need to make some new variables.   The number of times they were on First Base,the Batting Average (BA), the On Base Percentage (OBP), and the Slugg (SLG)&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mergeddf[&amp;#39;BA&amp;#39;] = mergeddf[&amp;#39;H&amp;#39;]/mergeddf[&amp;#39;AB&amp;#39;]
+mergeddf.BA.describe()
+
+
+
+
+count    1044.000000
+mean        0.202532
+std         0.140697
+min         0.000000
+25%         0.117647
+50%         0.235227
+75%         0.274705
+max         1.000000
+Name: BA, dtype: float64
+
+
+
+
+mergeddf[&amp;#39;1B&amp;#39;] = mergeddf[&amp;#39;H&amp;#39;]-mergeddf[&amp;#39;2B&amp;#39;]-mergeddf[&amp;#39;3B&amp;#39;]-mergeddf[&amp;#39;HR&amp;#39;]
+mergeddf[&amp;#39;1B&amp;#39;].describe()
+
+
+
+
+count    1237.000000
+mean       23.185125
+std        34.327716
+min         0.000000
+25%         0.000000
+50%         4.000000
+75%        33.000000
+max       192.000000
+Name: 1B, dtype: float64
+
+
+
+
+mergeddf[&amp;#39;SLG&amp;#39;]=(mergeddf[&amp;#39;1B&amp;#39;]+2*mergeddf[&amp;#39;2B&amp;#39;]+3*mergeddf[&amp;#39;3B&amp;#39;] \
+                 +4*mergeddf[&amp;#39;HR&amp;#39;])/mergeddf[&amp;#39;AB&amp;#39;]
+mergeddf[&amp;#39;SLG&amp;#39;].describe()
+
+
+
+
+count    1044.000000
+mean        0.303628
+std         0.214569
+min         0.000000
+25%         0.142857
+50%         0.337722
+75%         0.436874
+max         2.000000
+Name: SLG, dtype: float64
+
+
+
+
+mergeddf[&amp;#39;OBP&amp;#39;]=(mergeddf[&amp;#39;H&amp;#39;]+mergeddf[&amp;#39;BB&amp;#39;]+mergeddf[&amp;#39;HBP&amp;#39;]) \
+/(mergeddf[&amp;#39;AB&amp;#39;]+mergeddf[&amp;#39;BB&amp;#39;]+mergeddf[&amp;#39;HBP&amp;#39;]+mergeddf[&amp;#39;SF&amp;#39;])
+mergeddf[&amp;#39;OBP&amp;#39;].describe()
+
+
+
+
+count    1047.000000
+mean        0.254084
+std         0.159932
+min         0.000000
+25%         0.162162
+50%         0.293103
+75%         0.338235
+max         1.000000
+Name: OBP, dtype: float64
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The A's lost Jason Giambi (&lt;code&gt;giambja01&lt;/code&gt;), Johnny Damon (&lt;code&gt;damonjo01&lt;/code&gt;), Jason Isringhausen (&lt;code&gt;isrinja01&lt;/code&gt;), and Rainer Gustavo "Ray" Olmedo (&lt;code&gt;'saenzol01'&lt;/code&gt;).&lt;/p&gt;
+&lt;p&gt;These player need to replaced with similar player that bat, in total, as much as these guys, get on base as often as these guys, and can be payed less than these guys.  &lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="images/3ballplayers.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;my_mask = mergeddf[&amp;#39;playerID&amp;#39;].isin([&amp;#39;giambja01&amp;#39;,&amp;#39;damonjo01&amp;#39;,&amp;#39;isrinja01&amp;#39;,&amp;#39;saenzol01&amp;#39;])
+lostboysdf = mergeddf[my_mask]
+imp_var = [&amp;#39;playerID&amp;#39;, &amp;#39;teamID_x&amp;#39;,&amp;#39;AB&amp;#39;,&amp;#39;HR&amp;#39;, &amp;#39;OBP&amp;#39;, &amp;#39;SLG&amp;#39;, &amp;#39;salary&amp;#39;]
+lostboysdf[imp_var]
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;playerID&lt;/th&gt;
+      &lt;th&gt;teamID_x&lt;/th&gt;
+      &lt;th&gt;AB&lt;/th&gt;
+      &lt;th&gt;HR&lt;/th&gt;
+      &lt;th&gt;OBP&lt;/th&gt;
+      &lt;th&gt;SLG&lt;/th&gt;
+      &lt;th&gt;salary&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;7065&lt;/th&gt;
+      &lt;td&gt;damonjo01&lt;/td&gt;
+      &lt;td&gt;OAK&lt;/td&gt;
+      &lt;td&gt;644&lt;/td&gt;
+      &lt;td&gt;9&lt;/td&gt;
+      &lt;td&gt;0.323529&lt;/td&gt;
+      &lt;td&gt;0.363354&lt;/td&gt;
+      &lt;td&gt;7100000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;10836&lt;/th&gt;
+      &lt;td&gt;giambja01&lt;/td&gt;
+      &lt;td&gt;OAK&lt;/td&gt;
+      &lt;td&gt;520&lt;/td&gt;
+      &lt;td&gt;38&lt;/td&gt;
+      &lt;td&gt;0.476900&lt;/td&gt;
+      &lt;td&gt;0.659615&lt;/td&gt;
+      &lt;td&gt;4103333&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;14911&lt;/th&gt;
+      &lt;td&gt;isrinja01&lt;/td&gt;
+      &lt;td&gt;OAK&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;3300000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;27408&lt;/th&gt;
+      &lt;td&gt;saenzol01&lt;/td&gt;
+      &lt;td&gt;OAK&lt;/td&gt;
+      &lt;td&gt;305&lt;/td&gt;
+      &lt;td&gt;9&lt;/td&gt;
+      &lt;td&gt;0.291176&lt;/td&gt;
+      &lt;td&gt;0.383607&lt;/td&gt;
+      &lt;td&gt;290000&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;print &amp;quot;Avg OBP Needed to be replaced:&amp;quot;, 3*lostboysdf[imp_var].OBP.mean()
+print &amp;quot;Total Bats needed to be replaced:&amp;quot;, lostboysdf[imp_var].AB.sum()
+
+Avg OBP Needed to be replaced: 1.09160603138
+Total Bats needed to be replaced: 1469.0
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;We would ideally like to get every combination of 3 players that are available.  That would be:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;mergeddf&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;mergeddf&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="o"&gt;~&lt;/span&gt;&lt;span class="n"&gt;mergeddf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;playerID&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;isin&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;giambja01&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;damonjo01&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;isrinja01&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;saenzol01&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;])]&lt;/span&gt;
+&lt;span class="n"&gt;size&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mergeddf&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;size&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;math&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;nCr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;r&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;math&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;factorial&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;r&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;r&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;nCr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;size&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="mi"&gt;1335&lt;/span&gt;
+&lt;span class="mi"&gt;395654395&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;That is almost 400,000,000 combinations to search through.   Less make some reasonable assumptions about about the minimum At Bats and On Base Percentages&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mergeddf.plot(kind=&amp;#39;scatter&amp;#39;,x=&amp;#39;AB&amp;#39;,y=&amp;#39;OBP&amp;#39;)
+
+
+
+
+&amp;lt;matplotlib.axes._subplots.AxesSubplot at 0x1063f3f10&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/gw1d5_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;It looks like the variance does not change much above 200 AB.  We probably want them to bat about 500 times a season, however.  We also want the average to be above 0.33 for the OPB, so that seems like a reasonable initial cutoff.  We also want there average salary to be less than 5000000.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;size = len(mergeddf[(mergeddf.AB &amp;gt; 400) &amp;amp; (mergeddf.OBP &amp;gt; 0.33)])
+nCr(size,3)
+
+
+
+
+246905L
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;That gives us 11,480 combinations to search through.  Lets do it.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;#mdf = mergeddf[(mergeddf.yearID==2001)&amp;amp;(mergeddf.AB&amp;gt;50)] #.salary.describe()&lt;/span&gt;
+&lt;span class="c"&gt;#mdf.salary = mdf.salary.fillna(200000)&lt;/span&gt;
+&lt;span class="c"&gt;#mdf[imp_var].head()&lt;/span&gt;
+&lt;span class="n"&gt;mdf&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;mergeddf&lt;/span&gt;&lt;span class="p"&gt;[(&lt;/span&gt;&lt;span class="n"&gt;mergeddf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;AB&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;400&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mergeddf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;OBP&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="mf"&gt;0.33&lt;/span&gt;&lt;span class="p"&gt;)]&lt;/span&gt;
+
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;itertools&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;combinations&lt;/span&gt;
+&lt;span class="n"&gt;good_combinations&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[]&lt;/span&gt;
+&lt;span class="n"&gt;mdf&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;mdf&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="o"&gt;~&lt;/span&gt;&lt;span class="n"&gt;mdf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;playerID&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;isin&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;giambja01&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;damonjo01&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;isrinja01&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;saenzol01&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;])]&lt;/span&gt;
+&lt;span class="n"&gt;gc&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;DataFrame&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;columns&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;player1&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;player2&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;player3&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;total_AB&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;total_OBP&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;total_salary&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+&lt;span class="n"&gt;j&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;combinations&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mdf&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;mdf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;OBP&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="mf"&gt;0.4&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;playerID&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;tolist&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+    &lt;span class="n"&gt;total_salary&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;mdf&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;mdf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;playerID&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;salary&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;values&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="n"&gt;total_salary&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="n"&gt;mdf&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;mdf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;playerID&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;salary&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;values&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="n"&gt;total_salary&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="n"&gt;mdf&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;mdf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;playerID&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;salary&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;values&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+    &lt;span class="n"&gt;total_AB&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;mdf&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;mdf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;playerID&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;AB&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;values&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="n"&gt;total_AB&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="n"&gt;mdf&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;mdf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;playerID&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;AB&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;values&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="n"&gt;total_AB&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="n"&gt;mdf&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;mdf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;playerID&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;AB&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;values&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+    &lt;span class="n"&gt;total_obp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;mdf&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;mdf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;playerID&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;OBP&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;values&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="n"&gt;total_obp&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="n"&gt;mdf&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;mdf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;playerID&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;OBP&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;values&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="n"&gt;total_obp&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="n"&gt;mdf&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;mdf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;playerID&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;OBP&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;values&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;total_salary&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="mi"&gt;15000000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;total_obp&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="mf"&gt;1.0961&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;gc&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;loc&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="n"&gt;total_AB&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;total_obp&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;total_salary&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+        &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+
+&lt;span class="n"&gt;gc&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;gc&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sort&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;total_salary&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;span class="n"&gt;gc&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;head&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;player1&lt;/th&gt;
+      &lt;th&gt;player2&lt;/th&gt;
+      &lt;th&gt;player3&lt;/th&gt;
+      &lt;th&gt;total_AB&lt;/th&gt;
+      &lt;th&gt;total_OBP&lt;/th&gt;
+      &lt;th&gt;total_salary&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;28&lt;/th&gt;
+      &lt;td&gt;berkmla01&lt;/td&gt;
+      &lt;td&gt;gonzalu01&lt;/td&gt;
+      &lt;td&gt;pujolal01&lt;/td&gt;
+      &lt;td&gt;1776&lt;/td&gt;
+      &lt;td&gt;1.261767&lt;/td&gt;
+      &lt;td&gt;5338333&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;32&lt;/th&gt;
+      &lt;td&gt;berkmla01&lt;/td&gt;
+      &lt;td&gt;heltoto01&lt;/td&gt;
+      &lt;td&gt;pujolal01&lt;/td&gt;
+      &lt;td&gt;1754&lt;/td&gt;
+      &lt;td&gt;1.264850&lt;/td&gt;
+      &lt;td&gt;5455000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;36&lt;/th&gt;
+      &lt;td&gt;berkmla01&lt;/td&gt;
+      &lt;td&gt;martied01&lt;/td&gt;
+      &lt;td&gt;pujolal01&lt;/td&gt;
+      &lt;td&gt;1637&lt;/td&gt;
+      &lt;td&gt;1.256603&lt;/td&gt;
+      &lt;td&gt;6005000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;18&lt;/th&gt;
+      &lt;td&gt;berkmla01&lt;/td&gt;
+      &lt;td&gt;edmonji01&lt;/td&gt;
+      &lt;td&gt;pujolal01&lt;/td&gt;
+      &lt;td&gt;1667&lt;/td&gt;
+      &lt;td&gt;1.243410&lt;/td&gt;
+      &lt;td&gt;6838333&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;38&lt;/th&gt;
+      &lt;td&gt;berkmla01&lt;/td&gt;
+      &lt;td&gt;olerujo01&lt;/td&gt;
+      &lt;td&gt;pujolal01&lt;/td&gt;
+      &lt;td&gt;1739&lt;/td&gt;
+      &lt;td&gt;1.234375&lt;/td&gt;
+      &lt;td&gt;7205000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;24&lt;/th&gt;
+      &lt;td&gt;berkmla01&lt;/td&gt;
+      &lt;td&gt;gilesbr02&lt;/td&gt;
+      &lt;td&gt;pujolal01&lt;/td&gt;
+      &lt;td&gt;1743&lt;/td&gt;
+      &lt;td&gt;1.236756&lt;/td&gt;
+      &lt;td&gt;7838333&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;5&lt;/th&gt;
+      &lt;td&gt;alomaro01&lt;/td&gt;
+      &lt;td&gt;berkmla01&lt;/td&gt;
+      &lt;td&gt;pujolal01&lt;/td&gt;
+      &lt;td&gt;1742&lt;/td&gt;
+      &lt;td&gt;1.247866&lt;/td&gt;
+      &lt;td&gt;8255000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;43&lt;/th&gt;
+      &lt;td&gt;berkmla01&lt;/td&gt;
+      &lt;td&gt;pujolal01&lt;/td&gt;
+      &lt;td&gt;thomeji01&lt;/td&gt;
+      &lt;td&gt;1693&lt;/td&gt;
+      &lt;td&gt;1.249345&lt;/td&gt;
+      &lt;td&gt;8380000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;55&lt;/th&gt;
+      &lt;td&gt;gonzalu01&lt;/td&gt;
+      &lt;td&gt;heltoto01&lt;/td&gt;
+      &lt;td&gt;pujolal01&lt;/td&gt;
+      &lt;td&gt;1786&lt;/td&gt;
+      &lt;td&gt;1.263189&lt;/td&gt;
+      &lt;td&gt;9983333&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;25&lt;/th&gt;
+      &lt;td&gt;berkmla01&lt;/td&gt;
+      &lt;td&gt;gonzalu01&lt;/td&gt;
+      &lt;td&gt;heltoto01&lt;/td&gt;
+      &lt;td&gt;1773&lt;/td&gt;
+      &lt;td&gt;1.290459&lt;/td&gt;
+      &lt;td&gt;10088333&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;print len(gc)
+
+66
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;This allowed us to find 66 combination of players that would, in aggregate, have better statistics that the players that were lost.  It also turns out to be cheaper to do that.   This is the story of money ball.  It was a fun project.  &lt;/p&gt;</summary><category term="data-science"></category><category term="galvanize"></category><category term="pandas"></category><category term="money ball"></category></entry><entry><title>Galvanize - Week 01 - Day 4</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-01-04/" rel="alternate"></link><updated>2015-06-04T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-04:galvanize/galvanize-data-science-01-04/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
 &lt;h2&gt;Week 1 - Day 4&lt;/h2&gt;
 &lt;p&gt;The day started out with a mini-quiz on object-oriented programming, and that was followed by an introduction to git and sophisticated join queries.   Our instructor for the day used to work at Facebook, and she walked us through some the queries she would do on the job.  &lt;/p&gt;
 &lt;p&gt;She then gave us a simulated data set that match the structure, but not the content, of Facebook tables and we had an individual sprint attempting to complete 10 queries in 2 hours.&lt;/p&gt;

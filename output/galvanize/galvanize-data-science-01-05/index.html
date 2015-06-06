@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="en" class="no-js lt-ie9 lt-ie8 lt-ie7" prefix="og: http://ogp.me/ns#" itemscope itemtype="http://schema.org/BlogPosting"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" class="no-js lt-ie9 lt-ie8" prefix="og: http://ogp.me/ns#" itemscope itemtype="http://schema.org/BlogPosting"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" class="no-js lt-ie9" prefix="og: http://ogp.me/ns#" itemscope itemtype="http://schema.org/BlogPosting"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" class="no-js" prefix="og: http://ogp.me/ns#" itemscope itemtype="http://schema.org/BlogPosting"> <!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Galvanize - Week 01 - Day 5</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="The fifth day of Galvanize's Immersive Data Science program in San Francisco, CA where we got an introduction to pandas and data visualizations.">
+<link rel="shortcut icon" href="http://www.bryantravissmith.com/" type="">
+<meta name="author" content="Bryan Smith">
+<meta name="copyright" content="Bryan Smith">
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@bryantravissmit" />
+<meta property="og:site_name" content="Bryan Travis Smith, Ph.D" />
+
+<meta property="og:title" content="Galvanize - week 01 - day 5" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://www.bryantravissmith.com/galvanize/galvanize-data-science-01-05/" />
+<meta name="twitter:title" content="Galvanize - week 01 - day 5" />
+<meta name="twitter:url" content="http://www.bryantravissmith.com/galvanize/galvanize-data-science-01-05/" />
+<meta itemprop="url" content="http://www.bryantravissmith.com/galvanize/galvanize-data-science-01-05/" />
+<meta property="og:description" content="The fifth day of Galvanize&#39;s Immersive Data Science program in San Francisco, CA where we got an introduction to pandas and data visualizations." />
+<meta name="twitter:description" content="The fifth day of Galvanize&#39;s Immersive Data Science program in San Francisco, CA where we got an introduction to pandas and data visualizations." />
+<meta property="og:article:published_time" content="2015-06-05" />
+<meta property="og:article:modified_time" content="2015-06-05">
+<meta itemprop="dateModified" content="2015-06-05" />
+<meta property="og:article:author" content="Bryan Smith" >
+<meta property="og:article:tag" content="data-science">
+<meta property="og:article:tag" content="galvanize">
+<meta property="og:article:tag" content="pandas">
+<meta property="og:article:tag" content="money ball">
+<meta property="og:image" content="http://www.bryantravissmith.com/img/bryan.jpeg" />
+<meta property="og:image:type" content="image/jpeg" />
+<meta name="twitter:image" content="http://www.bryantravissmith.com/img/bryan.jpeg" />
+<meta itemprop="image" content="http://www.bryantravissmith.com/img/bryan.jpeg" />
+
+<link href="http://www.bryantravissmith.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Bryan Travis Smith, Ph.D ATOM Feed"/>
+<link href='http://fonts.googleapis.com/css?family=Merriweather:400,300italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/uikit/2.15.0/css/uikit.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/uikit/2.15.0/css/components/search.min.css">
+<link rel="stylesheet" href="/theme/css/tipuesearch.css">
+<link rel="stylesheet" href="/theme/css/solarized.css">
+<link rel="stylesheet" href="/theme/css/main.css">
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+</head>
+<body>
+<!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+<header class=" mg-header uk-navbar uk-navbar-attached">
+
+    <div class="uk-container uk-container-center">
+        <div class="uk-grid" data-uk-grid-margin>
+
+            <a class="mg-brand uk-navbar-brand uk-hidden-small" href="http://www.bryantravissmith.com">Bryan Travis Smith, Ph.D</a>
+            <div class="mg-tagline uk-navbar-content uk-hidden-small">Physicist, Data Scientist, Martial Artist, & Life Enthusiast</div>
+            <a class="uk-navbar-toggle uk-visible-small" href="#mg-offcanvas" data-uk-offcanvas></a>
+            <a class="mg-brand uk-navbar-brand uk-navbar-center uk-visible-small" href="http://www.bryantravissmith.com">Bryan Travis Smith, Ph.D</a>
+
+        </div>
+    </div>
+</header>
+
+<main class="mg-main">
+
+<div class="uk-container uk-container-center">
+
+    <div class="uk-grid" data-uk-grid-margin>
+        
+<div class="mg-container-social uk-width-medium-1-10 uk-hidden-small">
+
+    <div class="uk-panel" id="mg-panel-social">
+        <ul class="uk-nav uk-nav-side">
+            <li>
+            <a href="https://www.facebook.com/sharer/sharer.php?u=http://www.bryantravissmith.com/galvanize/galvanize-data-science-01-05/" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');return false;" taget="_blank" class="uk-button"><i class="uk-icon-facebook-square"></i> Share</a>
+            </li>
+            <li>
+            <a href="https://twitter.com/intent/tweet?text=Galvanize%20-%20Week%2001%20-%20Day%205&url=http://www.bryantravissmith.com/galvanize/galvanize-data-science-01-05/&via=bryantravissmit" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" class="uk-button" target="_blank"><i class="uk-icon-twitter"></i> Tweet</a>
+            </li>
+            <li>
+            <a href="https://plus.google.com/share?url=http://www.bryantravissmith.com/galvanize/galvanize-data-science-01-05/" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank" class="uk-button"><i class="uk-icon-google-plus-square"></i> Share</a>
+            </li>
+            <li>
+            <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://www.bryantravissmith.com/galvanize/galvanize-data-science-01-05/&title=Galvanize - Week 01 - Day 5" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank" class="uk-button"><i class="uk-icon-linkedin-square"></i> Share</a>
+            </li>
+        </ul>
+    </div>
+
+</div>
+
+<div class="uk-width-medium-7-10">
+
+    <article class="uk-article">
+        <h1 class="uk-heading-large uk-article-title" itemprop="name">Galvanize - Week 01 - Day 5</h1>
+        <p class="uk-article-meta"><time datetime="2015-06-05" itemprop="datePublished">Fri 05 June 2015</time> in <a href="http://www.bryantravissmith.com/category/galvanize.html">Galvanize</a>, <br class="uk-visible-small"><i class="uk-icon-comment"></i> <a href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-01-05/#disqus_thread" itemprop="discussionUrl"></a></p>
+
+        <a href="https://www.facebook.com/sharer/sharer.php?u=http://www.bryantravissmith.com/galvanize/galvanize-data-science-01-05/" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');return false;" taget="_blank" class="uk-button uk-visible-small"><i class="uk-icon-facebook-square"></i> Share</a>
+        <a href="https://twitter.com/intent/tweet?text=Galvanize%20-%20Week%2001%20-%20Day%205&url=http://www.bryantravissmith.com/galvanize/galvanize-data-science-01-05/&via=bryantravissmit" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" class="uk-button uk-visible-small" target="_blank"><i class="uk-icon-twitter"></i> Tweet</a>
+        <a href="https://plus.google.com/share?url=http://www.bryantravissmith.com/galvanize/galvanize-data-science-01-05/" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank" class="uk-button uk-visible-small"><i class="uk-icon-google-plus-square"></i> Share</a>
+
+        <!--<p class="uk-article-lead" itemprop="description">The fifth day of Galvanize's Immersive Data Science program in San Francisco, CA where we got an introduction to pandas and data visualizations.</p>!-->
+        <section itemprop="articleBody"><h1>Galvanize Immersive Data Science</h1>
+<h2>Week 1 - Day 5</h2>
+<p>This morning we started with a reflection about the week, and completed a survey about our progress and thoughts on the program.   I think it is a very strong, hands-on program so far.</p>
+<p>The morning lesson and sprint was on using (pandas)[http://pandas.pydata.org/].   We were given some hospital data in a CSV format, read in the data, and answered a number of questions about most common diseases, most expensive procedures, the post profitable hospitals, and various subsets of these question on different conditions.  It was a simple exercise that gave us practice making new variables, grouping, and subsetting to look massage the data into a form that allowed us to answer the questions.</p>
+<p>During our lunch we had a presentation on learning, and the approach and attitudes that facilitate the bests learning.  It was partly motivational and partly reflective.  If you are familiar with Carol Dweck's work and the research it created, then you have a feeling for the talk.</p>
+<p>After lunch we did a fun assignment that was to recreate the MoneyBall movie where we are trying to get a set of three players that in aggregate replace the 3 key players that were just lost.   </p>
+<p>The data we used is hosted (here)[http://www.seanlahman.com/baseball-archive/statistics/]</p>
+<h2>Money Ball</h2>
+<p>We first started by downloading the dataset and loading it into Pandas.  We started with the batting data:</p>
+<div class="highlight"><pre><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+
+<span class="n">batting</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;data/baseball-csvs/Batting.csv&#39;</span><span class="p">)</span>
+<span class="n">batting</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>playerID</th>
+      <th>yearID</th>
+      <th>stint</th>
+      <th>teamID</th>
+      <th>lgID</th>
+      <th>G</th>
+      <th>G_batting</th>
+      <th>AB</th>
+      <th>R</th>
+      <th>H</th>
+      <th>...</th>
+      <th>SB</th>
+      <th>CS</th>
+      <th>BB</th>
+      <th>SO</th>
+      <th>IBB</th>
+      <th>HBP</th>
+      <th>SH</th>
+      <th>SF</th>
+      <th>GIDP</th>
+      <th>G_old</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>aardsda01</td>
+      <td>2004</td>
+      <td>1</td>
+      <td>SFN</td>
+      <td>NL</td>
+      <td>11</td>
+      <td>11</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>aardsda01</td>
+      <td>2006</td>
+      <td>1</td>
+      <td>CHN</td>
+      <td>NL</td>
+      <td>45</td>
+      <td>43</td>
+      <td>2</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>45</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>aardsda01</td>
+      <td>2007</td>
+      <td>1</td>
+      <td>CHA</td>
+      <td>AL</td>
+      <td>25</td>
+      <td>2</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>aardsda01</td>
+      <td>2008</td>
+      <td>1</td>
+      <td>BOS</td>
+      <td>AL</td>
+      <td>47</td>
+      <td>5</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>aardsda01</td>
+      <td>2009</td>
+      <td>1</td>
+      <td>SEA</td>
+      <td>AL</td>
+      <td>73</td>
+      <td>3</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 24 columns</p>
+</div>
+
+<p>We then loaded the salaryd data:</p>
+<div class="highlight"><pre>salary = pd.read_csv(&#39;data/baseball-csvs/Salaries.csv&#39;)
+salary.head()
+</pre></div>
+
+
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>yearID</th>
+      <th>teamID</th>
+      <th>lgID</th>
+      <th>playerID</th>
+      <th>salary</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1985</td>
+      <td>BAL</td>
+      <td>AL</td>
+      <td>murraed02</td>
+      <td>1472819</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1985</td>
+      <td>BAL</td>
+      <td>AL</td>
+      <td>lynnfr01</td>
+      <td>1090000</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1985</td>
+      <td>BAL</td>
+      <td>AL</td>
+      <td>ripkeca01</td>
+      <td>800000</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>1985</td>
+      <td>BAL</td>
+      <td>AL</td>
+      <td>lacyle01</td>
+      <td>725000</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>1985</td>
+      <td>BAL</td>
+      <td>AL</td>
+      <td>flanami01</td>
+      <td>641667</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre>salary[salary.yearID==2001].salary.describe()
+
+
+
+
+count         860.000000
+mean      2279841.061628
+std       2907710.250521
+min        200000.000000
+25%        269375.000000
+50%        925000.000000
+75%       3250000.000000
+max      22000000.000000
+Name: salary, dtype: float64
+</pre></div>
+
+
+<p>In the year 2001, the year we are concerned with, the minimum salary was $200,000.</p>
+<p>The next thing we did was merged the two dataframes and limited the data to 2001.</p>
+<div class="highlight"><pre>mergeddf = batting.merge(salary,on=[&#39;playerID&#39;,&#39;yearID&#39;],how=&#39;left&#39;)
+mergeddf = mergeddf[mergeddf.yearID==2001]
+mergeddf.head()
+</pre></div>
+
+
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>playerID</th>
+      <th>yearID</th>
+      <th>stint</th>
+      <th>teamID_x</th>
+      <th>lgID_x</th>
+      <th>G</th>
+      <th>G_batting</th>
+      <th>AB</th>
+      <th>R</th>
+      <th>H</th>
+      <th>...</th>
+      <th>SO</th>
+      <th>IBB</th>
+      <th>HBP</th>
+      <th>SH</th>
+      <th>SF</th>
+      <th>GIDP</th>
+      <th>G_old</th>
+      <th>teamID_y</th>
+      <th>lgID_y</th>
+      <th>salary</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>13</th>
+      <td>abadan01</td>
+      <td>2001</td>
+      <td>1</td>
+      <td>OAK</td>
+      <td>AL</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>abbotje01</td>
+      <td>2001</td>
+      <td>1</td>
+      <td>FLO</td>
+      <td>NL</td>
+      <td>28</td>
+      <td>28</td>
+      <td>42</td>
+      <td>5</td>
+      <td>11</td>
+      <td>...</td>
+      <td>7</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>28</td>
+      <td>FLO</td>
+      <td>NL</td>
+      <td>300000</td>
+    </tr>
+    <tr>
+      <th>44</th>
+      <td>abbotku01</td>
+      <td>2001</td>
+      <td>1</td>
+      <td>ATL</td>
+      <td>NL</td>
+      <td>6</td>
+      <td>6</td>
+      <td>9</td>
+      <td>0</td>
+      <td>2</td>
+      <td>...</td>
+      <td>3</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>6</td>
+      <td>ATL</td>
+      <td>NL</td>
+      <td>600000</td>
+    </tr>
+    <tr>
+      <th>56</th>
+      <td>abbotpa01</td>
+      <td>2001</td>
+      <td>1</td>
+      <td>SEA</td>
+      <td>AL</td>
+      <td>28</td>
+      <td>2</td>
+      <td>4</td>
+      <td>0</td>
+      <td>1</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>2</td>
+      <td>SEA</td>
+      <td>AL</td>
+      <td>1700000</td>
+    </tr>
+    <tr>
+      <th>64</th>
+      <td>abernbr01</td>
+      <td>2001</td>
+      <td>1</td>
+      <td>TBA</td>
+      <td>AL</td>
+      <td>79</td>
+      <td>79</td>
+      <td>304</td>
+      <td>43</td>
+      <td>82</td>
+      <td>...</td>
+      <td>35</td>
+      <td>1</td>
+      <td>0</td>
+      <td>3</td>
+      <td>1</td>
+      <td>3</td>
+      <td>79</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 27 columns</p>
+</div>
+
+<p>We can see some of the salaries are missing.  There are players that can be aquired, but are not on a payroll.   If we pick them up we have to pay them 200,000.</p>
+<div class="highlight"><pre>mergeddf.salary = mergeddf.salary.fillna(200000)
+mergeddf.head()
+</pre></div>
+
+
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>playerID</th>
+      <th>yearID</th>
+      <th>stint</th>
+      <th>teamID_x</th>
+      <th>lgID_x</th>
+      <th>G</th>
+      <th>G_batting</th>
+      <th>AB</th>
+      <th>R</th>
+      <th>H</th>
+      <th>...</th>
+      <th>SO</th>
+      <th>IBB</th>
+      <th>HBP</th>
+      <th>SH</th>
+      <th>SF</th>
+      <th>GIDP</th>
+      <th>G_old</th>
+      <th>teamID_y</th>
+      <th>lgID_y</th>
+      <th>salary</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>13</th>
+      <td>abadan01</td>
+      <td>2001</td>
+      <td>1</td>
+      <td>OAK</td>
+      <td>AL</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>200000</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>abbotje01</td>
+      <td>2001</td>
+      <td>1</td>
+      <td>FLO</td>
+      <td>NL</td>
+      <td>28</td>
+      <td>28</td>
+      <td>42</td>
+      <td>5</td>
+      <td>11</td>
+      <td>...</td>
+      <td>7</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>28</td>
+      <td>FLO</td>
+      <td>NL</td>
+      <td>300000</td>
+    </tr>
+    <tr>
+      <th>44</th>
+      <td>abbotku01</td>
+      <td>2001</td>
+      <td>1</td>
+      <td>ATL</td>
+      <td>NL</td>
+      <td>6</td>
+      <td>6</td>
+      <td>9</td>
+      <td>0</td>
+      <td>2</td>
+      <td>...</td>
+      <td>3</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>6</td>
+      <td>ATL</td>
+      <td>NL</td>
+      <td>600000</td>
+    </tr>
+    <tr>
+      <th>56</th>
+      <td>abbotpa01</td>
+      <td>2001</td>
+      <td>1</td>
+      <td>SEA</td>
+      <td>AL</td>
+      <td>28</td>
+      <td>2</td>
+      <td>4</td>
+      <td>0</td>
+      <td>1</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>2</td>
+      <td>SEA</td>
+      <td>AL</td>
+      <td>1700000</td>
+    </tr>
+    <tr>
+      <th>64</th>
+      <td>abernbr01</td>
+      <td>2001</td>
+      <td>1</td>
+      <td>TBA</td>
+      <td>AL</td>
+      <td>79</td>
+      <td>79</td>
+      <td>304</td>
+      <td>43</td>
+      <td>82</td>
+      <td>...</td>
+      <td>35</td>
+      <td>1</td>
+      <td>0</td>
+      <td>3</td>
+      <td>1</td>
+      <td>3</td>
+      <td>79</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>200000</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 27 columns</p>
+</div>
+
+<p>Now we need to make some new variables.   The number of times they were on First Base,the Batting Average (BA), the On Base Percentage (OBP), and the Slugg (SLG)</p>
+<div class="highlight"><pre>mergeddf[&#39;BA&#39;] = mergeddf[&#39;H&#39;]/mergeddf[&#39;AB&#39;]
+mergeddf.BA.describe()
+
+
+
+
+count    1044.000000
+mean        0.202532
+std         0.140697
+min         0.000000
+25%         0.117647
+50%         0.235227
+75%         0.274705
+max         1.000000
+Name: BA, dtype: float64
+
+
+
+
+mergeddf[&#39;1B&#39;] = mergeddf[&#39;H&#39;]-mergeddf[&#39;2B&#39;]-mergeddf[&#39;3B&#39;]-mergeddf[&#39;HR&#39;]
+mergeddf[&#39;1B&#39;].describe()
+
+
+
+
+count    1237.000000
+mean       23.185125
+std        34.327716
+min         0.000000
+25%         0.000000
+50%         4.000000
+75%        33.000000
+max       192.000000
+Name: 1B, dtype: float64
+
+
+
+
+mergeddf[&#39;SLG&#39;]=(mergeddf[&#39;1B&#39;]+2*mergeddf[&#39;2B&#39;]+3*mergeddf[&#39;3B&#39;] \
+                 +4*mergeddf[&#39;HR&#39;])/mergeddf[&#39;AB&#39;]
+mergeddf[&#39;SLG&#39;].describe()
+
+
+
+
+count    1044.000000
+mean        0.303628
+std         0.214569
+min         0.000000
+25%         0.142857
+50%         0.337722
+75%         0.436874
+max         2.000000
+Name: SLG, dtype: float64
+
+
+
+
+mergeddf[&#39;OBP&#39;]=(mergeddf[&#39;H&#39;]+mergeddf[&#39;BB&#39;]+mergeddf[&#39;HBP&#39;]) \
+/(mergeddf[&#39;AB&#39;]+mergeddf[&#39;BB&#39;]+mergeddf[&#39;HBP&#39;]+mergeddf[&#39;SF&#39;])
+mergeddf[&#39;OBP&#39;].describe()
+
+
+
+
+count    1047.000000
+mean        0.254084
+std         0.159932
+min         0.000000
+25%         0.162162
+50%         0.293103
+75%         0.338235
+max         1.000000
+Name: OBP, dtype: float64
+</pre></div>
+
+
+<p>The A's lost Jason Giambi (<code>giambja01</code>), Johnny Damon (<code>damonjo01</code>), Jason Isringhausen (<code>isrinja01</code>), and Rainer Gustavo "Ray" Olmedo (<code>'saenzol01'</code>).</p>
+<p>These player need to replaced with similar player that bat, in total, as much as these guys, get on base as often as these guys, and can be payed less than these guys.  </p>
+<p><img alt="" src="images/3ballplayers.png" /></p>
+<div class="highlight"><pre>my_mask = mergeddf[&#39;playerID&#39;].isin([&#39;giambja01&#39;,&#39;damonjo01&#39;,&#39;isrinja01&#39;,&#39;saenzol01&#39;])
+lostboysdf = mergeddf[my_mask]
+imp_var = [&#39;playerID&#39;, &#39;teamID_x&#39;,&#39;AB&#39;,&#39;HR&#39;, &#39;OBP&#39;, &#39;SLG&#39;, &#39;salary&#39;]
+lostboysdf[imp_var]
+</pre></div>
+
+
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>playerID</th>
+      <th>teamID_x</th>
+      <th>AB</th>
+      <th>HR</th>
+      <th>OBP</th>
+      <th>SLG</th>
+      <th>salary</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>7065</th>
+      <td>damonjo01</td>
+      <td>OAK</td>
+      <td>644</td>
+      <td>9</td>
+      <td>0.323529</td>
+      <td>0.363354</td>
+      <td>7100000</td>
+    </tr>
+    <tr>
+      <th>10836</th>
+      <td>giambja01</td>
+      <td>OAK</td>
+      <td>520</td>
+      <td>38</td>
+      <td>0.476900</td>
+      <td>0.659615</td>
+      <td>4103333</td>
+    </tr>
+    <tr>
+      <th>14911</th>
+      <td>isrinja01</td>
+      <td>OAK</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>3300000</td>
+    </tr>
+    <tr>
+      <th>27408</th>
+      <td>saenzol01</td>
+      <td>OAK</td>
+      <td>305</td>
+      <td>9</td>
+      <td>0.291176</td>
+      <td>0.383607</td>
+      <td>290000</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre>print &quot;Avg OBP Needed to be replaced:&quot;, 3*lostboysdf[imp_var].OBP.mean()
+print &quot;Total Bats needed to be replaced:&quot;, lostboysdf[imp_var].AB.sum()
+
+Avg OBP Needed to be replaced: 1.09160603138
+Total Bats needed to be replaced: 1469.0
+</pre></div>
+
+
+<p>We would ideally like to get every combination of 3 players that are available.  That would be:</p>
+<div class="highlight"><pre><span class="n">mergeddf</span> <span class="o">=</span> <span class="n">mergeddf</span><span class="p">[</span><span class="o">~</span><span class="n">mergeddf</span><span class="o">.</span><span class="n">playerID</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s">&#39;giambja01&#39;</span><span class="p">,</span><span class="s">&#39;damonjo01&#39;</span><span class="p">,</span><span class="s">&#39;isrinja01&#39;</span><span class="p">,</span><span class="s">&#39;saenzol01&#39;</span><span class="p">])]</span>
+<span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mergeddf</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">size</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">def</span> <span class="nf">nCr</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">r</span><span class="p">):</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">factorial</span>
+    <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">/</span> <span class="n">f</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">/</span> <span class="n">f</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">r</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">nCr</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="mi">1335</span>
+<span class="mi">395654395</span>
+</pre></div>
+
+
+<p>That is almost 400,000,000 combinations to search through.   Less make some reasonable assumptions about about the minimum At Bats and On Base Percentages</p>
+<div class="highlight"><pre>mergeddf.plot(kind=&#39;scatter&#39;,x=&#39;AB&#39;,y=&#39;OBP&#39;)
+
+
+
+
+&lt;matplotlib.axes._subplots.AxesSubplot at 0x1063f3f10&gt;
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/gw1d5_1.png" /></p>
+<p>It looks like the variance does not change much above 200 AB.  We probably want them to bat about 500 times a season, however.  We also want the average to be above 0.33 for the OPB, so that seems like a reasonable initial cutoff.  We also want there average salary to be less than 5000000.</p>
+<div class="highlight"><pre>size = len(mergeddf[(mergeddf.AB &gt; 400) &amp; (mergeddf.OBP &gt; 0.33)])
+nCr(size,3)
+
+
+
+
+246905L
+</pre></div>
+
+
+<p>That gives us 11,480 combinations to search through.  Lets do it.</p>
+<div class="highlight"><pre><span class="c">#mdf = mergeddf[(mergeddf.yearID==2001)&amp;(mergeddf.AB&gt;50)] #.salary.describe()</span>
+<span class="c">#mdf.salary = mdf.salary.fillna(200000)</span>
+<span class="c">#mdf[imp_var].head()</span>
+<span class="n">mdf</span> <span class="o">=</span> <span class="n">mergeddf</span><span class="p">[(</span><span class="n">mergeddf</span><span class="o">.</span><span class="n">AB</span> <span class="o">&gt;</span> <span class="mi">400</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">mergeddf</span><span class="o">.</span><span class="n">OBP</span> <span class="o">&gt;</span> <span class="mf">0.33</span><span class="p">)]</span>
+
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">combinations</span>
+<span class="n">good_combinations</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">mdf</span> <span class="o">=</span> <span class="n">mdf</span><span class="p">[</span><span class="o">~</span><span class="n">mdf</span><span class="o">.</span><span class="n">playerID</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span> <span class="p">[</span><span class="s">&#39;giambja01&#39;</span><span class="p">,</span><span class="s">&#39;damonjo01&#39;</span><span class="p">,</span><span class="s">&#39;isrinja01&#39;</span><span class="p">,</span><span class="s">&#39;saenzol01&#39;</span><span class="p">])]</span>
+<span class="n">gc</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;player1&#39;</span><span class="p">,</span><span class="s">&#39;player2&#39;</span><span class="p">,</span><span class="s">&#39;player3&#39;</span><span class="p">,</span><span class="s">&#39;total_AB&#39;</span><span class="p">,</span><span class="s">&#39;total_OBP&#39;</span><span class="p">,</span><span class="s">&#39;total_salary&#39;</span><span class="p">])</span>
+<span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">(</span><span class="n">mdf</span><span class="p">[</span><span class="n">mdf</span><span class="o">.</span><span class="n">OBP</span><span class="o">&gt;</span><span class="mf">0.4</span><span class="p">]</span><span class="o">.</span><span class="n">playerID</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span><span class="mi">3</span><span class="p">):</span>
+
+    <span class="n">total_salary</span> <span class="o">=</span> <span class="n">mdf</span><span class="p">[</span><span class="n">mdf</span><span class="o">.</span><span class="n">playerID</span><span class="o">==</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">salary</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">total_salary</span> <span class="o">+=</span> <span class="n">mdf</span><span class="p">[</span><span class="n">mdf</span><span class="o">.</span><span class="n">playerID</span><span class="o">==</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">salary</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">total_salary</span> <span class="o">+=</span> <span class="n">mdf</span><span class="p">[</span><span class="n">mdf</span><span class="o">.</span><span class="n">playerID</span><span class="o">==</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span><span class="o">.</span><span class="n">salary</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">total_AB</span> <span class="o">=</span> <span class="n">mdf</span><span class="p">[</span><span class="n">mdf</span><span class="o">.</span><span class="n">playerID</span><span class="o">==</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">AB</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">total_AB</span> <span class="o">+=</span> <span class="n">mdf</span><span class="p">[</span><span class="n">mdf</span><span class="o">.</span><span class="n">playerID</span><span class="o">==</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">AB</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">total_AB</span> <span class="o">+=</span> <span class="n">mdf</span><span class="p">[</span><span class="n">mdf</span><span class="o">.</span><span class="n">playerID</span><span class="o">==</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span><span class="o">.</span><span class="n">AB</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">total_obp</span> <span class="o">=</span> <span class="n">mdf</span><span class="p">[</span><span class="n">mdf</span><span class="o">.</span><span class="n">playerID</span><span class="o">==</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">OBP</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">total_obp</span> <span class="o">+=</span> <span class="n">mdf</span><span class="p">[</span><span class="n">mdf</span><span class="o">.</span><span class="n">playerID</span><span class="o">==</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">OBP</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">total_obp</span> <span class="o">+=</span> <span class="n">mdf</span><span class="p">[</span><span class="n">mdf</span><span class="o">.</span><span class="n">playerID</span><span class="o">==</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span><span class="o">.</span><span class="n">OBP</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">total_salary</span> <span class="o">&lt;</span> <span class="mi">15000000</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">total_obp</span> <span class="o">&gt;</span> <span class="mf">1.0961</span><span class="p">):</span>
+        <span class="n">gc</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">total_AB</span><span class="p">,</span><span class="n">total_obp</span><span class="p">,</span><span class="n">total_salary</span><span class="p">]</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<span class="n">gc</span> <span class="o">=</span> <span class="n">gc</span><span class="o">.</span><span class="n">sort</span><span class="p">([</span><span class="s">&#39;total_salary&#39;</span><span class="p">])</span>
+<span class="n">gc</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+
+
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>player1</th>
+      <th>player2</th>
+      <th>player3</th>
+      <th>total_AB</th>
+      <th>total_OBP</th>
+      <th>total_salary</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>28</th>
+      <td>berkmla01</td>
+      <td>gonzalu01</td>
+      <td>pujolal01</td>
+      <td>1776</td>
+      <td>1.261767</td>
+      <td>5338333</td>
+    </tr>
+    <tr>
+      <th>32</th>
+      <td>berkmla01</td>
+      <td>heltoto01</td>
+      <td>pujolal01</td>
+      <td>1754</td>
+      <td>1.264850</td>
+      <td>5455000</td>
+    </tr>
+    <tr>
+      <th>36</th>
+      <td>berkmla01</td>
+      <td>martied01</td>
+      <td>pujolal01</td>
+      <td>1637</td>
+      <td>1.256603</td>
+      <td>6005000</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>berkmla01</td>
+      <td>edmonji01</td>
+      <td>pujolal01</td>
+      <td>1667</td>
+      <td>1.243410</td>
+      <td>6838333</td>
+    </tr>
+    <tr>
+      <th>38</th>
+      <td>berkmla01</td>
+      <td>olerujo01</td>
+      <td>pujolal01</td>
+      <td>1739</td>
+      <td>1.234375</td>
+      <td>7205000</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>berkmla01</td>
+      <td>gilesbr02</td>
+      <td>pujolal01</td>
+      <td>1743</td>
+      <td>1.236756</td>
+      <td>7838333</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>alomaro01</td>
+      <td>berkmla01</td>
+      <td>pujolal01</td>
+      <td>1742</td>
+      <td>1.247866</td>
+      <td>8255000</td>
+    </tr>
+    <tr>
+      <th>43</th>
+      <td>berkmla01</td>
+      <td>pujolal01</td>
+      <td>thomeji01</td>
+      <td>1693</td>
+      <td>1.249345</td>
+      <td>8380000</td>
+    </tr>
+    <tr>
+      <th>55</th>
+      <td>gonzalu01</td>
+      <td>heltoto01</td>
+      <td>pujolal01</td>
+      <td>1786</td>
+      <td>1.263189</td>
+      <td>9983333</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>berkmla01</td>
+      <td>gonzalu01</td>
+      <td>heltoto01</td>
+      <td>1773</td>
+      <td>1.290459</td>
+      <td>10088333</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre>print len(gc)
+
+66
+</pre></div>
+
+
+<p>This allowed us to find 66 combination of players that would, in aggregate, have better statistics that the players that were lost.  It also turns out to be cheaper to do that.   This is the story of money ball.  It was a fun project.  </p></section>
+        <hr class="uk-article-divider">
+    </article>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'bryansmithphd'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+     dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+     })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+</div>
+ 
+    
+        <div class="uk-width-medium-1-5 uk-hidden-small">
+            
+            <div class="uk-panel uk-panel-box">
+                <form class="uk-search" action="search.html" data-uk-search>
+                    <input class="uk-search-field tipue_search" type="search" name="q" id="tipue_search_input" autocomplete="off" placeholder="Search...">
+                </form>
+            </div>
+
+            <div class="uk-panel uk-panel-box">
+                <ul class="uk-nav uk-nav-side">
+                    <li class="uk-nav-header">Categories</li>
+                    <li class="uk-active"><a href="http://www.bryantravissmith.com/category/galvanize.html">Galvanize</a></li>
+                    <li ><a href="http://www.bryantravissmith.com/category/udacity.html">Udacity</a></li>
+                    <li class="uk-nav-header">Pages</li>
+                    
+                    <li >
+                        <a href="http://www.bryantravissmith.com/about/">About</a>
+                    </li>
+                    
+
+                    <li class="uk-nav-divider"></li>
+                    <li ><a href="http://www.bryantravissmith.com/archives.html">Archives</a></li>
+                </ul>
+            </div>
+
+            <div class="uk-panel uk-panel-box">
+                <h3 class="uk-panel-title">Receive Updates</h3>
+                <a rel="alternate" type="application/atom+xml" href="http://www.bryantravissmith.com/feeds/all.atom.xml" class="mg-feed"><i class="uk-icon-rss uk-icon-medium"></i> ATOM</a>
+            </div>
+            
+            <div class="uk-panel uk-panel-box">
+                <h3 class="uk-panel-title">Contacts</h3>
+                <a class="mg-icon-link" href="https://linkedin.com/in/bryantravissmith">
+                    <i class="uk-icon-linkedin uk-icon-medium"></i>
+                </a>
+                <a class="mg-icon-link" href="https://github.com/bryantravissmith">
+                    <i class="uk-icon-github uk-icon-medium"></i>
+                </a>
+                <a class="mg-icon-link" href="https://plus.google.com/+BryanSmithPhD">
+                    <i class="uk-icon-google-plus-square uk-icon-medium"></i>
+                </a>
+                <a class="mg-icon-link" href="https://twitter.com/bryantravissmit">
+                    <i class="uk-icon-twitter uk-icon-medium"></i>
+                </a>
+                <a class="mg-icon-link" href="https://instagram.com/bryantravissmith/">
+                    <i class="uk-icon-instagram uk-icon-medium"></i>
+                </a>
+                <a class="mg-icon-link" href="mailto:bryantravissmith@gmail.com">
+                    <i class="uk-icon-envelope uk-icon-medium"></i>
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</main>
+
+<footer class="mg-footer">
+    <div class="uk-container uk-container-center uk-text-center">
+
+        <div class="mg-icons-small uk-subnav uk-visible-small">
+            <li><a rel="alternate" type="application/atom+xml" href="http://www.bryantravissmith.com/feeds/all.atom.xml" class="uk-icon-button uk-icon-rss"></a></li>
+            <li>
+                <a href="https://linkedin.com/in/bryantravissmith" class="uk-icon-button uk-icon-linkedin"></a>
+            </li>
+            <li>
+                <a href="https://github.com/bryantravissmith" class="uk-icon-button uk-icon-github"></a>
+            </li>
+            <li>
+                <a href="https://plus.google.com/+BryanSmithPhD" class="uk-icon-button uk-icon-google-plus"></a>
+            </li>
+            <li>
+                <a href="https://twitter.com/bryantravissmit" class="uk-icon-button uk-icon-twitter"></a>
+            </li>
+            <li>
+                <a href="https://instagram.com/bryantravissmith/" class="uk-icon-button uk-icon-instagram"></a>
+            </li>
+            <li>
+                <a href="mailto:bryantravissmith@gmail.com" class="uk-icon-button uk-icon-envelope"></a>
+            </li>
+        </div>
+
+        <div class="mg-author uk-panel">
+            <p>&copy; 2015 Bryan Smith. All rights reserved.<br>Code snippets in the pages are released under <a href="http://opensource.org/licenses/MIT" target="_blank">The MIT License</a>, unless otherwise specified.</p>
+
+            <p>Powered by <a href="http://blog.getpelican.com">Pelican</a>.<br class="uk-visible-small"> Theme <a href="https://github.com/lucachr/pelican-mg">mg</a> by <a href="https://github.com/lucachr">Luca Chiricozzi</a>.</p>
+        </div>
+    </div> 
+</footer>
+
+<div id="mg-offcanvas" class="uk-offcanvas">
+    <div class="uk-offcanvas-bar">
+
+        <form class="uk-search" action="search.html" data-uk-search>
+            <input class="uk-search-field" type="search" name="q" id="tipue_search_input" autocomplete="off" placeholder="Search...">
+        </form>
+
+        <ul class="uk-nav uk-nav-offcanvas" data-uk-nav>
+            <li class="uk-nav-header">Categories</li>
+            <li class="uk-active"><a href="http://www.bryantravissmith.com/category/galvanize.html">Galvanize</a></li>
+            <li ><a href="http://www.bryantravissmith.com/category/udacity.html">Udacity</a></li>
+            <li class="uk-nav-header">Pages</li>        
+            <li >
+                <a href="http://www.bryantravissmith.com/about/">About</a>
+            </li>
+                    
+
+            <li class="uk-nav-divider"></li>
+            <li><a href="http://www.bryantravissmith.com/">Archives</a></li>
+        </ul>
+    </div>
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')</script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/uikit/2.15.0/js/uikit.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/uikit/2.15.0/js/components/search.min.js"></script>
+<script src="/theme/js/jquery.sticky-kit.js"></script>
+<script src="/theme/js/tipuesearch_set.js"></script>
+<script src="/theme/js/tipuesearch.js"></script>
+<script src="/theme/js/plugins.js"></script>
+<script src="/theme/js/main.js"></script>
+
+<script type="text/javascript">
+/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+var disqus_shortname = 'bryansmithphd'; // required: replace example with your forum shortname
+
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function () {
+ var s = document.createElement('script'); s.async = true;
+ s.type = 'text/javascript';
+ s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+ (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+ }());
+</script>
+
+<script>
+(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+                                                        function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+ e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+ e.src='//www.google-analytics.com/analytics.js';
+ r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-24340005-3');ga('send','pageview');
+</script>
+
+</body>
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+</html>
