@@ -7,6 +7,7 @@ AUTHOR = 'Bryan Smith'
 SITENAME = "Bryan Travis Smith, Ph.D"
 ALT_NAME = SITENAME
 SITESUBTITLE = "Physicist, Data Scientist, Martial Artist, & Life Enthusiast"
+SITE_SUBTEXT = SITESUBTITLE
 DESCRIPTION = "A blog about my experience with physics, data science, artifical intelligences, robotics, and technology."
 SITEURL = 'http://www.bryantravissmith.com'
 #FAVICON = 'favicon.ico'
@@ -30,6 +31,9 @@ LOCALE = 'en_GB'
 
 THEME = "alchemy/alchemy/"
 
+EMAIL_ADDRESS = 'bryantravissmith@gmail.com'
+GITHUB_ADDRESS = 'https://github.com/bryantravissmith'
+
 # Social widget
 #SOCIAL = (('linkedin','https://linkedin.com/in/bryantravissmith'),
 #		  ('github', 'https://github.com/bryantravissmith'),
@@ -45,6 +49,12 @@ THEME = "alchemy/alchemy/"
 #          "<a href=\"http://opensource.org/licenses/MIT\" target=\"_blank\">" +
 #          "The MIT License</a>, unless otherwise specified.")
 
+PAGES_ON_MENU = True
+CATEGORIES_ON_MENU = True
+SHOW_ARTICLE_AUTHOR = True
+TAGS_ON_MENU = True
+
+PROFILE_IMAGE = "http://www.bryantravissmith.com/img/bryan.jpeg"
 
 DEFAULT_PAGINATION = 10
 
