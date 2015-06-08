@@ -28,30 +28,30 @@ PAGE_SAVE_AS = '{slug}/index.html'
 DEFAULT_LANG = 'en'
 LOCALE = 'en_GB'
 
-THEME = "theme/"
+THEME = "alchemy/alchemy/"
 
 # Social widget
-SOCIAL = (('linkedin','https://linkedin.com/in/bryantravissmith'),
-		  ('github', 'https://github.com/bryantravissmith'),
-          ('google-plus-square', 'https://plus.google.com/+BryanSmithPhD'),
-		  ('twitter', 'https://twitter.com/bryantravissmit'),
-          ('instagram','https://instagram.com/bryantravissmith/'),
-          ('envelope', 'mailto:bryantravissmith@gmail.com'),)
+#SOCIAL = (('linkedin','https://linkedin.com/in/bryantravissmith'),
+#		  ('github', 'https://github.com/bryantravissmith'),
+#          ('google-plus-square', 'https://plus.google.com/+BryanSmithPhD'),
+#		  ('twitter', 'https://twitter.com/bryantravissmit'),
+#          ('instagram','https://instagram.com/bryantravissmith/'),
+#          ('envelope', 'mailto:bryantravissmith@gmail.com'),)
 
-SHARE = True
+#SHARE = True
 
-FOOTER = ("&copy; 2015 Bryan Smith. All rights reserved.<br>" +
-          "Code snippets in the pages are released under " +
-          "<a href=\"http://opensource.org/licenses/MIT\" target=\"_blank\">" +
-          "The MIT License</a>, unless otherwise specified.")
+#FOOTER = ("&copy; 2015 Bryan Smith. All rights reserved.<br>" +
+#          "Code snippets in the pages are released under " +
+#          "<a href=\"http://opensource.org/licenses/MIT\" target=\"_blank\">" +
+#          "The MIT License</a>, unless otherwise specified.")
 
 
 DEFAULT_PAGINATION = 10
 
 TAG_SAVE_AS = ''
 AUTHOR_SAVE_AS = ''
-DIRECT_TEMPLATES = ('index', 'categories', 'archives', 'search', 'tipue_search')
-TIPUE_SEARCH_SAVE_AS = 'tipue_search.json'
+#DIRECT_TEMPLATES = ('index', 'categories', 'archives', 'search', 'tipue_search')
+#TIPUE_SEARCH_SAVE_AS = 'tipue_search.json'
 
 RELATIVE_URLS = False
 
@@ -59,10 +59,10 @@ FEED_ALL_ATOM = 'feeds/all.atom.xml'
 
 DELETE_OUTPUT_DIRECTORY = True
 
-TWITTER_USERNAME = 'bryantravissmit'
+#TWITTER_USERNAME = 'bryantravissmit'
 DISQUS_SITENAME = "bryansmithphd"
 #SC_PROJECT = '10224955'
 #SC_SECURITY = '1f2cc438'
-GOOGLE_ANALYTICS = "UA-24340005-3"
-
+GOOGLE_ANALYTICS_ID = "UA-24340005-3"
+GOOGLE_ANALYTICS_DOMAIN = "www.bryantravissmith.com"
 
