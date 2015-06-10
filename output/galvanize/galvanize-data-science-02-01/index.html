@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-02-01/index.html" />
+
+    <title>  Bryan Travis Smith, Ph.D &mdash; Galvanize - Week 02 - Day 1
+</title>
+
+
+
+
+    <link rel="stylesheet" href="http://www.bryantravissmith.com/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-24340005-3', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+
+    <meta name="author" content="Bryan Smith">
+    <meta name="description" content="The sixth day of Galvanize's Immersive Data Science program in San Francisco, CA where we covered probability.">
+  <meta name="tags" contents="data-science, galvanize, pandas, money ball, ">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+      <div class="header-image pull-left">
+        <a class="nodec" href="http://www.bryantravissmith.com"><img src=http://www.bryantravissmith.com/img/bryan.jpeg></a>
+      </div>
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="http://www.bryantravissmith.com">Bryan Travis Smith, Ph.D</a>
+      </h1>
+      <h3 class="header-text">Physicist, Data Scientist, Martial Artist, & Life Enthusiast</h3>
+      <ul class="header-menu list-inline">
+              <li class="muted">|</li>
+            <li><a class="nodec" href="http://www.bryantravissmith.com/about/">About</a></li>
+              <li class="muted">|</li>
+          <li><a class="nodec icon-mail-alt" href="mailto:bryantravissmith@gmail.com"></a></li>
+          <li><a class="nodec icon-github" href="https://github.com/bryantravissmith"></a></li>
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+      <a href="/galvanize/galvanize-data-science-02-01/" title="Permalink to Galvanize - Week 02 - Day 1">Galvanize - Week 02 - Day 1</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" href="/galvanize/galvanize-data-science-02-01/" title="2015-06-08T10:20:00-07:00">Mon 08 June 2015</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+        <a href="http://www.bryantravissmith.com/category/galvanize.html">Galvanize</a>
+      </li>
+        <li class="muted">&middot;</li>
+        <li>
+          <address class="post-author">
+            By <a href="http://www.bryantravissmith.com/author/bryan-smith.html">Bryan Smith</a>
+          </address>
+        </li>
+    </ul>
+    <div class="post-content">
+      <h1>Galvanize Immersive Data Science</h1>
+<h2>Week 2 - Day 1</h2>
+<p>Since this is the first day of the week we started with an hour long assessment on what we did last week.  The assessment was straight forward, and very doable with a modest understanding of the previous material.   </p>
+<p>After the test, we started a lecture on probability, which we finished in the afternoon.  There was the individual sprint after the morning lecture, and a paired spring as the afternoon lecture</p>
+<h2>Conditional Probabilities</h2>
+<p>We started with some simple questions like the following:</p>
+<ul>
+<li>
+<p>Suppose two cards are drawn from a standard 52 card deck.  What's the probability that the first is a queen and the second is a king?</p>
+<p>$$P\left(Q\right) = \frac{4}{52}$$</p>
+<p>$$P\left(K,Q\right) = P\left(K|Q\right)*P\left(Q\right) = \frac{4}{51} * \frac{4}{52} = \frac{16}{2652}$$</p>
+<p>print "Answer: ", 16./2652</p>
+<p>Answer:  0.00603318250377</p>
+</li>
+<li>
+<p>What's the probability that both cards are queens?</p>
+<p>$$P\left(Q\right) = \frac{4}{52}$$</p>
+<p>$$P\left(Q,Q\right) = P\left(Q|Q\right)*P\left(Q\right) = \frac{3}{51} * \frac{4}{52} = \frac{12}{2652}$$</p>
+<p>print "Answer: ", 12./2652</p>
+<p>Answer:  0.00452488687783</p>
+</li>
+<li>
+<p>Suppose that before the second card was drawn, the first was inserted back into the deck and the deck reshuffled. What's the probability that both cards are queens?</p>
+</li>
+</ul>
+<p>$$P\left(Q\right) = \frac{4}{52}$$</p>
+<p>$$P\left(Q,Q\right) = P\left(Q\right)*P\left(Q\right) = \frac{4}{52} * \frac{4}{52} = \frac{16}{2705}$$</p>
+<div class="highlight"><pre>print &quot;Answer: &quot;, 16./2705
+
+Answer:  0.00591497227357
+</pre></div>
+
+
+<p>We had similar questions about tables of data:</p>
+<p>A Store Manager wants to understand how his customers use different payment methods, and suspects that the size of the purchase is a major deciding factor. He organizes the table below.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th align="right">Cash</th>
+<th align="right">Debit</th>
+<th align="right">Credit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Under 20</td>
+<td align="right">400</td>
+<td align="right">150</td>
+<td align="right">150</td>
+</tr>
+<tr>
+<td>20 - 50</td>
+<td align="right">200</td>
+<td align="right">1200</td>
+<td align="right">800</td>
+</tr>
+<tr>
+<td>Over 50</td>
+<td align="right">100</td>
+<td align="right">600</td>
+<td align="right">1400</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>
+<p>Given that a customer spent over $50, what's the probability that the customer used a credit card?</p>
+<p>$$P\left(C|S&gt;$50\right) = \frac{1400}{100+600+1400}$$ </p>
+<p>print "Answer: ", 1400./(100+600+1400)</p>
+<p>Answer:  0.666666666667</p>
+</li>
+<li>
+<p>Given that a customer paid in cash, what's the probability that the customer spent less than $20?</p>
+<p>$$P\left(S&lt;20|Cash\right) = \frac{400}{400+200+100}$$</p>
+<p>print "Answer: ", 400./(400+200+100)</p>
+<p>Answer:  0.571428571429</p>
+</li>
+<li>
+<p>What's the probability that a customer spent under $20 using cash?</p>
+<p>$$P\left(S &lt; $20,Cash\right) = \frac{400}{400+150+150+200+1200+800+100+600+1400}$$</p>
+<p>print "Answer: ", 400./(400+150+150+200+1200+800+100+600+1400)</p>
+<p>Answer:  0.08</p>
+</li>
+</ul>
+<p>We also had a question about job offers - something near and dear to our hearts:</p>
+<ul>
+<li>
+<p>A gSchool grad is looking for her first job!  Given that she is freaked out, her chances of not getting an offer are 70%.  Given that she isn't freaked out, her chances of not getting an offer are 30%.  Suppose that the probability that she's freaked out is 80%. What's the probability that she gets an offer?</p>
+<p>$$P\left(Offer|Freak Out\right) = 0.7$$  </p>
+<p>$$P\left(Offer|No Freak Oout\right) = 0.3$$</p>
+<p>$$P\left(Freak Out\right) = 0.8$$</p>
+</li>
+</ul>
+<p>$$ P\left(A\right) = \Sigma_{B} P\left(A|B\right) $$</p>
+<p>$$ P\left(Offer\right) = P\left(Offer|Freak Out\right) * P\left(Freak Out\right) + P\left(Offer|No Freak Out\right) * P\left(No Freak Out\right)$$</p>
+<p>$$P\left(Offer\right) = 0.7 * 0.8 + 0.3 * 0.2$$ </p>
+<div class="highlight"><pre>print &quot;Answer: &quot;, 0.7 * 0.8 + 0.3 * 0.2
+
+Answer:  0.62
+</pre></div>
+
+
+<p>We also tackled the deep issue go heroin use at Google: </p>
+<p>*. Google decides to do random drug tests for heroin on their employees.
+   They know that 3% of their population uses heroin. The drug test has the
+   following accuracy: The test correctly identifies 95% of the
+   heroin users (sensitivity) and 90% of the non-users (specificity).</p>
+<table>
+<thead>
+<tr>
+<th>Test Results</th>
+<th>Uses heroin</th>
+<th>Doesn't use heroin</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tests positive</td>
+<td>0.95</td>
+<td>0.10</td>
+</tr>
+<tr>
+<td>Tests negative</td>
+<td>0.05</td>
+<td>0.90</td>
+</tr>
+</tbody>
+</table>
+<p>Alice gets tested and the test comes back positive. What is the probability
+   that she uses heroin?</p>
+<p>$$P(Heroin \ | \ Positive Test) = \frac{P(Positive Test|Heroin) P(Heroin)}{P(Positive Test)}$$</p>
+<p>$$P(Heroin \ | \ Positive Test) = \frac{P(Positive Test|Heroin) P(Heroin)}{P(Positive Test|Heroin) P(Heroin) + P(Positive Test|No Heroin) P(No Heroin)}$$ </p>
+<p>$$ = \frac{0.95 \ 0.03}{0.95 \ 0.03 + 0.1 \ 0.97}$$</p>
+<div class="highlight"><pre>print &quot;Answer: &quot;, 0.95*0.03/(0.95*0.03 + 0.1*0.97)
+
+Answer:  0.227091633466
+</pre></div>
+
+
+<p>Finally we had the manditory birthday problem:   </p>
+<p>*The Birthday Problem.  Suppose there are 23 people in a data science class, lined up in a single file line.<br />
+Let A_i be the probability that the i'th person doesn't have the same birthday as the j'th person for any j &lt; i.<br />
+Use the chain rule from probability to calculate the probability that at least 2 people share the same birthday. </p>
+<p>$$P(1,2,3,...,23) = \mbox{Probability that 23 people do not have the same birthday}$$</p>
+<p>$$P( \ 1, \ 2, \ 3, \ ..., \ 23) = P(1) \ P(2|1) \ P(3 \ | \ 2 \ , \ 1) \ ... \ P(23|22 \ , \ ... \ , \ 2, \ 1)$$</p>
+<p>Given that 2 people don't have the same birthday, there are 363 days that are not taken that a new person could have:</p>
+<p>$$P(3|2,1) = \frac{363}{365}$$</p>
+<p>Similarly, given that 3 people don't have the same birthday, then there are 362 days not occupied:</p>
+<p>$$P(4|3,2,1) = \frac{362}{365}$$</p>
+<p>Extending this to the problem we have the probability of no matching birthdays being </p>
+<p>$$P( \ 1, \ 2,\ 3, \ ..., \ 23) = \frac{1 \ 364 \ 363 \ ... \ (365-23)}{365^{23}}$$</p>
+<div class="highlight"><pre>def bday(N=23):
+    prob = 1
+    for i in range(1,N+1):
+        prob = prob*(365.0-i+1)/365.
+    return prob
+
+print bday()
+
+0.492702765676
+</pre></div>
+
+
+<p>The probability of having 2 or more matches is us the inverse of this</p>
+<p>$$P(Matches &gt;= 2| \ 23) = 1 - P(No Maches|23)$$</p>
+<p>$$P(Matches &gt;= 2| \ 23) = 1-0.4927$$</p>
+<div class="highlight"><pre>print &quot;Answer: &quot;, round(100-100*bday(),1)
+
+Answer:  50.7
+</pre></div>
+
+
+<h2>Distributions</h2>
+<p>The afternoon paired programming assignment involved developing an intuition for and using various distributions.</p>
+<h3>Discrete:</h3>
+<ul>
+<li>
+<p>Bernoulli</p>
+<ul>
+<li>Model one instance of a success or failure trial (p)</li>
+</ul>
+</li>
+<li>
+<p>Binomial</p>
+<ul>
+<li>Number of successes out of a number of trials (n), each with probability of success (p)</li>
+</ul>
+</li>
+<li>
+<p>Poisson</p>
+<ul>
+<li>Model the number of events occurring in a fixed interval</li>
+<li>Events occur at an average rate (lambda) independently of the last event</li>
+</ul>
+</li>
+<li>
+<p>Geometric</p>
+<ul>
+<li>Sequence of Bernoulli trials until first success (p)</li>
+</ul>
+</li>
+</ul>
+<h3>Continuous:</h3>
+<ul>
+<li>
+<p>Uniform</p>
+<ul>
+<li>Any of the values in the interval of a to b are equally likely</li>
+</ul>
+</li>
+<li>
+<p>Gaussian</p>
+<ul>
+<li>Commonly occurring distribution shaped like a bell curve</li>
+<li>Often comes up because of the Central Limit Theorem (to be discussed later)</li>
+</ul>
+</li>
+<li>
+<p>Exponential</p>
+<ul>
+<li>Model time between Poisson events</li>
+<li>Events occur continuously and independently</li>
+</ul>
+</li>
+</ul>
+<p>Some of our questions involved being given examples and identify the distribution that describes it.</p>
+<p>Often we have to identify what distribution we should use to model a real-life
+situation. This exercise is designed to equip you with the ability to do so.</p>
+<p>*. A typist makes on average 2 mistakes per page.  What is the probability of a particular page having no errors on it?</p>
+<p>$$X = Poisson(\lambda = 2 \frac{mistakes}{page})$$</p>
+<div class="highlight"><pre><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="kn">as</span> <span class="nn">sc</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="kp">poisson</span><span class="o">.</span><span class="n">pmf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;Number of Mistakes on a Page&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;Probability&quot;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;Prob of No Mistakes: &quot;</span><span class="p">,</span> <span class="n">sc</span><span class="o">.</span><span class="kp">poisson</span><span class="o">.</span><span class="n">pmf</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">Prob</span> <span class="n">of</span> <span class="n">No</span> <span class="n">Mistakes</span><span class="p">:</span>  <span class="mf">0.135335283237</span>
+<span class="mf">0.135335283237</span>
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW2D1/output_24_1.png" /></p>
+<p>*. Components are packed in boxes of 20. The probability of a component being
+   defective is 0.1.  What is the probability of a box containing 2 defective components?</p>
+<p>$$ X = Binomial(p=0.1,k=2,n=20) $$</p>
+<div class="highlight"><pre>x = np.arange(20)
+y = sc.binom.pmf(x,20,.1)
+plt.bar(x,y,color=&#39;red&#39;,alpha=.2)
+plt.xlabel(&quot;Number of Defective Components&quot;)
+plt.ylabel(&quot;Probability&quot;)
+print &quot;Prob of 2 Defects: &quot;, sc.binom.pmf(2,20,.1)
+
+Prob of 2 Defects:  0.285179807064
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW2D1/output_26_1.png" /></p>
+<p>*. Patrons arrive at a local bar at a mean rate of 30 per hour.  What is the probability that the bouncer has to wait more than 3 minutes to card the next patron?</p>
+<p>$$X = Exponential(\lambda = .5 \frac{cards}{minute})$$</p>
+<p>$$ P(t \ &gt; \ 3min) = \int_{t=3}^{t=\infty} Exponential(\lambda = .5 \frac{cards}{minute}) $$</p>
+<div class="highlight"><pre>print &quot;Answer: &quot;, sc.expon.cdf(1e10,scale=0.5)-sc.expon.cdf(3,scale=0.5)
+
+
+ Anser:  0.00247875217667
+
+
+
+x = np.linspace(0,5,1000)
+y = sc.expon.pdf(x,scale = 0.5)
+plt.figure()
+plt.plot(x,y)
+plt.xlabel(&quot;Minutes&quot;)
+plt.ylabel(&quot;Probability Density&quot;)
+plt.ylim([0,0.1])
+d = np.zeros(len(y))
+plt.fill_between(x, y, where=x&gt;=3, interpolate=True, color=&#39;blue&#39;,alpha=0.4)
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW2D1/output_29_0.png" /></p>
+<p>*. A variable is normally distributed with a mean of 120 and a standard
+   deviation of 5. One score is randomly sampled. What is the probability the score is above 127?</p>
+<p>$$Z = (127-120)/5 = 7/5 = 1.4$$</p>
+<p>$$P(Z&gt;1.4) = 1 - .91924 \ \mbox{(area to left)}$$</p>
+<div class="highlight"><pre>x = np.linspace(100,140,1000)
+y = sc.norm.pdf(x,loc=120,scale=5)
+plt.figure()
+plt.plot(x,y)
+plt.xlabel(&quot;Variable Value&quot;)
+plt.ylabel(&quot;Probability Density&quot;)
+d = np.zeros(len(y))
+plt.fill_between(x, y, where=x&gt;=127, interpolate=True, color=&#39;blue&#39;,alpha=0.4)
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW2D1/output_31_0.png" /></p>
+<p>*. You need to find a tall person, at least 6 feet tall, to help you reach
+   a cookie jar. 8% of the population is 6 feet or taller.  If you wait on the sidewalk, how many people would you expect to have passed you by before you'd have a candidate to reach the jar?</p>
+<p>$$X = Geometric(p=0.08)$$</p>
+<p>$$average = \frac{1}{p} = \frac{1}{0.08} = 12.5$$</p>
+<p>We round up - 13th person is expected to be it - 12 people pass.</p>
+<div class="highlight"><pre>x = np.arange(40)
+y = sc.geom.pmf(x,.08)
+plt.bar(x,y,color=&#39;red&#39;,alpha=.2)
+plt.xlabel(&quot;Number of People&quot;)
+plt.ylabel(&quot;Probability Person is Above 6ft&quot;)
+
+
+
+
+&lt;matplotlib.text.Text at 0x106020790&gt;
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW2D1/output_33_1.png" /></p>
+<div class="highlight"><pre>x = np.arange(40)
+y = sc.geom.cdf(x,.08)
+plt.bar(x,y,color=&#39;red&#39;,alpha=.2)
+plt.xlabel(&quot;Number of People&quot;)
+plt.ylabel(&quot;Cumlative Probability Person is Above 6ft&quot;)
+
+
+
+
+&lt;matplotlib.text.Text at 0x106451c50&gt;
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW2D1/output_34_1.png" /></p>
+<ol>
+<li>A harried passenger will be several minutes late for a scheduled 10 A.M.
+   flight to NYC. Nevertheless, he might still make the flight, since boarding
+   is always allowed until 10:10 A.M., and boarding is sometimes
+   permitted up to 10:30 AM.</li>
+</ol>
+<p>Assuming the extended boarding time is <strong>uniformly distributed</strong> over the above
+   limits, find the probability that the passenger will make his flight,
+   assuming he arrives at the boarding gate at 10:25.</p>
+<p>$$X = Uniform(0,30)$$</p>
+<p>$$P( x &gt; 25 ) = \int_{25}^{30} \frac{dx}{30}$$</p>
+<div class="highlight"><pre>print &quot;Answer: &quot;, 5./30
+
+Answer:  0.166666666667
+
+
+
+x = np.linspace(0,30,1000)
+y = sc.uniform.pdf(x,loc=0,scale=30)
+plt.figure()
+plt.plot(x,y)
+plt.xlabel(&quot;Minutes Late&quot;)
+plt.ylabel(&quot;Probability Density&quot;)
+d = np.zeros(len(y))
+plt.fill_between(x, y, where=x&gt;=25, interpolate=True, color=&#39;blue&#39;,alpha=0.4)
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW2D1/output_37_0.png" /></p>
+<h2>Covariance and Joint Distribution</h2>
+<p>Suppose a university wants to look for factors that are correlated with the GPA of the students that they
+are going to admit. </p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="n">admissions</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;../probability/data/admissions.csv&#39;</span><span class="p">)</span>
+<span class="n">addmissions</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>family_income</th>
+      <th>gpa</th>
+      <th>parent_avg_age</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>31402</td>
+      <td>3.18</td>
+      <td>32</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>32247</td>
+      <td>2.98</td>
+      <td>48</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>34732</td>
+      <td>2.85</td>
+      <td>61</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>53759</td>
+      <td>3.39</td>
+      <td>62</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>50952</td>
+      <td>3.10</td>
+      <td>45</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<ul>
+<li>
+<p>Implement a <code>covariance</code> function and compute the covariance matrix of the dataframe. Check your results 
+   with <code>df.cov()</code>. Make sure you understand what each of the numbers in the matrix represents</p>
+<p>def make_cov(df):
+    N = len(df)
+    cols = df.columns
+    return [[(df[x]<em>df[y]).sum()/(N)-(df[x].sum()</em>df[y].sum())/(N**2) for y in cols] for x in cols]</p>
+<p>from pprint import pprint
+pprint (make_cov(addmissions))</p>
+<p>[[332910756.59847927, 4014.9337921708066, -1226.2147143883631],
+ [4014.9337921708066, 0.087883196618951942, -0.028782641179958546],
+ [-1226.2147143883631, -0.028782641179958546, 112]]</p>
+<p>addmissions.cov()</p>
+</li>
+</ul>
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>family_income</th>
+      <th>gpa</th>
+      <th>parent_avg_age</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>family_income</th>
+      <td>3.329410e+08</td>
+      <td>4015.299085</td>
+      <td>-1226.326280</td>
+    </tr>
+    <tr>
+      <th>gpa</th>
+      <td>4.015299e+03</td>
+      <td>0.087891</td>
+      <td>-0.028785</td>
+    </tr>
+    <tr>
+      <th>parent_avg_age</th>
+      <td>-1.226326e+03</td>
+      <td>-0.028785</td>
+      <td>112.977442</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<ul>
+<li>
+<p>Implement a <code>normalize</code> function that would compute the correlation matrix from the covariance matrix.
+   Check your results with <code>df.corr()</code></p>
+<p>def make_corr(df):
+    N = len(df)
+    cols = df.columns
+    return [[((df[x]<em>df[y]).sum()/(N)-(df[x].sum()</em>df[y].sum())/(N**2))/(df[x].std() * df[y].std()) for y in cols] for x in cols]</p>
+<p>pprint (make_corr(addmissions))</p>
+<p>[[0.99990902474526921, 0.74220186205662952, -0.0063224730309758576],
+ [0.74220186205662952, 0.99990902474528243, -0.0091340229188836969],
+ [-0.0063224730309758576, -0.0091340229188836969, 0.99134834685640671]]</p>
+<p>addmissions.corr()</p>
+</li>
+</ul>
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>family_income</th>
+      <th>gpa</th>
+      <th>parent_avg_age</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>family_income</th>
+      <td>1.000000</td>
+      <td>0.742269</td>
+      <td>-0.006323</td>
+    </tr>
+    <tr>
+      <th>gpa</th>
+      <td>0.742269</td>
+      <td>1.000000</td>
+      <td>-0.009135</td>
+    </tr>
+    <tr>
+      <th>parent_avg_age</th>
+      <td>-0.006323</td>
+      <td>-0.009135</td>
+      <td>1.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<ul>
+<li>You should identify <code>family_income</code> as being the most correlated with GPA. The university wants to make
+   an effort to make sure people of all family income are being fairly represented in the admissions process.
+   In order to achieve that, different GPA thresholds will be set according to family income. </li>
+</ul>
+<p>The low, medium and high family income groups are <code>0 to 26832</code>, <code>26833 to 37510</code> and <code>37511 to 51112</code> respectively. 
+   Implement a function that would plot the distribution of GPA scores for each family income category. These are the 
+   conditional probability distributions of <code>gpa</code> given certain levels of <code>family_income</code>.</p>
+<div class="highlight"><pre>def make_hist(df):
+    low = df[df.family_income &lt;= 26832]
+    med = df[(df.family_income &gt; 26832) &amp; (df.family_income &lt;= 37519)]
+    high = df[(df.family_income &gt; 37519) &amp; (df.family_income &lt;= 51112)]
+    low.gpa.plot(kind=&quot;kde&quot;, color=&quot;blue&quot;,label=&#39;Low Income&#39;)
+    med.gpa.plot(kind=&quot;kde&quot;, color=&quot;green&quot;,label=&#39;Medium Income&#39;)
+    high.gpa.plot(kind=&quot;kde&quot;, color=&quot;red&quot;,label=&#39;High Income&#39;)
+    plt.xlim([2.0, 4.0])
+    plt.legend()
+    plt.show()
+
+make_hist(addmissions)
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW2D1/output_47_0.png" /></p>
+<ul>
+<li>
+<p>If the university decides to accept students with GPA above the 90th percentile within the respective family 
+   income categories, what are the GPA thresholds for each of the categories?</p>
+<p>low = addmissions[addmissions.family_income &lt;= 26832]
+med = addmissions[(addmissions.family_income &gt; 26832) &amp; (addmissions.family_income &lt;= 37519)]
+high = addmissions[(addmissions.family_income &gt; 37519) &amp; (addmissions.family_income &lt;= 51112)]
+print "Low 90th Percentile", low.gpa.quantile(.9)
+print "Medium 90th Percentile", med.gpa.quantile(.9)
+print "High 90th Percentile", high.gpa.quantile(.9)</p>
+<p>Low 90th Percentile 3.01
+Medium 90th Percentile 3.26
+High 90th Percentile 3.36</p>
+</li>
+</ul>
+<h2>Pearson Correlation vs Spearman Correlation</h2>
+<p>The Pearson correlation evaluates the linear relationship between two continuous 
+variables. The Spearman correlation evaluates the monotonic relationship between two continuous or ordinal variables
+without assuming linearity of the variables. Spearman correlation is often more robust in capturing non-linear relationship
+between variables.</p>
+<ul>
+<li>
+<p>In addition to the <code>family_income</code> and <code>parent_avg_age</code>, you are also given data about the number of hours the 
+   students studied. Load the new data in from <code>data/admissions_with_study_hrs_and_sports.csv</code>.</p>
+<p>studydf = pd.read_csv('../probability/data/admissions_with_study_hrs_and_sports.csv')
+studydf.head()</p>
+</li>
+</ul>
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>family_income</th>
+      <th>gpa</th>
+      <th>family_income_cat</th>
+      <th>parent_avg_age</th>
+      <th>hrs_studied</th>
+      <th>sport_performance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>31402</td>
+      <td>3.18</td>
+      <td>medium</td>
+      <td>32</td>
+      <td>49.463745</td>
+      <td>0.033196</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>32247</td>
+      <td>2.98</td>
+      <td>medium</td>
+      <td>48</td>
+      <td>16.414467</td>
+      <td>0.000317</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>34732</td>
+      <td>2.85</td>
+      <td>medium</td>
+      <td>61</td>
+      <td>4.937079</td>
+      <td>0.021845</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>53759</td>
+      <td>3.39</td>
+      <td>high</td>
+      <td>62</td>
+      <td>160.210286</td>
+      <td>0.153819</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>50952</td>
+      <td>3.10</td>
+      <td>medium</td>
+      <td>45</td>
+      <td>36.417860</td>
+      <td>0.010444</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<ul>
+<li>
+<p>Make a scatter plot of the <code>gpa</code> against <code>hrs_studied</code>. Make the points more transperant so you can see the density
+   of the points. Use the following command get the slope and intercept of a straight line to fit the data.</p>
+<p>slope, intercept, r_value, p_value, std_err = sc.linregress(studydf.gpa,studydf.hrs_studied)
+print slope, intercept, r_value, p_value
+x = np.linspace(studydf.gpa.min(),studydf.gpa.max(),100)
+y = slope*x+intercept</p>
+<p>studydf.plot(kind='scatter',x='gpa',y='hrs_studied',alpha=0.01)
+plt.plot(x,y,color='red')
+plt.xlabel("GPA")
+plt.ylabel("Hours Studied")
+plt.show()</p>
+<p>494.329335528 -1400.63719543 0.475940264662 0.0</p>
+</li>
+</ul>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW2D1/output_53_1.png" /></p>
+<ul>
+<li>
+<p>Use the functions <code>scipy.stats.pearsonr</code> and <code>scipy.stats.spearmanr</code> to compute the Pearson and Spearman correlation</p>
+<p>print sc.pearsonr(studydf.gpa,studydf.hrs_studied)
+print sc.spearmanr(studydf.gpa,studydf.hrs_studied)</p>
+<p>(0.47594026466220946, 0.0)
+(0.98495916559333341, 0.0)</p>
+</li>
+</ul>
+<p>Repeat step <code>2</code> and <code>3</code> for <code>gpa</code> and <code>sport_performance</code>. Is there a strong relationship between the two variables?</p>
+<div class="highlight"><pre>slope, intercept, r_value, p_value, std_err = sc.linregress(studydf.gpa,studydf.sport_performance)
+print slope, intercept, r_value, p_value
+x = np.linspace(studydf.gpa.min(),studydf.gpa.max(),100)
+y = slope*x+intercept
+
+studydf.plot(kind=&#39;scatter&#39;,x=&#39;gpa&#39;,y=&#39;sport_performance&#39;,alpha=0.1)
+plt.plot(x,y,color=&#39;black&#39;)
+plt.show()
+
+0.00979813693421 0.0585103217504 0.0238485969548 0.0124044928587
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW2D1/output_57_1.png" /></p>
+<div class="highlight"><pre>print sc.pearsonr(studydf.gpa,studydf.sport_performance)
+print sc.spearmanr(studydf.gpa,studydf.sport_performance)
+
+(0.023848596954761905, 0.012404492858691094)
+(0.0022881402736224248, 0.81043264616449484)
+
+
+
+temp = studydf[studydf.gpa &gt; 3.0]
+slope, intercept, r_value, p_value, std_err = sc.linregress(temp.gpa,temp.sport_performance)
+print slope, intercept, r_value, p_value
+x = np.linspace(temp.gpa.min(),temp.gpa.max(),100)
+y = slope*x+intercept
+
+temp.plot(kind=&#39;scatter&#39;,x=&#39;gpa&#39;,y=&#39;sport_performance&#39;,alpha=0.1)
+plt.plot(x,y,color=&#39;black&#39;)
+plt.show()
+print sc.pearsonr(temp.gpa,temp.sport_performance)
+print sc.spearmanr(temp.gpa,temp.sport_performance)
+
+0.65608660543 -2.03523616554 0.945140987506 0.0
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW2D1/output_59_1.png" /></p>
+<div class="highlight"><pre>(0.94514098750633013, 0.0)
+(1.0, 0.0)
+</pre></div>
+
+
+<h2>Part 4: Distribution Simulation</h2>
+<p>Often times in real life applications, we can specify the values of a variable to be of a particular distribution,
+for example the number of sales made in the next month can be modeled as a uniform distribution over the range of
+5000 and 6000.</p>
+<p>In this scenario, we are modeling <code>profit</code> as a product of <code>number of views</code>, <code>conversion</code> and <code>profit per sale</code>,
+where <code>number of views</code>, <code>conversion</code> and <code>profit per sale</code> can be modeled as probabilistic distributions.
+By randomly drawing values from these distributions, we are able to get a distribution of the range of <code>profit</code> 
+based on the uncertainties in the other variables.</p>
+<p><code>Profit = Number of views * Conversion * Profit per sale</code></p>
+<p>Assumptions:
+- <code>Number of views</code> is a uniform distribution over the range of 5000 and 6000
+- <code>Conversion is a binomial distribution where the probability of success is</code>0.12<code>for each sale among the</code>Number on views made 
+- <code>Profit per sale</code> has <code>0.2</code> probability of taking the value <code>50</code> (for wholesale) and <code>0.8</code> of 
+  taking the value <code>60</code> (non-wholesale)</p>
+<ul>
+<li>
+<p>Given the distributions of each of variables, use scipy to write a function that would draw random values from each of the distributions to simulate a distribution for <code>profit</code></p>
+<p>def get_profit():
+    num_views = np.round(sc.uniform.rvs(loc=5000,scale=1000,size=1),0)
+    conversions = sc.binom.rvs(num_views,0.12)
+    wholesale = sc.binom.rvs(conversions,0.2)
+    return wholesale<em>50+(conversions-wholesale)</em>60</p>
+<p>profits = np.array([get_profit() for i in xrange(100000)])
+plt.hist(profits)
+plt.show()
+print "Low: ",np.percentile(profits,2.5)
+print "High: ",np.percentile(profits,97.5)</p>
+</li>
+</ul>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW2D1/output_61_0.png" /></p>
+<div class="highlight"><pre><span class="n">Low</span><span class="o">:</span>  <span class="mf">33800.0</span>
+<span class="n">High</span><span class="o">:</span>  <span class="mf">42920.0</span>
+</pre></div>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'bryansmithphd';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=bryansmithphd">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      Bryan Smith, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="http://www.bryantravissmith.com/theme/js/jquery.min.js"></script>
+  <script src="http://www.bryantravissmith.com/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+
+</html>

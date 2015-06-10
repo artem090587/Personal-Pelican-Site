@@ -1,5 +1,743 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Bryan Travis Smith, Ph.D</title><link href="http://www.bryantravissmith.com/" rel="alternate"></link><link href="http://www.bryantravissmith.com/feeds/galvanize.atom.xml" rel="self"></link><id>http://www.bryantravissmith.com/</id><updated>2015-06-05T10:30:00-07:00</updated><entry><title>Galvanize - Week 01 - Day 5</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-01-05/" rel="alternate"></link><updated>2015-06-05T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-05:galvanize/galvanize-data-science-01-05/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Bryan Travis Smith, Ph.D</title><link href="http://www.bryantravissmith.com/" rel="alternate"></link><link href="http://www.bryantravissmith.com/feeds/galvanize.atom.xml" rel="self"></link><id>http://www.bryantravissmith.com/</id><updated>2015-06-08T10:30:00-07:00</updated><entry><title>Galvanize - Week 02 - Day 1</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-02-01/" rel="alternate"></link><updated>2015-06-08T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-08:galvanize/galvanize-data-science-02-01/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
+&lt;h2&gt;Week 2 - Day 1&lt;/h2&gt;
+&lt;p&gt;Since this is the first day of the week we started with an hour long assessment on what we did last week.  The assessment was straight forward, and very doable with a modest understanding of the previous material.   &lt;/p&gt;
+&lt;p&gt;After the test, we started a lecture on probability, which we finished in the afternoon.  There was the individual sprint after the morning lecture, and a paired spring as the afternoon lecture&lt;/p&gt;
+&lt;h2&gt;Conditional Probabilities&lt;/h2&gt;
+&lt;p&gt;We started with some simple questions like the following:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Suppose two cards are drawn from a standard 52 card deck.  What's the probability that the first is a queen and the second is a king?&lt;/p&gt;
+&lt;p&gt;$$P\left(Q\right) = \frac{4}{52}$$&lt;/p&gt;
+&lt;p&gt;$$P\left(K,Q\right) = P\left(K|Q\right)*P\left(Q\right) = \frac{4}{51} * \frac{4}{52} = \frac{16}{2652}$$&lt;/p&gt;
+&lt;p&gt;print "Answer: ", 16./2652&lt;/p&gt;
+&lt;p&gt;Answer:  0.00603318250377&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;What's the probability that both cards are queens?&lt;/p&gt;
+&lt;p&gt;$$P\left(Q\right) = \frac{4}{52}$$&lt;/p&gt;
+&lt;p&gt;$$P\left(Q,Q\right) = P\left(Q|Q\right)*P\left(Q\right) = \frac{3}{51} * \frac{4}{52} = \frac{12}{2652}$$&lt;/p&gt;
+&lt;p&gt;print "Answer: ", 12./2652&lt;/p&gt;
+&lt;p&gt;Answer:  0.00452488687783&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Suppose that before the second card was drawn, the first was inserted back into the deck and the deck reshuffled. What's the probability that both cards are queens?&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;$$P\left(Q\right) = \frac{4}{52}$$&lt;/p&gt;
+&lt;p&gt;$$P\left(Q,Q\right) = P\left(Q\right)*P\left(Q\right) = \frac{4}{52} * \frac{4}{52} = \frac{16}{2705}$$&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;print &amp;quot;Answer: &amp;quot;, 16./2705
+
+Answer:  0.00591497227357
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;We had similar questions about tables of data:&lt;/p&gt;
+&lt;p&gt;A Store Manager wants to understand how his customers use different payment methods, and suspects that the size of the purchase is a major deciding factor. He organizes the table below.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;th align="right"&gt;Cash&lt;/th&gt;
+&lt;th align="right"&gt;Debit&lt;/th&gt;
+&lt;th align="right"&gt;Credit&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Under 20&lt;/td&gt;
+&lt;td align="right"&gt;400&lt;/td&gt;
+&lt;td align="right"&gt;150&lt;/td&gt;
+&lt;td align="right"&gt;150&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;20 - 50&lt;/td&gt;
+&lt;td align="right"&gt;200&lt;/td&gt;
+&lt;td align="right"&gt;1200&lt;/td&gt;
+&lt;td align="right"&gt;800&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Over 50&lt;/td&gt;
+&lt;td align="right"&gt;100&lt;/td&gt;
+&lt;td align="right"&gt;600&lt;/td&gt;
+&lt;td align="right"&gt;1400&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Given that a customer spent over $50, what's the probability that the customer used a credit card?&lt;/p&gt;
+&lt;p&gt;$$P\left(C|S&amp;gt;$50\right) = \frac{1400}{100+600+1400}$$ &lt;/p&gt;
+&lt;p&gt;print "Answer: ", 1400./(100+600+1400)&lt;/p&gt;
+&lt;p&gt;Answer:  0.666666666667&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Given that a customer paid in cash, what's the probability that the customer spent less than $20?&lt;/p&gt;
+&lt;p&gt;$$P\left(S&amp;lt;20|Cash\right) = \frac{400}{400+200+100}$$&lt;/p&gt;
+&lt;p&gt;print "Answer: ", 400./(400+200+100)&lt;/p&gt;
+&lt;p&gt;Answer:  0.571428571429&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;What's the probability that a customer spent under $20 using cash?&lt;/p&gt;
+&lt;p&gt;$$P\left(S &amp;lt; $20,Cash\right) = \frac{400}{400+150+150+200+1200+800+100+600+1400}$$&lt;/p&gt;
+&lt;p&gt;print "Answer: ", 400./(400+150+150+200+1200+800+100+600+1400)&lt;/p&gt;
+&lt;p&gt;Answer:  0.08&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We also had a question about job offers - something near and dear to our hearts:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;A gSchool grad is looking for her first job!  Given that she is freaked out, her chances of not getting an offer are 70%.  Given that she isn't freaked out, her chances of not getting an offer are 30%.  Suppose that the probability that she's freaked out is 80%. What's the probability that she gets an offer?&lt;/p&gt;
+&lt;p&gt;$$P\left(Offer|Freak Out\right) = 0.7$$  &lt;/p&gt;
+&lt;p&gt;$$P\left(Offer|No Freak Oout\right) = 0.3$$&lt;/p&gt;
+&lt;p&gt;$$P\left(Freak Out\right) = 0.8$$&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;$$ P\left(A\right) = \Sigma_{B} P\left(A|B\right) $$&lt;/p&gt;
+&lt;p&gt;$$ P\left(Offer\right) = P\left(Offer|Freak Out\right) * P\left(Freak Out\right) + P\left(Offer|No Freak Out\right) * P\left(No Freak Out\right)$$&lt;/p&gt;
+&lt;p&gt;$$P\left(Offer\right) = 0.7 * 0.8 + 0.3 * 0.2$$ &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;print &amp;quot;Answer: &amp;quot;, 0.7 * 0.8 + 0.3 * 0.2
+
+Answer:  0.62
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;We also tackled the deep issue go heroin use at Google: &lt;/p&gt;
+&lt;p&gt;*. Google decides to do random drug tests for heroin on their employees.
+   They know that 3% of their population uses heroin. The drug test has the
+   following accuracy: The test correctly identifies 95% of the
+   heroin users (sensitivity) and 90% of the non-users (specificity).&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Test Results&lt;/th&gt;
+&lt;th&gt;Uses heroin&lt;/th&gt;
+&lt;th&gt;Doesn't use heroin&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Tests positive&lt;/td&gt;
+&lt;td&gt;0.95&lt;/td&gt;
+&lt;td&gt;0.10&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Tests negative&lt;/td&gt;
+&lt;td&gt;0.05&lt;/td&gt;
+&lt;td&gt;0.90&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Alice gets tested and the test comes back positive. What is the probability
+   that she uses heroin?&lt;/p&gt;
+&lt;p&gt;$$P(Heroin \ | \ Positive Test) = \frac{P(Positive Test|Heroin) P(Heroin)}{P(Positive Test)}$$&lt;/p&gt;
+&lt;p&gt;$$P(Heroin \ | \ Positive Test) = \frac{P(Positive Test|Heroin) P(Heroin)}{P(Positive Test|Heroin) P(Heroin) + P(Positive Test|No Heroin) P(No Heroin)}$$ &lt;/p&gt;
+&lt;p&gt;$$ = \frac{0.95 \ 0.03}{0.95 \ 0.03 + 0.1 \ 0.97}$$&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;print &amp;quot;Answer: &amp;quot;, 0.95*0.03/(0.95*0.03 + 0.1*0.97)
+
+Answer:  0.227091633466
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Finally we had the manditory birthday problem:   &lt;/p&gt;
+&lt;p&gt;*The Birthday Problem.  Suppose there are 23 people in a data science class, lined up in a single file line.&lt;br /&gt;
+Let A_i be the probability that the i'th person doesn't have the same birthday as the j'th person for any j &amp;lt; i.&lt;br /&gt;
+Use the chain rule from probability to calculate the probability that at least 2 people share the same birthday. &lt;/p&gt;
+&lt;p&gt;$$P(1,2,3,...,23) = \mbox{Probability that 23 people do not have the same birthday}$$&lt;/p&gt;
+&lt;p&gt;$$P( \ 1, \ 2, \ 3, \ ..., \ 23) = P(1) \ P(2|1) \ P(3 \ | \ 2 \ , \ 1) \ ... \ P(23|22 \ , \ ... \ , \ 2, \ 1)$$&lt;/p&gt;
+&lt;p&gt;Given that 2 people don't have the same birthday, there are 363 days that are not taken that a new person could have:&lt;/p&gt;
+&lt;p&gt;$$P(3|2,1) = \frac{363}{365}$$&lt;/p&gt;
+&lt;p&gt;Similarly, given that 3 people don't have the same birthday, then there are 362 days not occupied:&lt;/p&gt;
+&lt;p&gt;$$P(4|3,2,1) = \frac{362}{365}$$&lt;/p&gt;
+&lt;p&gt;Extending this to the problem we have the probability of no matching birthdays being &lt;/p&gt;
+&lt;p&gt;$$P( \ 1, \ 2,\ 3, \ ..., \ 23) = \frac{1 \ 364 \ 363 \ ... \ (365-23)}{365^{23}}$$&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;def bday(N=23):
+    prob = 1
+    for i in range(1,N+1):
+        prob = prob*(365.0-i+1)/365.
+    return prob
+
+print bday()
+
+0.492702765676
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The probability of having 2 or more matches is us the inverse of this&lt;/p&gt;
+&lt;p&gt;$$P(Matches &amp;gt;= 2| \ 23) = 1 - P(No Maches|23)$$&lt;/p&gt;
+&lt;p&gt;$$P(Matches &amp;gt;= 2| \ 23) = 1-0.4927$$&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;print &amp;quot;Answer: &amp;quot;, round(100-100*bday(),1)
+
+Answer:  50.7
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Distributions&lt;/h2&gt;
+&lt;p&gt;The afternoon paired programming assignment involved developing an intuition for and using various distributions.&lt;/p&gt;
+&lt;h3&gt;Discrete:&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Bernoulli&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Model one instance of a success or failure trial (p)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Binomial&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Number of successes out of a number of trials (n), each with probability of success (p)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Poisson&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Model the number of events occurring in a fixed interval&lt;/li&gt;
+&lt;li&gt;Events occur at an average rate (lambda) independently of the last event&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Geometric&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Sequence of Bernoulli trials until first success (p)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Continuous:&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Uniform&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Any of the values in the interval of a to b are equally likely&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Gaussian&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Commonly occurring distribution shaped like a bell curve&lt;/li&gt;
+&lt;li&gt;Often comes up because of the Central Limit Theorem (to be discussed later)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Exponential&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Model time between Poisson events&lt;/li&gt;
+&lt;li&gt;Events occur continuously and independently&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Some of our questions involved being given examples and identify the distribution that describes it.&lt;/p&gt;
+&lt;p&gt;Often we have to identify what distribution we should use to model a real-life
+situation. This exercise is designed to equip you with the ability to do so.&lt;/p&gt;
+&lt;p&gt;*. A typist makes on average 2 mistakes per page.  What is the probability of a particular page having no errors on it?&lt;/p&gt;
+&lt;p&gt;$$X = Poisson(\lambda = 2 \frac{mistakes}{page})$$&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;matplotlib&lt;/span&gt; &lt;span class="n"&gt;inline&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;matplotlib.pyplot&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;plt&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;scipy.stats&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;sc&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;numpy&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;np&lt;/span&gt;
+
+
+&lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kp"&gt;array&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="n"&gt;y&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sc&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kp"&gt;poisson&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;pmf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;bar&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;xlabel&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Number of Mistakes on a Page&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ylabel&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Probability&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Prob of No Mistakes: &amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;sc&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kp"&gt;poisson&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;pmf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;Prob&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="n"&gt;No&lt;/span&gt; &lt;span class="n"&gt;Mistakes&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;  &lt;span class="mf"&gt;0.135335283237&lt;/span&gt;
+&lt;span class="mf"&gt;0.135335283237&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW2D1/output_24_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;*. Components are packed in boxes of 20. The probability of a component being
+   defective is 0.1.  What is the probability of a box containing 2 defective components?&lt;/p&gt;
+&lt;p&gt;$$ X = Binomial(p=0.1,k=2,n=20) $$&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;x = np.arange(20)
+y = sc.binom.pmf(x,20,.1)
+plt.bar(x,y,color=&amp;#39;red&amp;#39;,alpha=.2)
+plt.xlabel(&amp;quot;Number of Defective Components&amp;quot;)
+plt.ylabel(&amp;quot;Probability&amp;quot;)
+print &amp;quot;Prob of 2 Defects: &amp;quot;, sc.binom.pmf(2,20,.1)
+
+Prob of 2 Defects:  0.285179807064
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW2D1/output_26_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;*. Patrons arrive at a local bar at a mean rate of 30 per hour.  What is the probability that the bouncer has to wait more than 3 minutes to card the next patron?&lt;/p&gt;
+&lt;p&gt;$$X = Exponential(\lambda = .5 \frac{cards}{minute})$$&lt;/p&gt;
+&lt;p&gt;$$ P(t \ &amp;gt; \ 3min) = \int_{t=3}^{t=\infty} Exponential(\lambda = .5 \frac{cards}{minute}) $$&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;print &amp;quot;Answer: &amp;quot;, sc.expon.cdf(1e10,scale=0.5)-sc.expon.cdf(3,scale=0.5)
+
+
+ Anser:  0.00247875217667
+
+
+
+x = np.linspace(0,5,1000)
+y = sc.expon.pdf(x,scale = 0.5)
+plt.figure()
+plt.plot(x,y)
+plt.xlabel(&amp;quot;Minutes&amp;quot;)
+plt.ylabel(&amp;quot;Probability Density&amp;quot;)
+plt.ylim([0,0.1])
+d = np.zeros(len(y))
+plt.fill_between(x, y, where=x&amp;gt;=3, interpolate=True, color=&amp;#39;blue&amp;#39;,alpha=0.4)
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW2D1/output_29_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;*. A variable is normally distributed with a mean of 120 and a standard
+   deviation of 5. One score is randomly sampled. What is the probability the score is above 127?&lt;/p&gt;
+&lt;p&gt;$$Z = (127-120)/5 = 7/5 = 1.4$$&lt;/p&gt;
+&lt;p&gt;$$P(Z&amp;gt;1.4) = 1 - .91924 \ \mbox{(area to left)}$$&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;x = np.linspace(100,140,1000)
+y = sc.norm.pdf(x,loc=120,scale=5)
+plt.figure()
+plt.plot(x,y)
+plt.xlabel(&amp;quot;Variable Value&amp;quot;)
+plt.ylabel(&amp;quot;Probability Density&amp;quot;)
+d = np.zeros(len(y))
+plt.fill_between(x, y, where=x&amp;gt;=127, interpolate=True, color=&amp;#39;blue&amp;#39;,alpha=0.4)
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW2D1/output_31_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;*. You need to find a tall person, at least 6 feet tall, to help you reach
+   a cookie jar. 8% of the population is 6 feet or taller.  If you wait on the sidewalk, how many people would you expect to have passed you by before you'd have a candidate to reach the jar?&lt;/p&gt;
+&lt;p&gt;$$X = Geometric(p=0.08)$$&lt;/p&gt;
+&lt;p&gt;$$average = \frac{1}{p} = \frac{1}{0.08} = 12.5$$&lt;/p&gt;
+&lt;p&gt;We round up - 13th person is expected to be it - 12 people pass.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;x = np.arange(40)
+y = sc.geom.pmf(x,.08)
+plt.bar(x,y,color=&amp;#39;red&amp;#39;,alpha=.2)
+plt.xlabel(&amp;quot;Number of People&amp;quot;)
+plt.ylabel(&amp;quot;Probability Person is Above 6ft&amp;quot;)
+
+
+
+
+&amp;lt;matplotlib.text.Text at 0x106020790&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW2D1/output_33_1.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;x = np.arange(40)
+y = sc.geom.cdf(x,.08)
+plt.bar(x,y,color=&amp;#39;red&amp;#39;,alpha=.2)
+plt.xlabel(&amp;quot;Number of People&amp;quot;)
+plt.ylabel(&amp;quot;Cumlative Probability Person is Above 6ft&amp;quot;)
+
+
+
+
+&amp;lt;matplotlib.text.Text at 0x106451c50&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW2D1/output_34_1.png" /&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;A harried passenger will be several minutes late for a scheduled 10 A.M.
+   flight to NYC. Nevertheless, he might still make the flight, since boarding
+   is always allowed until 10:10 A.M., and boarding is sometimes
+   permitted up to 10:30 AM.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Assuming the extended boarding time is &lt;strong&gt;uniformly distributed&lt;/strong&gt; over the above
+   limits, find the probability that the passenger will make his flight,
+   assuming he arrives at the boarding gate at 10:25.&lt;/p&gt;
+&lt;p&gt;$$X = Uniform(0,30)$$&lt;/p&gt;
+&lt;p&gt;$$P( x &amp;gt; 25 ) = \int_{25}^{30} \frac{dx}{30}$$&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;print &amp;quot;Answer: &amp;quot;, 5./30
+
+Answer:  0.166666666667
+
+
+
+x = np.linspace(0,30,1000)
+y = sc.uniform.pdf(x,loc=0,scale=30)
+plt.figure()
+plt.plot(x,y)
+plt.xlabel(&amp;quot;Minutes Late&amp;quot;)
+plt.ylabel(&amp;quot;Probability Density&amp;quot;)
+d = np.zeros(len(y))
+plt.fill_between(x, y, where=x&amp;gt;=25, interpolate=True, color=&amp;#39;blue&amp;#39;,alpha=0.4)
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW2D1/output_37_0.png" /&gt;&lt;/p&gt;
+&lt;h2&gt;Covariance and Joint Distribution&lt;/h2&gt;
+&lt;p&gt;Suppose a university wants to look for factors that are correlated with the GPA of the students that they
+are going to admit. &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
+&lt;span class="n"&gt;admissions&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read_csv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;../probability/data/admissions.csv&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;addmissions&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;head&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;family_income&lt;/th&gt;
+      &lt;th&gt;gpa&lt;/th&gt;
+      &lt;th&gt;parent_avg_age&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;31402&lt;/td&gt;
+      &lt;td&gt;3.18&lt;/td&gt;
+      &lt;td&gt;32&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;32247&lt;/td&gt;
+      &lt;td&gt;2.98&lt;/td&gt;
+      &lt;td&gt;48&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;34732&lt;/td&gt;
+      &lt;td&gt;2.85&lt;/td&gt;
+      &lt;td&gt;61&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;53759&lt;/td&gt;
+      &lt;td&gt;3.39&lt;/td&gt;
+      &lt;td&gt;62&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;50952&lt;/td&gt;
+      &lt;td&gt;3.10&lt;/td&gt;
+      &lt;td&gt;45&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Implement a &lt;code&gt;covariance&lt;/code&gt; function and compute the covariance matrix of the dataframe. Check your results 
+   with &lt;code&gt;df.cov()&lt;/code&gt;. Make sure you understand what each of the numbers in the matrix represents&lt;/p&gt;
+&lt;p&gt;def make_cov(df):
+    N = len(df)
+    cols = df.columns
+    return [[(df[x]&lt;em&gt;df[y]).sum()/(N)-(df[x].sum()&lt;/em&gt;df[y].sum())/(N**2) for y in cols] for x in cols]&lt;/p&gt;
+&lt;p&gt;from pprint import pprint
+pprint (make_cov(addmissions))&lt;/p&gt;
+&lt;p&gt;[[332910756.59847927, 4014.9337921708066, -1226.2147143883631],
+ [4014.9337921708066, 0.087883196618951942, -0.028782641179958546],
+ [-1226.2147143883631, -0.028782641179958546, 112]]&lt;/p&gt;
+&lt;p&gt;addmissions.cov()&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;family_income&lt;/th&gt;
+      &lt;th&gt;gpa&lt;/th&gt;
+      &lt;th&gt;parent_avg_age&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;family_income&lt;/th&gt;
+      &lt;td&gt;3.329410e+08&lt;/td&gt;
+      &lt;td&gt;4015.299085&lt;/td&gt;
+      &lt;td&gt;-1226.326280&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;gpa&lt;/th&gt;
+      &lt;td&gt;4.015299e+03&lt;/td&gt;
+      &lt;td&gt;0.087891&lt;/td&gt;
+      &lt;td&gt;-0.028785&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;parent_avg_age&lt;/th&gt;
+      &lt;td&gt;-1.226326e+03&lt;/td&gt;
+      &lt;td&gt;-0.028785&lt;/td&gt;
+      &lt;td&gt;112.977442&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Implement a &lt;code&gt;normalize&lt;/code&gt; function that would compute the correlation matrix from the covariance matrix.
+   Check your results with &lt;code&gt;df.corr()&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;def make_corr(df):
+    N = len(df)
+    cols = df.columns
+    return [[((df[x]&lt;em&gt;df[y]).sum()/(N)-(df[x].sum()&lt;/em&gt;df[y].sum())/(N**2))/(df[x].std() * df[y].std()) for y in cols] for x in cols]&lt;/p&gt;
+&lt;p&gt;pprint (make_corr(addmissions))&lt;/p&gt;
+&lt;p&gt;[[0.99990902474526921, 0.74220186205662952, -0.0063224730309758576],
+ [0.74220186205662952, 0.99990902474528243, -0.0091340229188836969],
+ [-0.0063224730309758576, -0.0091340229188836969, 0.99134834685640671]]&lt;/p&gt;
+&lt;p&gt;addmissions.corr()&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;family_income&lt;/th&gt;
+      &lt;th&gt;gpa&lt;/th&gt;
+      &lt;th&gt;parent_avg_age&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;family_income&lt;/th&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;0.742269&lt;/td&gt;
+      &lt;td&gt;-0.006323&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;gpa&lt;/th&gt;
+      &lt;td&gt;0.742269&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;-0.009135&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;parent_avg_age&lt;/th&gt;
+      &lt;td&gt;-0.006323&lt;/td&gt;
+      &lt;td&gt;-0.009135&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;You should identify &lt;code&gt;family_income&lt;/code&gt; as being the most correlated with GPA. The university wants to make
+   an effort to make sure people of all family income are being fairly represented in the admissions process.
+   In order to achieve that, different GPA thresholds will be set according to family income. &lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The low, medium and high family income groups are &lt;code&gt;0 to 26832&lt;/code&gt;, &lt;code&gt;26833 to 37510&lt;/code&gt; and &lt;code&gt;37511 to 51112&lt;/code&gt; respectively. 
+   Implement a function that would plot the distribution of GPA scores for each family income category. These are the 
+   conditional probability distributions of &lt;code&gt;gpa&lt;/code&gt; given certain levels of &lt;code&gt;family_income&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;def make_hist(df):
+    low = df[df.family_income &amp;lt;= 26832]
+    med = df[(df.family_income &amp;gt; 26832) &amp;amp; (df.family_income &amp;lt;= 37519)]
+    high = df[(df.family_income &amp;gt; 37519) &amp;amp; (df.family_income &amp;lt;= 51112)]
+    low.gpa.plot(kind=&amp;quot;kde&amp;quot;, color=&amp;quot;blue&amp;quot;,label=&amp;#39;Low Income&amp;#39;)
+    med.gpa.plot(kind=&amp;quot;kde&amp;quot;, color=&amp;quot;green&amp;quot;,label=&amp;#39;Medium Income&amp;#39;)
+    high.gpa.plot(kind=&amp;quot;kde&amp;quot;, color=&amp;quot;red&amp;quot;,label=&amp;#39;High Income&amp;#39;)
+    plt.xlim([2.0, 4.0])
+    plt.legend()
+    plt.show()
+
+make_hist(addmissions)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW2D1/output_47_0.png" /&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;If the university decides to accept students with GPA above the 90th percentile within the respective family 
+   income categories, what are the GPA thresholds for each of the categories?&lt;/p&gt;
+&lt;p&gt;low = addmissions[addmissions.family_income &amp;lt;= 26832]
+med = addmissions[(addmissions.family_income &amp;gt; 26832) &amp;amp; (addmissions.family_income &amp;lt;= 37519)]
+high = addmissions[(addmissions.family_income &amp;gt; 37519) &amp;amp; (addmissions.family_income &amp;lt;= 51112)]
+print "Low 90th Percentile", low.gpa.quantile(.9)
+print "Medium 90th Percentile", med.gpa.quantile(.9)
+print "High 90th Percentile", high.gpa.quantile(.9)&lt;/p&gt;
+&lt;p&gt;Low 90th Percentile 3.01
+Medium 90th Percentile 3.26
+High 90th Percentile 3.36&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Pearson Correlation vs Spearman Correlation&lt;/h2&gt;
+&lt;p&gt;The Pearson correlation evaluates the linear relationship between two continuous 
+variables. The Spearman correlation evaluates the monotonic relationship between two continuous or ordinal variables
+without assuming linearity of the variables. Spearman correlation is often more robust in capturing non-linear relationship
+between variables.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;In addition to the &lt;code&gt;family_income&lt;/code&gt; and &lt;code&gt;parent_avg_age&lt;/code&gt;, you are also given data about the number of hours the 
+   students studied. Load the new data in from &lt;code&gt;data/admissions_with_study_hrs_and_sports.csv&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;studydf = pd.read_csv('../probability/data/admissions_with_study_hrs_and_sports.csv')
+studydf.head()&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;family_income&lt;/th&gt;
+      &lt;th&gt;gpa&lt;/th&gt;
+      &lt;th&gt;family_income_cat&lt;/th&gt;
+      &lt;th&gt;parent_avg_age&lt;/th&gt;
+      &lt;th&gt;hrs_studied&lt;/th&gt;
+      &lt;th&gt;sport_performance&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;31402&lt;/td&gt;
+      &lt;td&gt;3.18&lt;/td&gt;
+      &lt;td&gt;medium&lt;/td&gt;
+      &lt;td&gt;32&lt;/td&gt;
+      &lt;td&gt;49.463745&lt;/td&gt;
+      &lt;td&gt;0.033196&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;32247&lt;/td&gt;
+      &lt;td&gt;2.98&lt;/td&gt;
+      &lt;td&gt;medium&lt;/td&gt;
+      &lt;td&gt;48&lt;/td&gt;
+      &lt;td&gt;16.414467&lt;/td&gt;
+      &lt;td&gt;0.000317&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;34732&lt;/td&gt;
+      &lt;td&gt;2.85&lt;/td&gt;
+      &lt;td&gt;medium&lt;/td&gt;
+      &lt;td&gt;61&lt;/td&gt;
+      &lt;td&gt;4.937079&lt;/td&gt;
+      &lt;td&gt;0.021845&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;53759&lt;/td&gt;
+      &lt;td&gt;3.39&lt;/td&gt;
+      &lt;td&gt;high&lt;/td&gt;
+      &lt;td&gt;62&lt;/td&gt;
+      &lt;td&gt;160.210286&lt;/td&gt;
+      &lt;td&gt;0.153819&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;50952&lt;/td&gt;
+      &lt;td&gt;3.10&lt;/td&gt;
+      &lt;td&gt;medium&lt;/td&gt;
+      &lt;td&gt;45&lt;/td&gt;
+      &lt;td&gt;36.417860&lt;/td&gt;
+      &lt;td&gt;0.010444&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Make a scatter plot of the &lt;code&gt;gpa&lt;/code&gt; against &lt;code&gt;hrs_studied&lt;/code&gt;. Make the points more transperant so you can see the density
+   of the points. Use the following command get the slope and intercept of a straight line to fit the data.&lt;/p&gt;
+&lt;p&gt;slope, intercept, r_value, p_value, std_err = sc.linregress(studydf.gpa,studydf.hrs_studied)
+print slope, intercept, r_value, p_value
+x = np.linspace(studydf.gpa.min(),studydf.gpa.max(),100)
+y = slope*x+intercept&lt;/p&gt;
+&lt;p&gt;studydf.plot(kind='scatter',x='gpa',y='hrs_studied',alpha=0.01)
+plt.plot(x,y,color='red')
+plt.xlabel("GPA")
+plt.ylabel("Hours Studied")
+plt.show()&lt;/p&gt;
+&lt;p&gt;494.329335528 -1400.63719543 0.475940264662 0.0&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW2D1/output_53_1.png" /&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Use the functions &lt;code&gt;scipy.stats.pearsonr&lt;/code&gt; and &lt;code&gt;scipy.stats.spearmanr&lt;/code&gt; to compute the Pearson and Spearman correlation&lt;/p&gt;
+&lt;p&gt;print sc.pearsonr(studydf.gpa,studydf.hrs_studied)
+print sc.spearmanr(studydf.gpa,studydf.hrs_studied)&lt;/p&gt;
+&lt;p&gt;(0.47594026466220946, 0.0)
+(0.98495916559333341, 0.0)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Repeat step &lt;code&gt;2&lt;/code&gt; and &lt;code&gt;3&lt;/code&gt; for &lt;code&gt;gpa&lt;/code&gt; and &lt;code&gt;sport_performance&lt;/code&gt;. Is there a strong relationship between the two variables?&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;slope, intercept, r_value, p_value, std_err = sc.linregress(studydf.gpa,studydf.sport_performance)
+print slope, intercept, r_value, p_value
+x = np.linspace(studydf.gpa.min(),studydf.gpa.max(),100)
+y = slope*x+intercept
+
+studydf.plot(kind=&amp;#39;scatter&amp;#39;,x=&amp;#39;gpa&amp;#39;,y=&amp;#39;sport_performance&amp;#39;,alpha=0.1)
+plt.plot(x,y,color=&amp;#39;black&amp;#39;)
+plt.show()
+
+0.00979813693421 0.0585103217504 0.0238485969548 0.0124044928587
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW2D1/output_57_1.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;print sc.pearsonr(studydf.gpa,studydf.sport_performance)
+print sc.spearmanr(studydf.gpa,studydf.sport_performance)
+
+(0.023848596954761905, 0.012404492858691094)
+(0.0022881402736224248, 0.81043264616449484)
+
+
+
+temp = studydf[studydf.gpa &amp;gt; 3.0]
+slope, intercept, r_value, p_value, std_err = sc.linregress(temp.gpa,temp.sport_performance)
+print slope, intercept, r_value, p_value
+x = np.linspace(temp.gpa.min(),temp.gpa.max(),100)
+y = slope*x+intercept
+
+temp.plot(kind=&amp;#39;scatter&amp;#39;,x=&amp;#39;gpa&amp;#39;,y=&amp;#39;sport_performance&amp;#39;,alpha=0.1)
+plt.plot(x,y,color=&amp;#39;black&amp;#39;)
+plt.show()
+print sc.pearsonr(temp.gpa,temp.sport_performance)
+print sc.spearmanr(temp.gpa,temp.sport_performance)
+
+0.65608660543 -2.03523616554 0.945140987506 0.0
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW2D1/output_59_1.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;(0.94514098750633013, 0.0)
+(1.0, 0.0)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Part 4: Distribution Simulation&lt;/h2&gt;
+&lt;p&gt;Often times in real life applications, we can specify the values of a variable to be of a particular distribution,
+for example the number of sales made in the next month can be modeled as a uniform distribution over the range of
+5000 and 6000.&lt;/p&gt;
+&lt;p&gt;In this scenario, we are modeling &lt;code&gt;profit&lt;/code&gt; as a product of &lt;code&gt;number of views&lt;/code&gt;, &lt;code&gt;conversion&lt;/code&gt; and &lt;code&gt;profit per sale&lt;/code&gt;,
+where &lt;code&gt;number of views&lt;/code&gt;, &lt;code&gt;conversion&lt;/code&gt; and &lt;code&gt;profit per sale&lt;/code&gt; can be modeled as probabilistic distributions.
+By randomly drawing values from these distributions, we are able to get a distribution of the range of &lt;code&gt;profit&lt;/code&gt; 
+based on the uncertainties in the other variables.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Profit = Number of views * Conversion * Profit per sale&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Assumptions:
+- &lt;code&gt;Number of views&lt;/code&gt; is a uniform distribution over the range of 5000 and 6000
+- &lt;code&gt;Conversion is a binomial distribution where the probability of success is&lt;/code&gt;0.12&lt;code&gt;for each sale among the&lt;/code&gt;Number on views made 
+- &lt;code&gt;Profit per sale&lt;/code&gt; has &lt;code&gt;0.2&lt;/code&gt; probability of taking the value &lt;code&gt;50&lt;/code&gt; (for wholesale) and &lt;code&gt;0.8&lt;/code&gt; of 
+  taking the value &lt;code&gt;60&lt;/code&gt; (non-wholesale)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Given the distributions of each of variables, use scipy to write a function that would draw random values from each of the distributions to simulate a distribution for &lt;code&gt;profit&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;def get_profit():
+    num_views = np.round(sc.uniform.rvs(loc=5000,scale=1000,size=1),0)
+    conversions = sc.binom.rvs(num_views,0.12)
+    wholesale = sc.binom.rvs(conversions,0.2)
+    return wholesale&lt;em&gt;50+(conversions-wholesale)&lt;/em&gt;60&lt;/p&gt;
+&lt;p&gt;profits = np.array([get_profit() for i in xrange(100000)])
+plt.hist(profits)
+plt.show()
+print "Low: ",np.percentile(profits,2.5)
+print "High: ",np.percentile(profits,97.5)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW2D1/output_61_0.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;Low&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;  &lt;span class="mf"&gt;33800.0&lt;/span&gt;
+&lt;span class="n"&gt;High&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;  &lt;span class="mf"&gt;42920.0&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</summary><category term="data-science"></category><category term="galvanize"></category><category term="pandas"></category><category term="money ball"></category></entry><entry><title>Galvanize - Week 01 - Day 5</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-01-05/" rel="alternate"></link><updated>2015-06-05T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-05:galvanize/galvanize-data-science-01-05/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
 &lt;h2&gt;Week 1 - Day 5&lt;/h2&gt;
 &lt;p&gt;This morning we started with a reflection about the week, and completed a survey about our progress and thoughts on the program.   I think it is a very strong, hands-on program so far.&lt;/p&gt;
 &lt;p&gt;The morning lesson and sprint was on using (pandas)[http://pandas.pydata.org/].   We were given some hospital data in a CSV format, read in the data, and answered a number of questions about most common diseases, most expensive procedures, the post profitable hospitals, and various subsets of these question on different conditions.  It was a simple exercise that gave us practice making new variables, grouping, and subsetting to look massage the data into a form that allowed us to answer the questions.&lt;/p&gt;
