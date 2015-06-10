@@ -29,7 +29,7 @@ PAGE_SAVE_AS = '{slug}/index.html'
 DEFAULT_LANG = 'en'
 LOCALE = 'en_GB'
 
-THEME = "alchemy/alchemy/"
+THEME = "alchemy-theme/"
 
 EMAIL_ADDRESS = 'bryantravissmith@gmail.com'
 GITHUB_ADDRESS = 'https://github.com/bryantravissmith'
