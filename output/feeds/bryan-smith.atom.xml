@@ -1,5 +1,1077 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Bryan Travis Smith, Ph.D</title><link href="http://www.bryantravissmith.com/" rel="alternate"></link><link href="http://www.bryantravissmith.com/feeds/bryan-smith.atom.xml" rel="self"></link><id>http://www.bryantravissmith.com/</id><updated>2015-06-08T10:30:00-07:00</updated><entry><title>Galvanize - Week 02 - Day 1</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-02-01/" rel="alternate"></link><updated>2015-06-08T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-08:galvanize/galvanize-data-science-02-01/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Bryan Travis Smith, Ph.D</title><link href="http://www.bryantravissmith.com/" rel="alternate"></link><link href="http://www.bryantravissmith.com/feeds/bryan-smith.atom.xml" rel="self"></link><id>http://www.bryantravissmith.com/</id><updated>2015-06-09T10:30:00-07:00</updated><entry><title>Galvanize - Week 02 - Day 2</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-02-02/" rel="alternate"></link><updated>2015-06-09T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-09:galvanize/galvanize-data-science-02-02/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
+&lt;h2&gt;Week 2 - Day 2&lt;/h2&gt;
+&lt;p&gt;Today we started with a mini-quiz, had a lecture on sampling methods, were given a talk about searching for a job, and finished the day with lecture on estimations/bootstraping and a reinforcement paired programming section.&lt;/p&gt;
+&lt;h2&gt;Mini-Quiz&lt;/h2&gt;
+&lt;p&gt;The mini-quiz is interesting because it involved using pandas, which I have found to be great and flexible, while also mysterious.&lt;/p&gt;
+&lt;p&gt;We were given a salary dataset and asked to make some changes to it and answer some questions.  The first was to read in the data and convert the names to a human readiable text and transform variables to the correct type.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;matplotlib&lt;/span&gt; &lt;span class="n"&gt;inline&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;matplotlib.pyplot&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;plt&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;numpy&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;np&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
+
+&lt;span class="n"&gt;salary&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read_csv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;../estimation-sampling/data/salary_data.csv&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;salary&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kp"&gt;info&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="err"&gt;&amp;#39;&lt;/span&gt;&lt;span class="nc"&gt;pandas&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;core&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;frame&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;DataFrame&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;&amp;gt;&lt;/span&gt;
+&lt;span class="n"&gt;Int64Index&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;32160&lt;/span&gt; &lt;span class="n"&gt;entries&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="mi"&gt;32159&lt;/span&gt;
+&lt;span class="n"&gt;Data&lt;/span&gt; &lt;span class="n"&gt;columns&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;total&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt; &lt;span class="n"&gt;columns&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+&lt;span class="n"&gt;name&lt;/span&gt;          &lt;span class="mi"&gt;32160&lt;/span&gt; &lt;span class="n"&gt;non&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;null&lt;/span&gt; &lt;span class="nb"&gt;object&lt;/span&gt;
+&lt;span class="n"&gt;job_title&lt;/span&gt;     &lt;span class="mi"&gt;32160&lt;/span&gt; &lt;span class="n"&gt;non&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;null&lt;/span&gt; &lt;span class="nb"&gt;object&lt;/span&gt;
+&lt;span class="n"&gt;department&lt;/span&gt;    &lt;span class="mi"&gt;32160&lt;/span&gt; &lt;span class="n"&gt;non&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;null&lt;/span&gt; &lt;span class="nb"&gt;object&lt;/span&gt;
+&lt;span class="n"&gt;salary&lt;/span&gt;        &lt;span class="mi"&gt;32160&lt;/span&gt; &lt;span class="n"&gt;non&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;null&lt;/span&gt; &lt;span class="nb"&gt;object&lt;/span&gt;
+&lt;span class="n"&gt;Join&lt;/span&gt; &lt;span class="n"&gt;Date&lt;/span&gt;     &lt;span class="mi"&gt;32160&lt;/span&gt; &lt;span class="n"&gt;non&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;null&lt;/span&gt; &lt;span class="nb"&gt;object&lt;/span&gt;
+&lt;span class="n"&gt;dtypes&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;memory&lt;/span&gt; &lt;span class="n"&gt;usage&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mf"&gt;1.5&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;MB&lt;/span&gt;
+
+
+
+&lt;span class="n"&gt;salary&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;head&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;name&lt;/th&gt;
+      &lt;th&gt;job_title&lt;/th&gt;
+      &lt;th&gt;department&lt;/th&gt;
+      &lt;th&gt;salary&lt;/th&gt;
+      &lt;th&gt;Join Date&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;AARON,  ELVIA J&lt;/td&gt;
+      &lt;td&gt;WATER RATE TAKER&lt;/td&gt;
+      &lt;td&gt;WATER MGMNT&lt;/td&gt;
+      &lt;td&gt;$87228.0&lt;/td&gt;
+      &lt;td&gt;2000-09-27 00:00:00&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;AARON,  JEFFERY M&lt;/td&gt;
+      &lt;td&gt;POLICE OFFICER&lt;/td&gt;
+      &lt;td&gt;POLICE&lt;/td&gt;
+      &lt;td&gt;$75372.0&lt;/td&gt;
+      &lt;td&gt;2000-08-04 00:00:00&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;AARON,  KARINA&lt;/td&gt;
+      &lt;td&gt;POLICE OFFICER&lt;/td&gt;
+      &lt;td&gt;POLICE&lt;/td&gt;
+      &lt;td&gt;$75372.0&lt;/td&gt;
+      &lt;td&gt;2000-01-20 00:00:00&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;AARON,  KIMBERLEI R&lt;/td&gt;
+      &lt;td&gt;CHIEF CONTRACT EXPEDITER&lt;/td&gt;
+      &lt;td&gt;GENERAL SERVICES&lt;/td&gt;
+      &lt;td&gt;$80916.0&lt;/td&gt;
+      &lt;td&gt;2000-04-27 00:00:00&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;ABAD JR,  VICENTE M&lt;/td&gt;
+      &lt;td&gt;CIVIL ENGINEER IV&lt;/td&gt;
+      &lt;td&gt;WATER MGMNT&lt;/td&gt;
+      &lt;td&gt;$99648.0&lt;/td&gt;
+      &lt;td&gt;2000-02-11 00:00:00&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;salary.columns = [&amp;#39;Name&amp;#39;,&amp;#39;Position Title&amp;#39;,&amp;#39;Department&amp;#39;,&amp;#39;Employee Annual Salary&amp;#39;,&amp;#39;Join Date&amp;#39;]
+salary.head()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Name&lt;/th&gt;
+      &lt;th&gt;Position Title&lt;/th&gt;
+      &lt;th&gt;Department&lt;/th&gt;
+      &lt;th&gt;Employee Annual Salary&lt;/th&gt;
+      &lt;th&gt;Join Date&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;AARON,  ELVIA J&lt;/td&gt;
+      &lt;td&gt;WATER RATE TAKER&lt;/td&gt;
+      &lt;td&gt;WATER MGMNT&lt;/td&gt;
+      &lt;td&gt;$87228.0&lt;/td&gt;
+      &lt;td&gt;2000-09-27 00:00:00&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;AARON,  JEFFERY M&lt;/td&gt;
+      &lt;td&gt;POLICE OFFICER&lt;/td&gt;
+      &lt;td&gt;POLICE&lt;/td&gt;
+      &lt;td&gt;$75372.0&lt;/td&gt;
+      &lt;td&gt;2000-08-04 00:00:00&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;AARON,  KARINA&lt;/td&gt;
+      &lt;td&gt;POLICE OFFICER&lt;/td&gt;
+      &lt;td&gt;POLICE&lt;/td&gt;
+      &lt;td&gt;$75372.0&lt;/td&gt;
+      &lt;td&gt;2000-01-20 00:00:00&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;AARON,  KIMBERLEI R&lt;/td&gt;
+      &lt;td&gt;CHIEF CONTRACT EXPEDITER&lt;/td&gt;
+      &lt;td&gt;GENERAL SERVICES&lt;/td&gt;
+      &lt;td&gt;$80916.0&lt;/td&gt;
+      &lt;td&gt;2000-04-27 00:00:00&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;ABAD JR,  VICENTE M&lt;/td&gt;
+      &lt;td&gt;CIVIL ENGINEER IV&lt;/td&gt;
+      &lt;td&gt;WATER MGMNT&lt;/td&gt;
+      &lt;td&gt;$99648.0&lt;/td&gt;
+      &lt;td&gt;2000-02-11 00:00:00&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;p&gt;This is how I traditionally have renamed columns.   I learned a new way that involed using pandas' 'rename' function.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;salary = pd.read_csv(&amp;#39;../estimation-sampling/data/salary_data.csv&amp;#39;)
+salary.rename(columns={&amp;#39;name&amp;#39;: &amp;#39;Name&amp;#39;,
+                  &amp;#39;job_title&amp;#39;: &amp;#39;Position Title&amp;#39;,
+                  &amp;#39;department&amp;#39;:&amp;#39;Department&amp;#39;,
+                  &amp;#39;salary&amp;#39;:&amp;#39;Employee Annual Salary&amp;#39;,
+                   &amp;#39;join_data&amp;#39;: &amp;#39;Join Date&amp;#39;},
+                   inplace=True)
+salary.head()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Name&lt;/th&gt;
+      &lt;th&gt;Position Title&lt;/th&gt;
+      &lt;th&gt;Department&lt;/th&gt;
+      &lt;th&gt;Employee Annual Salary&lt;/th&gt;
+      &lt;th&gt;Join Date&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;AARON,  ELVIA J&lt;/td&gt;
+      &lt;td&gt;WATER RATE TAKER&lt;/td&gt;
+      &lt;td&gt;WATER MGMNT&lt;/td&gt;
+      &lt;td&gt;$87228.0&lt;/td&gt;
+      &lt;td&gt;2000-09-27 00:00:00&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;AARON,  JEFFERY M&lt;/td&gt;
+      &lt;td&gt;POLICE OFFICER&lt;/td&gt;
+      &lt;td&gt;POLICE&lt;/td&gt;
+      &lt;td&gt;$75372.0&lt;/td&gt;
+      &lt;td&gt;2000-08-04 00:00:00&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;AARON,  KARINA&lt;/td&gt;
+      &lt;td&gt;POLICE OFFICER&lt;/td&gt;
+      &lt;td&gt;POLICE&lt;/td&gt;
+      &lt;td&gt;$75372.0&lt;/td&gt;
+      &lt;td&gt;2000-01-20 00:00:00&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;AARON,  KIMBERLEI R&lt;/td&gt;
+      &lt;td&gt;CHIEF CONTRACT EXPEDITER&lt;/td&gt;
+      &lt;td&gt;GENERAL SERVICES&lt;/td&gt;
+      &lt;td&gt;$80916.0&lt;/td&gt;
+      &lt;td&gt;2000-04-27 00:00:00&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;ABAD JR,  VICENTE M&lt;/td&gt;
+      &lt;td&gt;CIVIL ENGINEER IV&lt;/td&gt;
+      &lt;td&gt;WATER MGMNT&lt;/td&gt;
+      &lt;td&gt;$99648.0&lt;/td&gt;
+      &lt;td&gt;2000-02-11 00:00:00&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;p&gt;I personally do not like these names for the columns because they involve spaces.   That removes the ability to us the pd.variable notation.   &lt;/p&gt;
+&lt;p&gt;I have also found multiple ways to update a variable type.  I am still not sure if there is a better method.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;salary[&amp;#39;Employee Annual Salary&amp;#39;] = salary[&amp;#39;Employee Annual Salary&amp;#39;].str.replace(&amp;quot;$&amp;quot;,&amp;quot;&amp;quot;).astype(float)
+salary[&amp;#39;Join Date&amp;#39;] = pd.to_datetime(salary[&amp;#39;Join Date&amp;#39;])
+salary.info()
+
+&amp;lt;class &amp;#39;pandas.core.frame.DataFrame&amp;#39;&amp;gt;
+Int64Index: 32160 entries, 0 to 32159
+Data columns (total 5 columns):
+Name                      32160 non-null object
+Position Title            32160 non-null object
+Department                32160 non-null object
+Employee Annual Salary    32160 non-null float64
+Join Date                 32160 non-null datetime64[ns]
+dtypes: datetime64[ns](1), float64(1), object(3)
+memory usage: 1.5+ MB
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Now that we have the data in the correct format, we can now answer questions about the dataset.  &lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;What are the top 5 paying job titles?&lt;/li&gt;
+&lt;li&gt;How many people have "Police" in their title?&lt;/li&gt;
+&lt;li&gt;What fraction of the people in 2 are a 'Police Officer'&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;How many people were hired from July 30, 2000 to Aug 08, 2000&lt;/p&gt;
+&lt;p&gt;salary.groupby('Position Title')['Employee Annual Salary'].mean().order(ascending=False).head()&lt;/p&gt;
+&lt;p&gt;Position Title
+SUPERINTENDENT OF POLICE          260004
+MAYOR                             216210
+FIRE COMMISSIONER                 202728
+FIRST DEPUTY SUPERINTENDENT       188316
+FIRST DEPUTY FIRE COMMISSIONER    188316
+Name: Employee Annual Salary, dtype: float64&lt;/p&gt;
+&lt;p&gt;print "Contains 'POLICE': ", salary[salary['Position Title'].str.contains('POLICE')]['Position Title'].count()
+salary[salary['Position Title'].str.contains('POLICE')]['Position Title'].value_counts(normalize=True)&lt;/p&gt;
+&lt;p&gt;Contains 'POLICE':  11141&lt;/p&gt;
+&lt;p&gt;POLICE OFFICER                                      0.847051
+POLICE OFFICER (ASSIGNED AS DETECTIVE)              0.076025
+POLICE COMMUNICATIONS OPERATOR II                   0.019747
+POLICE COMMUNICATIONS OPERATOR I                    0.012925
+POLICE OFFICER / FLD TRNG OFFICER                   0.010232
+POLICE OFFICER (ASSIGNED AS EVIDENCE TECHNICIAN)    0.006463
+POLICE OFFICER/EXPLSV DETECT K9 HNDLR               0.003590
+POLICE OFFICER (ASGND AS MARINE OFFICER)            0.002783
+POLICE CADET                                        0.002603
+ELECTRICAL MECHANIC-AUTO-POLICE MTR MNT             0.002423
+MACHINIST (AUTO) POLICE MOTOR MAINT                 0.002244
+POLICE OFFICER (ASSIGNED AS CANINE HANDLER)         0.001885
+POLICE OFFICER (ASSIGNED AS TRAFFIC SPECIALIST)     0.001795
+SUPERVISING POLICE COMMUNICATIONS OPERATOR          0.001616
+POLICE OFFICER (ASGND AS MOUNTED PATROL OFFICER)    0.001346
+POLICE OFFICER (ASSIGNED AS SECURITY SPECIALIST)    0.001346
+POLICE AGENT                                        0.001167
+POLICE FORENSIC INVESTIGATOR I                      0.001077
+POLICE OFFICER(ASGND AS LATENT PRINT EX)            0.000987
+POLICE OFFICER (PER ARBITRATION AWARD)              0.000898
+POLICE TECHNICIAN                                   0.000539
+POLICE LEGAL OFFICER II                             0.000359
+POLICE LEGAL OFFICER I                              0.000269
+DIR OF POLICE RECORDS                               0.000090
+MANAGER OF POLICE PAYROLLS                          0.000090
+POLICE OFFICER(ASGND AS SUPVG LATENT PRINT EX)      0.000090
+EXECUTIVE DIR - POLICE BOARD                        0.000090
+SUPERINTENDENT OF POLICE                            0.000090
+ASST SUPVSR OF POLICE RECORDS                       0.000090
+MANAGER OF POLICE PERSONNEL                         0.000090
+dtype: float64&lt;/p&gt;
+&lt;p&gt;salary.set_index('Join Date',inplace=True)
+salary.head()&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Name&lt;/th&gt;
+      &lt;th&gt;Position Title&lt;/th&gt;
+      &lt;th&gt;Department&lt;/th&gt;
+      &lt;th&gt;Employee Annual Salary&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Join Date&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2000-09-27&lt;/th&gt;
+      &lt;td&gt;AARON,  ELVIA J&lt;/td&gt;
+      &lt;td&gt;WATER RATE TAKER&lt;/td&gt;
+      &lt;td&gt;WATER MGMNT&lt;/td&gt;
+      &lt;td&gt;87228&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2000-08-04&lt;/th&gt;
+      &lt;td&gt;AARON,  JEFFERY M&lt;/td&gt;
+      &lt;td&gt;POLICE OFFICER&lt;/td&gt;
+      &lt;td&gt;POLICE&lt;/td&gt;
+      &lt;td&gt;75372&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2000-01-20&lt;/th&gt;
+      &lt;td&gt;AARON,  KARINA&lt;/td&gt;
+      &lt;td&gt;POLICE OFFICER&lt;/td&gt;
+      &lt;td&gt;POLICE&lt;/td&gt;
+      &lt;td&gt;75372&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2000-04-27&lt;/th&gt;
+      &lt;td&gt;AARON,  KIMBERLEI R&lt;/td&gt;
+      &lt;td&gt;CHIEF CONTRACT EXPEDITER&lt;/td&gt;
+      &lt;td&gt;GENERAL SERVICES&lt;/td&gt;
+      &lt;td&gt;80916&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2000-02-11&lt;/th&gt;
+      &lt;td&gt;ABAD JR,  VICENTE M&lt;/td&gt;
+      &lt;td&gt;CIVIL ENGINEER IV&lt;/td&gt;
+      &lt;td&gt;WATER MGMNT&lt;/td&gt;
+      &lt;td&gt;99648&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;salary.ix[&amp;#39;2000-07-13&amp;#39; : &amp;#39;2000-08-13&amp;#39;].count()
+
+
+
+
+Name                      2866
+Position Title            2866
+Department                2866
+Employee Annual Salary    2866
+dtype: int64
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Morning Sprint&lt;/h2&gt;
+&lt;p&gt;The individual morning sprint covered sampling and estimation.   We were given a dataset on rain fall and attempted to use &lt;a href="http://en.wikipedia.org/wiki/Method_of_moments_%28statistics%29"&gt;Method of Moments&lt;/a&gt; estimates on the data to approximate the distributions.  We then followed up by looking at &lt;a href="http://en.wikipedia.org/wiki/Maximum_likelihood"&gt;Maximum Likelihood Estimates&lt;/a&gt; of the parameters.  &lt;/p&gt;
+&lt;p&gt;I first looked at the data for January rainfall over the course of several years.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;data = pd.read_csv(&amp;quot;../estimation-sampling/data/rainfall.csv&amp;quot;)
+print data.info()
+
+&amp;lt;class &amp;#39;pandas.core.frame.DataFrame&amp;#39;&amp;gt;
+Int64Index: 140 entries, 0 to 139
+Data columns (total 13 columns):
+Year    140 non-null int64
+Jan     140 non-null float64
+Feb     140 non-null float64
+Mar     140 non-null float64
+Apr     140 non-null float64
+May     140 non-null float64
+Jun     140 non-null float64
+Jul     140 non-null float64
+Aug     140 non-null float64
+Sep     140 non-null float64
+Oct     140 non-null float64
+Nov     140 non-null float64
+Dec     140 non-null float64
+dtypes: float64(12), int64(1)
+memory usage: 15.3 KB
+None
+
+
+
+data.head()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Year&lt;/th&gt;
+      &lt;th&gt;Jan&lt;/th&gt;
+      &lt;th&gt;Feb&lt;/th&gt;
+      &lt;th&gt;Mar&lt;/th&gt;
+      &lt;th&gt;Apr&lt;/th&gt;
+      &lt;th&gt;May&lt;/th&gt;
+      &lt;th&gt;Jun&lt;/th&gt;
+      &lt;th&gt;Jul&lt;/th&gt;
+      &lt;th&gt;Aug&lt;/th&gt;
+      &lt;th&gt;Sep&lt;/th&gt;
+      &lt;th&gt;Oct&lt;/th&gt;
+      &lt;th&gt;Nov&lt;/th&gt;
+      &lt;th&gt;Dec&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;1871&lt;/td&gt;
+      &lt;td&gt;2.76&lt;/td&gt;
+      &lt;td&gt;4.58&lt;/td&gt;
+      &lt;td&gt;5.01&lt;/td&gt;
+      &lt;td&gt;4.13&lt;/td&gt;
+      &lt;td&gt;3.30&lt;/td&gt;
+      &lt;td&gt;2.98&lt;/td&gt;
+      &lt;td&gt;1.58&lt;/td&gt;
+      &lt;td&gt;2.36&lt;/td&gt;
+      &lt;td&gt;0.95&lt;/td&gt;
+      &lt;td&gt;1.31&lt;/td&gt;
+      &lt;td&gt;2.13&lt;/td&gt;
+      &lt;td&gt;1.65&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;1872&lt;/td&gt;
+      &lt;td&gt;2.32&lt;/td&gt;
+      &lt;td&gt;2.11&lt;/td&gt;
+      &lt;td&gt;3.14&lt;/td&gt;
+      &lt;td&gt;5.91&lt;/td&gt;
+      &lt;td&gt;3.09&lt;/td&gt;
+      &lt;td&gt;5.17&lt;/td&gt;
+      &lt;td&gt;6.10&lt;/td&gt;
+      &lt;td&gt;1.65&lt;/td&gt;
+      &lt;td&gt;4.50&lt;/td&gt;
+      &lt;td&gt;1.58&lt;/td&gt;
+      &lt;td&gt;2.25&lt;/td&gt;
+      &lt;td&gt;2.38&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;1873&lt;/td&gt;
+      &lt;td&gt;2.96&lt;/td&gt;
+      &lt;td&gt;7.14&lt;/td&gt;
+      &lt;td&gt;4.11&lt;/td&gt;
+      &lt;td&gt;3.59&lt;/td&gt;
+      &lt;td&gt;6.31&lt;/td&gt;
+      &lt;td&gt;4.20&lt;/td&gt;
+      &lt;td&gt;4.63&lt;/td&gt;
+      &lt;td&gt;2.36&lt;/td&gt;
+      &lt;td&gt;1.81&lt;/td&gt;
+      &lt;td&gt;4.28&lt;/td&gt;
+      &lt;td&gt;4.36&lt;/td&gt;
+      &lt;td&gt;5.94&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;1874&lt;/td&gt;
+      &lt;td&gt;5.22&lt;/td&gt;
+      &lt;td&gt;9.23&lt;/td&gt;
+      &lt;td&gt;5.36&lt;/td&gt;
+      &lt;td&gt;11.84&lt;/td&gt;
+      &lt;td&gt;1.49&lt;/td&gt;
+      &lt;td&gt;2.87&lt;/td&gt;
+      &lt;td&gt;2.65&lt;/td&gt;
+      &lt;td&gt;3.52&lt;/td&gt;
+      &lt;td&gt;3.12&lt;/td&gt;
+      &lt;td&gt;2.63&lt;/td&gt;
+      &lt;td&gt;6.12&lt;/td&gt;
+      &lt;td&gt;4.19&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;1875&lt;/td&gt;
+      &lt;td&gt;6.15&lt;/td&gt;
+      &lt;td&gt;3.06&lt;/td&gt;
+      &lt;td&gt;8.14&lt;/td&gt;
+      &lt;td&gt;4.22&lt;/td&gt;
+      &lt;td&gt;1.73&lt;/td&gt;
+      &lt;td&gt;5.63&lt;/td&gt;
+      &lt;td&gt;8.12&lt;/td&gt;
+      &lt;td&gt;1.60&lt;/td&gt;
+      &lt;td&gt;3.79&lt;/td&gt;
+      &lt;td&gt;1.25&lt;/td&gt;
+      &lt;td&gt;5.46&lt;/td&gt;
+      &lt;td&gt;4.30&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;plt.figure()
+data.Jan.hist(bins=30,color=&amp;#39;red&amp;#39;,alpha=.2)
+plt.title(&amp;quot;Rain Fall In Janary For All Years&amp;quot;)
+plt.xlabel(&amp;quot;Rain Values&amp;quot;)
+plt.ylabel(&amp;quot;Count&amp;quot;)
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_16_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;To me this looks like it could be well fitted by a &lt;a href="http://en.wikipedia.org/wiki/Poisson_distribution"&gt;Poisson distribution&lt;/a&gt; or a &lt;a href="http://en.wikipedia.org/wiki/Gamma_distribution"&gt;Gamma distribution&lt;/a&gt;.   A poisson distribution models random events occuring in a fixed time interval, and is a discreate distribution.  Gamma distributions are a continuous distribution that model how long one must way for N events to happen.   That seems like a better framework to think about rain fall.&lt;/p&gt;
+&lt;p&gt;The mean and variance for a Poisson distribution is the lambda parameter:&lt;/p&gt;
+&lt;p&gt;$$\mu = \lambda$$&lt;/p&gt;
+&lt;p&gt;So we will use this to see the fit.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;scipy.stats&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;sc&lt;/span&gt;
+
+&lt;span class="n"&gt;mean&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Jan&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;mean&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;var&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Jan&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;var&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;mean&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;var&lt;/span&gt;
+&lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;arange&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;16&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;y&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sc&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;poisson&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;pmf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;mean&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;figure&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Jan&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;hist&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;bins&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;30&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;color&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;red&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;alpha&lt;/span&gt;&lt;span class="o"&gt;=.&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;normed&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;True&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;label&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;Jan Rain&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;plot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;color&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;red&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;label&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;Poisson Fit&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;title&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Rain Fall In Janary For All Years&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;xlabel&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Rain Values&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ylabel&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Count&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;legend&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;show&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="mf"&gt;4.54457142857&lt;/span&gt; &lt;span class="mf"&gt;6.91677463515&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_18_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;This gives a fair fit to the distribution for january.   I want to compare this with the gama distribution.&lt;/p&gt;
+&lt;p&gt;The gamma function is given by:&lt;/p&gt;
+&lt;p&gt;$$X = Gamma(\alpha \ ,\beta) = \frac{\beta^\alpha \ x^{\alpha-1} \ e^{-\beta x}}{\Gamma(\alpha)}$$&lt;/p&gt;
+&lt;p&gt;The mean and variance of the gamma distribution is given by&lt;/p&gt;
+&lt;p&gt;$$\mu = \frac{\alpha}{\beta}$$&lt;/p&gt;
+&lt;p&gt;$$\sigma^2 = \frac{\alpha}{\beta^2}$$&lt;/p&gt;
+&lt;p&gt;So the estimate of alpha and beta are given by:&lt;/p&gt;
+&lt;p&gt;$$\beta = \frac{\mu}{\sigma^2}$$&lt;/p&gt;
+&lt;p&gt;$$\alpha = \frac{\mu^2}{\sigma^2}$$&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;beta = mean/var
+alpha = mean**2/var
+print alpha,beta
+x1 = np.linspace(0,16,100)
+y1 = sc.gamma.pdf(x1,alpha,scale=1/beta)
+plt.figure()
+data.Jan.hist(bins=30,color=&amp;#39;red&amp;#39;,alpha=.2,normed=True,label=&amp;#39;Jan Rain&amp;#39;)
+plt.plot(x,y,color=&amp;#39;red&amp;#39;,linestyle=&amp;#39;--&amp;#39;,label=&amp;#39;Poisson Fit&amp;#39;)
+plt.plot(x1,y1,color=&amp;#39;red&amp;#39;,label=&amp;#39;Gamma Fit&amp;#39;,linestyle=&amp;#39;-&amp;#39;)
+plt.title(&amp;quot;Rain Fall In Janary For All Years&amp;quot;)
+plt.xlabel(&amp;quot;Rain Values&amp;quot;)
+plt.ylabel(&amp;quot;Count&amp;quot;)
+plt.legend()
+plt.show()
+
+2.98594801173 0.65703621533
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_20_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;The Gamma distribution fit matches the distribution's peak and tail better than the Poisson distribution fit.  There are method's to test the relative fit but I saved that for another day.&lt;/p&gt;
+&lt;p&gt;Now lets look at the Gamma fits for all months.  The reason we bin by months is that we have the prior that rain and weather is season.  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;f, axarr = plt.subplots(3, 4,figsize=(14, 8))
+
+x = np.linspace(0,16,100)
+for i,month in enumerate(data.columns[1:]):
+    mean = data[month].mean()
+    var = data[month].var()
+    alpha = mean**2/var
+    beta = mean/var
+    y = sc.gamma.pdf(x,alpha,scale=1/beta)
+    axarr[i/4,i%4].hist(data[month],bins=20,color=&amp;#39;red&amp;#39;,alpha=0.25,normed=True)
+    axarr[i/4,i%4].set_xlim([0,20])
+    axarr[i/4,i%4].set_ylim([0,.35])
+    axarr[i/4,i%4].set_xlabel(&amp;quot;Rain Fall&amp;quot;)
+    axarr[i/4,i%4].set_ylabel(&amp;quot;Prob Density&amp;quot;)
+    axarr[i/4,i%4].set_title(month)
+    axarr[i/4,i%4].plot(x,y,label=&amp;quot;Gamma Fit&amp;quot;,color=&amp;#39;red&amp;#39;)
+    label = &amp;#39;alpha = %.2f\nbeta = %.2f&amp;#39; % (alpha, beta)
+    axarr[i/4,i%4].annotate(label, xy=(4, 0.25))
+
+plt.tight_layout()
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_22_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;We have a Method of Moments fit of the gamma distribution of rainfall for each month.   Now lets doo Maximum Likely Hood.  &lt;/p&gt;
+&lt;p&gt;First we need to make a funciton.  In order to test the method I will try it on a poisson generated dataset.  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;def poisson_likelihood(x, lam):
+    return sc.poisson.pmf(x,lam)
+
+##produces the probabilty of of each lambda(lam) given a value of 6
+plt.plot(range(1,20),[poisson_likelihood(6, lam) for lam in range(1,20)])
+plt.xlabel(&amp;quot;Lambda Value&amp;quot;)
+plt.ylabel(&amp;quot;Probability of Lambda Value Given x=6&amp;quot;)
+
+
+
+
+&amp;lt;matplotlib.text.Text at 0x10c5d0290&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_24_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;This make sense because the maximum likelihood is 6, but there are still changes that the value is different.  Lets run this on the data now.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;p_data = pd.read_csv(&amp;#39;../estimation-sampling/data/poisson.txt&amp;#39;,header=None)
+p_data.head()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;0&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;4&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;2&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;6&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;3&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;6&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;x_values = np.linspace(1,20,1000)
+likelihoods = np.array([np.log(poisson_likelihood(p_data.values[:,0],i)).sum() for i in x_values])
+plt.plot(x_values,likelihoods)
+plt.ylabel(&amp;quot;Log Likelyhood For Lambda Fro Data&amp;quot;)
+plt.xlabel(&amp;quot;Lambda Values&amp;quot;)
+
+
+
+
+&amp;lt;matplotlib.text.Text at 0x10c67f090&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_27_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;We want to compare the maximum likelihood (argmax) of this distribution to the mean fo the data since the mean of Poisson distribution should be the lambda parameter.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;x_values[likelihoods.argmax()],p_data.mean()
+
+
+
+
+(5.0510510510510516, 0    5.0437
+ dtype: float64)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The maximum likelihood estimate of the lambda parameter is very close to the sample mean, which also matches the value of lambda used to generated the data ($$\lambda = 5$$).&lt;/p&gt;
+&lt;p&gt;Scipy Stats has a fit function for each of the distributions that uses the maximum likelihood method.   I want to compare the plots the difference between the fits of the Method of Moments and the Maximum Likelihood.  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mean = data.Jan.mean()
+var = data.Jan.var()
+beta = mean/var
+alpha = mean**2/var
+
+x1 = np.linspace(0,16,100)
+y1 = sc.gamma.pdf(x1,alpha,scale=1./beta)
+alpha_MLE,loc_MFL,one_over_beta_MLE = sc.gamma.fit(data.Jan,floc=0) #Loc = 0 - no rainfall minimum
+y2 = sc.gamma.pdf(x1,alpha_MLE,scale=one_over_beta_MLE)
+plt.figure()
+data.Jan.hist(bins=30,color=&amp;#39;red&amp;#39;,alpha=.2,normed=True,label=&amp;#39;Jan Rain&amp;#39;)
+plt.plot(x1,y1,color=&amp;#39;red&amp;#39;,label=&amp;#39;Gamma Fit (MoM)&amp;#39;,linestyle=&amp;#39;--&amp;#39;)
+plt.plot(x1,y2,color=&amp;#39;red&amp;#39;,label=&amp;#39;Gamma Fit (MLE)&amp;#39;,linestyle=&amp;#39;-&amp;#39;)
+plt.title(&amp;quot;Rain Fall In Janary For All Years&amp;quot;)
+plt.xlabel(&amp;quot;Rain Values&amp;quot;)
+plt.ylabel(&amp;quot;Count&amp;quot;)
+plt.legend()
+plt.show()
+print alpha, alpha_MLE
+print beta, beta_MLE
+
+2.98594801173 0.65703621533
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_31_1.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;2.98594801173 3.25219914651
+0.65703621533 1.39738411574
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;We can see the two distributions are similar, but slightly different.   The MLE is more skewed right, and the MLE fits are larger then the method of moments.  I just want to finish this section with a plot of all the months.  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;plt.figure()
+f, axarr = plt.subplots(3, 4,figsize=(14, 10))
+x = np.linspace(0,16,100)
+for i,month in enumerate(data.columns[1:]):
+    mean = data[month].mean()
+    var = data[month].var()
+    alpha = mean**2/var
+    beta = mean/var
+    fits = sc.gamma.fit(data[month],floc=0)
+    alpha_fit = fits[0]
+    beta_fit = 1./fits[2]
+    y = sc.gamma.pdf(x,alpha,scale=1./beta)
+    y1 = sc.gamma.pdf(x,alpha_fit,scale=1./beta_fit)
+    print month, alpha, alpha_fit, beta, beta_fit
+    axarr[i/4,i%4].hist(data[month],bins=20,color=&amp;#39;red&amp;#39;,alpha=0.25,normed=True)
+    axarr[i/4,i%4].set_xlim([0,20])
+    axarr[i/4,i%4].set_ylim([0,.35])
+    axarr[i/4,i%4].set_xlabel(&amp;quot;Rain Fall&amp;quot;)
+    axarr[i/4,i%4].set_ylabel(&amp;quot;Prob Density&amp;quot;)
+    axarr[i/4,i%4].set_title(month)
+    axarr[i/4,i%4].plot(x,y,label=&amp;quot;MOD&amp;quot;,linestyle=&amp;#39;-&amp;#39;,color=&amp;#39;red&amp;#39;,lw=3,alpha=0.5)
+    axarr[i/4,i%4].plot(x,y1,label=&amp;quot;MLE&amp;quot;,linestyle=&amp;#39;--&amp;#39;,color=&amp;#39;green&amp;#39;,lw=3,alpha=0.5)
+    axarr[i/4,i%4].legend()
+
+plt.tight_layout()
+plt.show()
+
+Jan 2.98594801173 3.25219914651 0.65703621533 0.715622847528
+Feb 3.0418721755 3.0803224672 0.740681272732 0.750043734186
+Mar 4.67867768543 4.64576013378 0.946813252137 0.94015180285
+Apr 4.28032831959 4.25175417646 1.01660157558 1.00981505905
+May 3.53902182175 3.82055049055 0.815644176548 0.880528551612
+Jun 2.97083704473 2.89974494499 0.765862938963 0.747535846757
+Jul 3.98358361758 3.6314371778 1.02531889482 0.934681309897
+Aug 3.02948804114 3.20185713476 0.907886646459 0.959542766645
+Sep 2.29238948802 2.14489278382 0.678766821038 0.635093671449
+Oct 2.46786112353 1.96116795936 0.945359556993 0.751261428601
+Nov 3.69539855825 3.30306402837 1.00014653216 0.893962581139
+Dec 3.23590721109 3.52396472416 0.77216125712 0.840898349041
+
+
+
+&amp;lt;matplotlib.figure.Figure at 0x10c387e10&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_33_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;For each moths the distributions are similar, but like january the alpha and beta values are different. &lt;/p&gt;
+&lt;h2&gt;Kernal Density Estimates&lt;/h2&gt;
+&lt;p&gt;The last topic we had was to use the non-parametric method for fitting a distributions using gaussian kernal density estimates.   The idea is that each data point is fit with a gausian for some unknown variance, and the variance is shared for each such gaussian.   The variance paramenter is adjusted until an 'optimal' fit is found.&lt;/p&gt;
+&lt;p&gt;We can do this with an example by convoluting two gaussian data sets.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;data2 = [sc.norm.rvs(loc=0,scale=2) for x in range(500)]+[sc.norm.rvs(loc=4,scale=1) for x in range(400)]
+plt.figure()
+plt.hist(data,bins=30,color=&amp;#39;red&amp;#39;,alpha=0.2)
+plt.xlabel(&amp;quot;Values&amp;quot;)
+plt.ylabel(&amp;quot;Counts&amp;quot;)
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_35_0.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;fit = sc.gaussian_kde(data2)
+plt.figure()
+plt.hist(data,bins=30,normed=True,alpha=0.2)
+x=np.linspace(-6,8,100)
+plt.plot(x,fit(x),color=&amp;#39;blue&amp;#39;,label=&amp;#39;KDE Fit&amp;#39;)
+plt.xlabel(&amp;quot;Values&amp;quot;)
+plt.ylabel(&amp;quot;Counts&amp;quot;)
+plt.legend()
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_36_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;The fit function can be used for a density estimate when we do not wish to model the data with a particlar model.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;plt.figure()
+f, axarr = plt.subplots(3, 4,figsize=(14, 10))
+x = np.linspace(0,16,100)
+for i,month in enumerate(data.columns[1:]):
+    mean = data[month].mean()
+    var = data[month].var()
+    alpha = mean**2/var
+    beta = mean/var
+    fits = sc.gamma.fit(data[month],floc=0)
+    alpha_fit = fits[0]
+    beta_fit = 1./fits[2]
+    y = sc.gamma.pdf(x,alpha,scale=1./beta)
+    y1 = sc.gamma.pdf(x,alpha_fit,scale=1./beta_fit)
+    gfit = sc.gaussian_kde(data[month])
+    yg = gfit(x)
+    axarr[i/4,i%4].hist(data[month],bins=20,color=&amp;#39;red&amp;#39;,alpha=0.25,normed=True)
+    axarr[i/4,i%4].set_xlim([0,20])
+    axarr[i/4,i%4].set_ylim([0,.35])
+    axarr[i/4,i%4].set_xlabel(&amp;quot;Rain Fall&amp;quot;)
+    axarr[i/4,i%4].set_ylabel(&amp;quot;Prob Density&amp;quot;)
+    axarr[i/4,i%4].set_title(month)
+    axarr[i/4,i%4].plot(x,y,label=&amp;quot;MOD&amp;quot;,linestyle=&amp;#39;-&amp;#39;,color=&amp;#39;red&amp;#39;,lw=3,alpha=0.5)
+    axarr[i/4,i%4].plot(x,y1,label=&amp;quot;MLE&amp;quot;,linestyle=&amp;#39;--&amp;#39;,color=&amp;#39;green&amp;#39;,lw=3,alpha=0.5)
+    axarr[i/4,i%4].plot(x,y2,label=&amp;quot;KDE&amp;quot;,linestyle=&amp;#39;--&amp;#39;,color=&amp;#39;blue&amp;#39;,lw=3,alpha=0.5)
+    axarr[i/4,i%4].legend()
+
+plt.tight_layout()
+plt.show()
+
+
+&amp;lt;matplotlib.figure.Figure at 0x10c65e490&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_38_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;In each case the non-KDE function seem tot fit the data better, but it could be used to for other estimates if we did not have a model.&lt;/p&gt;
+&lt;h2&gt;Paired Programming&lt;/h2&gt;
+&lt;p&gt;In the afternoon session we had to investigate the centeral limit theorem, produce confidence intervals, and attempt some bootstrapping estimates&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;def make_draws(distribution, parameters, size):
+    &amp;#39;&amp;#39;&amp;#39;
+        returns distribrution or None if valid distribution is not selected
+    &amp;#39;&amp;#39;&amp;#39;    
+    dist = None
+
+    if distribution.lower() == &amp;#39;binomial&amp;#39;:
+        n, p = parameters[&amp;#39;n&amp;#39;], parameters[&amp;#39;p&amp;#39;]
+        dist = sc.binom(n, p).rvs(size)
+
+    elif distribution.lower() == &amp;#39;exponential&amp;#39;:
+        l = parameters[&amp;#39;lambda&amp;#39;]
+        dist = sc.expon(scale = l).rvs(size)
+
+    elif distribution.lower() == &amp;#39;poisson&amp;#39;:
+        l = parameters[&amp;#39;lambda&amp;#39;]
+        dist = sc.poisson(mu=l).rvs(size)
+
+    elif distribution.lower() == &amp;#39;gamma&amp;#39;:
+        a, b = parameters[&amp;#39;alpha&amp;#39;],parameters[&amp;#39;beta&amp;#39;]
+        dist = sc.gamma(a=a,scale=1./b).rvs(size)
+
+    elif distribution.lower() == &amp;#39;normal&amp;#39;:
+        mean, var = parameters[&amp;#39;mean&amp;#39;], parameters[&amp;#39;var&amp;#39;]
+        dist = sc.norm(loc=mean, scale=var).rvs(size)
+
+    elif distribution.lower() == &amp;#39;uniform&amp;#39;:
+        low, high = parameters[&amp;#39;low&amp;#39;], parameters[&amp;#39;high&amp;#39;]
+        dist = sc.uniform(loc=low, scale=(high-low)).rvs(size)
+
+    return dist
+
+def plot_means(distribution, parameters, size, repeat):
+    arr = []
+    for r in range(repeat):
+        arr.append(make_draws(distribution, parameters, size).mean())
+    plt.figure()
+    plt.title(&amp;quot;Centeral Limit Theorem: &amp;quot; + distribution + &amp;quot; for N = &amp;quot; + str(size))
+    plt.hist(arr, normed=1,bins=100)
+    plt.show()
+
+plot_means(&amp;#39;poisson&amp;#39;, {&amp;#39;lambda&amp;#39;:10}, 10, 5000)
+plot_means(&amp;#39;poisson&amp;#39;, {&amp;#39;lambda&amp;#39;:10}, 200, 5000)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_41_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_41_1.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;plot_means(&amp;#39;binomial&amp;#39;, {&amp;#39;n&amp;#39;:10,&amp;#39;p&amp;#39;:0.1}, 10, 5000)
+plot_means(&amp;#39;binomial&amp;#39;, {&amp;#39;n&amp;#39;:10,&amp;#39;p&amp;#39;:0.1}, 200, 5000)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_42_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_42_1.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;plot_means(&amp;#39;exponential&amp;#39;, {&amp;#39;lambda&amp;#39;:10}, 10, 5000)
+plot_means(&amp;#39;exponential&amp;#39;, {&amp;#39;lambda&amp;#39;:10}, 200, 5000)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_43_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_43_1.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;plot_means(&amp;#39;gamma&amp;#39;, {&amp;#39;alpha&amp;#39;:10,&amp;#39;beta&amp;#39;:0.1}, 10, 5000)
+plot_means(&amp;#39;gamma&amp;#39;, {&amp;#39;alpha&amp;#39;:10,&amp;#39;beta&amp;#39;:0.1}, 200, 5000)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_44_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_44_1.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;plot_means(&amp;#39;normal&amp;#39;, {&amp;#39;mean&amp;#39;:10,&amp;#39;var&amp;#39;:0.1}, 10, 5000)
+plot_means(&amp;#39;normal&amp;#39;, {&amp;#39;mean&amp;#39;:10,&amp;#39;var&amp;#39;:0.1}, 200, 5000)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_45_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_45_1.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;plot_means(&amp;#39;uniform&amp;#39;, {&amp;#39;low&amp;#39;:10,&amp;#39;high&amp;#39;:20}, 10, 5000)
+plot_means(&amp;#39;uniform&amp;#39;, {&amp;#39;low&amp;#39;:10,&amp;#39;high&amp;#39;:20}, 200, 5000)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_46_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_46_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;Looking at these distirubtions we see that for N = 10, espeicaly for the discrete distriubiton, that the sampling distirubiton of the mean is not normal.   If the underlying distribution is skewed, so is the sampling distribution.  If we look at means of samples of size 200, the central limit theorm holds and the sampling distribution is normal even if the underlying distribution is skewed or discrete.  &lt;/p&gt;
+&lt;p&gt;The central limit theorm does not hold for all statistics.  We can look at the max, for instance.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;def plot_max(distribution, parameters, size, repeat):
+    arr = []
+    for r in range(repeat):
+        arr.append(make_draws(distribution, parameters, size).max())
+    plt.figure()
+    plt.hist(arr, normed=1,bins=100)
+    plt.show()
+
+plot_max(&amp;#39;poisson&amp;#39;, {&amp;#39;lambda&amp;#39;:10}, 200, 5000)
+plot_max(&amp;#39;binomial&amp;#39;, {&amp;#39;n&amp;#39;:10,&amp;#39;p&amp;#39;:0.1}, 200, 5000)
+plot_max(&amp;#39;exponential&amp;#39;, {&amp;#39;lambda&amp;#39;:10}, 200, 5000)
+plot_max(&amp;#39;gamma&amp;#39;, {&amp;#39;alpha&amp;#39;:10,&amp;#39;beta&amp;#39;:0.1}, 200, 5000)
+plot_max(&amp;#39;normal&amp;#39;, {&amp;#39;mean&amp;#39;:10,&amp;#39;var&amp;#39;:0.1}, 200, 5000)
+plot_max(&amp;#39;uniform&amp;#39;, {&amp;#39;low&amp;#39;:5, &amp;#39;high&amp;#39;:10}, 200, 5000)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_48_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_48_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_48_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_48_3.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_48_4.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_48_5.png" /&gt;&lt;/p&gt;
+&lt;p&gt;These distributions are clearly not normally distributed, and the discrete distribution results remain discrete.&lt;/p&gt;
+&lt;h3&gt;Population Inference and Confidence Interval&lt;/h3&gt;
+&lt;p&gt;Our next section had to do with constructing confidence intervals on means for different situations.   We were given some lunch data, and attempted to construct the confidence interval for the mean lunch break.  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;lunch_hour = np.loadtxt(&amp;#39;../estimation-sampling/data/lunch_hour.txt&amp;#39;)
+plt.figure()
+plt.hist(lunch_hour)
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_50_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;There are 25 data points in the data.   Even though this distrubtion is not normal, the sampling distribution of the mean should be approching a normal distribution.  &lt;/p&gt;
+&lt;p&gt;The standard deviation of the sampling distirubiton is suppose to be well approximated by the standard error of the sample.&lt;/p&gt;
+&lt;p&gt;$$s = \sqrt{ \frac{\Sigma_{i}(x_i \ - \ \bar{x})^2}{N-1} }$$&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;se = lunch_hour.std(ddof=1) / np.sqrt( len(lunch_hour) )
+se, sc.sem(lunch_hour) ##scipy standard error comparison
+
+
+
+
+(0.040925827625524797, 0.040925827625524797)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Using this standard error we can attempt to construct the confidence interval on the population mean.  We choose Z=1.96 for a 95% confidence interval&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;lm = lunch_hour.mean()
+(ci_95_low, ci_95_hi) = (lm-1.96*se,lm+1.96*se)
+(ci_95_low, ci_95_hi)
+
+
+
+
+(2.1042853778539716, 2.264714622146029)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The 95% confidence interval interpretation is that 95% of the confidence intervals constructed through this method will contrain the population mean lunch hour.   If the sample size was smaller, the both the standard error and normal approximation would change in a way that would not allow this method to work.   &lt;/p&gt;
+&lt;p&gt;For smaller sample sizes we would want to try another method.  Bootstrapping could be effective.&lt;/p&gt;
+&lt;p&gt;Bootstrapping does not assume normality, or more any assumptions about the underlying distribution.   It is a non-parametric method of constructiong an confidence interval.   If the distribution is well approximateldy by some common distribution, the bootstrapped CI will overestimate the boundaries compared to this distribution.  &lt;/p&gt;
+&lt;p&gt;We will try this for another data set involving productivity.&lt;/p&gt;
+&lt;h3&gt;Bootstraping&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;productivity = np.loadtxt(&amp;#39;../estimation-sampling/data/productivity.txt&amp;#39;)
+productivity
+
+
+
+
+array([-19.1, -15.2, -12.4, -15.4,  -8.7,  -6.7,  -5.9,  -3.5,  -3.1,
+        -2.1,   4.2,   6.1,   7. ,   9.1,  10. ,  10.3,  13.2,  10.1,
+        14.1,  14.4,  20.1,  26.3,  27.7,  22.2,  23.4])
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Because the sample size is large enough, we would expect the centeral limit to hold.  Lets see if the boot strapping gives similar values.  If we do not know the population variance, we should us the t-distribution.   We will also check that.  The two results should be close&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;se = sc.sem(productivity)
+mean = productivity.mean()
+ci95lo, ci95hi = mean-1.96*se, mean+1.96*se
+print ci95lo, ci95hi
+
+-0.330202770421 10.4182027704
+
+
+
+ci95lo, ci95hi = mean+sc.t.ppf(0.025,24)*se, mean+sc.t.ppf(0.975,24)*se
+print ci95lo, ci95hi
+
+-0.615086412127 10.7030864121
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;These intervals are very close.   Bootstrapping should give a similar result.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nx"&gt;def&lt;/span&gt; &lt;span class="nx"&gt;bootstrap&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;sample&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;B&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;10000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nx"&gt;np&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;array&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt; &lt;span class="nx"&gt;sample&lt;/span&gt;&lt;span class="err"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;np.random.randint&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;sample&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="n"&gt;size&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nx"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;sample&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="nx"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;B&lt;/span&gt;&lt;span class="p"&gt;)])&lt;/span&gt;
+
+&lt;span class="nx"&gt;def&lt;/span&gt; &lt;span class="nx"&gt;bootstrap_ci&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;sample&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;stat_function&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nx"&gt;np&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;mean&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;iterations&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;ci&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;95&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+
+    &lt;span class="nx"&gt;statistic&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;np&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;apply_along_axis&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;stat_function&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nx"&gt;bootstrap&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;productivity&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;B&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nx"&gt;iterations&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="nx"&gt;e&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;g&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt; &lt;span class="nx"&gt;array&lt;/span&gt; &lt;span class="nx"&gt;of&lt;/span&gt; &lt;span class="nx"&gt;means&lt;/span&gt;
+    &lt;span class="nx"&gt;low&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;np&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;percentile&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;statistic&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nx"&gt;ci&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;.)&lt;/span&gt;
+    &lt;span class="nx"&gt;high&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;np&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;percentile&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;statistic&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nx"&gt;ci&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;.)&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nx"&gt;low&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;high&lt;/span&gt;
+
+&lt;span class="nx"&gt;bootstrap_ci&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;productivity&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+
+
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mf"&gt;0.49619999999999997&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mf"&gt;10.265000000000001&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;This is in line with the previous estimates.   Lets look at the histogram of bootstrapped means.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;def bootstrap_plot_means(sample, iterations=1000):
+    samples = bootstrap(sample, iterations)
+    means = np.apply_along_axis(np.mean, 1, samples)
+    plt.figure()
+    plt.hist(means,normed=True,color=&amp;#39;red&amp;#39;,alpha=0.1)
+    plt.xlabel(&amp;#39;Mean Values&amp;#39;)
+    plt.ylabel(&amp;#39;Probability Density&amp;#39;)
+    plt.show()
+
+bootstrap_plot_means(productivity)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_63_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;Even though the results are not a statistically significant difference from zero, the results suggest that the population value is likely to be different from zero.   The uncertainty from the sample does not allow us to know that it is not zero, but we do know that it does not significantly harm productivity.&lt;/p&gt;
+&lt;h3&gt;Bootstraping Correlation&lt;/h3&gt;
+&lt;p&gt;We can bootstrap other variables.   We will try it for the correlation between LSAT and GPA from law data.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;law_sample = np.loadtxt(&amp;#39;../estimation-sampling/data/law_sample.txt&amp;#39;)
+plt.scatter(law_sample[:,0],law_sample[:,1])
+plt.xlabel(&amp;quot;LSAT Score&amp;quot;)
+plt.ylabel(&amp;quot;GPA&amp;quot;)
+print sc.pearsonr(law_sample[:,0],law_sample[:,1])
+
+(0.77637449128940705, 0.00066510201110281625)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_65_1.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;data = bootstrap(law_sample,B=10000)
+corrs = np.array([sc.pearsonr(mat[:,0],mat[:,1])[0] for mat in data])
+plt.figure()
+plt.hist(corrs)
+plt.show()
+np.percentile(corrs,2.5),np.percentile(corrs,97.5)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_66_0.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;(0.45069334540504685, 0.96239529249176581)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Bootstrapping the correlation between the variables from the sampple finds that a 95% confidence interval estimates the population correlation of LSAT with GPA should be between 0.45 and 0.96.   Thankfully we have the full dataset from which this sample was pulled.   Lets compare.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;all_law = np.loadtxt(&amp;#39;../estimation-sampling/data/law_all.txt&amp;#39;)
+sc.pearsonr(all_law[:,0],all_law[:,1])[0]
+
+
+
+
+0.75999785550389798
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;This is smack in the middle of the confidence interval.   Pretty cool.   &lt;/p&gt;</summary><category term="data-science"></category><category term="galvanize"></category><category term="bootstraping"></category><category term="statistics"></category><category term="confidence interval"></category></entry><entry><title>Galvanize - Week 02 - Day 1</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-02-01/" rel="alternate"></link><updated>2015-06-08T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-08:galvanize/galvanize-data-science-02-01/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
 &lt;h2&gt;Week 2 - Day 1&lt;/h2&gt;
 &lt;p&gt;Since this is the first day of the week we started with an hour long assessment on what we did last week.  The assessment was straight forward, and very doable with a modest understanding of the previous material.   &lt;/p&gt;
 &lt;p&gt;After the test, we started a lecture on probability, which we finished in the afternoon.  There was the individual sprint after the morning lecture, and a paired spring as the afternoon lecture&lt;/p&gt;
