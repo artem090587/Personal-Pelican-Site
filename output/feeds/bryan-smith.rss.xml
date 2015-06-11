@@ -30,7 +30,7 @@
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/W02D2/output_1_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_1_1.png" /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;There is a 34% chance that one of the 12 tests will be a false positive value.  Instead, it would make more sense to chose a false positive rate such that the chance of having false positives out of 12 tests would be less than 0.05&lt;/strong&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;p = np.linspace(0,1,10000)
 cdf = 1-sc.binom.pmf(0,12,p)
@@ -43,7 +43,7 @@ print &amp;quot;New Significant Level: &amp;quot;, p[cdf &amp;lt; 0.05].max()
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/W02D2/output_3_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_3_0.png" /&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;New Significant Level:  0.004200420042
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -174,7 +174,7 @@ array([[&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x1088e9f10&amp;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/W02D2/output_11_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_11_1.png" /&gt;&lt;/p&gt;
 &lt;p&gt;The age's with zero appear to be users that are not signed in by the height of the bars in the age and signed_in graphs.   The number of total clicks is less then 50,000, and the click through rates are small are mostly zero. &lt;/p&gt;
 &lt;p&gt;To answer question 1, we need to split the date between signed-in users and signed-out users.   &lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;sign = nyt[nyt[&amp;#39;Signed_In&amp;#39;]==1]
@@ -191,12 +191,12 @@ plt.show()
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/W02D2/output_13_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_13_1.png" /&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&amp;lt;matplotlib.figure.Figure at 0x108bbc950&amp;gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/W02D2/output_13_3.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_13_3.png" /&gt;&lt;/p&gt;
 &lt;p&gt;We can construct a hypothesis test on the data where we have the following&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;H0: The mean click through rate between signed in users and signed-out users are the same&lt;/li&gt;
@@ -227,12 +227,12 @@ plt.show()
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/W02D2/output_17_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_17_1.png" /&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&amp;lt;matplotlib.figure.Figure at 0x109a90610&amp;gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/W02D2/output_17_3.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_17_3.png" /&gt;&lt;/p&gt;
 &lt;p&gt;A visual inspect of the data shows that men and women have similar distirubtions, with the exceptions fo the impressions distributions.  Men seem to have a wider range of impressons compared to women.  &lt;/p&gt;
 &lt;p&gt;The hypthesis test we are constructing is:&lt;/p&gt;
 &lt;p&gt;H0:  Signed-in Men and Women have the same mean CTR&lt;br /&gt;
@@ -886,7 +886,7 @@ plt.show()
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/W02D2/output_38_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_38_0.png" /&gt;&lt;/p&gt;
 &lt;p&gt;From this method we see that the p-value is still changing, making me believe that our experiment could be under-powered.&lt;/p&gt;
 &lt;p&gt;There is additional data about the country of each user.  It could be interesting to look that these results by country.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;countries = pd.read_csv(&amp;quot;../ab-testing/data/country.csv&amp;quot;)
@@ -1063,7 +1063,7 @@ plt.show()
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/W02D2/output_45_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_45_0.png" /&gt;&lt;/p&gt;
 &lt;p&gt;If we constructed a hypthoesis at the end of day on Tuesday, the US would look like they were responsive to the new page, but the time plot shows that this could be a cherry-picked value.  If the experiment was allowed to run for more time, or we collect more data, the value would have changed.   It is clear from these plots that the sample sizes are not large enough that a additional data does not heavily influence the result.   I would be hesitant to make any strong conclusions about the new page based on these results.  &lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Bryan Smith</dc:creator><pubDate>Wed, 10 Jun 2015 10:30:00 -0700</pubDate><guid>tag:www.bryantravissmith.com,2015-06-10:galvanize/galvanize-data-science-02-03/</guid><category>data-science</category><category>galvanize</category><category>ab testing</category><category>statistics</category><category>hypthesis testing</category></item><item><title>Galvanize - Week 02 - Day 2</title><link>http://www.bryantravissmith.com/galvanize/galvanize-data-science-02-02/</link><description>&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
 &lt;h2&gt;Week 2 - Day 2&lt;/h2&gt;
 &lt;p&gt;Today we started with a mini-quiz, had a lecture on sampling methods, were given a talk about searching for a job, and finished the day with lecture on estimations/bootstraping and a reinforcement paired programming section.&lt;/p&gt;
