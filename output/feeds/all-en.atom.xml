@@ -1,5 +1,1070 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Bryan Travis Smith, Ph.D</title><link href="http://www.bryantravissmith.com/" rel="alternate"></link><link href="http://www.bryantravissmith.com/feeds/all-en.atom.xml" rel="self"></link><id>http://www.bryantravissmith.com/</id><updated>2015-06-09T10:30:00-07:00</updated><entry><title>Galvanize - Week 02 - Day 2</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-02-02/" rel="alternate"></link><updated>2015-06-09T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-09:galvanize/galvanize-data-science-02-02/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Bryan Travis Smith, Ph.D</title><link href="http://www.bryantravissmith.com/" rel="alternate"></link><link href="http://www.bryantravissmith.com/feeds/all-en.atom.xml" rel="self"></link><id>http://www.bryantravissmith.com/</id><updated>2015-06-10T10:30:00-07:00</updated><entry><title>Galvanize - Week 02 - Day 3</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-02-03/" rel="alternate"></link><updated>2015-06-10T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-10:galvanize/galvanize-data-science-02-03/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
+&lt;h2&gt;Week 2 - Day 3&lt;/h2&gt;
+&lt;p&gt;Today we had a miniquiz on making a python package that could contain an arbitrary probability mass function as a dictionary.  It had to allow new values to be set, maintain a normalized pmf, and return probabilities for values in the dictionary, None otherwise.   &lt;/p&gt;
+&lt;h2&gt;Morning&lt;/h2&gt;
+&lt;p&gt;The morning lecture was on Hypthesis testing and multiple testing corrections.  We reviewed the languaged, phrasing, caveots, and particulars about the frame works.  Our sprint involved investigating some questions involving multiple testing and clickthru rates&lt;/p&gt;
+&lt;h2&gt;Multiple Testing&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;A study attempted to measure the influence of patients' astrological signs on their risk for heart failure.
+   12 groups of patients (1 group for each astrological sign) were reviewed and the incidence of heart failure in each group was recorded. For each of the 12 groups, the researchers performed a z-test comparing the incidence of heart failure in one group to the incidence among the patients of all the other groups (i.e. 12 tests). The group with the highest rate of heart failure was Pisces, which had a p-value of .026 when assessing the null hypothesis that it had the same heart failure rate as all the other groups. What is the the problem with concluding from this p-value that Pisces have a higher rate of heart failure at a significance level of 0.05? How might you correct this p-value?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;We have 12 tests, with a 5% false positive rate.  Using the Bernoulli Distribution we can see the chance of getting x number of false positive.&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;matplotlib&lt;/span&gt; &lt;span class="n"&gt;inline&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;matplotlib.pyplot&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;plt&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;numpy&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;np&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;scipy.stats&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;sc&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;__future__&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;division&lt;/span&gt;
+
+
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;bar&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kp"&gt;arange&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;12&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="n"&gt;sc&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;binom&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;pmf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kp"&gt;arange&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;12&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="mi"&gt;12&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mf"&gt;0.05&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="n"&gt;color&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;indianred&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;alpha&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;xlabel&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;False Positive Count&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ylabel&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;Probability of False Positive Count&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;title&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Probability Of False Positives For 12 Tests&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Prob of 1 false postiive with 12 tests&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;sc&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;binom&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;pmf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;12&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mf"&gt;0.05&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Prob of 1 or More false positives with 12 test&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;sc&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;binom&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;pmf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;12&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mf"&gt;0.05&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;Prob&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;false&lt;/span&gt; &lt;span class="n"&gt;postiive&lt;/span&gt; &lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="mi"&gt;12&lt;/span&gt; &lt;span class="n"&gt;tests&lt;/span&gt; &lt;span class="mf"&gt;0.341280055366&lt;/span&gt;
+&lt;span class="n"&gt;Prob&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="n"&gt;More&lt;/span&gt; &lt;span class="n"&gt;false&lt;/span&gt; &lt;span class="n"&gt;positives&lt;/span&gt; &lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="mi"&gt;12&lt;/span&gt; &lt;span class="kp"&gt;test&lt;/span&gt; &lt;span class="mf"&gt;0.459639912337&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/W02D2/output_1_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;There is a 34% chance that one of the 12 tests will be a false positive value.  Instead, it would make more sense to chose a false positive rate such that the chance of having false positives out of 12 tests would be less than 0.05&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;p = np.linspace(0,1,10000)
+cdf = 1-sc.binom.pmf(0,12,p)
+plt.plot(p,cdf,label=&amp;quot;CDF of P&amp;quot;,color=&amp;#39;indianred&amp;#39;)
+plt.xlabel(&amp;#39;False Positive Rate For 12 Tests&amp;#39;)
+plt.ylabel(&amp;#39;Prob of 1+ False Positives&amp;#39;)
+plt.fill_between(p, cdf, where=cdf&amp;lt;0.05, interpolate=True, color=&amp;#39;red&amp;#39;,alpha=0.2)
+plt.show()
+print &amp;quot;New Significant Level: &amp;quot;, p[cdf &amp;lt; 0.05].max()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/W02D2/output_3_0.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;New Significant Level:  0.004200420042
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;strong&gt;In this case we would want to have a false positive rate for a single test of 0.0042.  By this criteria the p-value of 0.026 is not significant for the relation between Picese and heart failure. &lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;The Bonferonni correct suggests taking the significant goal of an individual test and divide it by the number of tests.  This gives a value of 0.000417.  This is very close to the above results&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;print &amp;quot;Significance: &amp;quot;, 0.05/12
+
+Significance:  0.00416666666667
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Click Through Rate&lt;/h2&gt;
+&lt;p&gt;We will use hypothesis testing to analyze &lt;strong&gt;Click Through Rate (CTR)&lt;/strong&gt; on the New York Times website.
+CTR is defined as the number of clicks the user make per impression that is made upon the user.
+We are going to determine if there is statistically significant difference between the mean CTR for
+the following groups:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Signed in users v.s. Not signed in users&lt;/li&gt;
+&lt;li&gt;Male v.s. Female&lt;/li&gt;
+&lt;li&gt;Each of 7 age groups against each other (7 choose 2 = 21 tests)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;Because we are construction 23 hypothesis tests on this data set, we can use the Bonferroni Correction of dividing the 5% false error rate by 23 to get:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;$$\alpha_{23} = 0.00217 $$&lt;/p&gt;
+&lt;p&gt;We can now load the data.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;nyt = pd.read_csv(&amp;quot;../ab-testing/data/nyt1.csv&amp;quot;)
+nyt.info()
+
+&amp;lt;class &amp;#39;pandas.core.frame.DataFrame&amp;#39;&amp;gt;
+Int64Index: 458441 entries, 0 to 458440
+Data columns (total 5 columns):
+Age            458441 non-null int64
+Gender         458441 non-null int64
+Impressions    458441 non-null int64
+Clicks         458441 non-null int64
+Signed_In      458441 non-null int64
+dtypes: int64(5)
+memory usage: 21.0 MB
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;There are not any null values in the data set, but we need to construct a click through rate for each user.   We will do this by:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Removing users without Impressions&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Dividing the Clicks by Impressions&lt;/p&gt;
+&lt;p&gt;nyt = nyt[nyt.Impressions!=0]
+nyt['CTR'] = np.nan
+nyt.CTR = nyt.Clicks.astype(float)/nyt2.Impressions.astype(float)
+nyt.head()&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Age&lt;/th&gt;
+      &lt;th&gt;Gender&lt;/th&gt;
+      &lt;th&gt;Impressions&lt;/th&gt;
+      &lt;th&gt;Clicks&lt;/th&gt;
+      &lt;th&gt;Signed_In&lt;/th&gt;
+      &lt;th&gt;CTR&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;36&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;73&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;30&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;49&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;47&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;11&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Now that we have the click through lets look at the distributions of variables.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;nyt2.hist(figsize=(15,8),bins=30,color=&amp;#39;indianred&amp;#39;,alpha=0.5)
+
+
+
+
+array([[&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x1088e9f10&amp;gt;,
+        &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x1088d9a50&amp;gt;],
+       [&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x108944150&amp;gt;,
+        &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x104598750&amp;gt;],
+       [&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x10882f990&amp;gt;,
+        &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x1088cafd0&amp;gt;]], dtype=object)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/W02D2/output_11_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;The age's with zero appear to be users that are not signed in by the height of the bars in the age and signed_in graphs.   The number of total clicks is less then 50,000, and the click through rates are small are mostly zero. &lt;/p&gt;
+&lt;p&gt;To answer question 1, we need to split the date between signed-in users and signed-out users.   &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sign = nyt[nyt[&amp;#39;Signed_In&amp;#39;]==1]
+nosign = nyt[nyt[&amp;#39;Signed_In&amp;#39;]==0]
+plt.figure()
+sign.hist(figsize=(15,8),bins=10,color=&amp;#39;indianred&amp;#39;,alpha=0.5)
+plt.show()
+plt.figure()
+nosign.hist(figsize=(15,8),bins=10,color=&amp;#39;indianred&amp;#39;,alpha=0.5)
+plt.show()
+
+
+&amp;lt;matplotlib.figure.Figure at 0x10ed32690&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/W02D2/output_13_1.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&amp;lt;matplotlib.figure.Figure at 0x108bbc950&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/W02D2/output_13_3.png" /&gt;&lt;/p&gt;
+&lt;p&gt;We can construct a hypothesis test on the data where we have the following&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;H0: The mean click through rate between signed in users and signed-out users are the same&lt;/li&gt;
+&lt;li&gt;HA: The mean click through rates between signed-in users and signed-out users aer different&lt;/li&gt;
+&lt;li&gt;We requrire a p-value less than 0.00217 to rejec the Null Hypothesis in favor for the Alterative&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Do this with a Weltch's (Non Equal Variance Assigned) t-test results in the following results:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sc.ttest_ind(sign.CTR, nosign.CTR, equal_var=False)
+
+
+
+
+(array(-55.37611793427461), 0.0)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The results of the test states that the test statistic to measure the difference is -55, given a p-value very close to zero, which is less than 0.00217.   In this case we can see there is a mean difference in the click through rates between the two populations.  In this case the signed-out users have a higher CTR than signed-in users.&lt;/p&gt;
+&lt;p&gt;Question two has to do with the difference in click through rates between genders.   This requires that we only investigate the users that are signed in, because signed out users do not have a gender variable.   Lets look at the data and perform a Wetch's t-test.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;plt.figure()
+sign[sign.Gender==0].hist(figsize=(15,8),bins=10,color=&amp;#39;indianred&amp;#39;,alpha=0.5)
+plt.show()
+plt.figure()
+sign[sign.Gender==1].hist(figsize=(15,8),bins=10,color=&amp;#39;blue&amp;#39;,alpha=0.5)
+plt.show()
+
+
+&amp;lt;matplotlib.figure.Figure at 0x10ed3a550&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/W02D2/output_17_1.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&amp;lt;matplotlib.figure.Figure at 0x109a90610&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/W02D2/output_17_3.png" /&gt;&lt;/p&gt;
+&lt;p&gt;A visual inspect of the data shows that men and women have similar distirubtions, with the exceptions fo the impressions distributions.  Men seem to have a wider range of impressons compared to women.  &lt;/p&gt;
+&lt;p&gt;The hypthesis test we are constructing is:&lt;/p&gt;
+&lt;p&gt;H0:  Signed-in Men and Women have the same mean CTR&lt;br /&gt;
+HA:  Signed-in Men and Women have different mean CTR&lt;br /&gt;
+&lt;em&gt;significance is 0.00217&lt;/em&gt;  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sc.ttest_ind(sign[sign.Gender==0].CTR, sign[sign.Gender==1].CTR, equal_var=False)
+
+
+
+
+(array(3.2897560659373846), 0.0010028527313066396)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Our test possted a t-value of 3.29 and a p-value of 0.001, which is significant.  We reject the null in favor of the alternative, concluding that men and women have different mean click through rates.  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;print &amp;quot;Click through rates (SI Men, SI Women, NOT Si)&amp;quot;,sign[sign.Gender==1].CTR.mean(),sign[sign.Gender==1].CTR.mean(),nosign.CTR.mean()
+
+Click through rates (SI Men, SI Women, NOT Si) 0.0139185242976 0.0139185242976 0.0283549070617
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The difference in the mean CTR between men and women is significant, but not large. The difference between both groups and not-signed-in users are much more different.&lt;/p&gt;
+&lt;p&gt;Now we will construct a set of hypothesis tests comparing different age groups against each other.   &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sign[&amp;#39;AgeGroup&amp;#39;] = np.nan
+sign.loc[:,&amp;#39;AgeGroup&amp;#39;] = pd.cut(sign.Age, [0,7, 18, 24, 34, 44, 54, 64, 1000])
+df = pd.DataFrame(columns=[&amp;#39;group1&amp;#39;,&amp;#39;group2&amp;#39;,&amp;#39;meanCTR1&amp;#39;,&amp;#39;meanCTR2&amp;#39;,&amp;#39;p_value&amp;#39;,&amp;#39;mean_difference&amp;#39;])
+k = 0
+AG = sign.AgeGroup.unique()
+for i,x in enumerate(AG):
+    for j,y in enumerate(AG):
+        if x != &amp;#39;(0, 7]&amp;#39; and y!=&amp;#39;(0, 7]&amp;#39; and i &amp;gt; j:
+            g1 = sign[sign.AgeGroup==x].CTR
+            g2 = sign[sign.AgeGroup==y].CTR
+            p = sc.ttest_ind(g1,g2, equal_var=False)[1]
+            diff = g1.mean()-g2.mean()
+            df.loc[k] = [x,y,g1.mean(),g2.mean(),p,diff]
+            k += 1
+
+df = df[df.p_value &amp;lt; 0.00217]
+df = df.sort(&amp;#39;mean_difference&amp;#39;).reset_index().drop(&amp;#39;index&amp;#39;,axis=1)
+df
+
+/Library/Python/2.7/site-packages/IPython/kernel/__main__.py:1: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/indexing.html#indexing-view-versus-copy
+  if __name__ == &amp;#39;__main__&amp;#39;:
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;group1&lt;/th&gt;
+      &lt;th&gt;group2&lt;/th&gt;
+      &lt;th&gt;meanCTR1&lt;/th&gt;
+      &lt;th&gt;meanCTR2&lt;/th&gt;
+      &lt;th&gt;p_value&lt;/th&gt;
+      &lt;th&gt;mean_difference&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;(18, 24]&lt;/td&gt;
+      &lt;td&gt;(64, 1000]&lt;/td&gt;
+      &lt;td&gt;0.009720&lt;/td&gt;
+      &lt;td&gt;0.029803&lt;/td&gt;
+      &lt;td&gt;2.458627e-272&lt;/td&gt;
+      &lt;td&gt;-0.020082&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;(44, 54]&lt;/td&gt;
+      &lt;td&gt;(64, 1000]&lt;/td&gt;
+      &lt;td&gt;0.009958&lt;/td&gt;
+      &lt;td&gt;0.029803&lt;/td&gt;
+      &lt;td&gt;1.430923e-295&lt;/td&gt;
+      &lt;td&gt;-0.019845&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;(24, 34]&lt;/td&gt;
+      &lt;td&gt;(64, 1000]&lt;/td&gt;
+      &lt;td&gt;0.010146&lt;/td&gt;
+      &lt;td&gt;0.029803&lt;/td&gt;
+      &lt;td&gt;7.860398e-285&lt;/td&gt;
+      &lt;td&gt;-0.019656&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;(18, 24]&lt;/td&gt;
+      &lt;td&gt;(7, 18]&lt;/td&gt;
+      &lt;td&gt;0.009720&lt;/td&gt;
+      &lt;td&gt;0.026585&lt;/td&gt;
+      &lt;td&gt;6.900980e-144&lt;/td&gt;
+      &lt;td&gt;-0.016865&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;(54, 64]&lt;/td&gt;
+      &lt;td&gt;(64, 1000]&lt;/td&gt;
+      &lt;td&gt;0.020307&lt;/td&gt;
+      &lt;td&gt;0.029803&lt;/td&gt;
+      &lt;td&gt;9.214903e-56&lt;/td&gt;
+      &lt;td&gt;-0.009496&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;5&lt;/th&gt;
+      &lt;td&gt;(54, 64]&lt;/td&gt;
+      &lt;td&gt;(7, 18]&lt;/td&gt;
+      &lt;td&gt;0.020307&lt;/td&gt;
+      &lt;td&gt;0.026585&lt;/td&gt;
+      &lt;td&gt;8.273993e-20&lt;/td&gt;
+      &lt;td&gt;-0.006278&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;6&lt;/th&gt;
+      &lt;td&gt;(7, 18]&lt;/td&gt;
+      &lt;td&gt;(64, 1000]&lt;/td&gt;
+      &lt;td&gt;0.026585&lt;/td&gt;
+      &lt;td&gt;0.029803&lt;/td&gt;
+      &lt;td&gt;3.563408e-05&lt;/td&gt;
+      &lt;td&gt;-0.003218&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;7&lt;/th&gt;
+      &lt;td&gt;(54, 64]&lt;/td&gt;
+      &lt;td&gt;(34, 44]&lt;/td&gt;
+      &lt;td&gt;0.020307&lt;/td&gt;
+      &lt;td&gt;0.010286&lt;/td&gt;
+      &lt;td&gt;7.523228e-144&lt;/td&gt;
+      &lt;td&gt;0.010020&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;8&lt;/th&gt;
+      &lt;td&gt;(54, 64]&lt;/td&gt;
+      &lt;td&gt;(24, 34]&lt;/td&gt;
+      &lt;td&gt;0.020307&lt;/td&gt;
+      &lt;td&gt;0.010146&lt;/td&gt;
+      &lt;td&gt;5.668132e-141&lt;/td&gt;
+      &lt;td&gt;0.010160&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;9&lt;/th&gt;
+      &lt;td&gt;(54, 64]&lt;/td&gt;
+      &lt;td&gt;(44, 54]&lt;/td&gt;
+      &lt;td&gt;0.020307&lt;/td&gt;
+      &lt;td&gt;0.009958&lt;/td&gt;
+      &lt;td&gt;2.525271e-151&lt;/td&gt;
+      &lt;td&gt;0.010349&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;10&lt;/th&gt;
+      &lt;td&gt;(54, 64]&lt;/td&gt;
+      &lt;td&gt;(18, 24]&lt;/td&gt;
+      &lt;td&gt;0.020307&lt;/td&gt;
+      &lt;td&gt;0.009720&lt;/td&gt;
+      &lt;td&gt;1.007813e-130&lt;/td&gt;
+      &lt;td&gt;0.010586&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;11&lt;/th&gt;
+      &lt;td&gt;(7, 18]&lt;/td&gt;
+      &lt;td&gt;(34, 44]&lt;/td&gt;
+      &lt;td&gt;0.026585&lt;/td&gt;
+      &lt;td&gt;0.010286&lt;/td&gt;
+      &lt;td&gt;4.575147e-146&lt;/td&gt;
+      &lt;td&gt;0.016299&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;12&lt;/th&gt;
+      &lt;td&gt;(7, 18]&lt;/td&gt;
+      &lt;td&gt;(24, 34]&lt;/td&gt;
+      &lt;td&gt;0.026585&lt;/td&gt;
+      &lt;td&gt;0.010146&lt;/td&gt;
+      &lt;td&gt;7.449266e-146&lt;/td&gt;
+      &lt;td&gt;0.016439&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;13&lt;/th&gt;
+      &lt;td&gt;(7, 18]&lt;/td&gt;
+      &lt;td&gt;(44, 54]&lt;/td&gt;
+      &lt;td&gt;0.026585&lt;/td&gt;
+      &lt;td&gt;0.009958&lt;/td&gt;
+      &lt;td&gt;4.014382e-151&lt;/td&gt;
+      &lt;td&gt;0.016628&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;14&lt;/th&gt;
+      &lt;td&gt;(64, 1000]&lt;/td&gt;
+      &lt;td&gt;(34, 44]&lt;/td&gt;
+      &lt;td&gt;0.029803&lt;/td&gt;
+      &lt;td&gt;0.010286&lt;/td&gt;
+      &lt;td&gt;5.245541e-288&lt;/td&gt;
+      &lt;td&gt;0.019516&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;p&gt;We itereated through all 21 groups and found 14 pairs who's mean CTR are different from each other with a signicance less than 0.00217.   These results can be summarized in the following way:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;People older than 64 have a statistically significant difference in mean CTR from all other age groups&lt;/li&gt;
+&lt;li&gt;People between 54 adn 64 have a statistically significant difference in mean CTR from all other age groups&lt;/li&gt;
+&lt;li&gt;People between 7 and 18 have a statistically significant difference in mean CTR from all other age groups&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The order of CTR seems to be older than 65, 7-18 year olds, and then 54-64 year olds.  &lt;/p&gt;
+&lt;p&gt;Its interest that the high click through rate of non-signed-in users matches those of the older groups.   &lt;/p&gt;
+&lt;h2&gt;Afternoon&lt;/h2&gt;
+&lt;p&gt;In the afternoon we learned about AB testing, and our paired programming assignment had to do with analyzing the results of simulated data for &lt;a href="http://etsy.com"&gt;Etsy&lt;/a&gt;.  We were asked to analysis the data from a given Tuesday where an AB test was performed on a website between two pages.   The goal is to change the conversion rate from 10% to 10.1% with this new page, a lift of 1%.  We are told that the weekend users are different than weeday users, and most of Etsy's revenue is made on the weekend.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;df = pd.read_csv(&amp;#39;../ab-testing/data/experiment.csv&amp;#39;)
+df.head()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;user_id&lt;/th&gt;
+      &lt;th&gt;ts&lt;/th&gt;
+      &lt;th&gt;ab&lt;/th&gt;
+      &lt;th&gt;landing_page&lt;/th&gt;
+      &lt;th&gt;converted&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;4040615247&lt;/td&gt;
+      &lt;td&gt;1356998400&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;new_page&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;4365389205&lt;/td&gt;
+      &lt;td&gt;1356998400&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;new_page&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;4256174578&lt;/td&gt;
+      &lt;td&gt;1356998402&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;new_page&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;8122359922&lt;/td&gt;
+      &lt;td&gt;1356998402&lt;/td&gt;
+      &lt;td&gt;control&lt;/td&gt;
+      &lt;td&gt;old_page&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;6077269891&lt;/td&gt;
+      &lt;td&gt;1356998402&lt;/td&gt;
+      &lt;td&gt;control&lt;/td&gt;
+      &lt;td&gt;old_page&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;dfa = df[(df.ab==&amp;#39;treatment&amp;#39;)&amp;amp;(df.landing_page==&amp;#39;new_page&amp;#39;)]
+dfb = df[(df.ab==&amp;#39;control&amp;#39;)&amp;amp;(df.landing_page==&amp;#39;old_page&amp;#39;)]
+dfc = df[(df.ab==&amp;#39;control&amp;#39;)&amp;amp;(df.landing_page==&amp;#39;new_page&amp;#39;)]
+dfd = df[(df.ab==&amp;#39;treatment&amp;#39;)&amp;amp;(df.landing_page==&amp;#39;old_page&amp;#39;)]
+print dfa.user_id.nunique(),dfa.user_id.count()
+print dfb.user_id.nunique(),dfb.user_id.count()
+print dfc.user_id.nunique(),dfc.user_id.count()
+print dfd.user_id.nunique(),dfd.user_id.count()
+
+95574 95574
+90814 90815
+0 0
+4759 4759
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Right away we have a problem in the data.  We have 4759 users that are in treatment group that have seen the new page and old page.  There is also one person in the control group that appear's twice.  &lt;/p&gt;
+&lt;p&gt;In my minds, a good experiment outlines how to handle missing data, mistakes, and errors in the analysis before they a found.  This is not the case for this assignment, so we will have to decided what to do ourselves.  I am going to exam the 4759 users.  First I will get a datetime in the dataframe, and then I will try to figure out what is happening with this group.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;df[&amp;#39;dt&amp;#39;] = np.nan
+df[&amp;#39;dt&amp;#39;] = pd.to_datetime(df.ts,unit=&amp;#39;s&amp;#39;)
+dfa = df[(df.ab==&amp;#39;treatment&amp;#39;)&amp;amp;(df.landing_page==&amp;#39;new_page&amp;#39;)].sort(&amp;#39;user_id&amp;#39;)
+dfb = df[(df.ab==&amp;#39;control&amp;#39;)&amp;amp;(df.landing_page==&amp;#39;old_page&amp;#39;)].sort(&amp;#39;user_id&amp;#39;)
+dfc = df[(df.ab==&amp;#39;control&amp;#39;)&amp;amp;(df.landing_page==&amp;#39;new_page&amp;#39;)].sort(&amp;#39;user_id&amp;#39;)
+dfd = df[(df.ab==&amp;#39;treatment&amp;#39;)&amp;amp;(df.landing_page==&amp;#39;old_page&amp;#39;)].sort(&amp;#39;user_id&amp;#39;)
+
+dfd.head()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;user_id&lt;/th&gt;
+      &lt;th&gt;ts&lt;/th&gt;
+      &lt;th&gt;ab&lt;/th&gt;
+      &lt;th&gt;landing_page&lt;/th&gt;
+      &lt;th&gt;converted&lt;/th&gt;
+      &lt;th&gt;dt&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;189992&lt;/th&gt;
+      &lt;td&gt;1033628&lt;/td&gt;
+      &lt;td&gt;1357084275&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;old_page&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2013-01-01 23:51:15&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;151793&lt;/th&gt;
+      &lt;td&gt;1891740&lt;/td&gt;
+      &lt;td&gt;1357066970&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;old_page&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2013-01-01 19:02:50&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;114751&lt;/th&gt;
+      &lt;td&gt;4557110&lt;/td&gt;
+      &lt;td&gt;1357050318&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;old_page&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2013-01-01 14:25:18&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;99066&lt;/th&gt;
+      &lt;td&gt;5534964&lt;/td&gt;
+      &lt;td&gt;1357043251&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;old_page&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2013-01-01 12:27:31&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;104055&lt;/th&gt;
+      &lt;td&gt;6180378&lt;/td&gt;
+      &lt;td&gt;1357045528&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;old_page&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2013-01-01 13:05:28&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;dfa[dfa.user_id.isin(dfd.user_id)].head()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;user_id&lt;/th&gt;
+      &lt;th&gt;ts&lt;/th&gt;
+      &lt;th&gt;ab&lt;/th&gt;
+      &lt;th&gt;landing_page&lt;/th&gt;
+      &lt;th&gt;converted&lt;/th&gt;
+      &lt;th&gt;dt&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;189991&lt;/th&gt;
+      &lt;td&gt;1033628&lt;/td&gt;
+      &lt;td&gt;1357084274&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;new_page&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2013-01-01 23:51:14&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;151790&lt;/th&gt;
+      &lt;td&gt;1891740&lt;/td&gt;
+      &lt;td&gt;1357066969&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;new_page&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2013-01-01 19:02:49&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;114746&lt;/th&gt;
+      &lt;td&gt;4557110&lt;/td&gt;
+      &lt;td&gt;1357050317&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;new_page&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2013-01-01 14:25:17&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;99064&lt;/th&gt;
+      &lt;td&gt;5534964&lt;/td&gt;
+      &lt;td&gt;1357043250&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;new_page&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2013-01-01 12:27:30&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;104052&lt;/th&gt;
+      &lt;td&gt;6180378&lt;/td&gt;
+      &lt;td&gt;1357045527&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;new_page&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2013-01-01 13:05:27&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;p&gt;In these 5 cases we see that the users saw the new landing page, then one second later saw the old landing page.  None of these users displayed converted.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;print dfd[dfd.converted==1].user_id.count()
+dfd[dfd.converted==1].head()
+
+501
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;user_id&lt;/th&gt;
+      &lt;th&gt;ts&lt;/th&gt;
+      &lt;th&gt;ab&lt;/th&gt;
+      &lt;th&gt;landing_page&lt;/th&gt;
+      &lt;th&gt;converted&lt;/th&gt;
+      &lt;th&gt;dt&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;100082&lt;/th&gt;
+      &lt;td&gt;10792592&lt;/td&gt;
+      &lt;td&gt;1357043708&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;old_page&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;2013-01-01 12:35:08&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;67975&lt;/th&gt;
+      &lt;td&gt;13223933&lt;/td&gt;
+      &lt;td&gt;1357029144&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;old_page&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;2013-01-01 08:32:24&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;42109&lt;/th&gt;
+      &lt;td&gt;27727121&lt;/td&gt;
+      &lt;td&gt;1357017491&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;old_page&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;2013-01-01 05:18:11&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;22040&lt;/th&gt;
+      &lt;td&gt;34535851&lt;/td&gt;
+      &lt;td&gt;1357008350&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;old_page&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;2013-01-01 02:45:50&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;87355&lt;/th&gt;
+      &lt;td&gt;85676035&lt;/td&gt;
+      &lt;td&gt;1357037889&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;old_page&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;2013-01-01 10:58:09&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;print dfa[dfa.user_id.isin(dfd[dfd.converted==1].user_id)].user_id.count()
+dfa[dfa.user_id.isin(dfd[dfd.converted==1].user_id)].head()
+
+501
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;user_id&lt;/th&gt;
+      &lt;th&gt;ts&lt;/th&gt;
+      &lt;th&gt;ab&lt;/th&gt;
+      &lt;th&gt;landing_page&lt;/th&gt;
+      &lt;th&gt;converted&lt;/th&gt;
+      &lt;th&gt;dt&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;100079&lt;/th&gt;
+      &lt;td&gt;10792592&lt;/td&gt;
+      &lt;td&gt;1357043707&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;new_page&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2013-01-01 12:35:07&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;67973&lt;/th&gt;
+      &lt;td&gt;13223933&lt;/td&gt;
+      &lt;td&gt;1357029143&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;new_page&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2013-01-01 08:32:23&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;42108&lt;/th&gt;
+      &lt;td&gt;27727121&lt;/td&gt;
+      &lt;td&gt;1357017490&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;new_page&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2013-01-01 05:18:10&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;22038&lt;/th&gt;
+      &lt;td&gt;34535851&lt;/td&gt;
+      &lt;td&gt;1357008349&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;new_page&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2013-01-01 02:45:49&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;87352&lt;/th&gt;
+      &lt;td&gt;85676035&lt;/td&gt;
+      &lt;td&gt;1357037888&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;new_page&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2013-01-01 10:58:08&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;p&gt;We have 501 users that saw the new page, then 1 second later saw the old page and converted.  This does not make sense interms of our project/assignment, so I think the safest thing to do for this analysis is throw out these mistakes, and only do the analysis with the untainted results.  If this was a real experiment, I would definatley investigate the details of the test.&lt;/p&gt;
+&lt;p&gt;The goal of the experiment is to have a new pages that has a conversion lift of 1 percent.   With that goal in mine we define the following test:&lt;/p&gt;
+&lt;p&gt;H0:  The lift in conversions from the new page and old page is equal to 1%
+HA:  the lift if conversions from the new page to the old page is less than 1%&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;def z_test(old_conversion, new_conversion, old_nrow, new_nrow,
+           effect_size=0., two_tailed=True, alpha=.05):
+    &amp;quot;&amp;quot;&amp;quot;z-test&amp;quot;&amp;quot;&amp;quot;
+    conversion = (old_conversion * old_nrow + new_conversion * new_nrow) / \
+                 (old_nrow + new_nrow)
+
+    se = np.sqrt(conversion * (1 - conversion) * (1 / old_nrow + 1 / new_nrow))
+
+    z_score = (new_conversion - old_conversion - effect_size) / se
+
+    if not two_tailed:
+        p_val = 1 - sc.norm.cdf(abs(z_score))
+    else:
+        p_val = (1 - sc.norm.cdf(abs(z_score))) * 2
+
+    reject_null = p_val &amp;lt; alpha
+    #print &amp;#39;z-score: %s, p-value: %s, reject null: %s&amp;#39; % (z_score, p_val, reject_null)
+    return z_score, p_val, reject_null
+
+
+
+conA,cntA = dfa.converted.mean(),dfa.converted.count()
+conB,cntB = dfb.converted.mean(),dfb.converted.count()
+print conA,conB,cntA,cntB,0.01*conB
+z_test(conA,conB,cntA,cntB,two_tailed=False,effect_size=0.01*conB)
+
+0.0996819218616 0.0996421296041 95574 90815 0.000996421296041
+
+
+
+
+
+(-0.74648172622270292, 0.22768823318094589, False)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;In this frame there results are not significantly different from a 1% left that we can rule them out.  But we could have also tested if there is a difference between them.  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;z_test(conA,conB,cntA,cntB,two_tailed=True,effect_size=0.0)
+
+
+
+
+(-0.028666091979081442, 0.9771308999283459, False)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;This is also not signifcant difference between the groups either.  The results of our Tuesday experiment are really inconclusive.  Ultimately we are concerned with the effect on weekend users, because they are responsible for most of Etsy's revenue.   We were told this user base is different from the weekend users.  &lt;/p&gt;
+&lt;p&gt;AirBNB had a talks (&lt;a href="http://nerds.airbnb.com/experiments-airbnb/"&gt;here&lt;/a&gt; and &lt;a href="http://nerds.airbnb.com/experiments-at-airbnb/"&gt;here&lt;/a&gt;) about looking at the hourly change in a p-vale, and examing if and when it level's off as the 'true' p-value for an experiment.   We are going to explore this method.  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;p_values = []
+effect = 0
+last_effect=0
+for i in range(23):
+
+    # Grab the hour
+    df_houra = dfa[dfa.dt.dt.hour&amp;lt;=i]
+    df_hourb = dfb[dfb.dt.dt.hour&amp;lt;=i]
+
+    conA,cntA = df_houra.converted.mean(),df_houra.converted.count()
+    conB,cntB = df_hourb.converted.mean(),df_hourb.converted.count()
+
+    p_values.append( z_test(conA,conB,cntA,cntB,two_tailed=False,effect_size=0.01*conB)[1] )
+
+plt.figure()
+plt.plot(range(23),p_values,color=&amp;#39;indianred&amp;#39;,alpha=0.8,lw=2)
+plt.hlines(0.05,0,23,color=&amp;#39;red&amp;#39;,alpha=0.6,lw=2,linestyle=&amp;#39;--&amp;#39;)
+plt.xlabel(&amp;quot;Hours&amp;quot;)
+plt.ylabel(&amp;quot;P-values&amp;quot;)
+plt.ylim([0,1])
+plt.xlim([0,23])
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/W02D2/output_38_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;From this method we see that the p-value is still changing, making me believe that our experiment could be under-powered.&lt;/p&gt;
+&lt;p&gt;There is additional data about the country of each user.  It could be interesting to look that these results by country.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;countries = pd.read_csv(&amp;quot;../ab-testing/data/country.csv&amp;quot;)
+countries.head()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;user_id&lt;/th&gt;
+      &lt;th&gt;country&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;9160993935&lt;/td&gt;
+      &lt;td&gt;UK&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;5879439034&lt;/td&gt;
+      &lt;td&gt;UK&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;8915383273&lt;/td&gt;
+      &lt;td&gt;UK&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;2917824565&lt;/td&gt;
+      &lt;td&gt;US&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;3980216975&lt;/td&gt;
+      &lt;td&gt;UK&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;dfac = dfa.merge(countries,on=&amp;#39;user_id&amp;#39;)
+dfbc = dfb.merge(countries,on=&amp;#39;user_id&amp;#39;)
+print dfac.user_id.count(),dfac.user_id.nunique()
+print dfbc.user_id.count(),dfbc.user_id.nunique()
+dfac.head()
+
+97151 92554
+87927 87924
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;user_id&lt;/th&gt;
+      &lt;th&gt;ts&lt;/th&gt;
+      &lt;th&gt;ab&lt;/th&gt;
+      &lt;th&gt;landing_page&lt;/th&gt;
+      &lt;th&gt;converted&lt;/th&gt;
+      &lt;th&gt;dt&lt;/th&gt;
+      &lt;th&gt;country&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;23267&lt;/td&gt;
+      &lt;td&gt;1357066015&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;new_page&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2013-01-01 18:46:55&lt;/td&gt;
+      &lt;td&gt;CA&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;79973&lt;/td&gt;
+      &lt;td&gt;1357018111&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;new_page&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;2013-01-01 05:28:31&lt;/td&gt;
+      &lt;td&gt;US&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;338650&lt;/td&gt;
+      &lt;td&gt;1357083484&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;new_page&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2013-01-01 23:38:04&lt;/td&gt;
+      &lt;td&gt;UK&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;340147&lt;/td&gt;
+      &lt;td&gt;1357083599&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;new_page&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;2013-01-01 23:39:59&lt;/td&gt;
+      &lt;td&gt;US&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;382429&lt;/td&gt;
+      &lt;td&gt;1357002072&lt;/td&gt;
+      &lt;td&gt;treatment&lt;/td&gt;
+      &lt;td&gt;new_page&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2013-01-01 01:01:12&lt;/td&gt;
+      &lt;td&gt;CA&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;dfac.groupby(&amp;#39;user_id&amp;#39;).country.count().max()
+
+
+
+
+2
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;We see that some users have two countries listed.  Since the user country data is not time sensitive, we have to drop them.  We do not know which country they were in at the type of the experiment.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;dfac = dfa.merge(countries.drop_duplicates(&amp;#39;user_id&amp;#39;),on=&amp;#39;user_id&amp;#39;)
+print dfac.user_id.count(),dfac.user_id.nunique()
+dfbc = dfb.merge(countries.drop_duplicates(&amp;#39;user_id&amp;#39;),on=&amp;#39;user_id&amp;#39;)
+print dfbc.user_id.count(),dfbc.user_id.nunique()
+
+92554 92554
+87925 87924
+
+
+
+
+p_values = {&amp;#39;US&amp;#39;:[],&amp;#39;CA&amp;#39;:[],&amp;#39;UK&amp;#39;:[]}
+effect = {&amp;#39;US&amp;#39;:0,&amp;#39;CA&amp;#39;:0,&amp;#39;UK&amp;#39;:0}
+last_effect=0
+for i in range(23):
+    for country in dfac.country.unique():
+    # Grab the hour
+        df_houra = dfac[(dfac.dt.dt.hour&amp;lt;=i)&amp;amp;(dfac.country==country)]
+        df_hourb = dfbc[(dfbc.dt.dt.hour&amp;lt;=i)&amp;amp;(dfbc.country==country)]
+
+        conA,cntA = df_houra.converted.mean(),df_houra.converted.count()
+        conB,cntB = df_hourb.converted.mean(),df_hourb.converted.count()
+
+        p_values[country].append( z_test(conA,conB,cntA,cntB,two_tailed=False,effect_size=0.01*effect[country])[1] )
+        effect[country] = conB
+
+plt.figure()
+plt.plot(range(23),p_values[&amp;#39;US&amp;#39;],color=&amp;#39;indianred&amp;#39;,alpha=0.8,lw=2,label=&amp;#39;US&amp;#39;)
+plt.plot(range(23),p_values[&amp;#39;CA&amp;#39;],color=&amp;#39;blue&amp;#39;,alpha=0.8,lw=2,label=&amp;#39;CA&amp;#39;)
+plt.plot(range(23),p_values[&amp;#39;UK&amp;#39;],color=&amp;#39;green&amp;#39;,alpha=0.8,lw=2,label=&amp;#39;UK&amp;#39;)
+plt.hlines(0.05,0,23,color=&amp;#39;red&amp;#39;,alpha=0.6,lw=2,linestyle=&amp;#39;--&amp;#39;)
+plt.xlabel(&amp;quot;Hours&amp;quot;)
+plt.ylabel(&amp;quot;P-values&amp;quot;)
+plt.ylim([0,1])
+plt.xlim([0,23])
+plt.legend()
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/W02D2/output_45_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;If we constructed a hypthoesis at the end of day on Tuesday, the US would look like they were responsive to the new page, but the time plot shows that this could be a cherry-picked value.  If the experiment was allowed to run for more time, or we collect more data, the value would have changed.   It is clear from these plots that the sample sizes are not large enough that a additional data does not heavily influence the result.   I would be hesitant to make any strong conclusions about the new page based on these results.  &lt;/p&gt;</summary><category term="data-science"></category><category term="galvanize"></category><category term="ab testing"></category><category term="statistics"></category><category term="hypthesis testing"></category></entry><entry><title>Galvanize - Week 02 - Day 2</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-02-02/" rel="alternate"></link><updated>2015-06-09T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-09:galvanize/galvanize-data-science-02-02/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
 &lt;h2&gt;Week 2 - Day 2&lt;/h2&gt;
 &lt;p&gt;Today we started with a mini-quiz, had a lecture on sampling methods, were given a talk about searching for a job, and finished the day with lecture on estimations/bootstraping and a reinforcement paired programming section.&lt;/p&gt;
 &lt;h2&gt;Mini-Quiz&lt;/h2&gt;
