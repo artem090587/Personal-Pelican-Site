@@ -1,5 +1,1012 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Bryan Travis Smith, Ph.D</title><link href="http://www.bryantravissmith.com/" rel="alternate"></link><link href="http://www.bryantravissmith.com/feeds/all.atom.xml" rel="self"></link><id>http://www.bryantravissmith.com/</id><updated>2015-06-10T10:30:00-07:00</updated><entry><title>Galvanize - Week 02 - Day 3</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-02-03/" rel="alternate"></link><updated>2015-06-10T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-10:galvanize/galvanize-data-science-02-03/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Bryan Travis Smith, Ph.D</title><link href="http://www.bryantravissmith.com/" rel="alternate"></link><link href="http://www.bryantravissmith.com/feeds/all.atom.xml" rel="self"></link><id>http://www.bryantravissmith.com/</id><updated>2015-06-12T10:30:00-07:00</updated><entry><title>Galvanize - Week 02 - Day 5</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-02-05/" rel="alternate"></link><updated>2015-06-12T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-12:galvanize/galvanize-data-science-02-05/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
+&lt;h2&gt;Week 2 - Day 5&lt;/h2&gt;
+&lt;p&gt;Our more quiz was a survey about our progress in the program.  The morning lecture was about the beta distribution, and its relation to A/B testing from a Bayesian perspective, and a brief introduction to the multi-arm bandit method.   &lt;/p&gt;
+&lt;h2&gt;Individual Morning Sprint&lt;/h2&gt;
+&lt;p&gt;This morning we had some simulated click through data for two different sites and attempted to answer question about the outcome of the two pages.  We want to find the probability of a click through on the two pages and be able to quantify how much better one site is over the other. }&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;matplotlib&lt;/span&gt; &lt;span class="n"&gt;inline&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;matplotlib.pyplot&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;plt&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;numpy&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;np&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;scipy.stats&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;sc&lt;/span&gt;
+&lt;span class="n"&gt;A&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kp"&gt;loadtxt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;data/siteA.txt&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;B&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kp"&gt;loadtxt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;data/siteB.txt&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Bayesian Analysis&lt;/h2&gt;
+&lt;p&gt;We are going to start with a prior that the click through rate of both sites can be anything between 0 and 1.  This will look like the following:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;x=np.arange(0,1.01,0.01)
+y = sc.beta(a=1.,b=1.).pdf(x)
+
+def plot_with_fill(x,y,label,color):
+    lines = plt.plot(x,y,label=label,lw=2,color=color)
+    plt.fill_between(x,0,y,alpha=0.2,color=color)
+    plt.ylim([0,1.2*y.max()])
+    plt.legend()
+
+
+plot_with_fill(x,y,&amp;#39;Beta a=1,b=1&amp;#39;,&amp;#39;seagreen&amp;#39;)
+plt.xlabel(&amp;quot;Probability of Click Through&amp;quot;)
+plt.ylabel(&amp;quot;Probability Density&amp;quot;)
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/http://www.bryantravissmith.com/img/GW02D5/output_3_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;If we look at 1 value from the click through where the user does not click through, we update our believe:&lt;/p&gt;
+&lt;p&gt;$$\mbox{Posterior} = \mbox{Prior} * \mbox{Likelihood}$$&lt;/p&gt;
+&lt;p&gt;$$\mbox{Beta}(\alpha=1, \ \beta=2) = \mbox{Beta}(\alpha=1, \ \beta=1) \times (1 - p)$$&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;b1,a1 = 1,0
+y1 = sc.beta(a=1,b=1).pdf(x)
+y2 = sc.beta(a=a1+1,b=b1+1).pdf(x)
+plot_with_fill(x,y1,&amp;#39;Prior&amp;#39;,&amp;#39;seagreen&amp;#39;)
+plot_with_fill(x,y2,&amp;#39;1 Views&amp;#39;,&amp;#39;lightsalmon&amp;#39;)
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/http://www.bryantravissmith.com/img/GW02D5/output_5_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;If we have 50 views, the equation would be:&lt;/p&gt;
+&lt;p&gt;$$\mbox{Beta}(\alpha=1+n_{clicks}, \ \beta=1+n_{no clicks}) = \mbox{Beta}(\alpha=1, \ \beta=1) \times (1 - p)^{n_{no clicks}} \times p^{n_{clicks}}$$&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;b50,a50 = np.bincount(A[:50].astype(int))
+y1 = sc.beta(a=1,b=1).pdf(x)
+y2 = sc.beta(a=a50+1,b=b50+1).pdf(x)
+plot_with_fill(x,y1,&amp;#39;Prior&amp;#39;,&amp;#39;seagreen&amp;#39;)
+plot_with_fill(x,y2,&amp;#39;50 Views&amp;#39;,&amp;#39;lightsalmon&amp;#39;)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_7_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;We can imagine that we continue getting data, and our believe about the click through rate would evolve:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;x=np.arange(0,1.001,0.001)
+plt.figure(figsize=(15,10))
+y1 = sc.beta(a=1.,b=1.).pdf(x)
+plot_with_fill(x,y1,&amp;#39;Prior&amp;#39;,&amp;#39;seagreen&amp;#39;)
+color_s = {&amp;#39;50&amp;#39;:&amp;#39;lightsalmon&amp;#39;,&amp;#39;100&amp;#39;:&amp;#39;aquamarine&amp;#39;,&amp;#39;200&amp;#39;:&amp;#39;turquoise&amp;#39;,&amp;#39;400&amp;#39;:&amp;#39;NavajoWhite&amp;#39;,&amp;#39;800&amp;#39;:&amp;#39;forestgreen&amp;#39;}
+for count in [50,100,200,400,800]:
+    bc,ac = np.bincount(A[:count].astype(int))
+    y = sc.beta(a=ac,b=bc).pdf(x)
+    plot_with_fill(x,y,str(count)+&amp;#39; Views&amp;#39;,color_s[str(count)])
+plt.xlim([0,.2])
+
+
+
+
+(0, 0.2)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_9_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;We can see that as we increase the amount of data we have, we have a more specific believe about the click through rate of site A.  &lt;strong&gt;This is different from a hypthesis test.  It does not required a fix sample size or fixed amount of time&lt;/strong&gt;  &lt;/p&gt;
+&lt;p&gt;We can look at the two sites for all the data.  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;x=np.arange(0,1.001,0.001)
+plt.figure(figsize=(15,10))
+bA,aA = np.bincount(A.astype(int))
+bB,aB = np.bincount(B.astype(int))
+y1 = sc.beta(a=float(aA),b=float(bA)).pdf(x)
+y2 = sc.beta(a=float(aB),b=float(bB)).pdf(x)
+plot_with_fill(x,y1,&amp;#39;A Site&amp;#39;,&amp;#39;seagreen&amp;#39;)
+plot_with_fill(x,y2,&amp;#39;B Site&amp;#39;,&amp;#39;aquamarine&amp;#39;)
+plt.xlim([0,.2])
+plt.ylim([0,50])
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_11_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;We now want to determine, given these distributions, what is the probability that site B is better than site A.  We can take random variables from both distributions and count the number of times that the random value from B is greater than the random variable from A.   We can do this 10,000 times.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;rA = sc.beta(a=aA,b=bA).rvs(size=10000)
+rB = sc.beta(a=aB,b=bB).rvs(size=10000)
+nLess,nMore = np.bincount((rA&amp;lt;rB).astype(int))
+
+plt.figure()
+ps = []
+for i in range(1000):
+    rA = sc.beta(a=aA,b=bA).rvs(size=10000)
+    rB = sc.beta(a=aB,b=bB).rvs(size=10000)
+    nLess,nMore = np.bincount((rA&amp;lt;rB).astype(int))
+    ps.append(nMore/10000.)
+
+plt.hist(ps,bins=15,color=&amp;#39;aquamarine&amp;#39;,alpha=0.5)
+plt.show()
+print &amp;quot;Mean Prob: &amp;quot;, nMore/10000.
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_13_0.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;Mean Prob:  0.9971
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Based on our current belief based on the data, the chance that sight B is better than site A is 99.7%.  &lt;/p&gt;
+&lt;p&gt;We can also estimate the Bayesian equivalant of a confidence interval.&lt;/p&gt;
+&lt;p&gt;This is the centeral credible region - range of the 2.5 precentile and the 97.5 percentile:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;rA = sc.beta(a=aA,b=bA).rvs(size=10000)
+HDI_A = (np.percentile(rA,2.5),np.percentile(rA,97.5))
+rB = sc.beta(a=aB,b=bB).rvs(size=10000)
+HDI_B = (np.percentile(rB,2.5),np.percentile(rB,97.5))
+print &amp;quot;Site A: &amp;quot;, HDI_A
+print &amp;quot;Site B: &amp;quot;, HDI_B
+
+Site A:  (0.05002097381711422, 0.084804921163330979)
+Site B:  (0.082330727908278764, 0.12425696702783418)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;An 95% highest density interval (HDI) is the most dense interval of a posterior distribution containing X% of its mass. It is analagous to frequentist analysis's confidence intervals.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;def hdi_beta(data,percent=0.95):
+    bD,aD = np.bincount(data.astype(int))
+    x_max = sc.beta(a=aD,b=bD).ppf(1 - percent - 1e-6)
+    x_high_max = sc.beta(a=aD,b=bD).ppf(percent - 1e-6)
+    vals = np.linspace(0,x_max,1000)
+    p_vals = 0.95+sc.beta(a=aD,b=bD).cdf(vals)
+    x_high = sc.beta(a=aD,b=bD).ppf(p_vals)
+    width = x_high-vals
+    low = vals[np.argmin(width)]
+    high = low+width.min()
+    return (low,high)
+
+print &amp;quot;HDI A:&amp;quot;, hdi_beta(A)
+print &amp;quot;HDI B:&amp;quot;, hdi_beta(B)
+
+
+HDI A: (0.049391799061910255, 0.083668677250890555)
+HDI B: (0.081861282294831139, 0.12374716027178045)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;These HDI are close to the central credibility region, but they are systematically lower.&lt;/p&gt;
+&lt;p&gt;What is nicse about Baysina inference is we can ask what is the probability that site B is 2 percentage points better than A.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;nLess2,nMore2 = np.bincount((rB&amp;gt;(rA+0.02)).astype(int))
+print &amp;quot;Probabilty B &amp;gt; A + 0.02:  &amp;quot;, nMore2/10000.
+
+plt.figure()
+plt.hist((rB-rA),bins=30,color=&amp;#39;steelblue&amp;#39;,alpha=0.4)
+plt.show()
+
+Probabilty B &amp;gt; A + 0.02:   0.881
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_19_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;In this case we can see that the difference is near zero (really 0.02), but is likely to be higher.   The probabiliy given by the simulation is 88.1%. &lt;/p&gt;
+&lt;p&gt;For a sanity check we can do a hypothesis test.  We would perform a 1 sided Hypthesiss test:&lt;/p&gt;
+&lt;p&gt;H0: The mean clickthrough rate is the same.&lt;br /&gt;
+HA: The mean clicktrhough rate for site B is greater than site A.  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mDiff = rB.mean()-rA.mean()
+se = np.sqrt(rB.var()/(len(rB)-1)+rA.var()/(len(rA)-1))
+Z = mDiff/se
+print mDiff,se,Z
+print &amp;quot;p-value: &amp;quot;,1-sc.norm.cdf(Z)
+print &amp;quot;The mean difference is statistically significant&amp;quot;
+
+
+0.0363429336139 0.000138288570828 262.805041634
+p-value:  0.0
+The mean difference is statistically significant
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;We are now told that there is a business model for this website, and it should inform our decision to implement the new site:  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;* the average click on site A yields $1.00 in profit
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;the average click on site B yields $1.05 in profit  &lt;/p&gt;
+&lt;p&gt;gain_per_click = (rB.sum()*1.05-rA.sum())/10000.
+gain_per_click&lt;/p&gt;
+&lt;p&gt;0.041471285947814275&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;There is an average gain of 4 cents per click increase in revenume.  Roughly 3 cents from the increase in click through rate and 1.4 cent from the increase in yield.  &lt;/p&gt;
+&lt;p&gt;We are not told over what time the experiment we analysed took place over.  A site with 10 Million users per month will see an increase revenue of 400,000 dollars per month, while a site of 10,000 users per month will only see an increase of of 400 dollars per month.  The business decision of investing money and time depends on the context.  This could be a great boom for the company, or a waste of time, depending on the situation.  &lt;/p&gt;
+&lt;h2&gt;Multi-arm Bandit&lt;/h2&gt;
+&lt;p&gt;The multi-arm bandit approach is a method of balancing the exploration of strategies against the explortation of the best strategy.  We impleted a multi-arm bandit class with a number of strategies:  Random Choice, Max Mean, Epsilon Greedy, Soft Max, UCB1, Bayesian, and Annealing.  &lt;/p&gt;
+&lt;p&gt;We have two ways to measure the success of a search strategy for now.  The regret:&lt;/p&gt;
+&lt;p&gt;$$\mbox{Regret} = N \ p_{optimal} - \Sigma_{i=1}^{N} p_{i} $$&lt;/p&gt;
+&lt;p&gt;And the ratio of optimal decision:&lt;/p&gt;
+&lt;p&gt;$$ \frac{N_{optimal}}{N}$$&lt;/p&gt;
+&lt;p&gt;The bandit class takes an array of deciion options where each value is the probability of success.  The spirit of this is examining multiple metrics at the same time: like conversion rates across multiple simulatenous tests.&lt;/p&gt;
+&lt;h2&gt;Max Mean&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;bandits&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Bandits&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;banditstrategy&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;numpy&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;np&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;scipy.stats&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;sc&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;matplotlib.pyplot&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;plt&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;prettyplotlib&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;ppl&lt;/span&gt;
+&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;matplotlib&lt;/span&gt; &lt;span class="n"&gt;inline&lt;/span&gt;
+
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;figure&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;figsize&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;14&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;bandits&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Bandits&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="mf"&gt;0.05&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mf"&gt;0.03&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mf"&gt;0.06&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+    &lt;span class="n"&gt;strat&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;BanditStrategy&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;bandits&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;random_choice&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;strat&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sample_bandits&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;ppl&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;plot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;strat&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;N&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="n"&gt;strat&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;regrets&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;label&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;Random Choice&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;color&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;steelblue&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;alpha&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;lw&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="n"&gt;bandits&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Bandits&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="mf"&gt;0.05&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mf"&gt;0.03&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mf"&gt;0.06&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+    &lt;span class="n"&gt;strat&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;BanditStrategy&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;bandits&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;max_mean&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;strat&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sample_bandits&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;ppl&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;plot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;strat&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;N&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="n"&gt;strat&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;regrets&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;label&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;Max Mean&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="n"&gt;alpha&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;color&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;indianred&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;lw&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;show&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_26_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;The max mean, on average, performs better than a random choice.  The issue with max mean is that its very exploitive.   When there is a statisitcal fluxtuation in makes it look like a worse option is the best option, it will stick with it.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;plt.figure(figsize=(14,10))
+for i in range(10):
+    bandits = Bandits([0.05, 0.03, 0.06])
+    strat = BanditStrategy(bandits, random_choice)
+    strat.sample_bandits(1000)
+    ppl.plot(range(strat.N),strat.percentOpt,label=&amp;#39;Random Choice&amp;#39;,color=&amp;#39;steelblue&amp;#39;,alpha=0.4,lw=3)
+
+    bandits = Bandits([0.05, 0.03, 0.06])
+    strat = BanditStrategy(bandits, max_mean)
+    strat.sample_bandits(1000)
+    ppl.plot(range(strat.N),strat.percentOpt,label=&amp;#39;Max Mean&amp;#39;+str(i),alpha=0.4,color=&amp;#39;indianred&amp;#39;,lw=3)
+
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_28_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;This is best illustrated if we look at the percent of the time that the optimal solution is chosen.   The max-mean strategy will often find one value and stay with it.&lt;/p&gt;
+&lt;p&gt;We can explore this method on three different array options:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&amp;#39;&amp;#39;&amp;#39;
+One Stand Out Best = [0.1, 0.1, 0.1, 0.1, 0.9]
+One Small Best = [0.1, 0.1, 0.1, 0.1, 0.12]
+A clear rank = [0.1, 0.2, 0.3, 0.4, 0.5]
+&amp;#39;&amp;#39;&amp;#39;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Lets look at one &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;def make_multi_plots(size,func):
+    values = [[0.1, 0.1, 0.1, 0.1, 0.9],[0.1, 0.1, 0.1, 0.1, 0.12],[0.1, 0.2, 0.3, 0.4, 0.5]]
+    titles = [&amp;#39;One Stand Out Best&amp;#39;,&amp;#39;One Slightly Best&amp;#39;, &amp;quot;A clear rank&amp;quot;]
+    for v,t in zip(values,titles): 
+        plt.figure(figsize=(14,5))
+        plt.subplot(1,2,1)
+        for i in range(10):
+            bandits = Bandits(v[:])
+            strat = BanditStrategy(bandits, random_choice)
+            strat.sample_bandits(size)
+            ppl.plot(range(strat.N),strat.regrets,label=&amp;#39;Random Choice&amp;#39;,color=&amp;#39;steelblue&amp;#39;,alpha=0.4,lw=3)
+
+            bandits = Bandits(v[:])
+            strat = BanditStrategy(bandits, func)
+            strat.sample_bandits(size)
+            ppl.plot(range(strat.N),strat.regrets,label=&amp;#39;Max Mean&amp;#39;+str(i),alpha=0.4,color=&amp;#39;indianred&amp;#39;,lw=3)
+        plt.title(&amp;#39;Regret - &amp;#39; + t)
+
+        plt.subplot(1,2,2)
+        for i in range(10):
+            bandits = Bandits(v[:])
+            strat = BanditStrategy(bandits, random_choice)
+            strat.sample_bandits(size)
+            ppl.plot(range(strat.N),strat.percentOpt,label=&amp;#39;Random Choice&amp;#39;,color=&amp;#39;steelblue&amp;#39;,alpha=0.4,lw=3)
+
+            bandits = Bandits(v[:])
+            strat = BanditStrategy(bandits, func)
+            strat.sample_bandits(size)
+            ppl.plot(range(strat.N),strat.percentOpt,label=&amp;#39;Max Mean&amp;#39;+str(i),alpha=0.4,color=&amp;#39;indianred&amp;#39;,lw=3)
+        plt.title(&amp;#39;Percent Optimal - &amp;#39; + t)
+        plt.show()
+
+make_multi_plots(1000,max_mean)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_30_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_30_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_30_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;The Max-Mean appear to work well in cases where there is a single clear best option, but does not consistently find optimal results in the other options.&lt;/p&gt;
+&lt;h2&gt;Epsilon Greedy&lt;/h2&gt;
+&lt;p&gt;The epsilon greed strategy is a alternative to the max mean where some fraction of the time, say 10%, it will explore instead of exploit.   Well look at it for the same cases as the max mean method.  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;make_multi_plots(1000,epsilon_greedy)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_32_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_32_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_32_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;This strategy has the benefit that if it does start to exploit a sub-optimal strategy, it will eventually find its way out.   This is clear in the "Slightly Best" plots where as the number of trials increase, bandits are leaving the sub-optimal strategy.  &lt;/p&gt;
+&lt;h2&gt;Softmax&lt;/h2&gt;
+&lt;p&gt;The soft max is another strategy that balances exploitation vs exploration by use of a parameter.   It has an anology to temperature is method of statistical mechanics.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;func = lambda x: softmax(x,tau=0.5)
+make_multi_plots(1000,func)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_34_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_34_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_34_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;The tau parameter of 0.5, in this example, seems to provide random solutions.   If we reduce the size of tau to 0.005, we should get solutions close to max mean.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;func = lambda x: softmax(x,tau=0.005)
+make_multi_plots(1000,func)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_36_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_36_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_36_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;Inbetween, the soft max is to reduce the initial effect of outliers, but on these arrays we get less then optimal soltuions.&lt;/p&gt;
+&lt;h2&gt;UCB1&lt;/h2&gt;
+&lt;p&gt;The UCB1 picks the strategy based on the number of trials and its success rate.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;make_multi_plots(1000,ucb1)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_38_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_38_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_38_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;This method worked great on one standout best, but behaved randomly on the other options&lt;/p&gt;
+&lt;h2&gt;Bayesian Bandit&lt;/h2&gt;
+&lt;p&gt;This method uses the ration of success and failures in a trial to pick options based on the beta distribution.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;make_multi_plots(1000,bayesian_bandit)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_40_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_40_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_40_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;This method wored well on a clear best and eventually found the optimal solution for a ranked system.  The slight best behaved randomly.&lt;/p&gt;
+&lt;h2&gt;Annealing&lt;/h2&gt;
+&lt;p&gt;This method is working with a softmax that starts with a 'hot' system that explores randomly and cools to a 'cold' system that exploits.  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;func = lambda x:annealing(x,discount=0.90,tau=0.5)
+make_multi_plots(1000,annealing)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_42_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_42_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_42_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;We can see evidence of the cooling because the random values are starting to move away from random, but we would need to see more trials to see the evenatual discovery of optimal solutions.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;color_scheme = [(227, 119, 194), (247, 182, 210), (127, 127, 127), (199, 199, 199),(188, 189, 34),(23, 190, 207)] # (219, 219, 141)]#, (]
+color_scheme = [ (x/255.,y/255.,z/255.) for x,y,z in color_scheme]
+
+func1 = lambda x: softmax(x,tau=0.5)
+strategies = [max_mean,random_choice,epsilon_greedy,func1,ucb1,bayesian_bandit]
+
+size=10000
+values = [[0.1, 0.1, 0.1, 0.1, 0.9],[0.1, 0.1, 0.1, 0.1, 0.12],[0.1, 0.2, 0.3, 0.4, 0.5]]
+titles = [&amp;#39;One Stand Out Best&amp;#39;,&amp;#39;One Slightly Best&amp;#39;, &amp;quot;A clear rank&amp;quot;]
+for v,t in zip(values,titles): 
+    plt.figure(figsize=(14,5))
+    for color,func in zip(color_scheme,strategies):
+        plt.subplot(1,2,1)
+        bandits = Bandits(v[:])
+        strat = BanditStrategy(bandits, func)
+        strat.sample_bandits(size)
+        ppl.plot(range(strat.N),strat.regrets,label=func.__name__,alpha=1,color=color,lw=4)
+        plt.title(&amp;#39;Regret - &amp;#39; + t)
+        plt.legend(loc=2)
+
+
+        plt.subplot(1,2,2)
+        bandits = Bandits(v[:])
+        strat = BanditStrategy(bandits, func)
+        strat.sample_bandits(size)
+        ppl.plot(range(strat.N),strat.percentOpt,label=func.__name__,alpha=1,color=color,lw=4)
+        plt.title(&amp;#39;Percent Optimal - &amp;#39; + t)
+
+    plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_44_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_44_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_44_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;It seems that the epsilon greed strategy and bayesian bandit algorithms have the best overall performance and avoid getting stuck in non-optimal solutions.   The soft max and annealing both require turning, so they are not fairly compared.   It is nice to see that both epsilon greed and bayesian bandit solutions offer easy to implment and robust use.  &lt;/p&gt;</summary><category term="data-science"></category><category term="galvanize"></category><category term="ab testing"></category><category term="multi-arm bandit"></category></entry><entry><title>Galvanize - Week 02 - Day 4</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-02-04/" rel="alternate"></link><updated>2015-06-11T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-11:galvanize/galvanize-data-science-02-04/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
+&lt;h2&gt;Week 2 - Day 4&lt;/h2&gt;
+&lt;p&gt;Our morning quiz was fun.  It was the first time that we built off a prevous quiz.  We were required to build a random variable class that used our probability mass function from the day before.   The end result was being able to simulate a random value from any distrubiton able to be defined by a PMF.  &lt;/p&gt;
+&lt;p&gt;Our morning lecture was about power and sample size, as was our individual sprint.  The afternoon lecture was on Bayesian Inference, and the afternoon paired sprint was investigating evolving likelihood functions as we gained more information/data.  &lt;/p&gt;
+&lt;h2&gt;Power&lt;/h2&gt;
+&lt;p&gt;-Suppose you are interested in testing if on average a bottle of coke weighs 20.4 ounces. You have collected
+simple random samples of 130 bottles of coke and weighed them.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;matplotlib&lt;/span&gt; &lt;span class="n"&gt;inline&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;numpy&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;np&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;matplotlib.pyplot&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;plt&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;scipy.stats&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;sc&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;__future__&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;division&lt;/span&gt;
+
+&lt;span class="n"&gt;data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kp"&gt;loadtxt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;data/coke_weights.txt&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+
+
+&lt;span class="mi"&gt;130&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;State your null and alternative hypothesis.&lt;/p&gt;
+&lt;p&gt;1.&lt;strong&gt;H0: The mean weight of coke bottles is 20.4 oz&lt;/strong&gt;&lt;br /&gt;
+2.&lt;strong&gt;HA: The mean weight of coke bottles is different form 20.4 oz&lt;/strong&gt;     &lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Compute the mean and standard error of the sample. State why you are able to apply the Central
+   Limit Theorem here to approximate the sample distribution to be normal.&lt;/p&gt;
+&lt;p&gt;mean = data.mean()
+std = data.std()
+se = sc.sem(data)
+print "Sample Mean: ", mean
+print "Sample STD", std
+print "Sample Standard Error",se
+print "Sample Size: ", len(data)&lt;/p&gt;
+&lt;p&gt;Sample Mean:  20.519861441
+Sample STD 0.957682215104
+Sample Standard Error 0.084319217426
+Sample Size:  130&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;We can use the CLT on this problem because the sample size is 130, much greater than 30.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;We can make a simulation of the sampling distribution of the null hypthosis, and we can make a sampling distirubiton for another believe, say the true value is the sample man.   If this is true, we can ask questions about how powerful our test is at discovering the mean coke bottle weight is not 20.4, but 20.52.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;def power_graph(mu1,std1,n1,mu2,std2,n2,alpha=0.05,two_sided=True):
+    x = np.array([sc.norm.rvs(loc=mu1,scale=std1,size=n1).mean() for i in range(10000)])
+    y = np.array([sc.norm.rvs(loc=mu2,scale=std2,size=n2).mean() for i in range(10000)])
+    plt.figure()
+    plt.hist(x,normed=True,color=&amp;#39;lightseagreen&amp;#39;,edgecolor=&amp;#39;lightseagreen&amp;#39;,alpha=0.4,bins=30,label=&amp;quot;Null&amp;quot;)
+    plt.hist(y,normed=True,color=&amp;#39;lightsalmon&amp;#39;,edgecolor=&amp;#39;lightsalmon&amp;#39;,alpha=0.4,bins=30,label=&amp;quot;W=20.52&amp;quot;)
+    if two_sided:
+        x95 = np.percentile(x,100-100*alpha/2.)
+    else:
+        x95 = np.percentile(x,100-100*alpha)
+
+    plt.axvline(x95,0,10,color=&amp;#39;gray&amp;#39;,lw=2,linestyle=&amp;#39;--&amp;#39;,alpha=0.8)
+    plt.legend()
+    plt.show()
+    print &amp;quot;Value Threshold For Significance: &amp;quot;, x95
+    power = len(y[y&amp;gt;x95])/len(y)
+    print &amp;quot;Power of Finding True Positive: &amp;quot;,power
+    return power
+
+power_graph(20.4,data.std(),130,data.mean(),data.std(),130)
+power_graph(20.4,data.std(),130,data.mean(),data.std(),130,two_sided=False)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_6_0.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;Value Threshold For Significance:  20.5657024198
+Power of Finding True Positive:  0.2899
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_6_2.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;Value Threshold For Significance:  20.5387014434
+Power of Finding True Positive:  0.4037
+
+
+
+
+
+0.4037
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;These powers are 30% for the two sided, and 42% for the onsided.   It deends if our originaly hypothesis test is a not equal or greater than.   &lt;/p&gt;
+&lt;p&gt;We can also do this analytically since we are using the centeral limit.  For a two sided test, we find the following:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;x = np.linspace(20.4-4*se,20.4+4*se,100)
+
+y1 = sc.norm.pdf(x,loc=20.4,scale=se)
+cumy1 = sc.norm.cdf(x,loc=20.4,scale=se)
+y2 = sc.norm.pdf(x,loc=data.mean(),scale=se)
+x975 = 20.4+1.96*se
+x025 = 20.4-1.95*se
+print x025,x975
+plt.plot(x,y1,color=&amp;#39;indianred&amp;#39;,label=&amp;#39;Null Hypthesis&amp;#39;)
+plt.plot(x,y2,color=&amp;#39;steelblue&amp;#39;,label=&amp;#39;Data&amp;#39;)
+plt.fill_between(x[x&amp;gt;=x975],y2[x&amp;gt;=x975],color=&amp;#39;steelblue&amp;#39;,alpha=0.4)
+plt.fill_between(x[x&amp;gt;=x975],y1[x&amp;gt;=x975],color=&amp;#39;indianred&amp;#39;,alpha=0.4)
+plt.fill_between(x[x&amp;lt;=x025],y1[x&amp;lt;=x025],color=&amp;#39;indianred&amp;#39;,alpha=0.4)
+plt.axvline(x975,0,10,color=&amp;#39;black&amp;#39;,lw=3,linestyle=&amp;#39;--&amp;#39;)
+plt.axvline(x025,0,10,color=&amp;#39;black&amp;#39;,lw=3,linestyle=&amp;#39;--&amp;#39;)
+plt.show()
+
+20.235577526 20.5652656662
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_8_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;We can see that we would not reject the null hypothesis in favor of the alternative because the peak of the blue curve is to the left of the bounding of significance.  The area under the red cuver outside of the black boundaries is 0.05, the signifcance level.   The power of detecing a signficant difference assuming the data's mean is the true value is the blue area.   In this case it is ~ 30%&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;The probability of making a type II error (false negative) is called beta.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;beta = sc.norm.cdf(x975,loc=data.mean(),scale=se)-sc.norm.cdf(x025,loc=data.mean(),scale=se)
+print &amp;quot;Beta (Prob of Type II Error) Assuming data value is the true value&amp;quot;, beta
+
+Beta (Prob of Type II Error) Assuming data value is the true value 0.704503425135
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The power is always 1 minus the false negative rate:&lt;/p&gt;
+&lt;p&gt;$$\mbox{Power} = 1 - \beta$$&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;print &amp;quot;Power: &amp;quot;,1-beta
+
+Power:  0.295496574865
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Statistical power is affected by a number of factors, including the &lt;strong&gt;sample size&lt;/strong&gt;, the &lt;strong&gt;effect size (difference
+between the sample statistic and the statistic formulated under the null)&lt;/strong&gt;, and the &lt;strong&gt;significance level&lt;/strong&gt;. Here
+we are going to explore the effect of these factors on power.&lt;/p&gt;
+&lt;p&gt;If we assuming that we have a different null hypothesis, we can find the power of detecting anther effect size.  Lets stick with the sample data&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;def explore_power(null_mu,sample_size,effect_size,null_standard_dev,significance_level=0.95,two_sided=True):
+    if two_sided:
+        critical_z = sc.norm.isf((1-significance_level)/2.)
+        se = np.sqrt(null_standard_dev**2/(sample_size-1))
+        x025 = null_mu-critical_z*se
+        x975 = null_mu+critical_z*se
+        alt_mean = null_mu+effect_size
+        return (1-np.abs(sc.norm.cdf(x975,loc=alt_mean,scale=se)-sc.norm.cdf(x025,loc=alt_mean,scale=se)))*100
+    else:
+        critical_z = sc.norm.isf(significance_level)
+        se = np.sqrt(null_standard_dev**2/(sample_size-1))
+        x95 = null_mu-critical_z*se
+        alt_mean = null_mu+effect_size
+        return 100*(np.abs(sc.norm.cdf(x95,loc=alt_mean,scale=se)))
+
+print explore_power(20.4,130,data.mean()-20.4,data.std())
+explore_power(20.2,130,data.mean()-20.2,data.std())
+
+29.5495708063
+
+
+
+
+
+96.663546292685481
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The power increased when we assumed the distributions were more different.  This makes sense because the two values are father appart, and the sampling distributions have less overlap.  We can see that by calling power_graph, or calling the analyical functions because we have access to the central limit theorem.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;power_graph(20.2,data.std(),130,data.mean(),data.std(),130)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_17_0.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;Value Threshold For Significance:  20.364830609
+Power of Finding True Positive:  0.9698
+
+
+
+
+
+0.9698
+
+
+
+
+x = np.linspace(20.2-5*se,20.2+6*se,100)
+
+y1 = sc.norm.pdf(x,loc=20.2,scale=se)
+cumy1 = sc.norm.cdf(x,loc=20.2,scale=se)
+y2 = sc.norm.pdf(x,loc=data.mean(),scale=se)
+x975 = 20.2+1.96*se
+x025 = 20.2-1.95*se
+plt.plot(x,y1,color=&amp;#39;indianred&amp;#39;,label=&amp;#39;Null Hypthesis&amp;#39;)
+plt.plot(x,y2,color=&amp;#39;steelblue&amp;#39;,label=&amp;#39;Data&amp;#39;)
+plt.axvline(x975,0,10,color=&amp;#39;black&amp;#39;,lw=3,linestyle=&amp;#39;--&amp;#39;)
+plt.axvline(x025,0,10,color=&amp;#39;black&amp;#39;,lw=3,linestyle=&amp;#39;--&amp;#39;)
+plt.fill_between(x[x&amp;gt;=x975],y2[x&amp;gt;=x975],color=&amp;#39;steelblue&amp;#39;,alpha=0.4)
+plt.fill_between(x[x&amp;gt;=x975],y1[x&amp;gt;=x975],color=&amp;#39;indianred&amp;#39;,alpha=0.4)
+plt.fill_between(x[x&amp;lt;=x025],y1[x&amp;lt;=x025],color=&amp;#39;indianred&amp;#39;,alpha=0.4)
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_18_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;This makes me wonder how the power changes with the effect size.  I image that bigger effects are easier to detect.  It makes good sense&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;plt.plot(np.linspace(0.1,1.2,20),[explore_power(20.2,130,x,data.std()) for x in np.linspace(0.0,1.2,20)],&amp;#39;bo--&amp;#39;,
+        color=&amp;#39;lightseagreen&amp;#39;,alpha=0.8,label=&amp;quot;Power&amp;quot;)
+plt.ylim([0,110])
+plt.xlabel(&amp;quot;Effect Size&amp;quot;)
+plt.ylabel(&amp;quot;Power&amp;quot;)
+plt.legend(loc=4)
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_20_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;The power of a study also depends on the sample size.  As the sample size increases, the standard error decreases by the central limit theorem.   This will make two different distributions overlap less. &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;power_graph(20.4,data.std(),130,data.mean(),data.std(),130)
+power_graph(20.4,data.std(),1000,data.mean(),data.std(),1000)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_22_0.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;Value Threshold For Significance:  20.5657528314
+Power of Finding True Positive:  0.2857
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_22_2.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;Value Threshold For Significance:  20.4590858498
+Power of Finding True Positive:  0.9802
+
+
+
+
+
+0.9802
+
+
+
+
+data2 = np.loadtxt(&amp;#39;data/coke_weights_1000.txt&amp;#39;)
+mean = data2.mean()
+std = data2.std()
+se = sc.sem(data2)
+x = np.linspace(20.4-5*se,20.4+6*se,100)
+
+y1 = sc.norm.pdf(x,loc=20.4,scale=se)
+cumy1 = sc.norm.cdf(x,loc=20.4,scale=se)
+y2 = sc.norm.pdf(x,loc=data2.mean(),scale=se)
+x975 = 20.4+1.96*se
+x025 = 20.4-1.95*se
+
+plt.plot(x,y1,color=&amp;#39;indianred&amp;#39;,label=&amp;#39;Null Hypthesis&amp;#39;)
+plt.plot(x,y2,color=&amp;#39;steelblue&amp;#39;,label=&amp;#39;Data&amp;#39;)
+plt.axvline(x975,0,10,color=&amp;#39;black&amp;#39;,lw=3,linestyle=&amp;#39;--&amp;#39;)
+plt.axvline(x025,0,10,color=&amp;#39;black&amp;#39;,lw=3,linestyle=&amp;#39;--&amp;#39;)
+plt.fill_between(x[x&amp;gt;=x975],y2[x&amp;gt;=x975],color=&amp;#39;steelblue&amp;#39;,alpha=0.4)
+plt.fill_between(x[x&amp;gt;=x975],y1[x&amp;gt;=x975],color=&amp;#39;indianred&amp;#39;,alpha=0.4)
+plt.fill_between(x[x&amp;lt;=x025],y1[x&amp;lt;=x025],color=&amp;#39;indianred&amp;#39;,alpha=0.4)
+plt.show()
+beta = sc.norm.cdf(x975,loc=data2.mean(),scale=se)-sc.norm.cdf(x025,loc=data2.mean(),scale=se)
+print &amp;quot;Beta (Prob of Type II Error) Assuming data value is the true value&amp;quot;, beta
+print &amp;quot;Power:&amp;quot;,1-beta
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_23_0.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;Beta (Prob of Type II Error) Assuming data value is the true value 0.271504963539
+Power: 0.728495036461
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;We can also see how chaning the significance level affects the power of a study.  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;plt.plot(np.linspace(0.01,0.3,40),[explore_power(20.4,130,0.01,data.std(),significance_level=x) for x in np.linspace(0.01,0.3,40)],&amp;#39;bo--&amp;#39;,
+        color=&amp;#39;lightseagreen&amp;#39;,alpha=0.6,label=&amp;quot;Power&amp;quot;)
+plt.ylim([0,110])
+plt.xlabel(&amp;quot;Significance Level&amp;quot;)
+plt.ylabel(&amp;quot;Power&amp;quot;)
+plt.legend(loc=4)
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_25_0.png" /&gt;&lt;/p&gt;
+&lt;h2&gt;Power Calculations for A/B testing&lt;/h2&gt;
+&lt;p&gt;We continued yesterday's case study with Esty to find the power needed.  It looked like our Etsy Tuesday Landing Page experiment was under-powered.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;etsy = pd.read_csv(&amp;#39;data/experiment.csv&amp;#39;)
+old_data = etsy[etsy[&amp;#39;landing_page&amp;#39;] == &amp;#39;old_page&amp;#39;][&amp;#39;converted&amp;#39;]
+new_data = etsy[etsy[&amp;#39;landing_page&amp;#39;] == &amp;#39;new_page&amp;#39;][&amp;#39;converted&amp;#39;]
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;We will set up the following hypthesis test.&lt;/p&gt;
+&lt;p&gt;X ~ p_new - p_old&lt;/p&gt;
+&lt;p&gt;H0: X = 0.001
+H1: X &amp;gt; 0.001&lt;/p&gt;
+&lt;p&gt;We need to set up the proportions of conversions and find the standard error for this experiment.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;po = old_data.mean()
+pn = new_data.mean()
+p = (old_data.mean()*len(old_data)+new_data.mean()*len(new_data))/(len(old_data)+len(new_data))
+se = np.sqrt(p*(1-p)/len(old_data)+p*(1-p)/len(new_data))
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;We can make the same plots as before and compared null to our data.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;x = np.linspace(-5*se,5*se,100)
+
+y1 = sc.norm.pdf(x,loc=0.001,scale=se)
+cumy1 = sc.norm.cdf(x,loc=0.001,scale=se)
+y2 = sc.norm.pdf(x,loc=(pn-po),scale=se)
+x95 = 0.001+1.68*se
+plt.plot(x,y1,color=&amp;#39;indianred&amp;#39;,label=&amp;#39;Null Hypthesis&amp;#39;)
+plt.plot(x,y2,color=&amp;#39;steelblue&amp;#39;,label=&amp;#39;New Data&amp;#39;)
+plt.axvline(x95,0,10,color=&amp;#39;black&amp;#39;,lw=3,linestyle=&amp;#39;--&amp;#39;)
+plt.fill_between(x[x&amp;gt;=x95],y2[x&amp;gt;=x95],color=&amp;#39;steelblue&amp;#39;,alpha=0.4)
+plt.fill_between(x[x&amp;gt;=x95],y1[x&amp;gt;=x95],color=&amp;#39;indianred&amp;#39;,alpha=0.4)
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_31_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;We can see our data is not statistically different of 0.001, but if we assume the data represents the true mean, we have a very weak test.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;critical_z = sc.norm.ppf(0.95)
+x95 = 0.001+critical_z*se
+1-sc.norm.cdf(x95,loc=(pn-po),scale=se)
+
+
+
+
+0.005391084734824525
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;We have a power of less than 1/2% from our data.   &lt;/p&gt;
+&lt;p&gt;Increasing the sample size will weaken the power in this case, because our data is less than the null hypthesis, and we are constructing a one sided t-test.  In this case we accept the results and fail to reject the null hypthesis. &lt;/p&gt;
+&lt;p&gt;We were told that Etsy decided the pilot is a plausible enough representation of the company's daily  traffic. As a result, Esty decided on a two-tailed test instead, which is as follows:&lt;/p&gt;
+&lt;p&gt;```
+   X ~ p_new - p_old&lt;/p&gt;
+&lt;p&gt;H0: X = 0.001
+   H1: X != 0.001
+   ```&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;x = np.linspace(-5*se,5*se,100)
+
+y1 = sc.norm.pdf(x,loc=0.001,scale=se)
+cumy1 = sc.norm.cdf(x,loc=0.001,scale=se)
+y2 = sc.norm.pdf(x,loc=(pn-po),scale=se)
+x025 = 0.001-1.96*se
+x975 = 0.001+1.96*se
+plt.plot(x,y1,color=&amp;#39;indianred&amp;#39;,label=&amp;#39;Null Hypthesis&amp;#39;)
+plt.plot(x,y2,color=&amp;#39;steelblue&amp;#39;,label=&amp;#39;New Data&amp;#39;)
+plt.axvline(x025,0,10,color=&amp;#39;black&amp;#39;,lw=3,linestyle=&amp;#39;--&amp;#39;)
+plt.axvline(x975,0,10,color=&amp;#39;black&amp;#39;,lw=3,linestyle=&amp;#39;--&amp;#39;)
+plt.fill_between(x[x&amp;gt;=x975],y2[x&amp;gt;=x975],color=&amp;#39;steelblue&amp;#39;,alpha=0.4)
+plt.fill_between(x[x&amp;lt;=x025],y2[x&amp;lt;=x025],color=&amp;#39;steelblue&amp;#39;,alpha=0.4)
+plt.fill_between(x[x&amp;gt;=x975],y1[x&amp;gt;=x975],color=&amp;#39;indianred&amp;#39;,alpha=0.4)
+plt.fill_between(x[x&amp;lt;=x025],y1[x&amp;lt;=x025],color=&amp;#39;indianred&amp;#39;,alpha=0.4)
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_36_0.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;print &amp;quot;2-Sided Power: &amp;quot;, sc.norm.cdf(x025,loc=(pn-po),scale=se)+(1-sc.norm.cdf(x975,loc=(pn-po),scale=se))
+
+2-Sided Power:  0.14775925242
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Minimum Sample Size&lt;/h3&gt;
+&lt;p&gt;When desigining an experiment, or conducting a test, it is important to get enough data to measure what we are looking for.  In the case of Etsy, its a 1% lift in conversions.  To try to figure out the sample size we might considered our desired false postive and false negative rates, and the Z values associated with them.&lt;/p&gt;
+&lt;p&gt;$$\alpha = \mbox{False Positive Rate}, \ Z_{\alpha}$$&lt;/p&gt;
+&lt;p&gt;$$\beta = \mbox{False Negative Rate}, \ Z_{\beta}$$&lt;/p&gt;
+&lt;p&gt;In an experiment we will have one values, and the Z's will be related to it by the following:&lt;/p&gt;
+&lt;p&gt;$$\mu_{exp} = \mbox{Experimental Result}$$&lt;/p&gt;
+&lt;p&gt;$$s_{sample} = \mbox{Sampling Erroring}$$&lt;/p&gt;
+&lt;p&gt;$$Z_{\alpha} = \frac{\mu_{exp} \ - \ \mu_{Null}}{s_{sample}}$$&lt;/p&gt;
+&lt;p&gt;$$Z_{\beta} = \frac{\mu_{exp} \ - \ \mu_{Alternative}}{s_{sample}}$$&lt;/p&gt;
+&lt;p&gt;It is worth noting that one of these Z's can be positive, while the other can be negative.  You will find equations that differ from what is done here because of that.  Taking the difference between these two equations give:&lt;/p&gt;
+&lt;p&gt;$$\mbox{Effect Size} = \mu_{Alternative} - \mu_{Null}$$&lt;/p&gt;
+&lt;p&gt;$$Z_{\alpha} \ - \ Z_{\beta} = \frac{\mbox{Effect Size}}{s_{sample}}$$&lt;/p&gt;
+&lt;p&gt;We can use the eqauation for the sampling distribution for two sample proproption test of equal size for the sampling error.&lt;/p&gt;
+&lt;p&gt;$$s_{sample} = \sqrt{\frac{ p \ (1 - p) \ 2}{n}}$$&lt;/p&gt;
+&lt;p&gt;Where p is the weighted proportion of the two groups.  This gives the previous equation as.&lt;/p&gt;
+&lt;p&gt;$$Z_{\alpha} \ - \ Z_{\beta} = \frac{\mbox{Effect Size}}{\sqrt{\frac{ p \ (1 - p) \ 2}{n}}}$$&lt;/p&gt;
+&lt;p&gt;Squaring both sides we get:&lt;/p&gt;
+&lt;p&gt;$$(Z_{\alpha} \ - \ Z_{\beta})^2 = \frac{\mbox{Effect Size}^2 \ n}{ p \ (1 - p) \ 2}$$&lt;/p&gt;
+&lt;p&gt;So the needed sample size should be&lt;/p&gt;
+&lt;p&gt;$$n = \frac{2 \ (Z_{\alpha} \ - \ Z_{\beta})^2 \ p \ (1-p)}{\mbox{Effect Size}^2}$$&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;def calc_min_sample_size(old,new,effect_size,sig=0.05,pow=0.8,one_tail=False):
+    pn = new.mean()
+    po = old.mean()
+    no = len(old)
+    nn = len(new)
+    dp = pn-po
+    p = ( po*no+pn*nn ) / (nn+no)
+    se = np.sqrt(p*(1-p)*(1/nn+1/no))
+    if one_tail:
+        z_null = sc.norm.ppf((1-sig))
+    else:
+        z_null = sc.norm.ppf((1-sig/2))
+    z_pow = sc.norm.ppf(1-pow)
+
+
+    return (z_null-z_pow)**2*2*p*(1-p)/effect_size**2
+
+
+calc_min_sample_size(old_data,new_data,0.001,one_tail=False)
+
+
+
+
+1410314.3210247809
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;So if we want a power of 80% for our Etsy experiment, meaning its likely for us to detect results that are different from a lift of 1%, we need to have 1.4 million users in each sample.  Our results are definately underpowered.&lt;/p&gt;
+&lt;h2&gt;Afternoon - Bayes&lt;/h2&gt;
+&lt;p&gt;We covered Bayes' Theorem and updating priors with likelihoods to produce a posterior distribution of sample paramters given data.   We started with a created class, and explore the results of these distributions given data.&lt;/p&gt;
+&lt;p&gt;$$ P(Parameters \ | \ Data) = \frac{P(Data \ | \ Parameters) * P(Paramters)}{P(Data)} $$&lt;/p&gt;
+&lt;p&gt;$$ \mbox{Posterior} = \frac{\mbox{Likelihood} \ \times \ \mbox{Prior}}{\mbox{Normalization}} $$&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kr"&gt;class&lt;/span&gt; &lt;span class="nx"&gt;Bayes&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;object&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="s1"&gt;&amp;#39;&amp;#39;&amp;#39;&lt;/span&gt;
+&lt;span class="s1"&gt;    INPUT:&lt;/span&gt;
+&lt;span class="s1"&gt;        prior (dict): key is the value (e.g. 4-sided die),&lt;/span&gt;
+&lt;span class="s1"&gt;                      value is the probability&lt;/span&gt;
+
+&lt;span class="s1"&gt;        likelihood_func (function): takes a new piece of data and the value and&lt;/span&gt;
+&lt;span class="s1"&gt;                                    outputs the likelihood of getting that data&lt;/span&gt;
+&lt;span class="s1"&gt;    &amp;#39;&amp;#39;&amp;#39;&lt;/span&gt;
+    &lt;span class="nx"&gt;def&lt;/span&gt; &lt;span class="nx"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;prior&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;likelihood_func&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        &lt;span class="nx"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;prior&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;prior&lt;/span&gt;
+        &lt;span class="nx"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;likelihood_func&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;likelihood_func&lt;/span&gt;
+
+
+    &lt;span class="nx"&gt;def&lt;/span&gt; &lt;span class="nx"&gt;normalize&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;self&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        &lt;span class="s1"&gt;&amp;#39;&amp;#39;&amp;#39;&lt;/span&gt;
+&lt;span class="s1"&gt;        INPUT: None&lt;/span&gt;
+&lt;span class="s1"&gt;        OUTPUT: None&lt;/span&gt;
+
+&lt;span class="s1"&gt;        Makes the sum of the probabilities equal 1.&lt;/span&gt;
+&lt;span class="s1"&gt;        &amp;#39;&amp;#39;&amp;#39;&lt;/span&gt;
+        &lt;span class="nx"&gt;total&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;prior&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;values&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
+        &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="nx"&gt;key&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="nx"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;prior&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+            &lt;span class="nx"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;prior&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;key&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;prior&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;key&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nx"&gt;total&lt;/span&gt;
+
+    &lt;span class="nx"&gt;def&lt;/span&gt; &lt;span class="nx"&gt;update&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;data&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        &lt;span class="s1"&gt;&amp;#39;&amp;#39;&amp;#39;&lt;/span&gt;
+&lt;span class="s1"&gt;        INPUT:&lt;/span&gt;
+&lt;span class="s1"&gt;            data (int or str): A single observation (data point)&lt;/span&gt;
+
+&lt;span class="s1"&gt;        OUTPUT: None&lt;/span&gt;
+
+&lt;span class="s1"&gt;        Conduct a bayesian update. Multiply the prior by the likelihood and&lt;/span&gt;
+&lt;span class="s1"&gt;        make this the new prior.&lt;/span&gt;
+&lt;span class="s1"&gt;        &amp;#39;&amp;#39;&amp;#39;&lt;/span&gt;
+        &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="nx"&gt;k&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="nx"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;prior&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+            &lt;span class="nx"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;prior&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;k&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;prior&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;k&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nx"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;likelihood_func&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nx"&gt;k&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="nx"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;normalize&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="nx"&gt;def&lt;/span&gt; &lt;span class="nx"&gt;print_distribution&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;self&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        &lt;span class="s1"&gt;&amp;#39;&amp;#39;&amp;#39;&lt;/span&gt;
+&lt;span class="s1"&gt;        Print the current posterior probability.&lt;/span&gt;
+&lt;span class="s1"&gt;        &amp;#39;&amp;#39;&amp;#39;&lt;/span&gt;
+        &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="nx"&gt;k&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="nx"&gt;sorted&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;prior&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;keys&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+            &lt;span class="nx"&gt;print&lt;/span&gt; &lt;span class="nx"&gt;k&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;prior&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;k&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;
+
+    &lt;span class="nx"&gt;def&lt;/span&gt; &lt;span class="nx"&gt;plot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;color&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nx"&gt;None&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;title&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nx"&gt;None&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;label&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nx"&gt;None&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        &lt;span class="s1"&gt;&amp;#39;&amp;#39;&amp;#39;&lt;/span&gt;
+&lt;span class="s1"&gt;        Plot the current prior.&lt;/span&gt;
+&lt;span class="s1"&gt;        &amp;#39;&amp;#39;&amp;#39;&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;color&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="nx"&gt;None&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+            &lt;span class="nx"&gt;c&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;blue&amp;#39;&lt;/span&gt;
+        &lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+            &lt;span class="nx"&gt;c&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nx"&gt;color&lt;/span&gt;
+        &lt;span class="nx"&gt;k&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;sorted&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;prior&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;keys&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
+        &lt;span class="nx"&gt;v&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="bp"&gt;self.&lt;/span&gt;&lt;span class="nx-Member"&gt;prior&lt;/span&gt;&lt;span class="err"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;key&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="nx"&gt;key&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="nx"&gt;k&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+        &lt;span class="nx"&gt;plt&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;bar&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;np&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;arange&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;prior&lt;/span&gt;&lt;span class="p"&gt;)),&lt;/span&gt;&lt;span class="nx"&gt;v&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nx"&gt;color&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nx"&gt;c&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nx"&gt;alpha&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nx"&gt;label&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nx"&gt;label&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="nx"&gt;plt&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;xticks&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;np&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;arange&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;prior&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nx"&gt;k&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="nx"&gt;def&lt;/span&gt; &lt;span class="nx"&gt;likelihood_dice&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nx"&gt;value&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;data&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="kr"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;value&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+    &lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="kr"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;value&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="nx"&gt;def&lt;/span&gt; &lt;span class="nx"&gt;likelihood_coin&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nx"&gt;value&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;data&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;H&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kr"&gt;float&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;value&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="kr"&gt;float&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;value&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;The problem&lt;/h3&gt;
+&lt;p&gt;A box contains a 4-sided die, a 6-sided die, an 8-sided die,a 12-sided die, and a 20-sided die. A die is selected at random, and the rest are destroyed.  &lt;/p&gt;
+&lt;p&gt;What is the prior?&lt;br /&gt;
+&lt;strong&gt;All Dice Equally Likely&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;b = Bayes({&amp;#39;04&amp;#39;:0.2,&amp;#39;06&amp;#39;:0.2,&amp;#39;08&amp;#39;:0.2,&amp;#39;12&amp;#39;:0.2,&amp;#39;20&amp;#39;:0.2},likelihood_dice)
+b.plot()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_44_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;Say I roll an 8. After one bayesian update, what is the probability that I chose each of the dice?&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;b.update(8)
+b.plot()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_46_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;We know that we do not have a 4 or 6 sided dice, and the 8 is most likly because the 8 has a 1 in 8 chance of getting an 8, the 12 has a 1 in 12 chance of rolling and 8, and the 20 sided dice has a 1 in 20 chance of rolling an 8.&lt;/p&gt;
+&lt;p&gt;Comment on the difference in the posteriors if I had rolled the die 50 times instead of 1.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;[b.update(8) for i in range(49)]&lt;/span&gt;
+&lt;span class="err"&gt;b.plot()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_49_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;However unlikely it is, the posterier suggest that the post likely culperite of 50 roles all coming to 8 is an 8 sided dice.&lt;/p&gt;
+&lt;p&gt;Which one of these two sets of data gives you a more certain posterior and why?
+&lt;code&gt;[1, 1, 1, 3, 1, 2]&lt;/code&gt; or &lt;code&gt;[10, 10, 10, 10, 8, 8]&lt;/code&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;b = Bayes({&amp;#39;04&amp;#39;:0.2,&amp;#39;06&amp;#39;:0.2,&amp;#39;08&amp;#39;:0.2,&amp;#39;12&amp;#39;:0.2,&amp;#39;20&amp;#39;:0.2},likelihood_dice)
+[b.update(x) for x in [1,1,1,3,1,2]]
+b.plot()
+plt.show()
+b = Bayes({&amp;#39;04&amp;#39;:0.2,&amp;#39;06&amp;#39;:0.2,&amp;#39;08&amp;#39;:0.2,&amp;#39;12&amp;#39;:0.2,&amp;#39;20&amp;#39;:0.2},likelihood_dice)
+[b.update(x) for x in [10,10,10,10,8,8]]
+b.plot()
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_52_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_52_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;We are most certain in the second case becasue 3 of the dice have been ruled out, and a 1/12 per roll is much bigger than a 1/20.&lt;/p&gt;
+&lt;p&gt;Say the prior of the dice is:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;```
+4-sided die: 8%
+6-sided die: 12%
+8-sided die: 16%
+12-sided die: 24%
+20-sided die: 40%
+```
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;What are posteriors for each die after rolling the 8?&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;b = Bayes({&amp;#39;04&amp;#39;:0.08,&amp;#39;06&amp;#39;:0.12,&amp;#39;08&amp;#39;:0.16,&amp;#39;12&amp;#39;:0.24,&amp;#39;20&amp;#39;:0.40},likelihood_dice)
+b.update(8)
+b.plot()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_55_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;The postior makes 8 sided, 12 sided, and 20 sided dice equally likely after 1 roll of an 8.  &lt;/p&gt;
+&lt;p&gt;Say you keep the same prior and you roll the die 50 times and get values 1-8 every time. What would you expect of the posterior? How different do you think it would be if you'd used the uniform prior?&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;b = Bayes({&amp;#39;04&amp;#39;:0.2,&amp;#39;06&amp;#39;:0.2,&amp;#39;08&amp;#39;:0.2,&amp;#39;12&amp;#39;:0.2,&amp;#39;20&amp;#39;:0.2},likelihood_dice)
+[b.update(x) for x in np.random.randint(1,8,size=50)]
+b.plot()
+plt.show()
+b = Bayes({&amp;#39;04&amp;#39;:0.08,&amp;#39;06&amp;#39;:0.12,&amp;#39;08&amp;#39;:0.16,&amp;#39;12&amp;#39;:0.24,&amp;#39;20&amp;#39;:0.40},likelihood_dice)
+[b.update(x) for x in np.random.randint(1,8,size=50)]
+b.plot()
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_58_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_58_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;With enough data, the difference in priors do not matter.   They converge to the same value.  &lt;/p&gt;
+&lt;h2&gt;Bayes and Coin Flips&lt;/h2&gt;
+&lt;p&gt;We can consider a random flip of a coin and ask what is the believe about our belief of the probability the coin resulting in heads.   Before any flip we would assume a unifor distrubiton.   &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;p = np.linspace(0,0.99,100)
+prior = dict()
+for v in p:
+    prior[str(v)] = 0.01
+flips = [[&amp;#39;H&amp;#39;],[&amp;#39;T&amp;#39;],[&amp;#39;H&amp;#39;,&amp;#39;H&amp;#39;],[&amp;#39;H&amp;#39;,&amp;#39;T&amp;#39;],[&amp;#39;H&amp;#39;,&amp;#39;H&amp;#39;,&amp;#39;H&amp;#39;],[&amp;#39;T&amp;#39;,&amp;#39;H&amp;#39;,&amp;#39;T&amp;#39;],[&amp;#39;H&amp;#39;,&amp;#39;H&amp;#39;,&amp;#39;H&amp;#39;,&amp;#39;H&amp;#39;],[&amp;#39;T&amp;#39;,&amp;#39;H&amp;#39;,&amp;#39;T&amp;#39;,&amp;#39;H&amp;#39;]]
+
+plt.figure(figsize=(15,10))
+for i,f in enumerate(flips):
+    plt.subplot(4,2,i+1)
+    b = Bayes(prior.copy(),likelihood_coin)
+    for x in f:
+         b.update(x)
+    b.plot(label=str(f))
+    plt.legend(loc=&amp;#39;best&amp;#39;)
+    plt.xticks(rotation=70,fontsize=4)
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_61_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;We were given a cone class, with a unknown probability.  I am going to plot the update in my posteriers after fixed number of flips to see if a Bayesian would believe this is a biased coin&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;coin&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Coin&lt;/span&gt;
+&lt;span class="n"&gt;c&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Coin&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;figure&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;figsize&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;18&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="n"&gt;col&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;1&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;indianred&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;2&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;steelblue&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;10&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;coral&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;50&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;lightseagreen&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;250&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;skyblue&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;500&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;purple&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;1000&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;indianred&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="n"&gt;b&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Bayes&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;prior&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;copy&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt;&lt;span class="n"&gt;likelihood_coin&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;update&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;flip&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;9&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;49&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;249&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;499&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;999&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt;
+        &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;plot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;color&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;col&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)],&lt;/span&gt;&lt;span class="n"&gt;label&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="s"&gt;&amp;#39; Flips&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;legend&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;xticks&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rotation&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;70&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;show&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_63_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;As we update our believes, upto 1000 flips, we see that 50 looks to be in the edge of our posterior space, but the distribution is centered around 0.53, making this the maximum likelihood value after 1000 flips.&lt;/p&gt;</summary><category term="data-science"></category><category term="galvanize"></category><category term="ab testing"></category><category term="statistics"></category><category term="hypothesis testing"></category></entry><entry><title>Galvanize - Week 02 - Day 3</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-02-03/" rel="alternate"></link><updated>2015-06-10T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-10:galvanize/galvanize-data-science-02-03/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
 &lt;h2&gt;Week 2 - Day 3&lt;/h2&gt;
 &lt;p&gt;Today we had a miniquiz on making a python package that could contain an arbitrary probability mass function as a dictionary.  It had to allow new values to be set, maintain a normalized pmf, and return probabilities for values in the dictionary, None otherwise.   &lt;/p&gt;
 &lt;h2&gt;Morning&lt;/h2&gt;

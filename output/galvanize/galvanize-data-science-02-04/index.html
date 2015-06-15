@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-02-04/index.html" />
+
+    <title>  Bryan Travis Smith, Ph.D &mdash; Galvanize - Week 02 - Day 4
+</title>
+
+
+
+
+    <link rel="stylesheet" href="http://www.bryantravissmith.com/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-24340005-3', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+
+    <meta name="author" content="Bryan Smith">
+    <meta name="description" content="The ninth day of Galvanize's Immersive Data Science program in San Francisco, CA where we covered power and bayesian analysis of tests.">
+  <meta name="tags" contents="data-science, galvanize, ab testing, statistics, hypothesis testing, ">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+      <div class="header-image pull-left">
+        <a class="nodec" href="http://www.bryantravissmith.com"><img src=http://www.bryantravissmith.com/img/bryan.jpeg></a>
+      </div>
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="http://www.bryantravissmith.com">Bryan Travis Smith, Ph.D</a>
+      </h1>
+      <h3 class="header-text">Physicist, Data Scientist, Martial Artist, & Life Enthusiast</h3>
+      <ul class="header-menu list-inline">
+              <li class="muted">|</li>
+            <li><a class="nodec" href="http://www.bryantravissmith.com/about/">About</a></li>
+              <li class="muted">|</li>
+          <li><a class="nodec icon-mail-alt" href="mailto:bryantravissmith@gmail.com"></a></li>
+          <li><a class="nodec icon-github" href="https://github.com/bryantravissmith"></a></li>
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+      <a href="/galvanize/galvanize-data-science-02-04/" title="Permalink to Galvanize - Week 02 - Day 4">Galvanize - Week 02 - Day 4</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" href="/galvanize/galvanize-data-science-02-04/" title="2015-06-11T10:20:00-07:00">Thu 11 June 2015</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+        <a href="http://www.bryantravissmith.com/category/galvanize.html">Galvanize</a>
+      </li>
+        <li class="muted">&middot;</li>
+        <li>
+          <address class="post-author">
+            By <a href="http://www.bryantravissmith.com/author/bryan-smith.html">Bryan Smith</a>
+          </address>
+        </li>
+    </ul>
+    <div class="post-content">
+      <h1>Galvanize Immersive Data Science</h1>
+<h2>Week 2 - Day 4</h2>
+<p>Our morning quiz was fun.  It was the first time that we built off a prevous quiz.  We were required to build a random variable class that used our probability mass function from the day before.   The end result was being able to simulate a random value from any distrubiton able to be defined by a PMF.  </p>
+<p>Our morning lecture was about power and sample size, as was our individual sprint.  The afternoon lecture was on Bayesian Inference, and the afternoon paired sprint was investigating evolving likelihood functions as we gained more information/data.  </p>
+<h2>Power</h2>
+<p>-Suppose you are interested in testing if on average a bottle of coke weighs 20.4 ounces. You have collected
+simple random samples of 130 bottles of coke and weighed them.</p>
+<div class="highlight"><pre><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="kn">as</span> <span class="nn">sc</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">loadtxt</span><span class="p">(</span><span class="s">&#39;data/coke_weights.txt&#39;</span><span class="p">)</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+
+
+
+<span class="mi">130</span>
+</pre></div>
+
+
+<ol>
+<li>
+<p>State your null and alternative hypothesis.</p>
+<p>1.<strong>H0: The mean weight of coke bottles is 20.4 oz</strong><br />
+2.<strong>HA: The mean weight of coke bottles is different form 20.4 oz</strong>     </p>
+</li>
+<li>
+<p>Compute the mean and standard error of the sample. State why you are able to apply the Central
+   Limit Theorem here to approximate the sample distribution to be normal.</p>
+<p>mean = data.mean()
+std = data.std()
+se = sc.sem(data)
+print "Sample Mean: ", mean
+print "Sample STD", std
+print "Sample Standard Error",se
+print "Sample Size: ", len(data)</p>
+<p>Sample Mean:  20.519861441
+Sample STD 0.957682215104
+Sample Standard Error 0.084319217426
+Sample Size:  130</p>
+</li>
+</ol>
+<p><strong>We can use the CLT on this problem because the sample size is 130, much greater than 30.</strong></p>
+<p>We can make a simulation of the sampling distribution of the null hypthosis, and we can make a sampling distirubiton for another believe, say the true value is the sample man.   If this is true, we can ask questions about how powerful our test is at discovering the mean coke bottle weight is not 20.4, but 20.52.</p>
+<div class="highlight"><pre>def power_graph(mu1,std1,n1,mu2,std2,n2,alpha=0.05,two_sided=True):
+    x = np.array([sc.norm.rvs(loc=mu1,scale=std1,size=n1).mean() for i in range(10000)])
+    y = np.array([sc.norm.rvs(loc=mu2,scale=std2,size=n2).mean() for i in range(10000)])
+    plt.figure()
+    plt.hist(x,normed=True,color=&#39;lightseagreen&#39;,edgecolor=&#39;lightseagreen&#39;,alpha=0.4,bins=30,label=&quot;Null&quot;)
+    plt.hist(y,normed=True,color=&#39;lightsalmon&#39;,edgecolor=&#39;lightsalmon&#39;,alpha=0.4,bins=30,label=&quot;W=20.52&quot;)
+    if two_sided:
+        x95 = np.percentile(x,100-100*alpha/2.)
+    else:
+        x95 = np.percentile(x,100-100*alpha)
+
+    plt.axvline(x95,0,10,color=&#39;gray&#39;,lw=2,linestyle=&#39;--&#39;,alpha=0.8)
+    plt.legend()
+    plt.show()
+    print &quot;Value Threshold For Significance: &quot;, x95
+    power = len(y[y&gt;x95])/len(y)
+    print &quot;Power of Finding True Positive: &quot;,power
+    return power
+
+power_graph(20.4,data.std(),130,data.mean(),data.std(),130)
+power_graph(20.4,data.std(),130,data.mean(),data.std(),130,two_sided=False)
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_6_0.png" /></p>
+<div class="highlight"><pre>Value Threshold For Significance:  20.5657024198
+Power of Finding True Positive:  0.2899
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_6_2.png" /></p>
+<div class="highlight"><pre>Value Threshold For Significance:  20.5387014434
+Power of Finding True Positive:  0.4037
+
+
+
+
+
+0.4037
+</pre></div>
+
+
+<p>These powers are 30% for the two sided, and 42% for the onsided.   It deends if our originaly hypothesis test is a not equal or greater than.   </p>
+<p>We can also do this analytically since we are using the centeral limit.  For a two sided test, we find the following:</p>
+<div class="highlight"><pre>x = np.linspace(20.4-4*se,20.4+4*se,100)
+
+y1 = sc.norm.pdf(x,loc=20.4,scale=se)
+cumy1 = sc.norm.cdf(x,loc=20.4,scale=se)
+y2 = sc.norm.pdf(x,loc=data.mean(),scale=se)
+x975 = 20.4+1.96*se
+x025 = 20.4-1.95*se
+print x025,x975
+plt.plot(x,y1,color=&#39;indianred&#39;,label=&#39;Null Hypthesis&#39;)
+plt.plot(x,y2,color=&#39;steelblue&#39;,label=&#39;Data&#39;)
+plt.fill_between(x[x&gt;=x975],y2[x&gt;=x975],color=&#39;steelblue&#39;,alpha=0.4)
+plt.fill_between(x[x&gt;=x975],y1[x&gt;=x975],color=&#39;indianred&#39;,alpha=0.4)
+plt.fill_between(x[x&lt;=x025],y1[x&lt;=x025],color=&#39;indianred&#39;,alpha=0.4)
+plt.axvline(x975,0,10,color=&#39;black&#39;,lw=3,linestyle=&#39;--&#39;)
+plt.axvline(x025,0,10,color=&#39;black&#39;,lw=3,linestyle=&#39;--&#39;)
+plt.show()
+
+20.235577526 20.5652656662
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_8_1.png" /></p>
+<p><strong>We can see that we would not reject the null hypothesis in favor of the alternative because the peak of the blue curve is to the left of the bounding of significance.  The area under the red cuver outside of the black boundaries is 0.05, the signifcance level.   The power of detecing a signficant difference assuming the data's mean is the true value is the blue area.   In this case it is ~ 30%</strong></p>
+<p>The probability of making a type II error (false negative) is called beta.</p>
+<div class="highlight"><pre>beta = sc.norm.cdf(x975,loc=data.mean(),scale=se)-sc.norm.cdf(x025,loc=data.mean(),scale=se)
+print &quot;Beta (Prob of Type II Error) Assuming data value is the true value&quot;, beta
+
+Beta (Prob of Type II Error) Assuming data value is the true value 0.704503425135
+</pre></div>
+
+
+<p>The power is always 1 minus the false negative rate:</p>
+<p>$$\mbox{Power} = 1 - \beta$$</p>
+<div class="highlight"><pre>print &quot;Power: &quot;,1-beta
+
+Power:  0.295496574865
+</pre></div>
+
+
+<p>Statistical power is affected by a number of factors, including the <strong>sample size</strong>, the <strong>effect size (difference
+between the sample statistic and the statistic formulated under the null)</strong>, and the <strong>significance level</strong>. Here
+we are going to explore the effect of these factors on power.</p>
+<p>If we assuming that we have a different null hypothesis, we can find the power of detecting anther effect size.  Lets stick with the sample data</p>
+<div class="highlight"><pre>def explore_power(null_mu,sample_size,effect_size,null_standard_dev,significance_level=0.95,two_sided=True):
+    if two_sided:
+        critical_z = sc.norm.isf((1-significance_level)/2.)
+        se = np.sqrt(null_standard_dev**2/(sample_size-1))
+        x025 = null_mu-critical_z*se
+        x975 = null_mu+critical_z*se
+        alt_mean = null_mu+effect_size
+        return (1-np.abs(sc.norm.cdf(x975,loc=alt_mean,scale=se)-sc.norm.cdf(x025,loc=alt_mean,scale=se)))*100
+    else:
+        critical_z = sc.norm.isf(significance_level)
+        se = np.sqrt(null_standard_dev**2/(sample_size-1))
+        x95 = null_mu-critical_z*se
+        alt_mean = null_mu+effect_size
+        return 100*(np.abs(sc.norm.cdf(x95,loc=alt_mean,scale=se)))
+
+print explore_power(20.4,130,data.mean()-20.4,data.std())
+explore_power(20.2,130,data.mean()-20.2,data.std())
+
+29.5495708063
+
+
+
+
+
+96.663546292685481
+</pre></div>
+
+
+<p>The power increased when we assumed the distributions were more different.  This makes sense because the two values are father appart, and the sampling distributions have less overlap.  We can see that by calling power_graph, or calling the analyical functions because we have access to the central limit theorem.</p>
+<div class="highlight"><pre>power_graph(20.2,data.std(),130,data.mean(),data.std(),130)
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_17_0.png" /></p>
+<div class="highlight"><pre>Value Threshold For Significance:  20.364830609
+Power of Finding True Positive:  0.9698
+
+
+
+
+
+0.9698
+
+
+
+
+x = np.linspace(20.2-5*se,20.2+6*se,100)
+
+y1 = sc.norm.pdf(x,loc=20.2,scale=se)
+cumy1 = sc.norm.cdf(x,loc=20.2,scale=se)
+y2 = sc.norm.pdf(x,loc=data.mean(),scale=se)
+x975 = 20.2+1.96*se
+x025 = 20.2-1.95*se
+plt.plot(x,y1,color=&#39;indianred&#39;,label=&#39;Null Hypthesis&#39;)
+plt.plot(x,y2,color=&#39;steelblue&#39;,label=&#39;Data&#39;)
+plt.axvline(x975,0,10,color=&#39;black&#39;,lw=3,linestyle=&#39;--&#39;)
+plt.axvline(x025,0,10,color=&#39;black&#39;,lw=3,linestyle=&#39;--&#39;)
+plt.fill_between(x[x&gt;=x975],y2[x&gt;=x975],color=&#39;steelblue&#39;,alpha=0.4)
+plt.fill_between(x[x&gt;=x975],y1[x&gt;=x975],color=&#39;indianred&#39;,alpha=0.4)
+plt.fill_between(x[x&lt;=x025],y1[x&lt;=x025],color=&#39;indianred&#39;,alpha=0.4)
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_18_0.png" /></p>
+<p>This makes me wonder how the power changes with the effect size.  I image that bigger effects are easier to detect.  It makes good sense</p>
+<div class="highlight"><pre>plt.plot(np.linspace(0.1,1.2,20),[explore_power(20.2,130,x,data.std()) for x in np.linspace(0.0,1.2,20)],&#39;bo--&#39;,
+        color=&#39;lightseagreen&#39;,alpha=0.8,label=&quot;Power&quot;)
+plt.ylim([0,110])
+plt.xlabel(&quot;Effect Size&quot;)
+plt.ylabel(&quot;Power&quot;)
+plt.legend(loc=4)
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_20_0.png" /></p>
+<p>The power of a study also depends on the sample size.  As the sample size increases, the standard error decreases by the central limit theorem.   This will make two different distributions overlap less. </p>
+<div class="highlight"><pre>power_graph(20.4,data.std(),130,data.mean(),data.std(),130)
+power_graph(20.4,data.std(),1000,data.mean(),data.std(),1000)
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_22_0.png" /></p>
+<div class="highlight"><pre>Value Threshold For Significance:  20.5657528314
+Power of Finding True Positive:  0.2857
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_22_2.png" /></p>
+<div class="highlight"><pre>Value Threshold For Significance:  20.4590858498
+Power of Finding True Positive:  0.9802
+
+
+
+
+
+0.9802
+
+
+
+
+data2 = np.loadtxt(&#39;data/coke_weights_1000.txt&#39;)
+mean = data2.mean()
+std = data2.std()
+se = sc.sem(data2)
+x = np.linspace(20.4-5*se,20.4+6*se,100)
+
+y1 = sc.norm.pdf(x,loc=20.4,scale=se)
+cumy1 = sc.norm.cdf(x,loc=20.4,scale=se)
+y2 = sc.norm.pdf(x,loc=data2.mean(),scale=se)
+x975 = 20.4+1.96*se
+x025 = 20.4-1.95*se
+
+plt.plot(x,y1,color=&#39;indianred&#39;,label=&#39;Null Hypthesis&#39;)
+plt.plot(x,y2,color=&#39;steelblue&#39;,label=&#39;Data&#39;)
+plt.axvline(x975,0,10,color=&#39;black&#39;,lw=3,linestyle=&#39;--&#39;)
+plt.axvline(x025,0,10,color=&#39;black&#39;,lw=3,linestyle=&#39;--&#39;)
+plt.fill_between(x[x&gt;=x975],y2[x&gt;=x975],color=&#39;steelblue&#39;,alpha=0.4)
+plt.fill_between(x[x&gt;=x975],y1[x&gt;=x975],color=&#39;indianred&#39;,alpha=0.4)
+plt.fill_between(x[x&lt;=x025],y1[x&lt;=x025],color=&#39;indianred&#39;,alpha=0.4)
+plt.show()
+beta = sc.norm.cdf(x975,loc=data2.mean(),scale=se)-sc.norm.cdf(x025,loc=data2.mean(),scale=se)
+print &quot;Beta (Prob of Type II Error) Assuming data value is the true value&quot;, beta
+print &quot;Power:&quot;,1-beta
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_23_0.png" /></p>
+<div class="highlight"><pre>Beta (Prob of Type II Error) Assuming data value is the true value 0.271504963539
+Power: 0.728495036461
+</pre></div>
+
+
+<p>We can also see how chaning the significance level affects the power of a study.  </p>
+<div class="highlight"><pre>plt.plot(np.linspace(0.01,0.3,40),[explore_power(20.4,130,0.01,data.std(),significance_level=x) for x in np.linspace(0.01,0.3,40)],&#39;bo--&#39;,
+        color=&#39;lightseagreen&#39;,alpha=0.6,label=&quot;Power&quot;)
+plt.ylim([0,110])
+plt.xlabel(&quot;Significance Level&quot;)
+plt.ylabel(&quot;Power&quot;)
+plt.legend(loc=4)
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_25_0.png" /></p>
+<h2>Power Calculations for A/B testing</h2>
+<p>We continued yesterday's case study with Esty to find the power needed.  It looked like our Etsy Tuesday Landing Page experiment was under-powered.</p>
+<div class="highlight"><pre>etsy = pd.read_csv(&#39;data/experiment.csv&#39;)
+old_data = etsy[etsy[&#39;landing_page&#39;] == &#39;old_page&#39;][&#39;converted&#39;]
+new_data = etsy[etsy[&#39;landing_page&#39;] == &#39;new_page&#39;][&#39;converted&#39;]
+</pre></div>
+
+
+<p>We will set up the following hypthesis test.</p>
+<p>X ~ p_new - p_old</p>
+<p>H0: X = 0.001
+H1: X &gt; 0.001</p>
+<p>We need to set up the proportions of conversions and find the standard error for this experiment.</p>
+<div class="highlight"><pre>po = old_data.mean()
+pn = new_data.mean()
+p = (old_data.mean()*len(old_data)+new_data.mean()*len(new_data))/(len(old_data)+len(new_data))
+se = np.sqrt(p*(1-p)/len(old_data)+p*(1-p)/len(new_data))
+</pre></div>
+
+
+<p>We can make the same plots as before and compared null to our data.</p>
+<div class="highlight"><pre>x = np.linspace(-5*se,5*se,100)
+
+y1 = sc.norm.pdf(x,loc=0.001,scale=se)
+cumy1 = sc.norm.cdf(x,loc=0.001,scale=se)
+y2 = sc.norm.pdf(x,loc=(pn-po),scale=se)
+x95 = 0.001+1.68*se
+plt.plot(x,y1,color=&#39;indianred&#39;,label=&#39;Null Hypthesis&#39;)
+plt.plot(x,y2,color=&#39;steelblue&#39;,label=&#39;New Data&#39;)
+plt.axvline(x95,0,10,color=&#39;black&#39;,lw=3,linestyle=&#39;--&#39;)
+plt.fill_between(x[x&gt;=x95],y2[x&gt;=x95],color=&#39;steelblue&#39;,alpha=0.4)
+plt.fill_between(x[x&gt;=x95],y1[x&gt;=x95],color=&#39;indianred&#39;,alpha=0.4)
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_31_0.png" /></p>
+<p>We can see our data is not statistically different of 0.001, but if we assume the data represents the true mean, we have a very weak test.</p>
+<div class="highlight"><pre>critical_z = sc.norm.ppf(0.95)
+x95 = 0.001+critical_z*se
+1-sc.norm.cdf(x95,loc=(pn-po),scale=se)
+
+
+
+
+0.005391084734824525
+</pre></div>
+
+
+<p>We have a power of less than 1/2% from our data.   </p>
+<p>Increasing the sample size will weaken the power in this case, because our data is less than the null hypthesis, and we are constructing a one sided t-test.  In this case we accept the results and fail to reject the null hypthesis. </p>
+<p>We were told that Etsy decided the pilot is a plausible enough representation of the company's daily  traffic. As a result, Esty decided on a two-tailed test instead, which is as follows:</p>
+<p>```
+   X ~ p_new - p_old</p>
+<p>H0: X = 0.001
+   H1: X != 0.001
+   ```</p>
+<div class="highlight"><pre>x = np.linspace(-5*se,5*se,100)
+
+y1 = sc.norm.pdf(x,loc=0.001,scale=se)
+cumy1 = sc.norm.cdf(x,loc=0.001,scale=se)
+y2 = sc.norm.pdf(x,loc=(pn-po),scale=se)
+x025 = 0.001-1.96*se
+x975 = 0.001+1.96*se
+plt.plot(x,y1,color=&#39;indianred&#39;,label=&#39;Null Hypthesis&#39;)
+plt.plot(x,y2,color=&#39;steelblue&#39;,label=&#39;New Data&#39;)
+plt.axvline(x025,0,10,color=&#39;black&#39;,lw=3,linestyle=&#39;--&#39;)
+plt.axvline(x975,0,10,color=&#39;black&#39;,lw=3,linestyle=&#39;--&#39;)
+plt.fill_between(x[x&gt;=x975],y2[x&gt;=x975],color=&#39;steelblue&#39;,alpha=0.4)
+plt.fill_between(x[x&lt;=x025],y2[x&lt;=x025],color=&#39;steelblue&#39;,alpha=0.4)
+plt.fill_between(x[x&gt;=x975],y1[x&gt;=x975],color=&#39;indianred&#39;,alpha=0.4)
+plt.fill_between(x[x&lt;=x025],y1[x&lt;=x025],color=&#39;indianred&#39;,alpha=0.4)
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_36_0.png" /></p>
+<div class="highlight"><pre>print &quot;2-Sided Power: &quot;, sc.norm.cdf(x025,loc=(pn-po),scale=se)+(1-sc.norm.cdf(x975,loc=(pn-po),scale=se))
+
+2-Sided Power:  0.14775925242
+</pre></div>
+
+
+<h3>Minimum Sample Size</h3>
+<p>When desigining an experiment, or conducting a test, it is important to get enough data to measure what we are looking for.  In the case of Etsy, its a 1% lift in conversions.  To try to figure out the sample size we might considered our desired false postive and false negative rates, and the Z values associated with them.</p>
+<p>$$\alpha = \mbox{False Positive Rate}, \ Z_{\alpha}$$</p>
+<p>$$\beta = \mbox{False Negative Rate}, \ Z_{\beta}$$</p>
+<p>In an experiment we will have one values, and the Z's will be related to it by the following:</p>
+<p>$$\mu_{exp} = \mbox{Experimental Result}$$</p>
+<p>$$s_{sample} = \mbox{Sampling Erroring}$$</p>
+<p>$$Z_{\alpha} = \frac{\mu_{exp} \ - \ \mu_{Null}}{s_{sample}}$$</p>
+<p>$$Z_{\beta} = \frac{\mu_{exp} \ - \ \mu_{Alternative}}{s_{sample}}$$</p>
+<p>It is worth noting that one of these Z's can be positive, while the other can be negative.  You will find equations that differ from what is done here because of that.  Taking the difference between these two equations give:</p>
+<p>$$\mbox{Effect Size} = \mu_{Alternative} - \mu_{Null}$$</p>
+<p>$$Z_{\alpha} \ - \ Z_{\beta} = \frac{\mbox{Effect Size}}{s_{sample}}$$</p>
+<p>We can use the eqauation for the sampling distribution for two sample proproption test of equal size for the sampling error.</p>
+<p>$$s_{sample} = \sqrt{\frac{ p \ (1 - p) \ 2}{n}}$$</p>
+<p>Where p is the weighted proportion of the two groups.  This gives the previous equation as.</p>
+<p>$$Z_{\alpha} \ - \ Z_{\beta} = \frac{\mbox{Effect Size}}{\sqrt{\frac{ p \ (1 - p) \ 2}{n}}}$$</p>
+<p>Squaring both sides we get:</p>
+<p>$$(Z_{\alpha} \ - \ Z_{\beta})^2 = \frac{\mbox{Effect Size}^2 \ n}{ p \ (1 - p) \ 2}$$</p>
+<p>So the needed sample size should be</p>
+<p>$$n = \frac{2 \ (Z_{\alpha} \ - \ Z_{\beta})^2 \ p \ (1-p)}{\mbox{Effect Size}^2}$$</p>
+<div class="highlight"><pre>def calc_min_sample_size(old,new,effect_size,sig=0.05,pow=0.8,one_tail=False):
+    pn = new.mean()
+    po = old.mean()
+    no = len(old)
+    nn = len(new)
+    dp = pn-po
+    p = ( po*no+pn*nn ) / (nn+no)
+    se = np.sqrt(p*(1-p)*(1/nn+1/no))
+    if one_tail:
+        z_null = sc.norm.ppf((1-sig))
+    else:
+        z_null = sc.norm.ppf((1-sig/2))
+    z_pow = sc.norm.ppf(1-pow)
+
+
+    return (z_null-z_pow)**2*2*p*(1-p)/effect_size**2
+
+
+calc_min_sample_size(old_data,new_data,0.001,one_tail=False)
+
+
+
+
+1410314.3210247809
+</pre></div>
+
+
+<p>So if we want a power of 80% for our Etsy experiment, meaning its likely for us to detect results that are different from a lift of 1%, we need to have 1.4 million users in each sample.  Our results are definately underpowered.</p>
+<h2>Afternoon - Bayes</h2>
+<p>We covered Bayes' Theorem and updating priors with likelihoods to produce a posterior distribution of sample paramters given data.   We started with a created class, and explore the results of these distributions given data.</p>
+<p>$$ P(Parameters \ | \ Data) = \frac{P(Data \ | \ Parameters) * P(Paramters)}{P(Data)} $$</p>
+<p>$$ \mbox{Posterior} = \frac{\mbox{Likelihood} \ \times \ \mbox{Prior}}{\mbox{Normalization}} $$</p>
+<div class="highlight"><pre><span class="kr">class</span> <span class="nx">Bayes</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span><span class="o">:</span>
+    <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    INPUT:</span>
+<span class="s1">        prior (dict): key is the value (e.g. 4-sided die),</span>
+<span class="s1">                      value is the probability</span>
+
+<span class="s1">        likelihood_func (function): takes a new piece of data and the value and</span>
+<span class="s1">                                    outputs the likelihood of getting that data</span>
+<span class="s1">    &#39;&#39;&#39;</span>
+    <span class="nx">def</span> <span class="nx">__init__</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">prior</span><span class="p">,</span> <span class="nx">likelihood_func</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">prior</span> <span class="o">=</span> <span class="nx">prior</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">likelihood_func</span> <span class="o">=</span> <span class="nx">likelihood_func</span>
+
+
+    <span class="nx">def</span> <span class="nx">normalize</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        INPUT: None</span>
+<span class="s1">        OUTPUT: None</span>
+
+<span class="s1">        Makes the sum of the probabilities equal 1.</span>
+<span class="s1">        &#39;&#39;&#39;</span>
+        <span class="nx">total</span> <span class="o">=</span> <span class="nx">sum</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">prior</span><span class="p">.</span><span class="nx">values</span><span class="p">())</span>
+        <span class="k">for</span> <span class="nx">key</span> <span class="k">in</span> <span class="nx">self</span><span class="p">.</span><span class="nx">prior</span><span class="o">:</span>
+            <span class="nx">self</span><span class="p">.</span><span class="nx">prior</span><span class="cp">[</span><span class="nx">key</span><span class="cp">]</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">prior</span><span class="cp">[</span><span class="nx">key</span><span class="cp">]</span><span class="o">/</span><span class="nx">total</span>
+
+    <span class="nx">def</span> <span class="nx">update</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span><span class="o">:</span>
+        <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        INPUT:</span>
+<span class="s1">            data (int or str): A single observation (data point)</span>
+
+<span class="s1">        OUTPUT: None</span>
+
+<span class="s1">        Conduct a bayesian update. Multiply the prior by the likelihood and</span>
+<span class="s1">        make this the new prior.</span>
+<span class="s1">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="nx">k</span> <span class="k">in</span> <span class="nx">self</span><span class="p">.</span><span class="nx">prior</span><span class="o">:</span>
+            <span class="nx">self</span><span class="p">.</span><span class="nx">prior</span><span class="cp">[</span><span class="nx">k</span><span class="cp">]</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">prior</span><span class="cp">[</span><span class="nx">k</span><span class="cp">]</span><span class="o">*</span><span class="nx">self</span><span class="p">.</span><span class="nx">likelihood_func</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span><span class="nx">k</span><span class="p">)</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">normalize</span><span class="p">()</span>
+
+    <span class="nx">def</span> <span class="nx">print_distribution</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        Print the current posterior probability.</span>
+<span class="s1">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="nx">k</span> <span class="k">in</span> <span class="nx">sorted</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">prior</span><span class="p">.</span><span class="nx">keys</span><span class="p">())</span><span class="o">:</span>
+            <span class="nx">print</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">self</span><span class="p">.</span><span class="nx">prior</span><span class="cp">[</span><span class="nx">k</span><span class="cp">]</span>
+
+    <span class="nx">def</span> <span class="nx">plot</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">color</span><span class="o">=</span><span class="nx">None</span><span class="p">,</span> <span class="nx">title</span><span class="o">=</span><span class="nx">None</span><span class="p">,</span> <span class="nx">label</span><span class="o">=</span><span class="nx">None</span><span class="p">)</span><span class="o">:</span>
+        <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        Plot the current prior.</span>
+<span class="s1">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nx">color</span> <span class="o">==</span> <span class="nx">None</span><span class="o">:</span>
+            <span class="nx">c</span> <span class="o">=</span> <span class="s1">&#39;blue&#39;</span>
+        <span class="k">else</span><span class="o">:</span>
+            <span class="nx">c</span><span class="o">=</span><span class="nx">color</span>
+        <span class="nx">k</span> <span class="o">=</span> <span class="nx">sorted</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">prior</span><span class="p">.</span><span class="nx">keys</span><span class="p">())</span>
+        <span class="nx">v</span> <span class="o">=</span> <span class="cp">[</span><span class="bp">self.</span><span class="nx-Member">prior</span><span class="err">[</span><span class="nx">key</span><span class="cp">]</span> <span class="k">for</span> <span class="nx">key</span> <span class="k">in</span> <span class="nx">k</span><span class="p">]</span>
+        <span class="nx">plt</span><span class="p">.</span><span class="nx">bar</span><span class="p">(</span><span class="nx">np</span><span class="p">.</span><span class="nx">arange</span><span class="p">(</span><span class="nx">len</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">prior</span><span class="p">)),</span><span class="nx">v</span><span class="p">,</span><span class="nx">color</span><span class="o">=</span><span class="nx">c</span><span class="p">,</span><span class="nx">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span><span class="nx">label</span><span class="o">=</span><span class="nx">label</span><span class="p">)</span>
+        <span class="nx">plt</span><span class="p">.</span><span class="nx">xticks</span><span class="p">(</span><span class="nx">np</span><span class="p">.</span><span class="nx">arange</span><span class="p">(</span><span class="nx">len</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">prior</span><span class="p">))</span><span class="o">+</span><span class="mf">0.1</span><span class="p">,</span><span class="nx">k</span><span class="p">)</span>
+
+<span class="nx">def</span> <span class="nx">likelihood_dice</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span><span class="nx">value</span><span class="p">)</span><span class="o">:</span>
+    <span class="k">if</span> <span class="nx">data</span> <span class="o">&gt;</span> <span class="kr">int</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span><span class="o">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="o">:</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">.</span><span class="o">/</span><span class="kr">int</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
+
+<span class="nx">def</span> <span class="nx">likelihood_coin</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span><span class="nx">value</span><span class="p">)</span><span class="o">:</span>
+    <span class="k">if</span> <span class="nx">data</span><span class="o">==</span><span class="s1">&#39;H&#39;</span><span class="o">:</span>
+        <span class="k">return</span> <span class="kr">float</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
+    <span class="k">else</span><span class="o">:</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="o">-</span><span class="kr">float</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
+</pre></div>
+
+
+<h3>The problem</h3>
+<p>A box contains a 4-sided die, a 6-sided die, an 8-sided die,a 12-sided die, and a 20-sided die. A die is selected at random, and the rest are destroyed.  </p>
+<p>What is the prior?<br />
+<strong>All Dice Equally Likely</strong></p>
+<div class="highlight"><pre>b = Bayes({&#39;04&#39;:0.2,&#39;06&#39;:0.2,&#39;08&#39;:0.2,&#39;12&#39;:0.2,&#39;20&#39;:0.2},likelihood_dice)
+b.plot()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_44_0.png" /></p>
+<p>Say I roll an 8. After one bayesian update, what is the probability that I chose each of the dice?</p>
+<div class="highlight"><pre>b.update(8)
+b.plot()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_46_0.png" /></p>
+<p>We know that we do not have a 4 or 6 sided dice, and the 8 is most likly because the 8 has a 1 in 8 chance of getting an 8, the 12 has a 1 in 12 chance of rolling and 8, and the 20 sided dice has a 1 in 20 chance of rolling an 8.</p>
+<p>Comment on the difference in the posteriors if I had rolled the die 50 times instead of 1.</p>
+<div class="highlight"><pre><span class="k">[b.update(8) for i in range(49)]</span>
+<span class="err">b.plot()</span>
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_49_0.png" /></p>
+<p>However unlikely it is, the posterier suggest that the post likely culperite of 50 roles all coming to 8 is an 8 sided dice.</p>
+<p>Which one of these two sets of data gives you a more certain posterior and why?
+<code>[1, 1, 1, 3, 1, 2]</code> or <code>[10, 10, 10, 10, 8, 8]</code></p>
+<div class="highlight"><pre>b = Bayes({&#39;04&#39;:0.2,&#39;06&#39;:0.2,&#39;08&#39;:0.2,&#39;12&#39;:0.2,&#39;20&#39;:0.2},likelihood_dice)
+[b.update(x) for x in [1,1,1,3,1,2]]
+b.plot()
+plt.show()
+b = Bayes({&#39;04&#39;:0.2,&#39;06&#39;:0.2,&#39;08&#39;:0.2,&#39;12&#39;:0.2,&#39;20&#39;:0.2},likelihood_dice)
+[b.update(x) for x in [10,10,10,10,8,8]]
+b.plot()
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_52_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_52_1.png" /></p>
+<p>We are most certain in the second case becasue 3 of the dice have been ruled out, and a 1/12 per roll is much bigger than a 1/20.</p>
+<p>Say the prior of the dice is:</p>
+<div class="highlight"><pre>```
+4-sided die: 8%
+6-sided die: 12%
+8-sided die: 16%
+12-sided die: 24%
+20-sided die: 40%
+```
+</pre></div>
+
+
+<p>What are posteriors for each die after rolling the 8?</p>
+<div class="highlight"><pre>b = Bayes({&#39;04&#39;:0.08,&#39;06&#39;:0.12,&#39;08&#39;:0.16,&#39;12&#39;:0.24,&#39;20&#39;:0.40},likelihood_dice)
+b.update(8)
+b.plot()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_55_0.png" /></p>
+<p>The postior makes 8 sided, 12 sided, and 20 sided dice equally likely after 1 roll of an 8.  </p>
+<p>Say you keep the same prior and you roll the die 50 times and get values 1-8 every time. What would you expect of the posterior? How different do you think it would be if you'd used the uniform prior?</p>
+<div class="highlight"><pre>b = Bayes({&#39;04&#39;:0.2,&#39;06&#39;:0.2,&#39;08&#39;:0.2,&#39;12&#39;:0.2,&#39;20&#39;:0.2},likelihood_dice)
+[b.update(x) for x in np.random.randint(1,8,size=50)]
+b.plot()
+plt.show()
+b = Bayes({&#39;04&#39;:0.08,&#39;06&#39;:0.12,&#39;08&#39;:0.16,&#39;12&#39;:0.24,&#39;20&#39;:0.40},likelihood_dice)
+[b.update(x) for x in np.random.randint(1,8,size=50)]
+b.plot()
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_58_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_58_1.png" /></p>
+<p>With enough data, the difference in priors do not matter.   They converge to the same value.  </p>
+<h2>Bayes and Coin Flips</h2>
+<p>We can consider a random flip of a coin and ask what is the believe about our belief of the probability the coin resulting in heads.   Before any flip we would assume a unifor distrubiton.   </p>
+<div class="highlight"><pre>p = np.linspace(0,0.99,100)
+prior = dict()
+for v in p:
+    prior[str(v)] = 0.01
+flips = [[&#39;H&#39;],[&#39;T&#39;],[&#39;H&#39;,&#39;H&#39;],[&#39;H&#39;,&#39;T&#39;],[&#39;H&#39;,&#39;H&#39;,&#39;H&#39;],[&#39;T&#39;,&#39;H&#39;,&#39;T&#39;],[&#39;H&#39;,&#39;H&#39;,&#39;H&#39;,&#39;H&#39;],[&#39;T&#39;,&#39;H&#39;,&#39;T&#39;,&#39;H&#39;]]
+
+plt.figure(figsize=(15,10))
+for i,f in enumerate(flips):
+    plt.subplot(4,2,i+1)
+    b = Bayes(prior.copy(),likelihood_coin)
+    for x in f:
+         b.update(x)
+    b.plot(label=str(f))
+    plt.legend(loc=&#39;best&#39;)
+    plt.xticks(rotation=70,fontsize=4)
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_61_0.png" /></p>
+<p>We were given a cone class, with a unknown probability.  I am going to plot the update in my posteriers after fixed number of flips to see if a Bayesian would believe this is a biased coin</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">coin</span> <span class="kn">import</span> <span class="n">Coin</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">Coin</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="n">col</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;1&#39;</span><span class="p">:</span><span class="s">&#39;indianred&#39;</span><span class="p">,</span><span class="s">&#39;2&#39;</span><span class="p">:</span><span class="s">&#39;steelblue&#39;</span><span class="p">,</span><span class="s">&#39;10&#39;</span><span class="p">:</span><span class="s">&#39;coral&#39;</span><span class="p">,</span><span class="s">&#39;50&#39;</span><span class="p">:</span><span class="s">&#39;lightseagreen&#39;</span><span class="p">,</span><span class="s">&#39;250&#39;</span><span class="p">:</span><span class="s">&#39;skyblue&#39;</span><span class="p">,</span><span class="s">&#39;500&#39;</span><span class="p">:</span><span class="s">&#39;purple&#39;</span><span class="p">,</span><span class="s">&#39;1000&#39;</span><span class="p">:</span><span class="s">&#39;indianred&#39;</span><span class="p">}</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">Bayes</span><span class="p">(</span><span class="n">prior</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span><span class="n">likelihood_coin</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+    <span class="n">b</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">flip</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">49</span><span class="p">,</span><span class="mi">249</span><span class="p">,</span><span class="mi">499</span><span class="p">,</span><span class="mi">999</span><span class="p">]:</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">col</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)],</span><span class="n">label</span><span class="o">=</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="s">&#39; Flips&#39;</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">70</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D4/output_63_0.png" /></p>
+<p>As we update our believes, upto 1000 flips, we see that 50 looks to be in the edge of our posterior space, but the distribution is centered around 0.53, making this the maximum likelihood value after 1000 flips.</p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'bryansmithphd';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=bryansmithphd">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      Bryan Smith, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="http://www.bryantravissmith.com/theme/js/jquery.min.js"></script>
+  <script src="http://www.bryantravissmith.com/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$$','$$'], ['\\(','\\)']]}
+});
+</script>
+</html>
