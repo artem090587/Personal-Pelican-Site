@@ -44,7 +44,7 @@ The morning lecture was on Hypthesis testing and multiple testing corrections.  
 
 
 
-![png](http://www.bryantravissmith.com/img/GW02D2/output_1_1.png)
+![png](http://www.bryantravissmith.com/img/GW02D3/output_1_1.png)
 
 
 **There is a 34% chance that one of the 12 tests will be a false positive value.  Instead, it would make more sense to chose a false positive rate such that the chance of having false positives out of 12 tests would be less than 0.05**
@@ -60,7 +60,7 @@ The morning lecture was on Hypthesis testing and multiple testing corrections.  
     print "New Significant Level: ", p[cdf < 0.05].max()
 
 
-![png](http://www.bryantravissmith.com/img/GW02D2/output_3_0.png)
+![png](http://www.bryantravissmith.com/img/GW02D3/output_3_0.png)
 
 
     New Significant Level:  0.004200420042
@@ -206,7 +206,7 @@ Now that we have the click through lets look at the distributions of variables.
 
 
 
-![png](http://www.bryantravissmith.com/img/GW02D2/output_11_1.png)
+![png](http://www.bryantravissmith.com/img/GW02D3/output_11_1.png)
 
 
 The age's with zero appear to be users that are not signed in by the height of the bars in the age and signed_in graphs.   The number of total clicks is less then 50,000, and the click through rates are small are mostly zero. 
@@ -228,7 +228,7 @@ To answer question 1, we need to split the date between signed-in users and sign
 
 
 
-![png](http://www.bryantravissmith.com/img/GW02D2/output_13_1.png)
+![png](http://www.bryantravissmith.com/img/GW02D3/output_13_1.png)
 
 
 
@@ -236,7 +236,7 @@ To answer question 1, we need to split the date between signed-in users and sign
 
 
 
-![png](http://www.bryantravissmith.com/img/GW02D2/output_13_3.png)
+![png](http://www.bryantravissmith.com/img/GW02D3/output_13_3.png)
 
 
 We can construct a hypothesis test on the data where we have the following
@@ -274,7 +274,7 @@ Question two has to do with the difference in click through rates between gender
 
 
 
-![png](http://www.bryantravissmith.com/img/GW02D2/output_17_1.png)
+![png](http://www.bryantravissmith.com/img/GW02D3/output_17_1.png)
 
 
 
@@ -282,7 +282,7 @@ Question two has to do with the difference in click through rates between gender
 
 
 
-![png](http://www.bryantravissmith.com/img/GW02D2/output_17_3.png)
+![png](http://www.bryantravissmith.com/img/GW02D3/output_17_3.png)
 
 
 A visual inspect of the data shows that men and women have similar distirubtions, with the exceptions fo the impressions distributions.  Men seem to have a wider range of impressons compared to women.  
@@ -993,7 +993,7 @@ AirBNB had a talks ([here](http://nerds.airbnb.com/experiments-airbnb/) and [her
 
 
 
-![png](http://www.bryantravissmith.com/img/GW02D2/output_38_0.png)
+![png](http://www.bryantravissmith.com/img/GW02D3/output_38_0.png)
 
 
 From this method we see that the p-value is still changing, making me believe that our experiment could be under-powered.
@@ -1186,7 +1186,7 @@ We see that some users have two countries listed.  Since the user country data i
 
 
 
-![png](http://www.bryantravissmith.com/img/GW02D2/output_45_0.png)
+![png](http://www.bryantravissmith.com/img/GW02D3/output_45_0.png)
 
 
 If we constructed a hypthoesis at the end of day on Tuesday, the US would look like they were responsive to the new page, but the time plot shows that this could be a cherry-picked value.  If the experiment was allowed to run for more time, or we collect more data, the value would have changed.   It is clear from these plots that the sample sizes are not large enough that a additional data does not heavily influence the result.   I would be hesitant to make any strong conclusions about the new page based on these results.  

@@ -111,7 +111,7 @@ plt.show()
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/http://www.bryantravissmith.com/img/GW02D5/output_3_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_3_0.png" /></p>
 <p>If we look at 1 value from the click through where the user does not click through, we update our believe:</p>
 <p>$$\mbox{Posterior} = \mbox{Prior} * \mbox{Likelihood}$$</p>
 <p>$$\mbox{Beta}(\alpha=1, \ \beta=2) = \mbox{Beta}(\alpha=1, \ \beta=1) \times (1 - p)$$</p>
@@ -124,7 +124,7 @@ plt.show()
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/http://www.bryantravissmith.com/img/GW02D5/output_5_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D5/output_5_0.png" /></p>
 <p>If we have 50 views, the equation would be:</p>
 <p>$$\mbox{Beta}(\alpha=1+n_{clicks}, \ \beta=1+n_{no clicks}) = \mbox{Beta}(\alpha=1, \ \beta=1) \times (1 - p)^{n_{no clicks}} \times p^{n_{clicks}}$$</p>
 <div class="highlight"><pre>b50,a50 = np.bincount(A[:50].astype(int))

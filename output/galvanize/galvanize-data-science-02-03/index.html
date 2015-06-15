@@ -108,7 +108,7 @@
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_1_1.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D3/output_1_1.png" /></p>
 <p><strong>There is a 34% chance that one of the 12 tests will be a false positive value.  Instead, it would make more sense to chose a false positive rate such that the chance of having false positives out of 12 tests would be less than 0.05</strong></p>
 <div class="highlight"><pre>p = np.linspace(0,1,10000)
 cdf = 1-sc.binom.pmf(0,12,p)
@@ -121,7 +121,7 @@ print &quot;New Significant Level: &quot;, p[cdf &lt; 0.05].max()
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_3_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D3/output_3_0.png" /></p>
 <div class="highlight"><pre>New Significant Level:  0.004200420042
 </pre></div>
 
@@ -252,7 +252,7 @@ array([[&lt;matplotlib.axes._subplots.AxesSubplot object at 0x1088e9f10&gt;,
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_11_1.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D3/output_11_1.png" /></p>
 <p>The age's with zero appear to be users that are not signed in by the height of the bars in the age and signed_in graphs.   The number of total clicks is less then 50,000, and the click through rates are small are mostly zero. </p>
 <p>To answer question 1, we need to split the date between signed-in users and signed-out users.   </p>
 <div class="highlight"><pre>sign = nyt[nyt[&#39;Signed_In&#39;]==1]
@@ -269,12 +269,12 @@ plt.show()
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_13_1.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D3/output_13_1.png" /></p>
 <div class="highlight"><pre>&lt;matplotlib.figure.Figure at 0x108bbc950&gt;
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_13_3.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D3/output_13_3.png" /></p>
 <p>We can construct a hypothesis test on the data where we have the following</p>
 <ul>
 <li>H0: The mean click through rate between signed in users and signed-out users are the same</li>
@@ -305,12 +305,12 @@ plt.show()
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_17_1.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D3/output_17_1.png" /></p>
 <div class="highlight"><pre>&lt;matplotlib.figure.Figure at 0x109a90610&gt;
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_17_3.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D3/output_17_3.png" /></p>
 <p>A visual inspect of the data shows that men and women have similar distirubtions, with the exceptions fo the impressions distributions.  Men seem to have a wider range of impressons compared to women.  </p>
 <p>The hypthesis test we are constructing is:</p>
 <p>H0:  Signed-in Men and Women have the same mean CTR<br />
@@ -964,7 +964,7 @@ plt.show()
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_38_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D3/output_38_0.png" /></p>
 <p>From this method we see that the p-value is still changing, making me believe that our experiment could be under-powered.</p>
 <p>There is additional data about the country of each user.  It could be interesting to look that these results by country.</p>
 <div class="highlight"><pre>countries = pd.read_csv(&quot;../ab-testing/data/country.csv&quot;)
@@ -1141,7 +1141,7 @@ plt.show()
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D2/output_45_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW02D3/output_45_0.png" /></p>
 <p>If we constructed a hypthoesis at the end of day on Tuesday, the US would look like they were responsive to the new page, but the time plot shows that this could be a cherry-picked value.  If the experiment was allowed to run for more time, or we collect more data, the value would have changed.   It is clear from these plots that the sample sizes are not large enough that a additional data does not heavily influence the result.   I would be hesitant to make any strong conclusions about the new page based on these results.  </p>
     </div>
   </div>

@@ -48,7 +48,7 @@ We are going to start with a prior that the click through rate of both sites can
     plt.show()
 
 
-![png](http://www.bryantravissmith.com/img/GW02D5/http://www.bryantravissmith.com/img/GW02D5/output_3_0.png)
+![png](http://www.bryantravissmith.com/img/GW02D5/output_3_0.png)
 
 
 If we look at 1 value from the click through where the user does not click through, we update our believe:
@@ -66,7 +66,7 @@ $$\mbox{Beta}(\alpha=1, \ \beta=2) = \mbox{Beta}(\alpha=1, \ \beta=1) \times (1 
     plt.show()
 
 
-![png](http://www.bryantravissmith.com/img/GW02D5/http://www.bryantravissmith.com/img/GW02D5/output_5_0.png)
+![png](http://www.bryantravissmith.com/img/GW02D5/output_5_0.png)
 
 
 If we have 50 views, the equation would be:
