@@ -1,5 +1,3220 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Bryan Travis Smith, Ph.D</title><link href="http://www.bryantravissmith.com/" rel="alternate"></link><link href="http://www.bryantravissmith.com/feeds/all.atom.xml" rel="self"></link><id>http://www.bryantravissmith.com/</id><updated>2015-06-12T10:30:00-07:00</updated><entry><title>Galvanize - Week 02 - Day 5</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-02-05/" rel="alternate"></link><updated>2015-06-12T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-12:galvanize/galvanize-data-science-02-05/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Bryan Travis Smith, Ph.D</title><link href="http://www.bryantravissmith.com/" rel="alternate"></link><link href="http://www.bryantravissmith.com/feeds/all.atom.xml" rel="self"></link><id>http://www.bryantravissmith.com/</id><updated>2015-06-17T10:30:00-07:00</updated><entry><title>Galvanize - Week 03 - Day 3</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-03-03/" rel="alternate"></link><updated>2015-06-17T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-17:galvanize/galvanize-data-science-03-03/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
+&lt;h2&gt;Week 3 - Day 3&lt;/h2&gt;
+&lt;p&gt;Today we had a miniquiz on cleaning data.  Identify missing values, incorrect format, and outliers.   It was a straight forward assignment.   I was struck with there is no clear end to data cleaning without a purpose.   It would be nice ot set a stoping criteria or variable specification so there are clear evaluation criteria.  Obviously with raw data the data has to be explored, and these criteria does not exist.   &lt;/p&gt;
+&lt;h2&gt;Morning: One-fold Cross Validation&lt;/h2&gt;
+&lt;p&gt;This morning we started using cross validation on the boston data set from sklearn.  The goal is not to make the best model, but just work through th eprocess of using cross validation. &lt;/p&gt;
+&lt;p&gt;Descriptions for each column in &lt;code&gt;features&lt;/code&gt;:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Attribute Information (in order):
+    - CRIM     per capita crime rate by town
+    - ZN       proportion of residential land zoned for lots over 25,000 sq.ft.
+    - INDUS    proportion of non-retail business acres per town
+    - CHAS     Charles River dummy variable (= 1 if tract bounds river; 0 otherwise)
+    - NOX      nitric oxides concentration (parts per 10 million)
+    - RM       average number of rooms per dwelling
+    - AGE      proportion of owner-occupied units built prior to 1940
+    - DIS      weighted distances to five Boston employment centres
+    - RAD      index of accessibility to radial highways
+    - TAX      full-value property-tax rate per $10,000
+    - PTRATIO  pupil-teacher ratio by town
+    - B        1000(Bk - 0.63)^2 where Bk is the proportion of blacks by town
+    - LSTAT    % lower status of the population
+    - MEDV     Median value of owner-occupied homes in $1000's&lt;/code&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;matplotlib&lt;/span&gt; &lt;span class="n"&gt;inline&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;matplotlib.pyplot&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;plt&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;numpy&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;np&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;scipy.stats&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;sc&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;pandas.tools.plotting&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;scatter_matrix&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.linear_model&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;LinearRegression&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.cross_validation&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;KFold&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.cross_validation&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;train_test_split&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.cross_validation&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;cross_val_score&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.datasets&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;load_boston&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.metrics&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;mean_squared_error&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.preprocessing&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;StandardScaler&lt;/span&gt;
+&lt;span class="n"&gt;boston&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;load_boston&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;features&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;boston&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;
+&lt;span class="n"&gt;target&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;boston&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;target&lt;/span&gt; &lt;span class="c"&gt;# housing price&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;We are using the train, test split to make a training set of 70% of the data and a test set of 30% of the data.  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;train_feature, test_feature, train_target, test_target = train_test_split(features, target, test_size=0.3)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;We are going to use sklearn's LinearRegresion on this data set.  There are likely issues with multicolinearity, but we will skip that for now.   We will train the data on the training set, and test it on the testing set.  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;linear = LinearRegression()
+linear.fit(train_feature, train_target)
+# You can call predict to get the predicted values for training and test
+train_predicted = linear.predict(train_feature)
+test_predicted = linear.predict(test_feature)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;I wrote a mean square function to compare to sklearn's function.   I expect the test set to have larger value then the training set because the model was not trained on the test set.  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;def MSE(x1,x2):
+    return np.sum(np.power(x2-x1,2))/len(x1)
+print &amp;quot;Train MSE: &amp;quot;, MSE(train_predicted,train_target),mean_squared_error(train_predicted,train_target)
+print &amp;quot;Test MSE: &amp;quot;, MSE(test_predicted,test_target), mean_squared_error(test_predicted,test_target)
+
+
+Train MSE:  21.1395296142 21.1395296142
+Test MSE:  24.6555052851 24.6555052851
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;K-fold Cross Validation&lt;/h2&gt;
+&lt;p&gt;In K-fold cross validation the data is split into &lt;strong&gt;k&lt;/strong&gt; groups. One group
+out of the k groups will be the test set, the rest (&lt;strong&gt;k-1&lt;/strong&gt;) groups will
+be the training set. In the next iteration, another group will be the test set,
+and the rest will be the training set. The process repeats for k iterations (k-fold).
+In each fold, a metric for accuracy (MSE in this case) will be calculated and
+an overall average of that metric will be calculated over k-folds.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;To do this we need to manage randomly sampling &lt;strong&gt;k&lt;/strong&gt; folds.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Properly combining those &lt;strong&gt;k&lt;/strong&gt; folds into a test and training set on
+   your &lt;strong&gt;on the training dataset&lt;/strong&gt;. Outside of the k-fold, there should be
+   another set which will be referred to as the &lt;strong&gt;hold-out set&lt;/strong&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Train your model on your constructed training set and evaluate on the given test set&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Repeat steps &lt;strong&gt;2&lt;/strong&gt; and &lt;strong&gt;3&lt;/strong&gt; &lt;em&gt;k&lt;/em&gt; times.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Average your results of your error metric.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Compare the MSE for your test set in Part 1. and your K-fold cross validated error in &lt;code&gt;4.&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;indexes = np.arange(len(train_feature))
+indexes2 = indexes.copy()
+linear = LinearRegression()
+count = len(indexes)
+mse = []
+k = 10.
+for i in range(int(k)):
+    choices = np.random.choice(indexes2,int(count/k),replace=False)
+    indexes2 = np.setdiff1d(indexes2,choices)
+    train_index = np.setdiff1d(indexes,choices)
+    linear.fit(train_feature[train_index], train_target[train_index])
+    test_predicted = linear.predict(train_feature[choices])
+    mse.append(mean_squared_error(train_target[choices],test_predicted))&lt;/p&gt;
+&lt;p&gt;print "Avg MSE: ",sum(mse)/k&lt;/p&gt;
+&lt;p&gt;Avg MSE:  23.9048376671&lt;/p&gt;
+&lt;p&gt;def scorer(model,X,y):
+    return mean_squared_error(y,model.predict(X))&lt;/p&gt;
+&lt;p&gt;cross_val_score(LinearRegression(),train_feature,train_target,scoring=scorer,cv=10).mean()&lt;/p&gt;
+&lt;p&gt;24.72849552718905&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;I made my own k-fold validation and compared it to the sklearn method.  There is an obviously efficiency in code.  I did my own wrapper for the scoring because the string method sometimes returned negative values.   &lt;/p&gt;
+&lt;p&gt;We can look at the comparison between traiing and cross validaton as we increase the sample size.  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sample_sizes = np.arange(10,350,10)
+train_mse = []
+cross_mse = []
+for size in sample_sizes:
+    linear = LinearRegression()
+
+    linear.fit(train_feature[:size],train_target[:size])
+    train_predicted = linear.predict(train_feature[:size])
+    train_mse.append(mean_squared_error(train_predicted[:size],train_target[:size]))
+    cross_mse.append(cross_val_score(linear,train_feature[:size],train_target[:size],scoring=scorer,cv=5).mean())
+
+print len(sample_sizes),len(train_mse)
+plt.figure(figsize=(10,8))
+plt.plot(sample_sizes,train_mse,color=&amp;#39;seagreen&amp;#39;,lw=2,alpha=0.8,label=&amp;#39;Train Set MSE&amp;#39;)
+plt.plot(sample_sizes,cross_mse,color=&amp;#39;steelblue&amp;#39;,lw=2,alpha=0.8,label=&amp;#39;CV Set MSE&amp;#39;)
+plt.legend()
+plt.xlabel(&amp;quot;Sample Size&amp;quot;)
+plt.ylabel(&amp;quot;MSE&amp;quot;)
+plt.ylim([0,100])
+plt.show()
+
+34 34
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_13_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;In this case we see that the two values start to converge, but the CV is higher.  This make sense because it is hold out values to test on.   It should be a better approximation to applying it to a test set. &lt;/p&gt;
+&lt;p&gt;We can look at the difference between the test and training sets as we increase the training size.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sample_sizes = np.arange(10,350,10)
+test_mse = []
+train_mse = []
+for size in sample_sizes:
+    linear = LinearRegression()
+    linear.fit(train_feature[:size],train_target[:size])
+    train_predicted = linear.predict(train_feature)
+    test_predicted = linear.predict(test_feature)
+    train_mse.append(mean_squared_error(train_predicted,train_target))
+    test_mse.append(mean_squared_error(test_predicted,test_target))
+
+plt.figure(figsize=(10,8))
+plt.plot(sample_sizes,train_mse,color=&amp;#39;seagreen&amp;#39;,lw=2,alpha=0.8,label=&amp;#39;Train Set MSE&amp;#39;)
+plt.plot(sample_sizes,test_mse,color=&amp;#39;steelblue&amp;#39;,lw=2,alpha=0.8,label=&amp;#39;Test Set MSE&amp;#39;)
+plt.legend()
+plt.xlabel(&amp;quot;Sample Size&amp;quot;)
+plt.ylabel(&amp;quot;MSE&amp;quot;)
+plt.ylim([0,100])
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_15_0.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;test_mse = []
+train_mse = []
+num_feat = range(1,len(train_feature[0,:]))
+for i in num_feat:
+    linear = LinearRegression()
+    linear.fit(train_feature[:,:i],train_target)
+    train_predicted = linear.predict(train_feature[:,:i])
+    test_predicted = linear.predict(test_feature[:,:i])
+    train_mse.append(mean_squared_error(train_predicted,train_target))
+    test_mse.append(mean_squared_error(test_predicted,test_target))
+
+plt.figure(figsize=(10,8))
+plt.plot(num_feat,train_mse,color=&amp;#39;seagreen&amp;#39;,lw=2,alpha=0.8,label=&amp;#39;Train Set MSE&amp;#39;)
+plt.plot(num_feat,test_mse,color=&amp;#39;steelblue&amp;#39;,lw=2,alpha=0.8,label=&amp;#39;Test Set MSE&amp;#39;)
+plt.legend()
+plt.xlabel(&amp;quot;Number Features&amp;quot;)
+plt.ylabel(&amp;quot;MSE&amp;quot;)
+plt.ylim([0,100])
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_16_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;As we increase features and data, our results on the training set go down and the test set values, in this case, look to converge.   &lt;/p&gt;
+&lt;h2&gt;Stepwise Regression&lt;/h2&gt;
+&lt;p&gt;While stepwise regression has its many &lt;a href="http://andrewgelman.com/2014/06/02/hate-stepwise-regression/"&gt;critics&lt;/a&gt;, it is a useful exercise to introduce the concept of feature selection in the context of linear regression. This extra credit exercise has two components of different difficulties. First, use the &lt;code&gt;scikit-learn&lt;/code&gt; reverse feature elimation (a greedy feature elimination algorithm) to implement something similar to sequential backward selection. The second, more difficult part is implementing sequential forward selection.&lt;/p&gt;
+&lt;p&gt;We generate a random dataset that has 100 features, but only 5 of them influence the response variable.  We can use sklearn's RFE to fit and attempt to rank the features.  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.datasets&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;make_friedman1&lt;/span&gt;
+&lt;span class="n"&gt;X&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;make_friedman1&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n_samples&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;5000&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;n_features&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;random_state&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.feature_selection&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;RFE&lt;/span&gt;
+&lt;span class="n"&gt;linear&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;LinearRegression&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;rfe&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;RFE&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;linear&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;rfe&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;X&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;rfe&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ranking_&lt;/span&gt;
+
+
+
+
+&lt;span class="n"&gt;array&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;  &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;   &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;71&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;   &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;   &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;47&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;22&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;36&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;94&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;61&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;14&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;39&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;24&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="mi"&gt;58&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;20&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;75&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;98&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;41&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;32&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;78&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;54&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;76&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;86&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;55&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;43&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="mi"&gt;29&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;66&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;35&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;68&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;37&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;   &lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;92&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;51&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;13&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;89&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;46&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;82&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;83&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="mi"&gt;30&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;96&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;77&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;31&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;72&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;90&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;62&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;67&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;59&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;73&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;85&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="mi"&gt;91&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;17&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;26&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;56&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;28&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;33&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;53&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;18&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;   &lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;   &lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;38&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="mi"&gt;48&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;50&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;19&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;84&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;34&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;93&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;23&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;27&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;63&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;70&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;16&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;12&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="mi"&gt;44&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;80&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;45&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;97&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;87&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;   &lt;span class="mi"&gt;9&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;21&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;   &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;52&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;60&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;57&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;49&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;25&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="mi"&gt;40&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;95&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;81&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;42&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;99&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;74&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;65&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;69&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;We are going to loop through these variables and use them as a fit.   We want to see if a there is a point where adding more features will not improve the model.  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;linear = LinearRegression()
+rsq = []
+for i in range(2,50):
+    linear.fit(X[:,rfe.ranking_ &amp;lt; i],y)
+    rsq.append(linear.score(X[:,rfe.ranking_ &amp;lt; i],y))
+plt.plot(range(2,50),rsq,lw=3,color=&amp;#39;seagreen&amp;#39;,alpha=0.5,label=&amp;#39;R-Square&amp;#39;)
+plt.xlabel(&amp;quot;Number of Variables&amp;quot;)
+plt.ylabel(&amp;#39;R-Squared&amp;#39;)
+plt.ylim([0,1])
+plt.axvline(x=5,linestyle=&amp;#39;--&amp;#39;,color=&amp;#39;gray&amp;#39;)
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_21_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;Instead of using RFE to do backward selection, we can create a class that implements sequential forward selection, which involves starting with no variables in the model, testing the addition of each variable using a chosen model comparison criterion, adding the variable (if any) that improves the model the most, and repeating this process until none improves the model.&lt;/p&gt;
+&lt;h4&gt;Reference&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href="https://onlinecourses.science.psu.edu/stat501/node/88"&gt;Stepwise Regression Procedure&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;class ForwardRegression:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;def __init__(self,X,y):
+    self.nFeatures = X.shape[1]
+    self.nRow = X.shape[0]
+    self.X = X
+    self.y = y
+    self.linear = LinearRegression()
+    self.scores = []
+    self.best_features = []
+    self.best_model = False
+
+def next_best(self):
+    if not self.best_model:
+        max_rsq = 0
+        best_index = -1
+        for i in range(self.nFeatures):
+            if i not in self.best_features:
+                self.linear.fit(self.X[:,(self.best_features+[i])],self.y)
+                score = self.linear.score(self.X[:,(self.best_features+[i])],self.y)
+                if score &amp;gt; max_rsq:
+                    max_rsq = score
+                    best_index = i
+        if best_index != -1:
+            if len(self.scores) &amp;gt; 1:
+                if (max_rsq-self.scores[-1])/self.scores[-1] &amp;gt; 0.01:
+                    self.best_features.append(best_index)
+                    self.scores.append(max_rsq)
+                else:
+                    self.best_model = True
+
+            else:
+                self.best_features.append(best_index)
+                self.scores.append(max_rsq)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;fr = ForwardRegression(X,y)
+for i in range(5):
+    fr.next_best()
+print fr.scores
+print fr.best_features
+print fr.best_model&lt;/p&gt;
+&lt;p&gt;[0.32517954427506357, 0.49706338477081047, 0.64962046580083821, 0.74271747755945094]
+[3, 1, 0, 4]
+True&lt;/p&gt;
+&lt;p&gt;rfe.ranking_&lt;/p&gt;
+&lt;p&gt;array([  3,   2,  71,   1,   4,  47,  22,  36,  94,  61,  14,  39,  24,
+        58,  20,  75,  98,  79,  41,  32,  78,  54,  76,  86,  55,  43,
+        29,  66,  35,  68,  37,   8,  92,  51,  13,  89,  46,  82,  83,
+        30,  96,  77,  31,  72,  90,  62,  67,  59,  73,  15,  11,  85,
+        91,  17,  88,  26,  56,  28,  33,  53,  18,  10,   7,   6,  38,
+        48,  50,  19,  84,  34,  93,  23,  27,  63,  70,  16,  12, 100,
+        44,  80,  45,  97,  87,   9,  21,   5,  52,  60,  57,  49,  25,
+        40,  95,  81,  42,  99,  74,  65,  69,  64])&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This matches with the previous result for this example.&lt;/p&gt;
+&lt;h2&gt;Afternoon - Lasso and Ridge Regresson&lt;/h2&gt;
+&lt;p&gt;The goal fo this exercise is to get a feel for the shrinkage that these models do for coefficients.   We will start with the Ridge Regression in sklearn on the diabetes dataset.  We did a basic fit to start. &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.datasets&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;load_diabetes&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.linear_model&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;LinearRegression&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Lasso&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Ridge&lt;/span&gt;
+
+&lt;span class="n"&gt;diabetes&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;load_diabetes&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;X&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;diabetes&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;[:&lt;/span&gt;&lt;span class="mi"&gt;150&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="n"&gt;y&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;diabetes&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;target&lt;/span&gt;&lt;span class="p"&gt;[:&lt;/span&gt;&lt;span class="mi"&gt;150&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="n"&gt;XT&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;diabetes&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;150&lt;/span&gt;&lt;span class="p"&gt;:]&lt;/span&gt;
+&lt;span class="n"&gt;yT&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;diabetes&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;target&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;150&lt;/span&gt;&lt;span class="p"&gt;:]&lt;/span&gt;
+&lt;span class="n"&gt;fit&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Ridge&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;alpha&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;normalize&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;X&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;MSE: &amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;mean_squared_error&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fit&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;predict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;X&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;MSE&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;  &lt;span class="mf"&gt;4251.12234379&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Now we will look at how the parameters change as we increasee alpha.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.preprocessing&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;StandardScaler&lt;/span&gt;
+
+&lt;span class="n"&gt;scaler&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;StandardScaler&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;k&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;X&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;shape&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="n"&gt;alphas&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;logspace&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;params&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;zeros&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;alphas&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="n"&gt;k&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;enumerate&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;alphas&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;X_data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;scaler&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fit_transform&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;X&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;fit&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Ridge&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;alpha&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;normalize&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;X_data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;params&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;fit&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;coef_&lt;/span&gt;
+
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;figure&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;figsize&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;14&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;param&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;params&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;plot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;alphas&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;param&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;show&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_28_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;Given a large enough alpha/lambda, the coefficients go to zero   This is a property of the model, and we want to try to use this paramter to find the best model.  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;k = X.shape[1]
+alphas = np.logspace(-3,0,1000)
+mse_train = []
+mse_test = []
+for i,a in enumerate(alphas):
+    X_data = scaler.fit_transform(X)
+    fit = Ridge(alpha=a, normalize=True).fit(X_data, y)
+    mse_train.append(mean_squared_error(y,fit.predict(X_data)))
+    mse_test.append(mean_squared_error(yT,fit.predict(scaler.transform(XT))))
+plt.figure(figsize=(14,6))
+plt.plot(alphas, mse_train)
+plt.plot(alphas, mse_test,color=&amp;#39;green&amp;#39;)
+plt.show()
+
+
+print &amp;quot;Best Alpha: &amp;quot;, alphas[mse_test.index(min(mse_test))]
+alpha_ridge = alphas[mse_test.index(min(mse_test))]
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_30_0.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;Best Alpha:  0.252582002696
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Now we are going to do the same for Lasso Regresion&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;k = X.shape[1]
+alphas = np.logspace(-2, 2)
+params = np.zeros((len(alphas), k))
+for i,a in enumerate(alphas):
+    X_data = scaler.fit_transform(X)
+    fit = Lasso(alpha=a, normalize=True).fit(X_data, y)
+    params[i] = fit.coef_
+
+plt.figure(figsize=(14,6))
+for param in params.T:
+    plt.plot(alphas, param)
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_32_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;The Lasso drops the paramters to zero much more quickly than the Ridge Method.  This is because of the absolut value in the prior.  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;k = X.shape[1]
+alphas = np.logspace(-3,0,1000)
+mse_train = []
+mse_test = []
+for i,a in enumerate(alphas):
+    X_data = scaler.fit_transform(X)
+    fit = Lasso(alpha=a, normalize=True).fit(X_data, y)
+    mse_train.append(mean_squared_error(y,fit.predict(X_data)))
+    mse_test.append(mean_squared_error(yT,fit.predict(scaler.transform(XT))))
+plt.figure(figsize=(14,6))
+plt.plot(alphas, mse_train)
+plt.plot(alphas, mse_test,color=&amp;#39;green&amp;#39;)
+plt.show()
+
+print &amp;quot;Best Alpha: &amp;quot;, alphas[mse_test.index(min(mse_test))]
+alpha_lasso = alphas[mse_test.index(min(mse_test))]
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_34_0.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;Best Alpha:  0.286059553518
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;We are going to compare the 3 models.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;ridge = Ridge(alpha=alpha_ridge)
+ridge.fit(X_data,y)
+
+lasso = Lasso(alpha=alpha_lasso)
+lasso.fit(X_data,y)
+
+ols = LinearRegression()
+ols.fit(X_data,y)
+
+print &amp;quot;Ridge MSE:&amp;quot;,mean_squared_error(yT,ridge.predict(scaler.transform(XT)))
+print &amp;quot;Lasso MSE:&amp;quot;,mean_squared_error(yT,lasso.predict(scaler.transform(XT)))
+print &amp;quot;OLS MSE:&amp;quot;,mean_squared_error(yT,ols.predict(scaler.transform(XT)))
+print &amp;quot; &amp;quot;
+print &amp;quot;Ridge,Lasso,OLS&amp;quot; 
+for i in range(len(ridge.coef_)):
+    print round(ridge.coef_[i],2),round(lasso.coef_[i],2),round(ols.coef_[i],2)
+
+Ridge MSE: 3184.60043415
+Lasso MSE: 3160.04592755
+OLS MSE: 3190.98282981
+
+Ridge,Lasso,OLS
+-3.28 -2.95 -3.29
+-17.46 -17.04 -17.51
+20.52 20.39 20.55
+14.68 14.28 14.7
+2.45 -0.0 3.85
+-15.54 -12.27 -16.78
+-12.38 -11.89 -13.07
+5.94 4.43 5.84
+26.36 27.43 25.93
+4.47 4.34 4.44
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The Lasso model on the lower MSE on the test set, and also dropped one of the variables in the model.   Over all its coefficients are lower, and this is consistent with what we saw in the previous plots.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.metrics&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;r2_score&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Ridge MSE:&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;r2_score&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;yT&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;ridge&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;predict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;scaler&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;transform&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;XT&lt;/span&gt;&lt;span class="p"&gt;)))&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Lasso MSE:&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;r2_score&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;yT&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;lasso&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;predict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;scaler&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;transform&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;XT&lt;/span&gt;&lt;span class="p"&gt;)))&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;OLS MSE:&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;r2_score&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;yT&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;ols&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;predict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;scaler&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;transform&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;XT&lt;/span&gt;&lt;span class="p"&gt;)))&lt;/span&gt;
+
+&lt;span class="n"&gt;Ridge&lt;/span&gt; &lt;span class="n"&gt;MSE&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mf"&gt;0.473709418009&lt;/span&gt;
+&lt;span class="n"&gt;Lasso&lt;/span&gt; &lt;span class="n"&gt;MSE&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mf"&gt;0.477767322867&lt;/span&gt;
+&lt;span class="n"&gt;OLS&lt;/span&gt; &lt;span class="n"&gt;MSE&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mf"&gt;0.472654656259&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;It is clear that this is far from the final story...&lt;/p&gt;</summary><category term="data-science"></category><category term="galvanize"></category><category term="Lasso Regresion"></category><category term="Ridge Regression"></category><category term="Regularization"></category></entry><entry><title>Galvanize - Week 03 - Day 2</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-03-02/" rel="alternate"></link><updated>2015-06-16T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-16:galvanize/galvanize-data-science-03-02/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
+&lt;h2&gt;Week 3 - Day 2&lt;/h2&gt;
+&lt;p&gt;Today we did more linear regression, and started evaluating applying linear models to regression problems.   It was a combination of informative and frustration because I learned a lot, but did not develope an intuition for the process.   I suppsoe that will come with time.  &lt;/p&gt;
+&lt;h2&gt;Mini-Quiz&lt;/h2&gt;
+&lt;p&gt;Today's miniquiz took all of 5 minutes.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Write a python function to find the value in a list that's closest to a given value.&lt;/p&gt;
+&lt;p&gt;e.g. &lt;code&gt;closest([10, 17, 2, 29, 16], 14&lt;/code&gt; should return 16.&lt;/p&gt;
+&lt;p&gt;a = [10,17,2,29,16]
+import math
+def closest(array,val):
+    diff = [math.fabs(x-val) for x in array]
+    index = diff.index(min(diff))
+    return array[index]&lt;/p&gt;
+&lt;p&gt;closest(a,14)&lt;/p&gt;
+&lt;p&gt;16&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Instead let's start with a numpy array. How can we do the same thing in one line using numpy magic.&lt;/p&gt;
+&lt;p&gt;import numpy as np&lt;/p&gt;
+&lt;p&gt;a = np.array(a)
+a[np.abs(a-14).argmin()]&lt;/p&gt;
+&lt;p&gt;16&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;My favorite numpy trick is &lt;a href="http://docs.scipy.org/doc/numpy/user/basics.indexing.html#boolean-or-mask-index-arrays"&gt;masking&lt;/a&gt;. Say you have a feature matrix &lt;code&gt;X&lt;/code&gt; (2d numpy array) and with labels &lt;code&gt;y&lt;/code&gt; (1d numpy array). I would like to get a feature matrix of only the positive cases, i.e. get the rows from &lt;code&gt;X&lt;/code&gt; where &lt;code&gt;y&lt;/code&gt; is positive.&lt;/p&gt;
+&lt;p&gt;How can you do this in one line?&lt;/p&gt;
+&lt;p&gt;Create example &lt;code&gt;X&lt;/code&gt; and &lt;code&gt;y&lt;/code&gt; to verify your code.&lt;/p&gt;
+&lt;p&gt;x = np.random.rand(100,10)
+y = np.random.randint(2,size=(100,))&lt;/p&gt;
+&lt;p&gt;print x.shape, x[y&amp;gt;0,:].shape&lt;/p&gt;
+&lt;p&gt;(100, 10) (47, 10)&lt;/p&gt;
+&lt;p&gt;print set(y[y&amp;gt;0].tolist())&lt;/p&gt;
+&lt;p&gt;set([1])&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;Morning - Regression&lt;/h2&gt;
+&lt;p&gt;The linear regression model makes a number of assumptions about the data, including &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Homoscedasticity of residuals&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Normal distribution of residuals&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Lack of multicollinearity among features&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Independence of the observations (For example, independence assumption violated if data is a time series)&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Since the results of the regression model depend on these statistical assumptions, the 
+results of the regression model are only correct if our assumptions hold (at least approximately).&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;This morning we will be exploring two datasets: &lt;code&gt;prestige&lt;/code&gt; and &lt;code&gt;ccard&lt;/code&gt;. Below is a description of the 2 datasets.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;prestige&lt;/code&gt; &lt;em&gt;(From yesterday afternoon)&lt;/em&gt;&lt;ul&gt;
+&lt;li&gt;Prediction of the prestige of a job&lt;/li&gt;
+&lt;li&gt;Dependent variable: &lt;code&gt;prestige&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Independent variables: &lt;code&gt;income&lt;/code&gt;, &lt;code&gt;education&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Code to load data set into dataframe:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;code&gt;python
+  import statsmodels.api as sm
+  prestige = sm.datasets.get_rdataset("Duncan", "car", cache=True).data&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ccard&lt;/code&gt;&lt;ul&gt;
+&lt;li&gt;Prediction of the average credit card expenditure&lt;/li&gt;
+&lt;li&gt;Dependent variable: &lt;code&gt;AVGEXP&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Independent variables: &lt;code&gt;AGE&lt;/code&gt;, &lt;code&gt;INCOME&lt;/code&gt;, &lt;code&gt;INCOMESQ&lt;/code&gt; (&lt;code&gt;INCOME^2&lt;/code&gt;), &lt;code&gt;OWNRENT&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Code to load data set into dataframe:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;code&gt;python
+  credit_card = sm.datasets.ccard.load_pandas().data&lt;/code&gt;&lt;/p&gt;
+&lt;h2&gt;Prestige Regression&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;matplotlib&lt;/span&gt; &lt;span class="n"&gt;inline&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;matplotlib.pyplot&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;plt&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;numpy&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;np&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;scipy.stats&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;sc&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;statsmodels.api&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;sm&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;pandas.tools.plotting&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;scatter_matrix&lt;/span&gt;
+&lt;span class="n"&gt;prestige&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;datasets&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_rdataset&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Duncan&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;car&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;cache&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;
+&lt;span class="n"&gt;credit_card&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;datasets&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ccard&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;load_pandas&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;
+
+
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;figure&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;figsize&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="n"&gt;scatter_matrix&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;prestige&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="kp"&gt;diagonal&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;kde&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;figsize&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;14&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;14&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="n"&gt;alpha&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.4&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;show&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+
+&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;matplotlib&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;figure&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Figure&lt;/span&gt; &lt;span class="n"&gt;at&lt;/span&gt; &lt;span class="mh"&gt;0x106186450&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_9_1.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;plt.figure()
+prestige.boxplot()
+plt.show()
+
+/Library/Python/2.7/site-packages/pandas/tools/plotting.py:2633: FutureWarning: 
+The default value for &amp;#39;return_type&amp;#39; will change to &amp;#39;axes&amp;#39; in a future release.
+ To use the future behavior now, set return_type=&amp;#39;axes&amp;#39;.
+ To keep the previous behavior and silence this warning, set return_type=&amp;#39;dict&amp;#39;.
+  warnings.warn(msg, FutureWarning)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_10_1.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;y = prestige[[&amp;#39;prestige&amp;#39;]]
+x = sm.add_constant(prestige[[&amp;#39;income&amp;#39;,&amp;#39;education&amp;#39;]])
+model1 = sm.OLS(y,x).fit()
+model1.summary()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;table class="simpletable"&gt;
+&lt;caption&gt;OLS Regression Results&lt;/caption&gt;
+&lt;tr&gt;
+  &lt;th&gt;Dep. Variable:&lt;/th&gt;        &lt;td&gt;prestige&lt;/td&gt;     &lt;th&gt;  R-squared:         &lt;/th&gt; &lt;td&gt;   0.828&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Model:&lt;/th&gt;                   &lt;td&gt;OLS&lt;/td&gt;       &lt;th&gt;  Adj. R-squared:    &lt;/th&gt; &lt;td&gt;   0.820&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Method:&lt;/th&gt;             &lt;td&gt;Least Squares&lt;/td&gt;  &lt;th&gt;  F-statistic:       &lt;/th&gt; &lt;td&gt;   101.2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Date:&lt;/th&gt;             &lt;td&gt;Wed, 17 Jun 2015&lt;/td&gt; &lt;th&gt;  Prob (F-statistic):&lt;/th&gt; &lt;td&gt;8.65e-17&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Time:&lt;/th&gt;                 &lt;td&gt;07:50:23&lt;/td&gt;     &lt;th&gt;  Log-Likelihood:    &lt;/th&gt; &lt;td&gt; -178.98&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;No. Observations:&lt;/th&gt;      &lt;td&gt;    45&lt;/td&gt;      &lt;th&gt;  AIC:               &lt;/th&gt; &lt;td&gt;   364.0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Df Residuals:&lt;/th&gt;          &lt;td&gt;    42&lt;/td&gt;      &lt;th&gt;  BIC:               &lt;/th&gt; &lt;td&gt;   369.4&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Df Model:&lt;/th&gt;              &lt;td&gt;     2&lt;/td&gt;      &lt;th&gt;                     &lt;/th&gt;     &lt;td&gt; &lt;/td&gt;   
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Covariance Type:&lt;/th&gt;      &lt;td&gt;nonrobust&lt;/td&gt;    &lt;th&gt;                     &lt;/th&gt;     &lt;td&gt; &lt;/td&gt;   
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;table class="simpletable"&gt;
+&lt;tr&gt;
+      &lt;td&gt;&lt;/td&gt;         &lt;th&gt;coef&lt;/th&gt;     &lt;th&gt;std err&lt;/th&gt;      &lt;th&gt;t&lt;/th&gt;      &lt;th&gt;P&gt;|t|&lt;/th&gt; &lt;th&gt;[95.0% Conf. Int.]&lt;/th&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;const&lt;/th&gt;     &lt;td&gt;   -6.0647&lt;/td&gt; &lt;td&gt;    4.272&lt;/td&gt; &lt;td&gt;   -1.420&lt;/td&gt; &lt;td&gt; 0.163&lt;/td&gt; &lt;td&gt;  -14.686     2.556&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;income&lt;/th&gt;    &lt;td&gt;    0.5987&lt;/td&gt; &lt;td&gt;    0.120&lt;/td&gt; &lt;td&gt;    5.003&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt;    0.357     0.840&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;education&lt;/th&gt; &lt;td&gt;    0.5458&lt;/td&gt; &lt;td&gt;    0.098&lt;/td&gt; &lt;td&gt;    5.555&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt;    0.348     0.744&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;table class="simpletable"&gt;
+&lt;tr&gt;
+  &lt;th&gt;Omnibus:&lt;/th&gt;       &lt;td&gt; 1.279&lt;/td&gt; &lt;th&gt;  Durbin-Watson:     &lt;/th&gt; &lt;td&gt;   1.458&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Prob(Omnibus):&lt;/th&gt; &lt;td&gt; 0.528&lt;/td&gt; &lt;th&gt;  Jarque-Bera (JB):  &lt;/th&gt; &lt;td&gt;   0.520&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Skew:&lt;/th&gt;          &lt;td&gt; 0.155&lt;/td&gt; &lt;th&gt;  Prob(JB):          &lt;/th&gt; &lt;td&gt;   0.771&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Kurtosis:&lt;/th&gt;      &lt;td&gt; 3.426&lt;/td&gt; &lt;th&gt;  Cond. No.          &lt;/th&gt; &lt;td&gt;    163.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;p&gt;So far we have looked at the data distributions, and the scatter matrix shows relationships between prestige and both income and education.  We have some covariance between income and educations, that could affect the assumption of linear regression that the variables in the model are independant.   We can look at a studentized resid plot and a QQ plot to examine the model.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;def stud_plot(model):
+    stud = model.resid/model.resid.std()
+    fitv = model.fittedvalues
+    plt.figure(figsize=(10,4))
+    plt.plot(fitv,stud,marker=&amp;#39;o&amp;#39;,lw=0,color=&amp;#39;steelblue&amp;#39;,alpha=0.8)
+    plt.axhline(2,color=&amp;#39;gray&amp;#39;,linestyle=&amp;#39;--&amp;#39;,)
+    plt.axhline(-2,color=&amp;#39;gray&amp;#39;,linestyle=&amp;#39;--&amp;#39;)
+    plt.xlabel(&amp;quot;Fitted Values&amp;quot;)
+    plt.ylabel(&amp;quot;Studentized Residual&amp;quot;)
+    plt.ylim([-5,5])
+    plt.show()
+
+def qq_plot(model):
+    plt.figure(figsize=(10,4))
+    stud = model.resid/model.resid.std()
+    sc.probplot(model.resid,plot=plt)
+    plt.title(&amp;quot;QQ Plot&amp;quot;)
+    plt.show()
+
+stud_plot(model1)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_13_0.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;qq_plot(model1)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_14_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;We see se have two outliers from the studentized plot, those that are more than 2 standard deviation from the fit.   The QQ-plot shows a fairly normal distributions of the residuals, suggesting the fit is okay.  We can also see if we have any points with high leverage.&lt;/p&gt;
+&lt;p&gt;$$\hat{y} = X \dot \beta = X (X^T \ X)^{-1} \ X^T \ y = H \ y$$&lt;/p&gt;
+&lt;p&gt;$$ H = X (X^T \ X)^{-1} \ X^T $$  &lt;/p&gt;
+&lt;p&gt;The diagonals of the hat matrix (H) are considered to be estimates of leverage of each point.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;def get_H(X):
+    H = X.dot( np.linalg.inv(X.transpose().dot(X)).dot(X.transpose()) )
+    return H.diagonal()
+
+def lev_plot(model,X):
+    h = get_H(X)
+    stud = model.resid/model.resid.std()
+    plt.figure(figsize=(10,5))
+    plt.plot(h,stud,marker=&amp;#39;o&amp;#39;,lw=0,color=&amp;#39;steelblue&amp;#39;,alpha=0.8)
+    plt.xlabel(&amp;quot;H Leverage&amp;quot;)
+    plt.ylabel(&amp;quot;Studentized Residual&amp;quot;)
+    plt.ylim([-5,5])
+    plt.show()
+
+lev_plot(model1,x.values)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_17_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;We can see that we have 3 points that are leveraging the results, and one of them is an outlier.&lt;/p&gt;
+&lt;p&gt;Now we have the question - what do we do with the outliers and the high leverage points?  I think we will stick wih removing all the high leverage points.  We before we do lets look that these three points.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;x[get_H(x.values)&amp;gt;0.15]
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;const&lt;/th&gt;
+      &lt;th&gt;income&lt;/th&gt;
+      &lt;th&gt;education&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;minister&lt;/th&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;21&lt;/td&gt;
+      &lt;td&gt;84&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;conductor&lt;/th&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;76&lt;/td&gt;
+      &lt;td&gt;34&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;RR.engineer&lt;/th&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;81&lt;/td&gt;
+      &lt;td&gt;28&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;y[get_H(x.values)&amp;gt;=0.15]
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;prestige&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;minister&lt;/th&gt;
+      &lt;td&gt;87&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;conductor&lt;/th&gt;
+      &lt;td&gt;38&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;RR.engineer&lt;/th&gt;
+      &lt;td&gt;67&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;p&gt;We see the engineer and conductor have higher income, but lower eduation, while the minister has lower education and higher income.   To decide what we do with these values we really need to know the purpose of the model.  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;hp = get_H(x.values)
+model2 = sm.OLS(y[hp&amp;lt;0.15],x[hp&amp;lt;0.15]).fit()
+model2.summary()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;table class="simpletable"&gt;
+&lt;caption&gt;OLS Regression Results&lt;/caption&gt;
+&lt;tr&gt;
+  &lt;th&gt;Dep. Variable:&lt;/th&gt;        &lt;td&gt;prestige&lt;/td&gt;     &lt;th&gt;  R-squared:         &lt;/th&gt; &lt;td&gt;   0.876&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Model:&lt;/th&gt;                   &lt;td&gt;OLS&lt;/td&gt;       &lt;th&gt;  Adj. R-squared:    &lt;/th&gt; &lt;td&gt;   0.870&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Method:&lt;/th&gt;             &lt;td&gt;Least Squares&lt;/td&gt;  &lt;th&gt;  F-statistic:       &lt;/th&gt; &lt;td&gt;   138.1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Date:&lt;/th&gt;             &lt;td&gt;Wed, 17 Jun 2015&lt;/td&gt; &lt;th&gt;  Prob (F-statistic):&lt;/th&gt; &lt;td&gt;2.02e-18&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Time:&lt;/th&gt;                 &lt;td&gt;07:50:23&lt;/td&gt;     &lt;th&gt;  Log-Likelihood:    &lt;/th&gt; &lt;td&gt; -160.59&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;No. Observations:&lt;/th&gt;      &lt;td&gt;    42&lt;/td&gt;      &lt;th&gt;  AIC:               &lt;/th&gt; &lt;td&gt;   327.2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Df Residuals:&lt;/th&gt;          &lt;td&gt;    39&lt;/td&gt;      &lt;th&gt;  BIC:               &lt;/th&gt; &lt;td&gt;   332.4&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Df Model:&lt;/th&gt;              &lt;td&gt;     2&lt;/td&gt;      &lt;th&gt;                     &lt;/th&gt;     &lt;td&gt; &lt;/td&gt;   
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Covariance Type:&lt;/th&gt;      &lt;td&gt;nonrobust&lt;/td&gt;    &lt;th&gt;                     &lt;/th&gt;     &lt;td&gt; &lt;/td&gt;   
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;table class="simpletable"&gt;
+&lt;tr&gt;
+      &lt;td&gt;&lt;/td&gt;         &lt;th&gt;coef&lt;/th&gt;     &lt;th&gt;std err&lt;/th&gt;      &lt;th&gt;t&lt;/th&gt;      &lt;th&gt;P&gt;|t|&lt;/th&gt; &lt;th&gt;[95.0% Conf. Int.]&lt;/th&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;const&lt;/th&gt;     &lt;td&gt;   -6.3174&lt;/td&gt; &lt;td&gt;    3.680&lt;/td&gt; &lt;td&gt;   -1.717&lt;/td&gt; &lt;td&gt; 0.094&lt;/td&gt; &lt;td&gt;  -13.760     1.125&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;income&lt;/th&gt;    &lt;td&gt;    0.9307&lt;/td&gt; &lt;td&gt;    0.154&lt;/td&gt; &lt;td&gt;    6.053&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt;    0.620     1.242&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;education&lt;/th&gt; &lt;td&gt;    0.2846&lt;/td&gt; &lt;td&gt;    0.121&lt;/td&gt; &lt;td&gt;    2.345&lt;/td&gt; &lt;td&gt; 0.024&lt;/td&gt; &lt;td&gt;    0.039     0.530&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;table class="simpletable"&gt;
+&lt;tr&gt;
+  &lt;th&gt;Omnibus:&lt;/th&gt;       &lt;td&gt; 3.811&lt;/td&gt; &lt;th&gt;  Durbin-Watson:     &lt;/th&gt; &lt;td&gt;   1.468&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Prob(Omnibus):&lt;/th&gt; &lt;td&gt; 0.149&lt;/td&gt; &lt;th&gt;  Jarque-Bera (JB):  &lt;/th&gt; &lt;td&gt;   2.802&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Skew:&lt;/th&gt;          &lt;td&gt;-0.614&lt;/td&gt; &lt;th&gt;  Prob(JB):          &lt;/th&gt; &lt;td&gt;   0.246&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Kurtosis:&lt;/th&gt;      &lt;td&gt; 3.303&lt;/td&gt; &lt;th&gt;  Cond. No.          &lt;/th&gt; &lt;td&gt;    158.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Removing 3 of the 45 data points slightly improved the R-squared value, but dramatically changed the model.   The coefficients were initialy (0.5987,0.5458).  The new model coefficient is (0.9407,2846).  The minister must have been pulling the fit down because they have high prestigue but low income.  Removing them changed the model.   Few people become ministers, so it could be a better model without including them. &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;stud_plot(model2)
+qq_plot(model2)
+lev_plot(model2,x[get_H(x.values)&amp;lt;0.15].values)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_24_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_24_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_24_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;The leverage plot does not show a few points dominating the fit, buter there are a few outliers in the fit.   The QQ plot shows some signs of the erros not being normal.   &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;print &amp;quot;Model 1 RSE: &amp;quot;, np.sqrt(np.sum(np.power(y.values.reshape(1,45)-model1.predict(x),2))/(45-2-1))
+print &amp;quot;Model 2 RSE: &amp;quot;, np.sqrt(np.sum(np.power(y.values.reshape(1,45)-model2.predict(x),2))/(45-2-1))
+
+Model 1 RSE:  13.3690283982
+Model 2 RSE:  14.6713753944
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;On the entire dataset, the first model does a better job fitting the entire dataset then the second model.  The second model fits the subsetted data better.   On these vlaues we have&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;print &amp;quot;Model 1 RSE: &amp;quot;, np.sqrt(np.sum(np.power(y[hp&amp;lt;0.15].values.reshape(1,42)-model1.predict(x[hp&amp;lt;0.15]),2))/(42-2-1))
+print &amp;quot;Model 2 RSE: &amp;quot;, np.sqrt(np.sum(np.power(y[hp&amp;lt;0.15].values.reshape(1,42)-model2.predict(x[hp&amp;lt;0.15]),2))/(42-2-1))
+
+Model 1 RSE:  12.2166311202
+Model 2 RSE:  11.492268427
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;On the subsetted data, the second model does do better.   If this model was unleashed into the wild we would need to identify outliers and attempt to decide what to do with them&lt;/p&gt;
+&lt;h2&gt;Credit Analysis&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;plt.figure(figsize=(10,10))
+scatter_matrix(credit_card,diagonal=&amp;#39;kde&amp;#39;,alpha=0.5,figsize=(14,14))
+plt.show()
+
+
+&amp;lt;matplotlib.figure.Figure at 0x10a815250&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_30_1.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;credit_card.corr()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;AVGEXP&lt;/th&gt;
+      &lt;th&gt;AGE&lt;/th&gt;
+      &lt;th&gt;INCOME&lt;/th&gt;
+      &lt;th&gt;INCOMESQ&lt;/th&gt;
+      &lt;th&gt;OWNRENT&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;AVGEXP&lt;/th&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;0.168367&lt;/td&gt;
+      &lt;td&gt;0.443135&lt;/td&gt;
+      &lt;td&gt;0.372679&lt;/td&gt;
+      &lt;td&gt;0.243342&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;AGE&lt;/th&gt;
+      &lt;td&gt;0.168367&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;0.385108&lt;/td&gt;
+      &lt;td&gt;0.316498&lt;/td&gt;
+      &lt;td&gt;0.438236&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;INCOME&lt;/th&gt;
+      &lt;td&gt;0.443135&lt;/td&gt;
+      &lt;td&gt;0.385108&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;0.964707&lt;/td&gt;
+      &lt;td&gt;0.473079&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;INCOMESQ&lt;/th&gt;
+      &lt;td&gt;0.372679&lt;/td&gt;
+      &lt;td&gt;0.316498&lt;/td&gt;
+      &lt;td&gt;0.964707&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;0.434500&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;OWNRENT&lt;/th&gt;
+      &lt;td&gt;0.243342&lt;/td&gt;
+      &lt;td&gt;0.438236&lt;/td&gt;
+      &lt;td&gt;0.473079&lt;/td&gt;
+      &lt;td&gt;0.434500&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;credit_card.corr(method=&amp;#39;spearman&amp;#39;)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;AVGEXP&lt;/th&gt;
+      &lt;th&gt;AGE&lt;/th&gt;
+      &lt;th&gt;INCOME&lt;/th&gt;
+      &lt;th&gt;INCOMESQ&lt;/th&gt;
+      &lt;th&gt;OWNRENT&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;AVGEXP&lt;/th&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;0.182947&lt;/td&gt;
+      &lt;td&gt;0.533556&lt;/td&gt;
+      &lt;td&gt;0.533556&lt;/td&gt;
+      &lt;td&gt;0.340274&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;AGE&lt;/th&gt;
+      &lt;td&gt;0.182947&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;0.444940&lt;/td&gt;
+      &lt;td&gt;0.444940&lt;/td&gt;
+      &lt;td&gt;0.434660&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;INCOME&lt;/th&gt;
+      &lt;td&gt;0.533556&lt;/td&gt;
+      &lt;td&gt;0.444940&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;0.410097&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;INCOMESQ&lt;/th&gt;
+      &lt;td&gt;0.533556&lt;/td&gt;
+      &lt;td&gt;0.444940&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;0.410097&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;OWNRENT&lt;/th&gt;
+      &lt;td&gt;0.340274&lt;/td&gt;
+      &lt;td&gt;0.434660&lt;/td&gt;
+      &lt;td&gt;0.410097&lt;/td&gt;
+      &lt;td&gt;0.410097&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The scatter matrix shows that therre are some variations in between the average expense and age, income, and income squaree.  Obviously income and income squared are related.   The spearmann correlations show that age and income are ordered together, but that ordering does not seem to be a linear relationship because of the significant increason from pearson to spearman.  This could affect our modeling.   &lt;/p&gt;
+&lt;p&gt;We'll do a basic fit and see what we are starting with.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;yc = credit_card[[&amp;#39;AVGEXP&amp;#39;]]
+xc = sm.add_constant(credit_card[[&amp;#39;INCOME&amp;#39;,&amp;#39;INCOMESQ&amp;#39;,&amp;#39;AGE&amp;#39;,&amp;quot;OWNRENT&amp;quot;]])
+model3 = sm.OLS(yc,xc).fit()
+model3.summary()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;table class="simpletable"&gt;
+&lt;caption&gt;OLS Regression Results&lt;/caption&gt;
+&lt;tr&gt;
+  &lt;th&gt;Dep. Variable:&lt;/th&gt;         &lt;td&gt;AVGEXP&lt;/td&gt;      &lt;th&gt;  R-squared:         &lt;/th&gt; &lt;td&gt;   0.244&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Model:&lt;/th&gt;                   &lt;td&gt;OLS&lt;/td&gt;       &lt;th&gt;  Adj. R-squared:    &lt;/th&gt; &lt;td&gt;   0.198&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Method:&lt;/th&gt;             &lt;td&gt;Least Squares&lt;/td&gt;  &lt;th&gt;  F-statistic:       &lt;/th&gt; &lt;td&gt;   5.394&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Date:&lt;/th&gt;             &lt;td&gt;Wed, 17 Jun 2015&lt;/td&gt; &lt;th&gt;  Prob (F-statistic):&lt;/th&gt; &lt;td&gt;0.000795&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Time:&lt;/th&gt;                 &lt;td&gt;08:06:50&lt;/td&gt;     &lt;th&gt;  Log-Likelihood:    &lt;/th&gt; &lt;td&gt; -506.49&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;No. Observations:&lt;/th&gt;      &lt;td&gt;    72&lt;/td&gt;      &lt;th&gt;  AIC:               &lt;/th&gt; &lt;td&gt;   1023.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Df Residuals:&lt;/th&gt;          &lt;td&gt;    67&lt;/td&gt;      &lt;th&gt;  BIC:               &lt;/th&gt; &lt;td&gt;   1034.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Df Model:&lt;/th&gt;              &lt;td&gt;     4&lt;/td&gt;      &lt;th&gt;                     &lt;/th&gt;     &lt;td&gt; &lt;/td&gt;   
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Covariance Type:&lt;/th&gt;      &lt;td&gt;nonrobust&lt;/td&gt;    &lt;th&gt;                     &lt;/th&gt;     &lt;td&gt; &lt;/td&gt;   
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;table class="simpletable"&gt;
+&lt;tr&gt;
+      &lt;td&gt;&lt;/td&gt;        &lt;th&gt;coef&lt;/th&gt;     &lt;th&gt;std err&lt;/th&gt;      &lt;th&gt;t&lt;/th&gt;      &lt;th&gt;P&gt;|t|&lt;/th&gt; &lt;th&gt;[95.0% Conf. Int.]&lt;/th&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;const&lt;/th&gt;    &lt;td&gt; -237.1465&lt;/td&gt; &lt;td&gt;  199.352&lt;/td&gt; &lt;td&gt;   -1.190&lt;/td&gt; &lt;td&gt; 0.238&lt;/td&gt; &lt;td&gt; -635.054   160.761&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;INCOME&lt;/th&gt;   &lt;td&gt;  234.3470&lt;/td&gt; &lt;td&gt;   80.366&lt;/td&gt; &lt;td&gt;    2.916&lt;/td&gt; &lt;td&gt; 0.005&lt;/td&gt; &lt;td&gt;   73.936   394.758&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;INCOMESQ&lt;/th&gt; &lt;td&gt;  -14.9968&lt;/td&gt; &lt;td&gt;    7.469&lt;/td&gt; &lt;td&gt;   -2.008&lt;/td&gt; &lt;td&gt; 0.049&lt;/td&gt; &lt;td&gt;  -29.906    -0.088&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;AGE&lt;/th&gt;      &lt;td&gt;   -3.0818&lt;/td&gt; &lt;td&gt;    5.515&lt;/td&gt; &lt;td&gt;   -0.559&lt;/td&gt; &lt;td&gt; 0.578&lt;/td&gt; &lt;td&gt;  -14.089     7.926&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;OWNRENT&lt;/th&gt;  &lt;td&gt;   27.9409&lt;/td&gt; &lt;td&gt;   82.922&lt;/td&gt; &lt;td&gt;    0.337&lt;/td&gt; &lt;td&gt; 0.737&lt;/td&gt; &lt;td&gt; -137.573   193.455&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;table class="simpletable"&gt;
+&lt;tr&gt;
+  &lt;th&gt;Omnibus:&lt;/th&gt;       &lt;td&gt;69.024&lt;/td&gt; &lt;th&gt;  Durbin-Watson:     &lt;/th&gt; &lt;td&gt;   1.640&lt;/td&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Prob(Omnibus):&lt;/th&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;th&gt;  Jarque-Bera (JB):  &lt;/th&gt; &lt;td&gt; 497.349&lt;/td&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Skew:&lt;/th&gt;          &lt;td&gt; 2.844&lt;/td&gt; &lt;th&gt;  Prob(JB):          &lt;/th&gt; &lt;td&gt;1.00e-108&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Kurtosis:&lt;/th&gt;      &lt;td&gt;14.551&lt;/td&gt; &lt;th&gt;  Cond. No.          &lt;/th&gt; &lt;td&gt;    227.&lt;/td&gt; 
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;stud_plot(model3)
+qq_plot(model3)
+lev_plot(model3,xc.values)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_35_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_35_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_35_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;Our inital linear model is not a strong fit, age and own/rent are not significantly involved in the model, the residuals are not normally distributed, and there are outliers and high leverage points.   We clearly need to do something with this model.  The variances does not look constant.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;statsmodels.stats.diagnostic&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;HetGoldfeldQuandt&lt;/span&gt;
+&lt;span class="n"&gt;HGQ&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;HetGoldfeldQuandt&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;HGQ&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;yc&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;xc&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+
+
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mf"&gt;1.3799238831599079&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mf"&gt;0.18743313399026834&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;increasing&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;equal_var&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;test&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ones&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fittedvalues&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="n"&gt;test&lt;/span&gt;&lt;span class="p"&gt;[:,&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fittedvalues&lt;/span&gt;
+    &lt;span class="n"&gt;test&lt;/span&gt;&lt;span class="p"&gt;[:,&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;resid&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;resid&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;test&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;test&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;test&lt;/span&gt;&lt;span class="p"&gt;[:,&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;argsort&lt;/span&gt;&lt;span class="p"&gt;()]&lt;/span&gt;
+    &lt;span class="n"&gt;half&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fittedvalues&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;sc&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;levene&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;test&lt;/span&gt;&lt;span class="p"&gt;[:&lt;/span&gt;&lt;span class="n"&gt;half&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="n"&gt;test&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;half&lt;/span&gt;&lt;span class="p"&gt;:,&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+
+&lt;span class="n"&gt;equal_var&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;model3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+
+
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mf"&gt;7.6983153917314482&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mf"&gt;0.0070815962364431974&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;We see that th HetGoldfeldQuandt test shows the variance of the data is not significantly increasing with fitted values, but the levene test shows that there is not equal variance between the lower half and the upper half of the results.   If true, we need to have a fundamentally different model.  We could try a power law relationship.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;model4 = sm.OLS(np.log(yc+1),xc).fit()
+model4.summary()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;table class="simpletable"&gt;
+&lt;caption&gt;OLS Regression Results&lt;/caption&gt;
+&lt;tr&gt;
+  &lt;th&gt;Dep. Variable:&lt;/th&gt;         &lt;td&gt;AVGEXP&lt;/td&gt;      &lt;th&gt;  R-squared:         &lt;/th&gt; &lt;td&gt;   0.282&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Model:&lt;/th&gt;                   &lt;td&gt;OLS&lt;/td&gt;       &lt;th&gt;  Adj. R-squared:    &lt;/th&gt; &lt;td&gt;   0.239&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Method:&lt;/th&gt;             &lt;td&gt;Least Squares&lt;/td&gt;  &lt;th&gt;  F-statistic:       &lt;/th&gt; &lt;td&gt;   6.576&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Date:&lt;/th&gt;             &lt;td&gt;Wed, 17 Jun 2015&lt;/td&gt; &lt;th&gt;  Prob (F-statistic):&lt;/th&gt; &lt;td&gt;0.000159&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Time:&lt;/th&gt;                 &lt;td&gt;08:01:19&lt;/td&gt;     &lt;th&gt;  Log-Likelihood:    &lt;/th&gt; &lt;td&gt; -97.129&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;No. Observations:&lt;/th&gt;      &lt;td&gt;    72&lt;/td&gt;      &lt;th&gt;  AIC:               &lt;/th&gt; &lt;td&gt;   204.3&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Df Residuals:&lt;/th&gt;          &lt;td&gt;    67&lt;/td&gt;      &lt;th&gt;  BIC:               &lt;/th&gt; &lt;td&gt;   215.6&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Df Model:&lt;/th&gt;              &lt;td&gt;     4&lt;/td&gt;      &lt;th&gt;                     &lt;/th&gt;     &lt;td&gt; &lt;/td&gt;   
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Covariance Type:&lt;/th&gt;      &lt;td&gt;nonrobust&lt;/td&gt;    &lt;th&gt;                     &lt;/th&gt;     &lt;td&gt; &lt;/td&gt;   
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;table class="simpletable"&gt;
+&lt;tr&gt;
+      &lt;td&gt;&lt;/td&gt;        &lt;th&gt;coef&lt;/th&gt;     &lt;th&gt;std err&lt;/th&gt;      &lt;th&gt;t&lt;/th&gt;      &lt;th&gt;P&gt;|t|&lt;/th&gt; &lt;th&gt;[95.0% Conf. Int.]&lt;/th&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;const&lt;/th&gt;    &lt;td&gt;    3.6758&lt;/td&gt; &lt;td&gt;    0.677&lt;/td&gt; &lt;td&gt;    5.432&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt;    2.325     5.027&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;INCOME&lt;/th&gt;   &lt;td&gt;    0.7680&lt;/td&gt; &lt;td&gt;    0.273&lt;/td&gt; &lt;td&gt;    2.815&lt;/td&gt; &lt;td&gt; 0.006&lt;/td&gt; &lt;td&gt;    0.223     1.313&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;INCOMESQ&lt;/th&gt; &lt;td&gt;   -0.0463&lt;/td&gt; &lt;td&gt;    0.025&lt;/td&gt; &lt;td&gt;   -1.826&lt;/td&gt; &lt;td&gt; 0.072&lt;/td&gt; &lt;td&gt;   -0.097     0.004&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;AGE&lt;/th&gt;      &lt;td&gt;   -0.0238&lt;/td&gt; &lt;td&gt;    0.019&lt;/td&gt; &lt;td&gt;   -1.273&lt;/td&gt; &lt;td&gt; 0.207&lt;/td&gt; &lt;td&gt;   -0.061     0.014&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;OWNRENT&lt;/th&gt;  &lt;td&gt;    0.3307&lt;/td&gt; &lt;td&gt;    0.281&lt;/td&gt; &lt;td&gt;    1.175&lt;/td&gt; &lt;td&gt; 0.244&lt;/td&gt; &lt;td&gt;   -0.231     0.893&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;table class="simpletable"&gt;
+&lt;tr&gt;
+  &lt;th&gt;Omnibus:&lt;/th&gt;       &lt;td&gt; 5.638&lt;/td&gt; &lt;th&gt;  Durbin-Watson:     &lt;/th&gt; &lt;td&gt;   1.902&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Prob(Omnibus):&lt;/th&gt; &lt;td&gt; 0.060&lt;/td&gt; &lt;th&gt;  Jarque-Bera (JB):  &lt;/th&gt; &lt;td&gt;   4.883&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Skew:&lt;/th&gt;          &lt;td&gt;-0.511&lt;/td&gt; &lt;th&gt;  Prob(JB):          &lt;/th&gt; &lt;td&gt;  0.0870&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Kurtosis:&lt;/th&gt;      &lt;td&gt; 3.764&lt;/td&gt; &lt;th&gt;  Cond. No.          &lt;/th&gt; &lt;td&gt;    227.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;stud_plot(model4)
+qq_plot(model4)
+lev_plot(model4,xc.values)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_41_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_41_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_41_2.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;HGQ = HetGoldfeldQuandt()
+print HGQ.run(np.log(yc+1),xc)
+print equal_var(model4)
+
+(0.54047445064175459, 0.95411861481885185, &amp;#39;increasing&amp;#39;)
+(0.0049114588257328637, 0.94432837966256522)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Both tests show that the variance appears to be constant with this fit.   The exponential model seems to be an improvement from this perspective.   We can look at the variance indication factor to see if there are any variables we should not be including.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;def print_vif(x):
+    for i,col in enumerate(x.columns):
+        print col, vif(x.values,i)
+print_vif(xc)
+
+const 35.2892427253
+INCOME 16.3339165879
+INCOMESQ 15.21011121
+AGE 1.3624340126
+OWNRENT 1.43105661679
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;In this case the income and income square obviously predict each other, but the other variables appear to be independant.   Maybe this is the case for an interaction term in our model.  Owners and renters probably have different credit habits.  We also saw spearman correlation between age and income.  The improvement of this model will have to be explored after we cover interaction terms&lt;/p&gt;
+&lt;h2&gt;Afternoon&lt;/h2&gt;
+&lt;p&gt;In the afternoon we were given a new data set and told to perform a regression fit on the data.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;balance = pd.read_csv(&amp;#39;../linear-regression/data/balance.csv&amp;#39;)
+balance.info()
+
+&amp;lt;class &amp;#39;pandas.core.frame.DataFrame&amp;#39;&amp;gt;
+Int64Index: 400 entries, 0 to 399
+Data columns (total 12 columns):
+Unnamed: 0    400 non-null int64
+Income        400 non-null float64
+Limit         400 non-null int64
+Rating        400 non-null int64
+Cards         400 non-null int64
+Age           400 non-null int64
+Education     400 non-null int64
+Gender        400 non-null object
+Student       400 non-null object
+Married       400 non-null object
+Ethnicity     400 non-null object
+Balance       400 non-null int64
+dtypes: float64(1), int64(7), object(4)
+memory usage: 40.6+ KB
+
+
+
+balance.head(10)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Unnamed: 0&lt;/th&gt;
+      &lt;th&gt;Income&lt;/th&gt;
+      &lt;th&gt;Limit&lt;/th&gt;
+      &lt;th&gt;Rating&lt;/th&gt;
+      &lt;th&gt;Cards&lt;/th&gt;
+      &lt;th&gt;Age&lt;/th&gt;
+      &lt;th&gt;Education&lt;/th&gt;
+      &lt;th&gt;Gender&lt;/th&gt;
+      &lt;th&gt;Student&lt;/th&gt;
+      &lt;th&gt;Married&lt;/th&gt;
+      &lt;th&gt;Ethnicity&lt;/th&gt;
+      &lt;th&gt;Balance&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;14.891&lt;/td&gt;
+      &lt;td&gt;3606&lt;/td&gt;
+      &lt;td&gt;283&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;34&lt;/td&gt;
+      &lt;td&gt;11&lt;/td&gt;
+      &lt;td&gt;Male&lt;/td&gt;
+      &lt;td&gt;No&lt;/td&gt;
+      &lt;td&gt;Yes&lt;/td&gt;
+      &lt;td&gt;Caucasian&lt;/td&gt;
+      &lt;td&gt;333&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;106.025&lt;/td&gt;
+      &lt;td&gt;6645&lt;/td&gt;
+      &lt;td&gt;483&lt;/td&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;82&lt;/td&gt;
+      &lt;td&gt;15&lt;/td&gt;
+      &lt;td&gt;Female&lt;/td&gt;
+      &lt;td&gt;Yes&lt;/td&gt;
+      &lt;td&gt;Yes&lt;/td&gt;
+      &lt;td&gt;Asian&lt;/td&gt;
+      &lt;td&gt;903&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;104.593&lt;/td&gt;
+      &lt;td&gt;7075&lt;/td&gt;
+      &lt;td&gt;514&lt;/td&gt;
+      &lt;td&gt;4&lt;/td&gt;
+      &lt;td&gt;71&lt;/td&gt;
+      &lt;td&gt;11&lt;/td&gt;
+      &lt;td&gt;Male&lt;/td&gt;
+      &lt;td&gt;No&lt;/td&gt;
+      &lt;td&gt;No&lt;/td&gt;
+      &lt;td&gt;Asian&lt;/td&gt;
+      &lt;td&gt;580&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;4&lt;/td&gt;
+      &lt;td&gt;148.924&lt;/td&gt;
+      &lt;td&gt;9504&lt;/td&gt;
+      &lt;td&gt;681&lt;/td&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;36&lt;/td&gt;
+      &lt;td&gt;11&lt;/td&gt;
+      &lt;td&gt;Female&lt;/td&gt;
+      &lt;td&gt;No&lt;/td&gt;
+      &lt;td&gt;No&lt;/td&gt;
+      &lt;td&gt;Asian&lt;/td&gt;
+      &lt;td&gt;964&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;5&lt;/td&gt;
+      &lt;td&gt;55.882&lt;/td&gt;
+      &lt;td&gt;4897&lt;/td&gt;
+      &lt;td&gt;357&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;68&lt;/td&gt;
+      &lt;td&gt;16&lt;/td&gt;
+      &lt;td&gt;Male&lt;/td&gt;
+      &lt;td&gt;No&lt;/td&gt;
+      &lt;td&gt;Yes&lt;/td&gt;
+      &lt;td&gt;Caucasian&lt;/td&gt;
+      &lt;td&gt;331&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;5&lt;/th&gt;
+      &lt;td&gt;6&lt;/td&gt;
+      &lt;td&gt;80.180&lt;/td&gt;
+      &lt;td&gt;8047&lt;/td&gt;
+      &lt;td&gt;569&lt;/td&gt;
+      &lt;td&gt;4&lt;/td&gt;
+      &lt;td&gt;77&lt;/td&gt;
+      &lt;td&gt;10&lt;/td&gt;
+      &lt;td&gt;Male&lt;/td&gt;
+      &lt;td&gt;No&lt;/td&gt;
+      &lt;td&gt;No&lt;/td&gt;
+      &lt;td&gt;Caucasian&lt;/td&gt;
+      &lt;td&gt;1151&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;6&lt;/th&gt;
+      &lt;td&gt;7&lt;/td&gt;
+      &lt;td&gt;20.996&lt;/td&gt;
+      &lt;td&gt;3388&lt;/td&gt;
+      &lt;td&gt;259&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;37&lt;/td&gt;
+      &lt;td&gt;12&lt;/td&gt;
+      &lt;td&gt;Female&lt;/td&gt;
+      &lt;td&gt;No&lt;/td&gt;
+      &lt;td&gt;No&lt;/td&gt;
+      &lt;td&gt;African American&lt;/td&gt;
+      &lt;td&gt;203&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;7&lt;/th&gt;
+      &lt;td&gt;8&lt;/td&gt;
+      &lt;td&gt;71.408&lt;/td&gt;
+      &lt;td&gt;7114&lt;/td&gt;
+      &lt;td&gt;512&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;87&lt;/td&gt;
+      &lt;td&gt;9&lt;/td&gt;
+      &lt;td&gt;Male&lt;/td&gt;
+      &lt;td&gt;No&lt;/td&gt;
+      &lt;td&gt;No&lt;/td&gt;
+      &lt;td&gt;Asian&lt;/td&gt;
+      &lt;td&gt;872&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;8&lt;/th&gt;
+      &lt;td&gt;9&lt;/td&gt;
+      &lt;td&gt;15.125&lt;/td&gt;
+      &lt;td&gt;3300&lt;/td&gt;
+      &lt;td&gt;266&lt;/td&gt;
+      &lt;td&gt;5&lt;/td&gt;
+      &lt;td&gt;66&lt;/td&gt;
+      &lt;td&gt;13&lt;/td&gt;
+      &lt;td&gt;Female&lt;/td&gt;
+      &lt;td&gt;No&lt;/td&gt;
+      &lt;td&gt;No&lt;/td&gt;
+      &lt;td&gt;Caucasian&lt;/td&gt;
+      &lt;td&gt;279&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;9&lt;/th&gt;
+      &lt;td&gt;10&lt;/td&gt;
+      &lt;td&gt;71.061&lt;/td&gt;
+      &lt;td&gt;6819&lt;/td&gt;
+      &lt;td&gt;491&lt;/td&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;41&lt;/td&gt;
+      &lt;td&gt;19&lt;/td&gt;
+      &lt;td&gt;Female&lt;/td&gt;
+      &lt;td&gt;Yes&lt;/td&gt;
+      &lt;td&gt;Yes&lt;/td&gt;
+      &lt;td&gt;African American&lt;/td&gt;
+      &lt;td&gt;1350&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;scatter_matrix(balance,diagonal=&amp;#39;kde&amp;#39;,figsize=(14,14))
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_48_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;In order to do regression we need to remove the categorical variables and replace them with variables that are zero or one.  With Ethnicity we need to decided ona  baseline, which we decided on african american (alphabetical order).&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;balance = balance.drop(&amp;quot;Unnamed: 0&amp;quot;,axis=1)
+balance.Gender = balance.Gender.str.strip()
+balance.Gender = np.where(balance.Gender==&amp;#39;Male&amp;#39;,1,0)
+balance.Student = np.where(balance.Student==&amp;#39;Yes&amp;#39;,1,0)
+balance.Married = np.where(balance.Married==&amp;#39;Yes&amp;#39;,1,0)
+balance[&amp;#39;Caucasian&amp;#39;] = np.where(balance.Ethnicity==&amp;#39;Caucasian&amp;#39;,1,0)
+balance[&amp;#39;Asian&amp;#39;] = np.where(balance.Ethnicity==&amp;#39;Asian&amp;#39;,1,0)
+balance = balance.drop(&amp;#39;Ethnicity&amp;#39;,axis=1)
+balance.head()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Income&lt;/th&gt;
+      &lt;th&gt;Limit&lt;/th&gt;
+      &lt;th&gt;Rating&lt;/th&gt;
+      &lt;th&gt;Cards&lt;/th&gt;
+      &lt;th&gt;Age&lt;/th&gt;
+      &lt;th&gt;Education&lt;/th&gt;
+      &lt;th&gt;Gender&lt;/th&gt;
+      &lt;th&gt;Student&lt;/th&gt;
+      &lt;th&gt;Married&lt;/th&gt;
+      &lt;th&gt;Balance&lt;/th&gt;
+      &lt;th&gt;Caucasian&lt;/th&gt;
+      &lt;th&gt;Asian&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;14.891&lt;/td&gt;
+      &lt;td&gt;3606&lt;/td&gt;
+      &lt;td&gt;283&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;34&lt;/td&gt;
+      &lt;td&gt;11&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;333&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;106.025&lt;/td&gt;
+      &lt;td&gt;6645&lt;/td&gt;
+      &lt;td&gt;483&lt;/td&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;82&lt;/td&gt;
+      &lt;td&gt;15&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;903&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;104.593&lt;/td&gt;
+      &lt;td&gt;7075&lt;/td&gt;
+      &lt;td&gt;514&lt;/td&gt;
+      &lt;td&gt;4&lt;/td&gt;
+      &lt;td&gt;71&lt;/td&gt;
+      &lt;td&gt;11&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;580&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;148.924&lt;/td&gt;
+      &lt;td&gt;9504&lt;/td&gt;
+      &lt;td&gt;681&lt;/td&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;36&lt;/td&gt;
+      &lt;td&gt;11&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;964&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;55.882&lt;/td&gt;
+      &lt;td&gt;4897&lt;/td&gt;
+      &lt;td&gt;357&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;68&lt;/td&gt;
+      &lt;td&gt;16&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;331&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;yb = balance[[&amp;#39;Balance&amp;#39;]]
+xb = sm.add_constant(balance.drop([&amp;#39;Balance&amp;#39;],axis=1))
+modelb1 = sm.OLS(yb,xb).fit()
+modelb1.summary()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;table class="simpletable"&gt;
+&lt;caption&gt;OLS Regression Results&lt;/caption&gt;
+&lt;tr&gt;
+  &lt;th&gt;Dep. Variable:&lt;/th&gt;         &lt;td&gt;Balance&lt;/td&gt;     &lt;th&gt;  R-squared:         &lt;/th&gt; &lt;td&gt;   0.955&lt;/td&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Model:&lt;/th&gt;                   &lt;td&gt;OLS&lt;/td&gt;       &lt;th&gt;  Adj. R-squared:    &lt;/th&gt; &lt;td&gt;   0.954&lt;/td&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Method:&lt;/th&gt;             &lt;td&gt;Least Squares&lt;/td&gt;  &lt;th&gt;  F-statistic:       &lt;/th&gt; &lt;td&gt;   750.3&lt;/td&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Date:&lt;/th&gt;             &lt;td&gt;Wed, 17 Jun 2015&lt;/td&gt; &lt;th&gt;  Prob (F-statistic):&lt;/th&gt; &lt;td&gt;1.11e-253&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Time:&lt;/th&gt;                 &lt;td&gt;08:33:39&lt;/td&gt;     &lt;th&gt;  Log-Likelihood:    &lt;/th&gt; &lt;td&gt; -2398.7&lt;/td&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;No. Observations:&lt;/th&gt;      &lt;td&gt;   400&lt;/td&gt;      &lt;th&gt;  AIC:               &lt;/th&gt; &lt;td&gt;   4821.&lt;/td&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Df Residuals:&lt;/th&gt;          &lt;td&gt;   388&lt;/td&gt;      &lt;th&gt;  BIC:               &lt;/th&gt; &lt;td&gt;   4869.&lt;/td&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Df Model:&lt;/th&gt;              &lt;td&gt;    11&lt;/td&gt;      &lt;th&gt;                     &lt;/th&gt;     &lt;td&gt; &lt;/td&gt;    
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Covariance Type:&lt;/th&gt;      &lt;td&gt;nonrobust&lt;/td&gt;    &lt;th&gt;                     &lt;/th&gt;     &lt;td&gt; &lt;/td&gt;    
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;table class="simpletable"&gt;
+&lt;tr&gt;
+      &lt;td&gt;&lt;/td&gt;         &lt;th&gt;coef&lt;/th&gt;     &lt;th&gt;std err&lt;/th&gt;      &lt;th&gt;t&lt;/th&gt;      &lt;th&gt;P&gt;|t|&lt;/th&gt; &lt;th&gt;[95.0% Conf. Int.]&lt;/th&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;const&lt;/th&gt;     &lt;td&gt; -489.8611&lt;/td&gt; &lt;td&gt;   35.801&lt;/td&gt; &lt;td&gt;  -13.683&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt; -560.250  -419.473&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Income&lt;/th&gt;    &lt;td&gt;   -7.8031&lt;/td&gt; &lt;td&gt;    0.234&lt;/td&gt; &lt;td&gt;  -33.314&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt;   -8.264    -7.343&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Limit&lt;/th&gt;     &lt;td&gt;    0.1909&lt;/td&gt; &lt;td&gt;    0.033&lt;/td&gt; &lt;td&gt;    5.824&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt;    0.126     0.255&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Rating&lt;/th&gt;    &lt;td&gt;    1.1365&lt;/td&gt; &lt;td&gt;    0.491&lt;/td&gt; &lt;td&gt;    2.315&lt;/td&gt; &lt;td&gt; 0.021&lt;/td&gt; &lt;td&gt;    0.171     2.102&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Cards&lt;/th&gt;     &lt;td&gt;   17.7245&lt;/td&gt; &lt;td&gt;    4.341&lt;/td&gt; &lt;td&gt;    4.083&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt;    9.190    26.259&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Age&lt;/th&gt;       &lt;td&gt;   -0.6139&lt;/td&gt; &lt;td&gt;    0.294&lt;/td&gt; &lt;td&gt;   -2.088&lt;/td&gt; &lt;td&gt; 0.037&lt;/td&gt; &lt;td&gt;   -1.192    -0.036&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Education&lt;/th&gt; &lt;td&gt;   -1.0989&lt;/td&gt; &lt;td&gt;    1.598&lt;/td&gt; &lt;td&gt;   -0.688&lt;/td&gt; &lt;td&gt; 0.492&lt;/td&gt; &lt;td&gt;   -4.241     2.043&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Gender&lt;/th&gt;    &lt;td&gt;   10.6532&lt;/td&gt; &lt;td&gt;    9.914&lt;/td&gt; &lt;td&gt;    1.075&lt;/td&gt; &lt;td&gt; 0.283&lt;/td&gt; &lt;td&gt;   -8.839    30.145&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Student&lt;/th&gt;   &lt;td&gt;  425.7474&lt;/td&gt; &lt;td&gt;   16.723&lt;/td&gt; &lt;td&gt;   25.459&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt;  392.869   458.626&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Married&lt;/th&gt;   &lt;td&gt;   -8.5339&lt;/td&gt; &lt;td&gt;   10.363&lt;/td&gt; &lt;td&gt;   -0.824&lt;/td&gt; &lt;td&gt; 0.411&lt;/td&gt; &lt;td&gt;  -28.908    11.841&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Caucasian&lt;/th&gt; &lt;td&gt;   10.1070&lt;/td&gt; &lt;td&gt;   12.210&lt;/td&gt; &lt;td&gt;    0.828&lt;/td&gt; &lt;td&gt; 0.408&lt;/td&gt; &lt;td&gt;  -13.899    34.113&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Asian&lt;/th&gt;     &lt;td&gt;   16.8042&lt;/td&gt; &lt;td&gt;   14.119&lt;/td&gt; &lt;td&gt;    1.190&lt;/td&gt; &lt;td&gt; 0.235&lt;/td&gt; &lt;td&gt;  -10.955    44.564&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;table class="simpletable"&gt;
+&lt;tr&gt;
+  &lt;th&gt;Omnibus:&lt;/th&gt;       &lt;td&gt;34.899&lt;/td&gt; &lt;th&gt;  Durbin-Watson:     &lt;/th&gt; &lt;td&gt;   1.968&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Prob(Omnibus):&lt;/th&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;th&gt;  Jarque-Bera (JB):  &lt;/th&gt; &lt;td&gt;  41.766&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Skew:&lt;/th&gt;          &lt;td&gt; 0.782&lt;/td&gt; &lt;th&gt;  Prob(JB):          &lt;/th&gt; &lt;td&gt;8.52e-10&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Kurtosis:&lt;/th&gt;      &lt;td&gt; 3.241&lt;/td&gt; &lt;th&gt;  Cond. No.          &lt;/th&gt; &lt;td&gt;3.87e+04&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;stud_plot(modelb1)
+qq_plot(modelb1)
+lev_plot(modelb1,xb.values)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_52_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_52_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_52_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;We have some very strange behavor with our model.   I am currious what is happening here.  Lets start by looking at the data points where we have the strang line on the studentized plot.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;balance[modelb1.fittedvalues &amp;lt; 100].describe()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Income&lt;/th&gt;
+      &lt;th&gt;Limit&lt;/th&gt;
+      &lt;th&gt;Rating&lt;/th&gt;
+      &lt;th&gt;Cards&lt;/th&gt;
+      &lt;th&gt;Age&lt;/th&gt;
+      &lt;th&gt;Education&lt;/th&gt;
+      &lt;th&gt;Gender&lt;/th&gt;
+      &lt;th&gt;Student&lt;/th&gt;
+      &lt;th&gt;Married&lt;/th&gt;
+      &lt;th&gt;Balance&lt;/th&gt;
+      &lt;th&gt;Caucasian&lt;/th&gt;
+      &lt;th&gt;Asian&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;count&lt;/th&gt;
+      &lt;td&gt;81.000000&lt;/td&gt;
+      &lt;td&gt;81.000000&lt;/td&gt;
+      &lt;td&gt;81.000000&lt;/td&gt;
+      &lt;td&gt;81.000000&lt;/td&gt;
+      &lt;td&gt;81.000000&lt;/td&gt;
+      &lt;td&gt;81.000000&lt;/td&gt;
+      &lt;td&gt;81.000000&lt;/td&gt;
+      &lt;td&gt;81.000000&lt;/td&gt;
+      &lt;td&gt;81.000000&lt;/td&gt;
+      &lt;td&gt;81&lt;/td&gt;
+      &lt;td&gt;81.000000&lt;/td&gt;
+      &lt;td&gt;81.000000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;mean&lt;/th&gt;
+      &lt;td&gt;28.950296&lt;/td&gt;
+      &lt;td&gt;2078.024691&lt;/td&gt;
+      &lt;td&gt;177.074074&lt;/td&gt;
+      &lt;td&gt;2.753086&lt;/td&gt;
+      &lt;td&gt;55.679012&lt;/td&gt;
+      &lt;td&gt;13.419753&lt;/td&gt;
+      &lt;td&gt;0.530864&lt;/td&gt;
+      &lt;td&gt;0.012346&lt;/td&gt;
+      &lt;td&gt;0.592593&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0.481481&lt;/td&gt;
+      &lt;td&gt;0.308642&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;std&lt;/th&gt;
+      &lt;td&gt;15.648895&lt;/td&gt;
+      &lt;td&gt;736.739048&lt;/td&gt;
+      &lt;td&gt;47.463085&lt;/td&gt;
+      &lt;td&gt;1.145981&lt;/td&gt;
+      &lt;td&gt;17.237914&lt;/td&gt;
+      &lt;td&gt;2.801179&lt;/td&gt;
+      &lt;td&gt;0.502156&lt;/td&gt;
+      &lt;td&gt;0.111111&lt;/td&gt;
+      &lt;td&gt;0.494413&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0.502770&lt;/td&gt;
+      &lt;td&gt;0.464811&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;min&lt;/th&gt;
+      &lt;td&gt;10.726000&lt;/td&gt;
+      &lt;td&gt;855.000000&lt;/td&gt;
+      &lt;td&gt;93.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;24.000000&lt;/td&gt;
+      &lt;td&gt;6.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;25%&lt;/th&gt;
+      &lt;td&gt;18.036000&lt;/td&gt;
+      &lt;td&gt;1501.000000&lt;/td&gt;
+      &lt;td&gt;142.000000&lt;/td&gt;
+      &lt;td&gt;2.000000&lt;/td&gt;
+      &lt;td&gt;40.000000&lt;/td&gt;
+      &lt;td&gt;11.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;50%&lt;/th&gt;
+      &lt;td&gt;27.039000&lt;/td&gt;
+      &lt;td&gt;2047.000000&lt;/td&gt;
+      &lt;td&gt;173.000000&lt;/td&gt;
+      &lt;td&gt;3.000000&lt;/td&gt;
+      &lt;td&gt;57.000000&lt;/td&gt;
+      &lt;td&gt;14.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;75%&lt;/th&gt;
+      &lt;td&gt;34.772000&lt;/td&gt;
+      &lt;td&gt;2529.000000&lt;/td&gt;
+      &lt;td&gt;199.000000&lt;/td&gt;
+      &lt;td&gt;3.000000&lt;/td&gt;
+      &lt;td&gt;70.000000&lt;/td&gt;
+      &lt;td&gt;15.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;max&lt;/th&gt;
+      &lt;td&gt;92.112000&lt;/td&gt;
+      &lt;td&gt;4612.000000&lt;/td&gt;
+      &lt;td&gt;344.000000&lt;/td&gt;
+      &lt;td&gt;6.000000&lt;/td&gt;
+      &lt;td&gt;84.000000&lt;/td&gt;
+      &lt;td&gt;19.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;balance[modelb1.fittedvalues &amp;gt; 100].describe()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Income&lt;/th&gt;
+      &lt;th&gt;Limit&lt;/th&gt;
+      &lt;th&gt;Rating&lt;/th&gt;
+      &lt;th&gt;Cards&lt;/th&gt;
+      &lt;th&gt;Age&lt;/th&gt;
+      &lt;th&gt;Education&lt;/th&gt;
+      &lt;th&gt;Gender&lt;/th&gt;
+      &lt;th&gt;Student&lt;/th&gt;
+      &lt;th&gt;Married&lt;/th&gt;
+      &lt;th&gt;Balance&lt;/th&gt;
+      &lt;th&gt;Caucasian&lt;/th&gt;
+      &lt;th&gt;Asian&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;count&lt;/th&gt;
+      &lt;td&gt;319.000000&lt;/td&gt;
+      &lt;td&gt;319.000000&lt;/td&gt;
+      &lt;td&gt;319.000000&lt;/td&gt;
+      &lt;td&gt;319.000000&lt;/td&gt;
+      &lt;td&gt;319.000000&lt;/td&gt;
+      &lt;td&gt;319.000000&lt;/td&gt;
+      &lt;td&gt;319.000000&lt;/td&gt;
+      &lt;td&gt;319.000000&lt;/td&gt;
+      &lt;td&gt;319.000000&lt;/td&gt;
+      &lt;td&gt;319.000000&lt;/td&gt;
+      &lt;td&gt;319.000000&lt;/td&gt;
+      &lt;td&gt;319.000000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;mean&lt;/th&gt;
+      &lt;td&gt;49.349781&lt;/td&gt;
+      &lt;td&gt;5410.407524&lt;/td&gt;
+      &lt;td&gt;400.103448&lt;/td&gt;
+      &lt;td&gt;3.009404&lt;/td&gt;
+      &lt;td&gt;55.664577&lt;/td&gt;
+      &lt;td&gt;13.457680&lt;/td&gt;
+      &lt;td&gt;0.470219&lt;/td&gt;
+      &lt;td&gt;0.122257&lt;/td&gt;
+      &lt;td&gt;0.617555&lt;/td&gt;
+      &lt;td&gt;652.056426&lt;/td&gt;
+      &lt;td&gt;0.501567&lt;/td&gt;
+      &lt;td&gt;0.241379&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;std&lt;/th&gt;
+      &lt;td&gt;37.582144&lt;/td&gt;
+      &lt;td&gt;2071.839874&lt;/td&gt;
+      &lt;td&gt;139.162472&lt;/td&gt;
+      &lt;td&gt;1.419730&lt;/td&gt;
+      &lt;td&gt;17.279892&lt;/td&gt;
+      &lt;td&gt;3.206312&lt;/td&gt;
+      &lt;td&gt;0.499896&lt;/td&gt;
+      &lt;td&gt;0.328097&lt;/td&gt;
+      &lt;td&gt;0.486748&lt;/td&gt;
+      &lt;td&gt;422.907364&lt;/td&gt;
+      &lt;td&gt;0.500783&lt;/td&gt;
+      &lt;td&gt;0.428592&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;min&lt;/th&gt;
+      &lt;td&gt;10.354000&lt;/td&gt;
+      &lt;td&gt;1160.000000&lt;/td&gt;
+      &lt;td&gt;126.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;23.000000&lt;/td&gt;
+      &lt;td&gt;5.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;25%&lt;/th&gt;
+      &lt;td&gt;23.022500&lt;/td&gt;
+      &lt;td&gt;3907.000000&lt;/td&gt;
+      &lt;td&gt;298.000000&lt;/td&gt;
+      &lt;td&gt;2.000000&lt;/td&gt;
+      &lt;td&gt;42.500000&lt;/td&gt;
+      &lt;td&gt;11.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;305.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;50%&lt;/th&gt;
+      &lt;td&gt;36.508000&lt;/td&gt;
+      &lt;td&gt;5110.000000&lt;/td&gt;
+      &lt;td&gt;377.000000&lt;/td&gt;
+      &lt;td&gt;3.000000&lt;/td&gt;
+      &lt;td&gt;56.000000&lt;/td&gt;
+      &lt;td&gt;14.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;607.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;75%&lt;/th&gt;
+      &lt;td&gt;62.848500&lt;/td&gt;
+      &lt;td&gt;6408.000000&lt;/td&gt;
+      &lt;td&gt;467.000000&lt;/td&gt;
+      &lt;td&gt;4.000000&lt;/td&gt;
+      &lt;td&gt;69.000000&lt;/td&gt;
+      &lt;td&gt;16.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;950.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;max&lt;/th&gt;
+      &lt;td&gt;186.634000&lt;/td&gt;
+      &lt;td&gt;13913.000000&lt;/td&gt;
+      &lt;td&gt;982.000000&lt;/td&gt;
+      &lt;td&gt;9.000000&lt;/td&gt;
+      &lt;td&gt;98.000000&lt;/td&gt;
+      &lt;td&gt;20.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;1999.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;balance.describe()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Income&lt;/th&gt;
+      &lt;th&gt;Limit&lt;/th&gt;
+      &lt;th&gt;Rating&lt;/th&gt;
+      &lt;th&gt;Cards&lt;/th&gt;
+      &lt;th&gt;Age&lt;/th&gt;
+      &lt;th&gt;Education&lt;/th&gt;
+      &lt;th&gt;Gender&lt;/th&gt;
+      &lt;th&gt;Student&lt;/th&gt;
+      &lt;th&gt;Married&lt;/th&gt;
+      &lt;th&gt;Balance&lt;/th&gt;
+      &lt;th&gt;Caucasian&lt;/th&gt;
+      &lt;th&gt;Asian&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;count&lt;/th&gt;
+      &lt;td&gt;400.000000&lt;/td&gt;
+      &lt;td&gt;400.000000&lt;/td&gt;
+      &lt;td&gt;400.000000&lt;/td&gt;
+      &lt;td&gt;400.000000&lt;/td&gt;
+      &lt;td&gt;400.000000&lt;/td&gt;
+      &lt;td&gt;400.000000&lt;/td&gt;
+      &lt;td&gt;400.000000&lt;/td&gt;
+      &lt;td&gt;400.000000&lt;/td&gt;
+      &lt;td&gt;400.00000&lt;/td&gt;
+      &lt;td&gt;400.000000&lt;/td&gt;
+      &lt;td&gt;400.00000&lt;/td&gt;
+      &lt;td&gt;400.000000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;mean&lt;/th&gt;
+      &lt;td&gt;45.218885&lt;/td&gt;
+      &lt;td&gt;4735.600000&lt;/td&gt;
+      &lt;td&gt;354.940000&lt;/td&gt;
+      &lt;td&gt;2.957500&lt;/td&gt;
+      &lt;td&gt;55.667500&lt;/td&gt;
+      &lt;td&gt;13.450000&lt;/td&gt;
+      &lt;td&gt;0.482500&lt;/td&gt;
+      &lt;td&gt;0.100000&lt;/td&gt;
+      &lt;td&gt;0.61250&lt;/td&gt;
+      &lt;td&gt;520.015000&lt;/td&gt;
+      &lt;td&gt;0.49750&lt;/td&gt;
+      &lt;td&gt;0.255000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;std&lt;/th&gt;
+      &lt;td&gt;35.244273&lt;/td&gt;
+      &lt;td&gt;2308.198848&lt;/td&gt;
+      &lt;td&gt;154.724143&lt;/td&gt;
+      &lt;td&gt;1.371275&lt;/td&gt;
+      &lt;td&gt;17.249807&lt;/td&gt;
+      &lt;td&gt;3.125207&lt;/td&gt;
+      &lt;td&gt;0.500319&lt;/td&gt;
+      &lt;td&gt;0.300376&lt;/td&gt;
+      &lt;td&gt;0.48779&lt;/td&gt;
+      &lt;td&gt;459.758877&lt;/td&gt;
+      &lt;td&gt;0.50062&lt;/td&gt;
+      &lt;td&gt;0.436407&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;min&lt;/th&gt;
+      &lt;td&gt;10.354000&lt;/td&gt;
+      &lt;td&gt;855.000000&lt;/td&gt;
+      &lt;td&gt;93.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;23.000000&lt;/td&gt;
+      &lt;td&gt;5.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;0.00000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;0.00000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;25%&lt;/th&gt;
+      &lt;td&gt;21.007250&lt;/td&gt;
+      &lt;td&gt;3088.000000&lt;/td&gt;
+      &lt;td&gt;247.250000&lt;/td&gt;
+      &lt;td&gt;2.000000&lt;/td&gt;
+      &lt;td&gt;41.750000&lt;/td&gt;
+      &lt;td&gt;11.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;0.00000&lt;/td&gt;
+      &lt;td&gt;68.750000&lt;/td&gt;
+      &lt;td&gt;0.00000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;50%&lt;/th&gt;
+      &lt;td&gt;33.115500&lt;/td&gt;
+      &lt;td&gt;4622.500000&lt;/td&gt;
+      &lt;td&gt;344.000000&lt;/td&gt;
+      &lt;td&gt;3.000000&lt;/td&gt;
+      &lt;td&gt;56.000000&lt;/td&gt;
+      &lt;td&gt;14.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;1.00000&lt;/td&gt;
+      &lt;td&gt;459.500000&lt;/td&gt;
+      &lt;td&gt;0.00000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;75%&lt;/th&gt;
+      &lt;td&gt;57.470750&lt;/td&gt;
+      &lt;td&gt;5872.750000&lt;/td&gt;
+      &lt;td&gt;437.250000&lt;/td&gt;
+      &lt;td&gt;4.000000&lt;/td&gt;
+      &lt;td&gt;70.000000&lt;/td&gt;
+      &lt;td&gt;16.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;1.00000&lt;/td&gt;
+      &lt;td&gt;863.000000&lt;/td&gt;
+      &lt;td&gt;1.00000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;max&lt;/th&gt;
+      &lt;td&gt;186.634000&lt;/td&gt;
+      &lt;td&gt;13913.000000&lt;/td&gt;
+      &lt;td&gt;982.000000&lt;/td&gt;
+      &lt;td&gt;9.000000&lt;/td&gt;
+      &lt;td&gt;98.000000&lt;/td&gt;
+      &lt;td&gt;20.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+      &lt;td&gt;1.00000&lt;/td&gt;
+      &lt;td&gt;1999.000000&lt;/td&gt;
+      &lt;td&gt;1.00000&lt;/td&gt;
+      &lt;td&gt;1.000000&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;p&gt;We see that relative to the averages, the trouble points looked to be people with no balance.  If we do a fit without balance, just to check, I am curreous if we get a good model.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;modelb2 = sm.OLS(yb[yb.values&amp;gt;0],xb[yb.values&amp;gt;0]).fit()
+modelb2.summary()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;table class="simpletable"&gt;
+&lt;caption&gt;OLS Regression Results&lt;/caption&gt;
+&lt;tr&gt;
+  &lt;th&gt;Dep. Variable:&lt;/th&gt;         &lt;td&gt;Balance&lt;/td&gt;     &lt;th&gt;  R-squared:         &lt;/th&gt; &lt;td&gt;   0.999&lt;/td&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Model:&lt;/th&gt;                   &lt;td&gt;OLS&lt;/td&gt;       &lt;th&gt;  Adj. R-squared:    &lt;/th&gt; &lt;td&gt;   0.999&lt;/td&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Method:&lt;/th&gt;             &lt;td&gt;Least Squares&lt;/td&gt;  &lt;th&gt;  F-statistic:       &lt;/th&gt; &lt;td&gt;4.366e+04&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Date:&lt;/th&gt;             &lt;td&gt;Wed, 17 Jun 2015&lt;/td&gt; &lt;th&gt;  Prob (F-statistic):&lt;/th&gt;  &lt;td&gt;  0.00&lt;/td&gt;  
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Time:&lt;/th&gt;                 &lt;td&gt;08:44:21&lt;/td&gt;     &lt;th&gt;  Log-Likelihood:    &lt;/th&gt; &lt;td&gt; -1162.5&lt;/td&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;No. Observations:&lt;/th&gt;      &lt;td&gt;   310&lt;/td&gt;      &lt;th&gt;  AIC:               &lt;/th&gt; &lt;td&gt;   2349.&lt;/td&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Df Residuals:&lt;/th&gt;          &lt;td&gt;   298&lt;/td&gt;      &lt;th&gt;  BIC:               &lt;/th&gt; &lt;td&gt;   2394.&lt;/td&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Df Model:&lt;/th&gt;              &lt;td&gt;    11&lt;/td&gt;      &lt;th&gt;                     &lt;/th&gt;     &lt;td&gt; &lt;/td&gt;    
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Covariance Type:&lt;/th&gt;      &lt;td&gt;nonrobust&lt;/td&gt;    &lt;th&gt;                     &lt;/th&gt;     &lt;td&gt; &lt;/td&gt;    
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;table class="simpletable"&gt;
+&lt;tr&gt;
+      &lt;td&gt;&lt;/td&gt;         &lt;th&gt;coef&lt;/th&gt;     &lt;th&gt;std err&lt;/th&gt;      &lt;th&gt;t&lt;/th&gt;      &lt;th&gt;P&gt;|t|&lt;/th&gt; &lt;th&gt;[95.0% Conf. Int.]&lt;/th&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;const&lt;/th&gt;     &lt;td&gt; -696.6745&lt;/td&gt; &lt;td&gt;    4.406&lt;/td&gt; &lt;td&gt; -158.103&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt; -705.346  -688.003&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Income&lt;/th&gt;    &lt;td&gt;   -9.9916&lt;/td&gt; &lt;td&gt;    0.029&lt;/td&gt; &lt;td&gt; -339.458&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt;  -10.050    -9.934&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Limit&lt;/th&gt;     &lt;td&gt;    0.3360&lt;/td&gt; &lt;td&gt;    0.004&lt;/td&gt; &lt;td&gt;   84.135&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt;    0.328     0.344&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Rating&lt;/th&gt;    &lt;td&gt;   -0.1433&lt;/td&gt; &lt;td&gt;    0.059&lt;/td&gt; &lt;td&gt;   -2.428&lt;/td&gt; &lt;td&gt; 0.016&lt;/td&gt; &lt;td&gt;   -0.259    -0.027&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Cards&lt;/th&gt;     &lt;td&gt;   25.4764&lt;/td&gt; &lt;td&gt;    0.500&lt;/td&gt; &lt;td&gt;   50.962&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt;   24.493    26.460&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Age&lt;/th&gt;       &lt;td&gt;   -1.0029&lt;/td&gt; &lt;td&gt;    0.036&lt;/td&gt; &lt;td&gt;  -28.215&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt;   -1.073    -0.933&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Education&lt;/th&gt; &lt;td&gt;   -0.0080&lt;/td&gt; &lt;td&gt;    0.189&lt;/td&gt; &lt;td&gt;   -0.042&lt;/td&gt; &lt;td&gt; 0.966&lt;/td&gt; &lt;td&gt;   -0.381     0.365&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Gender&lt;/th&gt;    &lt;td&gt;   -0.2332&lt;/td&gt; &lt;td&gt;    1.200&lt;/td&gt; &lt;td&gt;   -0.194&lt;/td&gt; &lt;td&gt; 0.846&lt;/td&gt; &lt;td&gt;   -2.596     2.129&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Student&lt;/th&gt;   &lt;td&gt;  500.8310&lt;/td&gt; &lt;td&gt;    1.880&lt;/td&gt; &lt;td&gt;  266.464&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt;  497.132   504.530&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Married&lt;/th&gt;   &lt;td&gt;   -2.0625&lt;/td&gt; &lt;td&gt;    1.261&lt;/td&gt; &lt;td&gt;   -1.636&lt;/td&gt; &lt;td&gt; 0.103&lt;/td&gt; &lt;td&gt;   -4.543     0.418&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Caucasian&lt;/th&gt; &lt;td&gt;   -0.0700&lt;/td&gt; &lt;td&gt;    1.467&lt;/td&gt; &lt;td&gt;   -0.048&lt;/td&gt; &lt;td&gt; 0.962&lt;/td&gt; &lt;td&gt;   -2.956     2.816&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Asian&lt;/th&gt;     &lt;td&gt;   -1.3785&lt;/td&gt; &lt;td&gt;    1.731&lt;/td&gt; &lt;td&gt;   -0.796&lt;/td&gt; &lt;td&gt; 0.426&lt;/td&gt; &lt;td&gt;   -4.784     2.027&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;table class="simpletable"&gt;
+&lt;tr&gt;
+  &lt;th&gt;Omnibus:&lt;/th&gt;       &lt;td&gt; 3.799&lt;/td&gt; &lt;th&gt;  Durbin-Watson:     &lt;/th&gt; &lt;td&gt;   2.067&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Prob(Omnibus):&lt;/th&gt; &lt;td&gt; 0.150&lt;/td&gt; &lt;th&gt;  Jarque-Bera (JB):  &lt;/th&gt; &lt;td&gt;   3.766&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Skew:&lt;/th&gt;          &lt;td&gt;-0.269&lt;/td&gt; &lt;th&gt;  Prob(JB):          &lt;/th&gt; &lt;td&gt;   0.152&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Kurtosis:&lt;/th&gt;      &lt;td&gt; 2.963&lt;/td&gt; &lt;th&gt;  Cond. No.          &lt;/th&gt; &lt;td&gt;4.37e+04&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;stud_plot(modelb2)
+qq_plot(modelb2)
+lev_plot(modelb2,xb[yb.values&amp;gt;0].values)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_59_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_59_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_59_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;So we have a great fit where the variance is constant, the residuals are normally distributed, and there are no high leverage points if we fit the data with removing the zero-balance points.   People with zero balance, however, are in the data.   Our regression does not make valid predictions for people with zero balnce.  &lt;/p&gt;
+&lt;p&gt;This seems like a two step process:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Classify if the person is likely to have zero balance.&lt;/li&gt;
+&lt;li&gt;If they do predict zero, otherwise predict the regression model.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Another solution would be to cut on credit rating.  One model for those above 350 credit rating, and another model for those with less than 350 credit rating.  This is because in the zero balance group, the max credit rating was 344.  Some of the issues is that we not know if this is a general cutoff, but lets try it.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;modelb3 = sm.OLS(yb[xb.Rating &amp;gt; 350],xb[xb.Rating &amp;gt; 350]).fit()
+modelb3.summary()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;table class="simpletable"&gt;
+&lt;caption&gt;OLS Regression Results&lt;/caption&gt;
+&lt;tr&gt;
+  &lt;th&gt;Dep. Variable:&lt;/th&gt;         &lt;td&gt;Balance&lt;/td&gt;     &lt;th&gt;  R-squared:         &lt;/th&gt; &lt;td&gt;   0.999&lt;/td&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Model:&lt;/th&gt;                   &lt;td&gt;OLS&lt;/td&gt;       &lt;th&gt;  Adj. R-squared:    &lt;/th&gt; &lt;td&gt;   0.999&lt;/td&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Method:&lt;/th&gt;             &lt;td&gt;Least Squares&lt;/td&gt;  &lt;th&gt;  F-statistic:       &lt;/th&gt; &lt;td&gt;1.854e+04&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Date:&lt;/th&gt;             &lt;td&gt;Wed, 17 Jun 2015&lt;/td&gt; &lt;th&gt;  Prob (F-statistic):&lt;/th&gt; &lt;td&gt;1.07e-273&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Time:&lt;/th&gt;                 &lt;td&gt;09:06:41&lt;/td&gt;     &lt;th&gt;  Log-Likelihood:    &lt;/th&gt; &lt;td&gt; -741.54&lt;/td&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;No. Observations:&lt;/th&gt;      &lt;td&gt;   196&lt;/td&gt;      &lt;th&gt;  AIC:               &lt;/th&gt; &lt;td&gt;   1507.&lt;/td&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Df Residuals:&lt;/th&gt;          &lt;td&gt;   184&lt;/td&gt;      &lt;th&gt;  BIC:               &lt;/th&gt; &lt;td&gt;   1546.&lt;/td&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Df Model:&lt;/th&gt;              &lt;td&gt;    11&lt;/td&gt;      &lt;th&gt;                     &lt;/th&gt;     &lt;td&gt; &lt;/td&gt;    
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Covariance Type:&lt;/th&gt;      &lt;td&gt;nonrobust&lt;/td&gt;    &lt;th&gt;                     &lt;/th&gt;     &lt;td&gt; &lt;/td&gt;    
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;table class="simpletable"&gt;
+&lt;tr&gt;
+      &lt;td&gt;&lt;/td&gt;         &lt;th&gt;coef&lt;/th&gt;     &lt;th&gt;std err&lt;/th&gt;      &lt;th&gt;t&lt;/th&gt;      &lt;th&gt;P&gt;|t|&lt;/th&gt; &lt;th&gt;[95.0% Conf. Int.]&lt;/th&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;const&lt;/th&gt;     &lt;td&gt; -691.8364&lt;/td&gt; &lt;td&gt;    6.766&lt;/td&gt; &lt;td&gt; -102.258&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt; -705.184  -678.488&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Income&lt;/th&gt;    &lt;td&gt;   -9.9829&lt;/td&gt; &lt;td&gt;    0.037&lt;/td&gt; &lt;td&gt; -271.846&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt;  -10.055    -9.910&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Limit&lt;/th&gt;     &lt;td&gt;    0.3346&lt;/td&gt; &lt;td&gt;    0.005&lt;/td&gt; &lt;td&gt;   65.301&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt;    0.325     0.345&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Rating&lt;/th&gt;    &lt;td&gt;   -0.1283&lt;/td&gt; &lt;td&gt;    0.076&lt;/td&gt; &lt;td&gt;   -1.698&lt;/td&gt; &lt;td&gt; 0.091&lt;/td&gt; &lt;td&gt;   -0.277     0.021&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Cards&lt;/th&gt;     &lt;td&gt;   25.3670&lt;/td&gt; &lt;td&gt;    0.660&lt;/td&gt; &lt;td&gt;   38.407&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt;   24.064    26.670&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Age&lt;/th&gt;       &lt;td&gt;   -1.0321&lt;/td&gt; &lt;td&gt;    0.048&lt;/td&gt; &lt;td&gt;  -21.524&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt;   -1.127    -0.938&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Education&lt;/th&gt; &lt;td&gt;   -0.0099&lt;/td&gt; &lt;td&gt;    0.252&lt;/td&gt; &lt;td&gt;   -0.039&lt;/td&gt; &lt;td&gt; 0.969&lt;/td&gt; &lt;td&gt;   -0.507     0.487&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Gender&lt;/th&gt;    &lt;td&gt;   -1.5948&lt;/td&gt; &lt;td&gt;    1.597&lt;/td&gt; &lt;td&gt;   -0.998&lt;/td&gt; &lt;td&gt; 0.319&lt;/td&gt; &lt;td&gt;   -4.746     1.557&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Student&lt;/th&gt;   &lt;td&gt;  501.4411&lt;/td&gt; &lt;td&gt;    2.587&lt;/td&gt; &lt;td&gt;  193.814&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt;  496.337   506.546&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Married&lt;/th&gt;   &lt;td&gt;   -2.5047&lt;/td&gt; &lt;td&gt;    1.725&lt;/td&gt; &lt;td&gt;   -1.452&lt;/td&gt; &lt;td&gt; 0.148&lt;/td&gt; &lt;td&gt;   -5.907     0.898&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Caucasian&lt;/th&gt; &lt;td&gt;    0.1485&lt;/td&gt; &lt;td&gt;    1.961&lt;/td&gt; &lt;td&gt;    0.076&lt;/td&gt; &lt;td&gt; 0.940&lt;/td&gt; &lt;td&gt;   -3.721     4.018&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Asian&lt;/th&gt;     &lt;td&gt;   -2.5407&lt;/td&gt; &lt;td&gt;    2.280&lt;/td&gt; &lt;td&gt;   -1.115&lt;/td&gt; &lt;td&gt; 0.266&lt;/td&gt; &lt;td&gt;   -7.038     1.957&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;table class="simpletable"&gt;
+&lt;tr&gt;
+  &lt;th&gt;Omnibus:&lt;/th&gt;       &lt;td&gt; 5.399&lt;/td&gt; &lt;th&gt;  Durbin-Watson:     &lt;/th&gt; &lt;td&gt;   2.016&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Prob(Omnibus):&lt;/th&gt; &lt;td&gt; 0.067&lt;/td&gt; &lt;th&gt;  Jarque-Bera (JB):  &lt;/th&gt; &lt;td&gt;   5.524&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Skew:&lt;/th&gt;          &lt;td&gt;-0.404&lt;/td&gt; &lt;th&gt;  Prob(JB):          &lt;/th&gt; &lt;td&gt;  0.0632&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Kurtosis:&lt;/th&gt;      &lt;td&gt; 2.842&lt;/td&gt; &lt;th&gt;  Cond. No.          &lt;/th&gt; &lt;td&gt;5.92e+04&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;modelb4 = sm.OLS(yb[xb.Rating &amp;lt;= 350],xb[xb.Rating &amp;lt;= 350]).fit()
+modelb4.summary()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;table class="simpletable"&gt;
+&lt;caption&gt;OLS Regression Results&lt;/caption&gt;
+&lt;tr&gt;
+  &lt;th&gt;Dep. Variable:&lt;/th&gt;         &lt;td&gt;Balance&lt;/td&gt;     &lt;th&gt;  R-squared:         &lt;/th&gt; &lt;td&gt;   0.851&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Model:&lt;/th&gt;                   &lt;td&gt;OLS&lt;/td&gt;       &lt;th&gt;  Adj. R-squared:    &lt;/th&gt; &lt;td&gt;   0.842&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Method:&lt;/th&gt;             &lt;td&gt;Least Squares&lt;/td&gt;  &lt;th&gt;  F-statistic:       &lt;/th&gt; &lt;td&gt;   99.66&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Date:&lt;/th&gt;             &lt;td&gt;Wed, 17 Jun 2015&lt;/td&gt; &lt;th&gt;  Prob (F-statistic):&lt;/th&gt; &lt;td&gt;3.80e-73&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Time:&lt;/th&gt;                 &lt;td&gt;09:07:02&lt;/td&gt;     &lt;th&gt;  Log-Likelihood:    &lt;/th&gt; &lt;td&gt; -1197.8&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;No. Observations:&lt;/th&gt;      &lt;td&gt;   204&lt;/td&gt;      &lt;th&gt;  AIC:               &lt;/th&gt; &lt;td&gt;   2420.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Df Residuals:&lt;/th&gt;          &lt;td&gt;   192&lt;/td&gt;      &lt;th&gt;  BIC:               &lt;/th&gt; &lt;td&gt;   2459.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Df Model:&lt;/th&gt;              &lt;td&gt;    11&lt;/td&gt;      &lt;th&gt;                     &lt;/th&gt;     &lt;td&gt; &lt;/td&gt;   
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Covariance Type:&lt;/th&gt;      &lt;td&gt;nonrobust&lt;/td&gt;    &lt;th&gt;                     &lt;/th&gt;     &lt;td&gt; &lt;/td&gt;   
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;table class="simpletable"&gt;
+&lt;tr&gt;
+      &lt;td&gt;&lt;/td&gt;         &lt;th&gt;coef&lt;/th&gt;     &lt;th&gt;std err&lt;/th&gt;      &lt;th&gt;t&lt;/th&gt;      &lt;th&gt;P&gt;|t|&lt;/th&gt; &lt;th&gt;[95.0% Conf. Int.]&lt;/th&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;const&lt;/th&gt;     &lt;td&gt; -218.3506&lt;/td&gt; &lt;td&gt;   47.949&lt;/td&gt; &lt;td&gt;   -4.554&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt; -312.924  -123.777&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Income&lt;/th&gt;    &lt;td&gt;   -7.1002&lt;/td&gt; &lt;td&gt;    0.446&lt;/td&gt; &lt;td&gt;  -15.913&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt;   -7.980    -6.220&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Limit&lt;/th&gt;     &lt;td&gt;    0.1523&lt;/td&gt; &lt;td&gt;    0.043&lt;/td&gt; &lt;td&gt;    3.563&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt;    0.068     0.237&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Rating&lt;/th&gt;    &lt;td&gt;    0.4791&lt;/td&gt; &lt;td&gt;    0.654&lt;/td&gt; &lt;td&gt;    0.732&lt;/td&gt; &lt;td&gt; 0.465&lt;/td&gt; &lt;td&gt;   -0.811     1.769&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Cards&lt;/th&gt;     &lt;td&gt;   13.9981&lt;/td&gt; &lt;td&gt;    5.762&lt;/td&gt; &lt;td&gt;    2.430&lt;/td&gt; &lt;td&gt; 0.016&lt;/td&gt; &lt;td&gt;    2.634    25.362&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Age&lt;/th&gt;       &lt;td&gt;   -0.6226&lt;/td&gt; &lt;td&gt;    0.368&lt;/td&gt; &lt;td&gt;   -1.691&lt;/td&gt; &lt;td&gt; 0.092&lt;/td&gt; &lt;td&gt;   -1.349     0.104&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Education&lt;/th&gt; &lt;td&gt;   -2.7730&lt;/td&gt; &lt;td&gt;    2.072&lt;/td&gt; &lt;td&gt;   -1.338&lt;/td&gt; &lt;td&gt; 0.182&lt;/td&gt; &lt;td&gt;   -6.859     1.313&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Gender&lt;/th&gt;    &lt;td&gt;   25.9813&lt;/td&gt; &lt;td&gt;   12.584&lt;/td&gt; &lt;td&gt;    2.065&lt;/td&gt; &lt;td&gt; 0.040&lt;/td&gt; &lt;td&gt;    1.161    50.801&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Student&lt;/th&gt;   &lt;td&gt;  339.5260&lt;/td&gt; &lt;td&gt;   22.216&lt;/td&gt; &lt;td&gt;   15.283&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt;  295.707   383.345&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Married&lt;/th&gt;   &lt;td&gt;   -8.2622&lt;/td&gt; &lt;td&gt;   12.799&lt;/td&gt; &lt;td&gt;   -0.646&lt;/td&gt; &lt;td&gt; 0.519&lt;/td&gt; &lt;td&gt;  -33.507    16.983&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Caucasian&lt;/th&gt; &lt;td&gt;   22.5267&lt;/td&gt; &lt;td&gt;   15.427&lt;/td&gt; &lt;td&gt;    1.460&lt;/td&gt; &lt;td&gt; 0.146&lt;/td&gt; &lt;td&gt;   -7.901    52.955&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Asian&lt;/th&gt;     &lt;td&gt;   14.5170&lt;/td&gt; &lt;td&gt;   17.628&lt;/td&gt; &lt;td&gt;    0.824&lt;/td&gt; &lt;td&gt; 0.411&lt;/td&gt; &lt;td&gt;  -20.252    49.286&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;table class="simpletable"&gt;
+&lt;tr&gt;
+  &lt;th&gt;Omnibus:&lt;/th&gt;       &lt;td&gt; 3.153&lt;/td&gt; &lt;th&gt;  Durbin-Watson:     &lt;/th&gt; &lt;td&gt;   1.919&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Prob(Omnibus):&lt;/th&gt; &lt;td&gt; 0.207&lt;/td&gt; &lt;th&gt;  Jarque-Bera (JB):  &lt;/th&gt; &lt;td&gt;   2.562&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Skew:&lt;/th&gt;          &lt;td&gt; 0.155&lt;/td&gt; &lt;th&gt;  Prob(JB):          &lt;/th&gt; &lt;td&gt;   0.278&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Kurtosis:&lt;/th&gt;      &lt;td&gt; 2.547&lt;/td&gt; &lt;th&gt;  Cond. No.          &lt;/th&gt; &lt;td&gt;2.49e+04&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;stud_plot(modelb3)
+qq_plot(modelb3)
+lev_plot(modelb3,xb[xb.Rating&amp;gt;350].values)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_63_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_63_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_63_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;The model for above 350 Credit Rating looks good.  Lets check below 350.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;stud_plot(modelb4)
+qq_plot(modelb4)
+lev_plot(modelb4,xb[xb.Rating&amp;lt;=350].values)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_65_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_65_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_65_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;We have the same issue before.   We must made a cut to make a good prediction, then removed the values from the data that were causing issues without knowing the balance.   This can be useful in practice, but i find it a little unstatisfying.   For now we will stop with this exploration.  &lt;/p&gt;</summary><category term="data-science"></category><category term="galvanize"></category><category term="regression"></category></entry><entry><title>Galvanize - Week 03 - Day 5</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-03-01/" rel="alternate"></link><updated>2015-06-15T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-15:galvanize/galvanize-data-science-03-01/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
+&lt;h2&gt;Week 3 - Day 1&lt;/h2&gt;
+&lt;p&gt;Today we had the first quiz I did not finish.  I attempted to do algebra in latex, and made a sign mistake and had difficulty traking my mistake.   &lt;/p&gt;
+&lt;p&gt;The morning involved using numpy to solve some linear algrebra based problems.  The afternoon had to do with exploratory data analysis and linear regression.   &lt;/p&gt;
+&lt;h2&gt;Miniquiz&lt;/h2&gt;
+&lt;p&gt;Probability Practice&lt;/p&gt;
+&lt;p&gt;Let's say we play a game where I keep flipping a coin until I get heads. If the first time I get heads is on the nth coin, then I pay you 2n-1 dollars. How much would you pay me to play this game for us to break even in the long term? Show your work.&lt;/p&gt;
+&lt;p&gt;P(n) = p^(n-1)*(1-p)&lt;/p&gt;
+&lt;p&gt;$$E(V) = \Sigma_{i=1}^{\infty} p^{n-1} \ (1-p) \ (2n-1) $$&lt;/p&gt;
+&lt;p&gt;$$E(V) = \Sigma_{i=1}^{\infty} (2n-1) (p^{n-1} - p^n) $$&lt;/p&gt;
+&lt;p&gt;$$E(V) = \Sigma{i=1}^{\infty} 2 \ n \ p^{n-1} - \Sigma{i=1}^{\infty} 2 \ n \ p^{n} - \Sigma{i=1}^{\infty} p^{n-1} + \Sigma{i=1}^{\infty} p^{n} $$&lt;/p&gt;
+&lt;p&gt;$$E(V) = 2 + \Sigma{i=1}^{\infty} 2 \ (n+1)\ p^{n} - \Sigma{i=1}^{\infty} 2 \ n \ p^{n} - 1 - \Sigma{i=1}^{\infty} p^{n} + \Sigma{i=1}^{\infty} p^{n} $$&lt;/p&gt;
+&lt;p&gt;$$E(V) = 1 + \Sigma_{i=1}^{\infty} 2 p^{n} $$&lt;/p&gt;
+&lt;p&gt;$$E(V) = 1 + \frac{2 \ p }{1-p}$$&lt;/p&gt;
+&lt;p&gt;Write a program to simulate the game and verify that your answer is correct.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;numpy&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;np&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;expect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;val&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mf"&gt;0.&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;val&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;val&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;an&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;simulation&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;pays&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[]&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+        &lt;span class="k"&gt;while&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;random&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;rand&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+        &lt;span class="n"&gt;pays&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kp"&gt;append&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="n"&gt;pays&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kp"&gt;array&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;pays&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;pays&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kp"&gt;mean&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;p&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kp"&gt;linspace&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mf"&gt;0.9&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;expect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="n"&gt;an&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="n"&gt;simulation&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;10000&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+
+&lt;span class="mf"&gt;1.22222222222&lt;/span&gt; &lt;span class="mf"&gt;1.22222222222&lt;/span&gt; &lt;span class="mf"&gt;1.2154&lt;/span&gt;
+&lt;span class="mf"&gt;1.46575342466&lt;/span&gt; &lt;span class="mf"&gt;1.46575342466&lt;/span&gt; &lt;span class="mf"&gt;1.4702&lt;/span&gt;
+&lt;span class="mf"&gt;1.76923076923&lt;/span&gt; &lt;span class="mf"&gt;1.76923076923&lt;/span&gt; &lt;span class="mf"&gt;1.7798&lt;/span&gt;
+&lt;span class="mf"&gt;2.15789473684&lt;/span&gt; &lt;span class="mf"&gt;2.15789473684&lt;/span&gt; &lt;span class="mf"&gt;2.1384&lt;/span&gt;
+&lt;span class="mf"&gt;2.67346938776&lt;/span&gt; &lt;span class="mf"&gt;2.67346938776&lt;/span&gt; &lt;span class="mf"&gt;2.6592&lt;/span&gt;
+&lt;span class="mf"&gt;3.39024390244&lt;/span&gt; &lt;span class="mf"&gt;3.39024390244&lt;/span&gt; &lt;span class="mf"&gt;3.3546&lt;/span&gt;
+&lt;span class="mf"&gt;4.45454545455&lt;/span&gt; &lt;span class="mf"&gt;4.45454545455&lt;/span&gt; &lt;span class="mf"&gt;4.3904&lt;/span&gt;
+&lt;span class="mf"&gt;6.2&lt;/span&gt; &lt;span class="mf"&gt;6.2&lt;/span&gt; &lt;span class="mf"&gt;6.186&lt;/span&gt;
+&lt;span class="mf"&gt;9.58823529412&lt;/span&gt; &lt;span class="mf"&gt;9.58823529412&lt;/span&gt; &lt;span class="mf"&gt;9.6414&lt;/span&gt;
+&lt;span class="mf"&gt;19.0&lt;/span&gt; &lt;span class="mf"&gt;19.0&lt;/span&gt; &lt;span class="mf"&gt;19.1224&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Linear Algebra Practice:&lt;/h2&gt;
+&lt;p&gt;The stochastic matrix is central to the Markov process. It is a sqaure matrix specifying that probabilities of going from one state to the other such that every column of the matrix sums to 1.  The probability of entering a certain state depends only on the last state occupied and the stochastic matrix, not on any earlier states&lt;/p&gt;
+&lt;p&gt;Suppose that the 2004 &lt;strong&gt;state of land use&lt;/strong&gt; in a city of 60 mi^2 of built-up
+area is&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;In 2004:
+
+C (Commercially Used): 25%
+I (Industrially Used): 20%
+R (Residentially Used): 55%
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;ol&gt;
+&lt;li&gt;Find the &lt;strong&gt;state of land use&lt;/strong&gt; in &lt;strong&gt;2009&lt;/strong&gt; and &lt;strong&gt;2014&lt;/strong&gt;,
+   assuming that the transition probabilities for 5-year intervals are given
+   by the matrix &lt;strong&gt;A&lt;/strong&gt; and remain practically the same over the time considered.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;div align="center"&gt;
+      &lt;img src="images/transition_matix_A.png"&gt;
+   &lt;/div&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;numpy&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;np&lt;/span&gt;
+
+&lt;span class="n"&gt;A_5&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kp"&gt;array&lt;/span&gt;&lt;span class="p"&gt;([[&lt;/span&gt;&lt;span class="mf"&gt;0.7&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mf"&gt;0.0&lt;/span&gt;&lt;span class="p"&gt;],[&lt;/span&gt;&lt;span class="mf"&gt;0.2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mf"&gt;0.9&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mf"&gt;0.2&lt;/span&gt;&lt;span class="p"&gt;],[&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mf"&gt;0.0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mf"&gt;0.8&lt;/span&gt;&lt;span class="p"&gt;]])&lt;/span&gt;
+&lt;span class="n"&gt;A_10&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;A_5&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kp"&gt;dot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;A_5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;A_10&lt;/span&gt;
+
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;2004: &amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kp"&gt;array&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;25&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mf"&gt;0.20&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mf"&gt;0.55&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;2009: &amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;A_5&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kp"&gt;dot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kp"&gt;array&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;25&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mf"&gt;0.20&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mf"&gt;0.55&lt;/span&gt;&lt;span class="p"&gt;]))&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;2014: &amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;A_10&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kp"&gt;dot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kp"&gt;array&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;25&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mf"&gt;0.20&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mf"&gt;0.55&lt;/span&gt;&lt;span class="p"&gt;]))&lt;/span&gt;
+
+&lt;span class="mi"&gt;2004&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;  &lt;span class="p"&gt;[&lt;/span&gt; &lt;span class="mf"&gt;0.25&lt;/span&gt;  &lt;span class="mf"&gt;0.2&lt;/span&gt;   &lt;span class="mf"&gt;0.55&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="mi"&gt;2009&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;  &lt;span class="p"&gt;[&lt;/span&gt; &lt;span class="mf"&gt;0.195&lt;/span&gt;  &lt;span class="mf"&gt;0.34&lt;/span&gt;   &lt;span class="mf"&gt;0.465&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="mi"&gt;2014&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;  &lt;span class="p"&gt;[&lt;/span&gt; &lt;span class="mf"&gt;0.1705&lt;/span&gt;  &lt;span class="mf"&gt;0.438&lt;/span&gt;   &lt;span class="mf"&gt;0.3915&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Part 1.2&lt;/h3&gt;
+&lt;p&gt;This following question uses the &lt;code&gt;iris&lt;/code&gt; dataset. Load the data in with the following code.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;datasets&lt;/span&gt;
+&lt;span class="c"&gt;# The 1st column is sepal length and the 2nd column is sepal width&lt;/span&gt;
+&lt;span class="n"&gt;sepalLength_sepalWidth&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;datasets&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;load_iris&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;[:,&lt;/span&gt; &lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Make a scatter plot of sepal width vs sepal length&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Compute the mean vector (column-wise) of the data matrix. The &lt;code&gt;shape&lt;/code&gt;
+   of the mean vector should be &lt;code&gt;(1, 2)&lt;/code&gt; and plot it.&lt;/p&gt;
+&lt;p&gt;%matplotlib inline
+from sklearn import datasets
+import matplotlib.pyplot as plt&lt;/p&gt;
+&lt;p&gt;sepalLength_sepalWidth = datasets.load_iris().data[:, :2]
+plt.plot(sepalLength_sepalWidth[:,0],sepalLength_sepalWidth[:,1],linewidth=0,marker='o',color='steelblue',alpha=0.25,label="Data")
+plt.xlabel('Sepal Length')
+plt.ylabel('Sepal Width')
+plt.plot(sepalLength_sepalWidth[:,0].mean(),sepalLength_sepalWidth[:,1].mean(),'x',
+         markeredgewidth=10,markersize=20,color='indianred',label='Mean',alpha=0.5)
+print "Shape: ",sepalLength_sepalWidth.shape&lt;/p&gt;
+&lt;p&gt;Shape:  (150, 2)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_5_1.png" /&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Write a function (&lt;code&gt;euclidean_dist&lt;/code&gt;) to calculate the euclidean distance
+   between two &lt;strong&gt;column vectors (not row vector)&lt;/strong&gt;. Your function should check
+   if the vectors are column vectors and the shape of the two vectors are the same .&lt;/p&gt;
+&lt;p&gt;def euclidean_dist(c1,c2):
+    if c2.shape==c1.shape and c1.shape[1]==1:
+        return np.sqrt(np.sum(np.power(c1-c2,2)))
+    return None&lt;/p&gt;
+&lt;p&gt;a = np.ones((10,1))
+b = np.zeros((10,1))
+euclidean_dist(a,b)==np.sqrt(10)&lt;/p&gt;
+&lt;p&gt;True&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Write a function (&lt;code&gt;cosine_sim&lt;/code&gt;) to calculate the cosine similarity_between 
+   two &lt;strong&gt;column vectors (not row vector)&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;def cosine_sim(c1,c2):
+    if c2.shape==c1.shape and c1.shape[1]==1:
+        result = c1.transpose().dot(c2)/(np.linalg.norm(c1)*np.linalg.norm(c2))
+        return result[0,0]
+    return None&lt;/p&gt;
+&lt;p&gt;a = np.array([1,0]).reshape(2,1)
+b = np.array([0,1]).reshape(2,1)
+print cosine_sim(a,b)==0
+a = np.array([1,0]).reshape(2,1)
+b = np.array([1,1]).reshape(2,1)
+print cosine_sim(a,b) == 1/np.sqrt(2)&lt;/p&gt;
+&lt;p&gt;True
+True&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Write a function that would loop through all the data points in a given matrix and 
+   calculate the given distance metric between each of the data point and the mean
+   vector. Use the function to compute Euclidean Distance and Cosine Similarity between each of
+   the data points and the mean of the data points. You should be able to call the function
+   in this manner:&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Plot histograms of the euclidean distances and cosine similarities.&lt;/p&gt;
+&lt;p&gt;def compute_dist(data,func):
+    means = data.mean(axis=0).transpose().reshape(data.shape[1],1)
+    dists = []
+    for i in range(data.shape[0]):
+        dists.append(func(data[i,:].reshape(data.shape[1],1),means))
+    dists = np.array(dists)
+    dists = dists.reshape(data.shape[0],1)
+    return dists&lt;/p&gt;
+&lt;p&gt;values = compute_dist(sepalLength_sepalWidth,euclidean_dist)
+plt.hist(values[:,0],color='steelblue',alpha=0.5,edgecolor='black',linewidth=0.1)
+plt.xlabel('Euclidean Distance From Mean')
+plt.ylabel('Count')
+plt.show()
+values = compute_dist(sepalLength_sepalWidth,cosine_sim)
+plt.hist(values[:,0],color='steelblue',alpha=0.5,linewidth=0.1)
+plt.xlabel('Cosign Similarity From Mean')
+plt.ylabel('Count')
+plt.show()&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_11_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_11_1.png" /&gt;&lt;/p&gt;
+&lt;h2&gt;Extra Credit: Implementing the PageRank Algorithm&lt;/h2&gt;
+&lt;p&gt;The &lt;a href="http://en.wikipedia.org/wiki/PageRank"&gt;Page Rank Algorithm&lt;/a&gt; is used by Google
+Search (in their early days) to rank websites in their search engine in terms 
+of the importance of webpages. 
+&lt;a href="http://books.google.com/books/p/princeton?id=5o_K4rri1CsC&amp;amp;printsec=frontcover&amp;amp;source=gbs_ViewAPI&amp;amp;hl=en#v=onepage&amp;amp;q&amp;amp;f=false"&gt;More about PageRank&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;We will implement PageRank on this simple network of websites.&lt;/p&gt;
+&lt;p&gt;&lt;div align="center"&gt;
+    &lt;img src="images/pageweb.png"&gt;
+   &lt;/div&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;In the above image:&lt;/strong&gt;
+   - Each node is a web page
+   - Each directed edge corresponds to one page referencing the other
+   - These web pages correspond to the states our Markov chain can be in
+   - Assume that the model of our chain is that of a random surfer/walker.&lt;/p&gt;
+&lt;p&gt;In this model, we transition from one web page (state) to the next with
+equal probability (to begin).  Or rather we randomly pick an outgoing edge
+from our current state.  Before we can do any sort of calculation we need to
+know how we will move on this Markov Chain.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;PR = np.array([[0,1,0,0,0],[0.5,0,0.5,0,0],[0.333333,0.333333,0,0,0.333333],[1.,0,0,0,0],[0,0.3333333,0.3333333,0.3333333,0]]).transpose()
+PR
+
+
+
+
+array([[ 0.       ,  0.5      ,  0.333333 ,  1.       ,  0.       ],
+       [ 1.       ,  0.       ,  0.333333 ,  0.       ,  0.3333333],
+       [ 0.       ,  0.5      ,  0.       ,  0.       ,  0.3333333],
+       [ 0.       ,  0.       ,  0.       ,  0.       ,  0.3333333],
+       [ 0.       ,  0.       ,  0.333333 ,  0.       ,  0.       ]])
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;ol&gt;
+&lt;li&gt;Now that we have a transition matrix, the next step is to iterate on this
+   from one page to the next (like someone blindly navigating the internet) and
+   see where we end up. The probability distribution for our random surfer can
+   be described in this matrix notation as well (or vector rather).&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Initialize a vector for the probability of where our random surfer is.
+   It will be a vector with length equal to the number of pages.
+   Initialize it to be equally probable to start on any page
+   (i.e. you start randomly in a state on the chain).&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;start = np.array([0.2,0.2,0.2,0.2,0.2]).reshape(5,1)
+start
+
+
+
+
+array([[ 0.2],
+       [ 0.2],
+       [ 0.2],
+       [ 0.2],
+       [ 0.2]])
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;To take a step on the chain, simply matrix multiple our user vector by the
+   transition matrix.
+   After one iteration, what is the most likely location for your random surfer?&lt;/p&gt;
+&lt;p&gt;step1 = PR.dot(start)
+step1&lt;/p&gt;
+&lt;p&gt;array([[ 0.3666666 ],
+       [ 0.33333326],
+       [ 0.16666666],
+       [ 0.06666666],
+       [ 0.0666666 ]])&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Plot how the probabilities change.
+   Iterate the matrix through the first ten steps.
+   At each step create a bar plot of the surfers probability vector.&lt;/p&gt;
+&lt;p&gt;steps = start.copy()
+plt.figure(figsize=(15,8))
+for i in range(10):
+    steps = PR.dot(steps)
+    ax = plt.subplot(2,5,i+1)
+    plt.bar(np.arange(5),steps[:,0],color='steelblue',alpha=0.5,linewidth=0.1)
+    ax.set_xticklabels (('A', 'B', 'C', 'D', 'E') )
+    plt.title(str(i+1) + " Steps")
+plt.show()
+print "Final Distribution: ",steps&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_19_0.png" /&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;Final Distribution:  [[ 0.29401788]
+ [ 0.38811497]
+ [ 0.22055748]
+ [ 0.02429332]
+ [ 0.07301416]]
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;This time to compute the stationary distribution, we can use numpy's
+   matrix operations. Using the function for calculating &lt;a href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.linalg.eig.html"&gt;eigenvectors&lt;/a&gt; compute the
+   stationary distibution (page rank).  Is it the same as what you found
+   from above?  What is it's eigenvalue?&lt;/p&gt;
+&lt;p&gt;values,Vectors = np.linalg.eig(PR)
+values&lt;/p&gt;
+&lt;p&gt;array([ 0.99999977+0.j        , -0.64800046+0.27072373j,
+       -0.64800046-0.27072373j,  0.14800058+0.30123034j,
+        0.14800058-0.30123034j])&lt;/p&gt;
+&lt;p&gt;solution = np.real(Vectors[:,0]/np.sum(Vectors[:,0]))
+solution.reshape(5,1)&lt;/p&gt;
+&lt;p&gt;array([[ 0.29268293],
+       [ 0.39024392],
+       [ 0.21951223],
+       [ 0.02439023],
+       [ 0.07317069]])&lt;/p&gt;
+&lt;p&gt;import pandas as pd
+df = pd.DataFrame(columns=["A","B","C","D","E"])
+steps = start.copy()
+for i in range(20):
+    df.loc[i] = steps[:,0].transpose()
+    steps = PR.dot(steps)&lt;/p&gt;
+&lt;p&gt;df.plot()
+plt.legend(bbox_to_anchor=(0.08,1),ncol=5, loc=3, borderaxespad=0.)
+print "Final Distribution: "
+steps&lt;/p&gt;
+&lt;p&gt;Final Distribution: &lt;/p&gt;
+&lt;p&gt;array([[ 0.29265924],
+       [ 0.39030474],
+       [ 0.21945581],
+       [ 0.02438301],
+       [ 0.07319274]])&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_23_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;We can see that the stationary state is found in 6 states.   The vector produced by this method matches the eigenvectors found by numpy linear algrebra library&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;PR.dot(steps)
+
+
+
+
+array([[ 0.29268725],
+       [ 0.39020868],
+       [ 0.21954995],
+       [ 0.02439758],
+       [ 0.07315186]])
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Exploratory Data Analysis (EDA)&lt;/h2&gt;
+&lt;p&gt;Exploratory data analysis is a first crucial step to building predictive models from your data. EDA allows you
+to confirm or invalidate some of the assumptions you are making about your data and understand relationships between your variables.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;In this scenario, you are a data scientist at &lt;a href="http://www.bayareabikeshare.com/"&gt;Bay Area Bike Share&lt;/a&gt;. Your task
+is to provide insights on bike user activity and behavior to the products team. &lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Load the file &lt;code&gt;data/201402_trip_data.csv&lt;/code&gt; into a dataframe.&lt;/p&gt;
+&lt;p&gt;import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.stats as scs
+import statsmodels.api as sm
+from pandas.tools.plotting import scatter_matrix
+%matplotlib inline&lt;/p&gt;
+&lt;p&gt;df = pd.read_csv('data/201402_trip_data.csv')&lt;/p&gt;
+&lt;p&gt;df['start_date'] = pd.to_datetime(df.start_date)
+df['end_date'] = pd.to_datetime(df.end_date)
+df['month'] = df.start_date.dt.month
+df['dayofweek'] = df.start_date.dt.dayofweek
+df['date'] = df.start_date.dt.date
+df['hour'] = df.start_date.dt.hour&lt;/p&gt;
+&lt;p&gt;df.info()&lt;/p&gt;
+&lt;p&gt;&lt;class 'pandas.core.frame.DataFrame'&gt;
+Int64Index: 144015 entries, 0 to 144014
+Data columns (total 15 columns):
+trip_id              144015 non-null int64
+duration             144015 non-null int64
+start_date           144015 non-null datetime64[ns]
+start_station        144015 non-null object
+start_terminal       144015 non-null int64
+end_date             144015 non-null datetime64[ns]
+end_station          144015 non-null object
+end_terminal         144015 non-null int64
+bike_#               144015 non-null int64
+subscription_type    144015 non-null object
+zip_code             137885 non-null object
+month                144015 non-null int64
+dayofweek            144015 non-null int64
+date                 144015 non-null object
+hour                 144015 non-null int64
+dtypes: datetime64&lt;a href="2"&gt;ns&lt;/a&gt;, int64(8), object(5)
+memory usage: 17.6+ MB&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Group the bike rides by &lt;code&gt;month&lt;/code&gt; and count the number of users per month. Plot the number of users for each month. 
+   What do you observe? Provide a likely explanation to your observation. Real life data can often be messy/incomplete
+   and cursory EDA is often able to reveal that.&lt;/p&gt;
+&lt;p&gt;m = df.groupby('month')
+a = m.trip_id.count().tolist()
+a = a[2:]+a[:2]
+fig,ax = plt.subplots()
+plt.bar(range(7),a,color='steelblue',alpha=0.5)
+ax.set_xticklabels(('Aug','Sep','Oct',"Nov","Dec",'Jan','Feb'))
+plt.show()&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_30_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;We see that we do not have data for the entire month of august, so it is not fair to evaluate it to the other months.  We see that there is a slowdown in december, and febuary has less days.   It might make more sense to look at the daily usage rates. &lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Plot the daily user count from September to December. Mark the &lt;code&gt;mean&lt;/code&gt; and &lt;code&gt;mean +/- 1.5 * Standard Deviation&lt;/code&gt; as 
+   horizontal lines on the plot. This would help you identify the outliers in your data. Describe your observations. &lt;/p&gt;
+&lt;p&gt;duc = df[df.month.isin([9, 10, 11, 12])].groupby('date')
+counts = duc.trip_id.count().reset_index().set_index('date')
+counts.columns = ['Count']
+high = counts.mean()+1.5&lt;em&gt;counts.std()
+low = counts.mean()-1.5&lt;/em&gt;counts.std()
+counts.plot(color='steelblue',lw=2,alpha=.75)
+plt.axhline(high.values,color='black',linestyle='--')
+plt.axhline(low.values,color='black',linestyle='--')
+plt.xticks(rotation=30)
+plt.ylabel('Daily User Count')
+plt.show()&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_33_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;The dashed black lines are the 'outlier' boundaries.   Though these are not the traditional definition of an outlire, we see points outside of these bounds.  The issues is that we have seasonal variation.  The low months pull down the average making high months look like possible outliers.   I do not believe we see any outlires in this data set, and won't believe it until I understand the cyclical nature of the data.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Plot the distribution of the daily user counts for all months as a histogram. Fit a 
+   &lt;a href="http://glowingpython.blogspot.com/2012/08/kernel-density-estimation-with-scipy.html"&gt;KDE&lt;/a&gt; to the histogram.
+   What is the distribution and explain why the distribution might be shaped as such. &lt;/p&gt;
+&lt;p&gt;duc = df.groupby('date')
+counts = duc.trip_id.count()
+counts.hist(alpha=.5, linewidth=0, bins=20, normed=True)&lt;/p&gt;
+&lt;p&gt;kde = scs.gaussian_kde(counts)
+s = np.linspace(counts.min(), counts.max(), 100)
+plt.plot(s, kde(s), color='indianred', lw=3)&lt;/p&gt;
+&lt;p&gt;[&lt;matplotlib.lines.Line2D at 0x11123e610&gt;]&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_36_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;This looks like we could have two different contributers to daily user counts.   One that has a mean of around 1000, and another with a mean around 400.   The combination of the two sources could produce a double peaked distribution like this.  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;plt.figure(figsize=(14,8))
+ax = plt.gca()
+df[&amp;#39;weekend&amp;#39;] = df.dayofweek.isin([5,6])
+duc_we = df[df[&amp;#39;weekend&amp;#39;]].groupby(&amp;#39;date&amp;#39;)
+duc_wd = df[~df[&amp;#39;weekend&amp;#39;]].groupby(&amp;#39;date&amp;#39;)
+counts_we = duc_we.trip_id.count().reset_index().set_index(&amp;#39;date&amp;#39;)
+counts_wd = duc_wd.trip_id.count().reset_index().set_index(&amp;#39;date&amp;#39;)
+counts_we.hist(alpha=.7, linewidth=0, bins=20, normed=True, color=&amp;#39;burlywood&amp;#39;,ax=ax)
+counts_wd.hist(alpha=.7, linewidth=0, bins=20, normed=True, color=&amp;#39;seagreen&amp;#39;,ax=ax)
+
+kde_we = scs.gaussian_kde(counts_we.values[:,0])
+kde_wd = scs.gaussian_kde(counts_wd.values[:,0])
+plt.plot(s, kde_we(s), color=&amp;#39;goldenrod&amp;#39;, lw=3, label=&amp;#39;Weekend&amp;#39;)
+plt.plot(s, kde_wd(s), color=&amp;#39;forestgreen&amp;#39;, lw=3, label=&amp;#39;Weekday&amp;#39;)
+plt.xlabel(&amp;#39;Number of Daily Users&amp;#39;)
+plt.ylabel(&amp;#39;Probability Density&amp;#39;)
+plt.title(&amp;#39;Weekend vs Weekday Daily User Count&amp;#39;)
+plt.legend()
+plt.show()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_38_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;We can see that from this distirbution that the weekend users seem to be around 400, and the weekday user counts seem to be peaked around 1000.  The combintation of the two distributions produces the initial histogram we looked at&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Now we are going to explore hourly trends of user activity. Group the bike rides by &lt;code&gt;date&lt;/code&gt; and &lt;code&gt;hour&lt;/code&gt; and count 
+   the number of rides in the given hour on the given date. Make a 
+   &lt;a href="http://blog.bharatbhole.com/creating-boxplots-with-matplotlib/"&gt;boxplot&lt;/a&gt; of the hours in the day &lt;strong&gt;(x)&lt;/strong&gt; against
+   the number of users &lt;strong&gt;(y)&lt;/strong&gt; in that given hour. &lt;/p&gt;
+&lt;p&gt;plt.figure(figsize=(14,8))
+ax=plt.gca()
+huc = df.groupby(['date','hour'])
+huc_vals = huc.trip_id.count().unstack()
+huc_vals.fillna(0.0,inplace=True)
+huc_vals.plot(kind='box',ax=ax)
+plt.xlabel('Hour of Day')
+plt.ylabel('Hourly User Count')
+plt.show()&lt;/p&gt;
+&lt;p&gt;huc.trip_id.count().reset_index().boxplot('trip_id',by='hour')
+plt.show()&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_41_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_41_1.png" /&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Replot the boxplot from above after binning your data into weekday and weekend. Describe the differences you observe between hour user activity between weekday and weekend? &lt;/p&gt;
+&lt;p&gt;plt.figure(figsize=(14,6))
+ax=plt.subplot(1,2,1)
+huc = df[df.weekend].groupby(['date','hour'])
+huc_vals = huc.trip_id.count().unstack()
+huc_vals.fillna(0.0,inplace=True)
+huc_vals.plot(kind='box',ax=ax)
+plt.xlabel('Hour of Day')
+plt.ylabel('Weekend Hourly User Count')
+plt.title('Weekend Hourly User Counts')&lt;/p&gt;
+&lt;p&gt;ax=plt.subplot(1,2,2)
+huc = df[~df.weekend].groupby(['date','hour'])
+huc_vals = huc.trip_id.count().unstack()
+huc_vals.fillna(0.0,inplace=True)
+huc_vals.plot(kind='box',ax=ax)
+plt.xlabel('Hour of Day')
+plt.ylabel('Weekday Hourly User Count')
+plt.title('Weekday Hourly User Counts')
+plt.show()&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_43_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;Weekend users center in daylight hours and peak shortly after lunch.   Weekday users seem to be commuters, using the bikes before and after work hours, with a similar proportion of users using the bikes around lunchtime as weekend users.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;There are two types of bike users (specified by column &lt;code&gt;Subscription Type&lt;/code&gt;: &lt;code&gt;Subscriber&lt;/code&gt; and &lt;code&gt;Customer&lt;/code&gt;. Given this
+   information and the weekend and weekday categorization, plot and inspect the user activity trends. Suppose the 
+   product team wants to run a promotional campaign, what are you suggestions in terms of who the promotion should 
+   apply to and when it should apply for the campaign to be effective?&lt;/p&gt;
+&lt;p&gt;plt.figure(figsize=(14,12))
+ax=plt.subplot(2,2,1)
+huc = df[(df.weekend)&amp;amp;(df.subscription_type=='Customer')].groupby(['date','hour'])
+huc_vals = huc.trip_id.count().unstack()
+huc_vals.fillna(0.0,inplace=True)
+huc_vals.plot(kind='box',ax=ax)
+plt.xlabel('Hour of Day')
+plt.ylabel('Weekend Hourly User Count')
+plt.ylim([0,150])
+plt.title('Customer Weekend Hourly User Counts')&lt;/p&gt;
+&lt;p&gt;ax=plt.subplot(2,2,2)
+huc = df[(~df.weekend)&amp;amp;(df.subscription_type=='Customer')].groupby(['date','hour'])
+huc_vals = huc.trip_id.count().unstack()
+huc_vals.fillna(0.0,inplace=True)
+huc_vals.plot(kind='box',ax=ax)
+plt.xlabel('Hour of Day')
+plt.ylabel('Weekday Hourly User Count')
+plt.ylim([0,150])
+plt.title('Customer Weekday Hourly User Counts')&lt;/p&gt;
+&lt;p&gt;ax=plt.subplot(2,2,3)
+huc = df[(df.weekend)&amp;amp;(df.subscription_type=='Subscriber')].groupby(['date','hour'])
+huc_vals = huc.trip_id.count().unstack()
+huc_vals.fillna(0.0,inplace=True)
+huc_vals.plot(kind='box',ax=ax)
+plt.xlabel('Hour of Day')
+plt.ylabel('Weekend Hourly User Count')
+plt.ylim([0,150])
+plt.title('Subscriber Weekend Hourly User Counts')&lt;/p&gt;
+&lt;p&gt;ax=plt.subplot(2,2,4)
+huc = df[(~df.weekend)&amp;amp;(df.subscription_type=='Subscriber')].groupby(['date','hour'])
+huc_vals = huc.trip_id.count().unstack()
+huc_vals.fillna(0.0,inplace=True)
+huc_vals.plot(kind='box',ax=ax)
+plt.xlabel('Hour of Day')
+plt.ylabel('Weekday Hourly User Count')
+plt.ylim([0,150])
+plt.title('Subscriber Weekday Hourly User Counts')&lt;/p&gt;
+&lt;p&gt;plt.show()&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_46_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;It seems that subscribers are mostly commuters, and responsible for the weekday double peek.  Because there seems to be a large number of bikes not be used on the weekends, or during lunch periods, a promotion targeting customers during non-peak times could help bring in more revenue.  &lt;/p&gt;
+&lt;h2&gt;Linear Regression&lt;/h2&gt;
+&lt;p&gt;Linear regression is an approach to modeling the relationship between a continuous dependent (&lt;strong&gt;y&lt;/strong&gt;) variable and 
+one or more continuous independent (&lt;strong&gt;x&lt;/strong&gt;) variables. Here you will be introduced to fitting the model and interpreting
+the results before we dive more into the details of linear regression tomorrow.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;We will be using the &lt;code&gt;prestige&lt;/code&gt; data in &lt;code&gt;statsmodels&lt;/code&gt;. &lt;code&gt;statsmodels&lt;/code&gt; is the de facto library for performing regression tasks in Python. Load the data with the follow code.&lt;/p&gt;
+&lt;p&gt;import statsmodels.api as sm
+prestige = sm.datasets.get_rdataset("Duncan", "car", cache=True).data
+y = prestige['prestige']
+x = prestige[['income', 'education']].astype(float)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;income&lt;/th&gt;
+      &lt;th&gt;education&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;accountant&lt;/th&gt;
+      &lt;td&gt;62&lt;/td&gt;
+      &lt;td&gt;86&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;pilot&lt;/th&gt;
+      &lt;td&gt;72&lt;/td&gt;
+      &lt;td&gt;76&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;architect&lt;/th&gt;
+      &lt;td&gt;75&lt;/td&gt;
+      &lt;td&gt;92&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;author&lt;/th&gt;
+      &lt;td&gt;55&lt;/td&gt;
+      &lt;td&gt;90&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;chemist&lt;/th&gt;
+      &lt;td&gt;64&lt;/td&gt;
+      &lt;td&gt;86&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Explore the data by making a &lt;a href="http://pandas.pydata.org/pandas-docs/version/0.15.0/visualization.html#visualization-scatter-matrix"&gt;scatter_matrix&lt;/a&gt;
+   and a &lt;a href="http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.boxplot.html"&gt;boxplot&lt;/a&gt;
+   to show the range of each of your variables.&lt;/p&gt;
+&lt;p&gt;scatter_matrix(prestige[['prestige','income','education']], diagonal='kde', figsize=(10,10))
+plt.show()&lt;/p&gt;
+&lt;p&gt;prestige[['prestige','income','education']].boxplot()
+plt.show()&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_51_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_51_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;It seems that the values have been normalized between 0 and 100.  It also looks that prestige is related to education and income, but so are income and education.   Since these values are not independant, we might see funny results in our fits.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;The beta coefficients of a linear regression model can be calculated by solving the normal equation.
+   Using numpy, write a function that solves the &lt;strong&gt;normal equation&lt;/strong&gt; (below).
+   As input your function should take a matrix of features (&lt;strong&gt;x&lt;/strong&gt;) and
+   a vector of target (&lt;strong&gt;y&lt;/strong&gt;). You should return a vector of beta coefficients 
+   that represent the line of best fit which minimizes the residual. 
+   Calculate  R&lt;sup&gt;2&lt;/sup&gt;. &lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;div align="center"&gt;
+      &lt;img height="30" src="images/normal_equation.png"&gt;
+   &lt;/div&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;x = sm.add_constant(x)
+x.head()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div style="max-height:1000px;max-width:1500px;overflow:auto;"&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;const&lt;/th&gt;
+      &lt;th&gt;income&lt;/th&gt;
+      &lt;th&gt;education&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;accountant&lt;/th&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;62&lt;/td&gt;
+      &lt;td&gt;86&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;pilot&lt;/th&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;72&lt;/td&gt;
+      &lt;td&gt;76&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;architect&lt;/th&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;75&lt;/td&gt;
+      &lt;td&gt;92&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;author&lt;/th&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;55&lt;/td&gt;
+      &lt;td&gt;90&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;chemist&lt;/th&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;64&lt;/td&gt;
+      &lt;td&gt;86&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;def solve_normal(matrix, vector):
+    x = matrix.values
+    y = vector.values
+    return np.linalg.inv(x.transpose().dot(x)).dot(x.transpose()).dot(y)
+
+betas = solve_normal(x,y)
+print &amp;quot;Constant: &amp;quot;, betas[0]
+print &amp;quot;Income: &amp;quot;, betas[1]
+print &amp;quot;Education: &amp;quot;, betas[2]
+
+Constant:  -6.0646629221
+Income:  0.598732821529
+Education:  0.545833909401
+
+
+
+TSS = np.sum(np.power(y.values-y.values.mean(),2))
+RSS = np.sum(np.power(y.values-np.dot(x.values,betas),2))
+print &amp;quot;R-Squared: &amp;quot;, 1-RSS/TSS
+
+R-Squared:  0.828173417254
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Verify your results using statsmodels. Use the code below as a reference.&lt;/p&gt;
+&lt;p&gt;import statsmodels.api as sm
+model = sm.OLS(y, x).fit()
+model.summary()&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;table class="simpletable"&gt;
+&lt;caption&gt;OLS Regression Results&lt;/caption&gt;
+&lt;tr&gt;
+  &lt;th&gt;Dep. Variable:&lt;/th&gt;        &lt;td&gt;prestige&lt;/td&gt;     &lt;th&gt;  R-squared:         &lt;/th&gt; &lt;td&gt;   0.828&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Model:&lt;/th&gt;                   &lt;td&gt;OLS&lt;/td&gt;       &lt;th&gt;  Adj. R-squared:    &lt;/th&gt; &lt;td&gt;   0.820&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Method:&lt;/th&gt;             &lt;td&gt;Least Squares&lt;/td&gt;  &lt;th&gt;  F-statistic:       &lt;/th&gt; &lt;td&gt;   101.2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Date:&lt;/th&gt;             &lt;td&gt;Tue, 16 Jun 2015&lt;/td&gt; &lt;th&gt;  Prob (F-statistic):&lt;/th&gt; &lt;td&gt;8.65e-17&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Time:&lt;/th&gt;                 &lt;td&gt;07:23:19&lt;/td&gt;     &lt;th&gt;  Log-Likelihood:    &lt;/th&gt; &lt;td&gt; -178.98&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;No. Observations:&lt;/th&gt;      &lt;td&gt;    45&lt;/td&gt;      &lt;th&gt;  AIC:               &lt;/th&gt; &lt;td&gt;   364.0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Df Residuals:&lt;/th&gt;          &lt;td&gt;    42&lt;/td&gt;      &lt;th&gt;  BIC:               &lt;/th&gt; &lt;td&gt;   369.4&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Df Model:&lt;/th&gt;              &lt;td&gt;     2&lt;/td&gt;      &lt;th&gt;                     &lt;/th&gt;     &lt;td&gt; &lt;/td&gt;   
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Covariance Type:&lt;/th&gt;      &lt;td&gt;nonrobust&lt;/td&gt;    &lt;th&gt;                     &lt;/th&gt;     &lt;td&gt; &lt;/td&gt;   
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;table class="simpletable"&gt;
+&lt;tr&gt;
+      &lt;td&gt;&lt;/td&gt;         &lt;th&gt;coef&lt;/th&gt;     &lt;th&gt;std err&lt;/th&gt;      &lt;th&gt;t&lt;/th&gt;      &lt;th&gt;P&gt;|t|&lt;/th&gt; &lt;th&gt;[95.0% Conf. Int.]&lt;/th&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;const&lt;/th&gt;     &lt;td&gt;   -6.0647&lt;/td&gt; &lt;td&gt;    4.272&lt;/td&gt; &lt;td&gt;   -1.420&lt;/td&gt; &lt;td&gt; 0.163&lt;/td&gt; &lt;td&gt;  -14.686     2.556&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;income&lt;/th&gt;    &lt;td&gt;    0.5987&lt;/td&gt; &lt;td&gt;    0.120&lt;/td&gt; &lt;td&gt;    5.003&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt;    0.357     0.840&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;education&lt;/th&gt; &lt;td&gt;    0.5458&lt;/td&gt; &lt;td&gt;    0.098&lt;/td&gt; &lt;td&gt;    5.555&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt;    0.348     0.744&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;table class="simpletable"&gt;
+&lt;tr&gt;
+  &lt;th&gt;Omnibus:&lt;/th&gt;       &lt;td&gt; 1.279&lt;/td&gt; &lt;th&gt;  Durbin-Watson:     &lt;/th&gt; &lt;td&gt;   1.458&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Prob(Omnibus):&lt;/th&gt; &lt;td&gt; 0.528&lt;/td&gt; &lt;th&gt;  Jarque-Bera (JB):  &lt;/th&gt; &lt;td&gt;   0.520&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Skew:&lt;/th&gt;          &lt;td&gt; 0.155&lt;/td&gt; &lt;th&gt;  Prob(JB):          &lt;/th&gt; &lt;td&gt;   0.771&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Kurtosis:&lt;/th&gt;      &lt;td&gt; 3.426&lt;/td&gt; &lt;th&gt;  Cond. No.          &lt;/th&gt; &lt;td&gt;    163.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Interpret your result summary, focusing on the beta coefficents, p-values, F-statistic, and the R&lt;sup&gt;2&lt;/sup&gt;. &lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The results from the manual calculation match the values from statsmodels' OLS regression.   We have 82.8% of the varience is explained by the model.  The F-statistics, assuming independant variables, says our model does describe some of the behavior of the prestige.   The coefficients say that for every unit increase in income, we have a 0.5987 incraese in prestige, and for every unit increase in educaiton we have a 0.5458 increase in prestigue.  The issue with the model, highlighted by the p-value on the constant term, is that as educaiton increases, so does income.   They will increase together, somehow double increasing the prestigue.   We need a way to remove this co-linearity between income and educaiton&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;x = np.random.rand(20,1)*10
+y = 5*x+2+np.random.rand(20,1)*30
+z = 2*x+4*y+2+np.random.rand(20,1)*40
+ones = np.ones(20).reshape(20,1)
+
+X = pd.DataFrame({&amp;#39;x&amp;#39;:x[:,0],&amp;#39;y&amp;#39;:y[:,0],&amp;#39;c&amp;#39;:ones[:,0]})
+Y = pd.DataFrame({&amp;#39;z&amp;#39;:z[:,0]})
+model = sm.OLS(Y, X).fit()
+model.summary()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;table class="simpletable"&gt;
+&lt;caption&gt;OLS Regression Results&lt;/caption&gt;
+&lt;tr&gt;
+  &lt;th&gt;Dep. Variable:&lt;/th&gt;            &lt;td&gt;z&lt;/td&gt;        &lt;th&gt;  R-squared:         &lt;/th&gt; &lt;td&gt;   0.975&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Model:&lt;/th&gt;                   &lt;td&gt;OLS&lt;/td&gt;       &lt;th&gt;  Adj. R-squared:    &lt;/th&gt; &lt;td&gt;   0.972&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Method:&lt;/th&gt;             &lt;td&gt;Least Squares&lt;/td&gt;  &lt;th&gt;  F-statistic:       &lt;/th&gt; &lt;td&gt;   325.7&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Date:&lt;/th&gt;             &lt;td&gt;Tue, 16 Jun 2015&lt;/td&gt; &lt;th&gt;  Prob (F-statistic):&lt;/th&gt; &lt;td&gt;2.79e-14&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Time:&lt;/th&gt;                 &lt;td&gt;07:40:32&lt;/td&gt;     &lt;th&gt;  Log-Likelihood:    &lt;/th&gt; &lt;td&gt; -78.012&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;No. Observations:&lt;/th&gt;      &lt;td&gt;    20&lt;/td&gt;      &lt;th&gt;  AIC:               &lt;/th&gt; &lt;td&gt;   162.0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Df Residuals:&lt;/th&gt;          &lt;td&gt;    17&lt;/td&gt;      &lt;th&gt;  BIC:               &lt;/th&gt; &lt;td&gt;   165.0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Df Model:&lt;/th&gt;              &lt;td&gt;     2&lt;/td&gt;      &lt;th&gt;                     &lt;/th&gt;     &lt;td&gt; &lt;/td&gt;   
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Covariance Type:&lt;/th&gt;      &lt;td&gt;nonrobust&lt;/td&gt;    &lt;th&gt;                     &lt;/th&gt;     &lt;td&gt; &lt;/td&gt;   
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;table class="simpletable"&gt;
+&lt;tr&gt;
+  &lt;td&gt;&lt;/td&gt;     &lt;th&gt;coef&lt;/th&gt;     &lt;th&gt;std err&lt;/th&gt;      &lt;th&gt;t&lt;/th&gt;      &lt;th&gt;P&gt;|t|&lt;/th&gt; &lt;th&gt;[95.0% Conf. Int.]&lt;/th&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;c&lt;/th&gt; &lt;td&gt;   18.9688&lt;/td&gt; &lt;td&gt;    9.231&lt;/td&gt; &lt;td&gt;    2.055&lt;/td&gt; &lt;td&gt; 0.056&lt;/td&gt; &lt;td&gt;   -0.507    38.445&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;x&lt;/th&gt; &lt;td&gt;    2.2866&lt;/td&gt; &lt;td&gt;    2.065&lt;/td&gt; &lt;td&gt;    1.107&lt;/td&gt; &lt;td&gt; 0.284&lt;/td&gt; &lt;td&gt;   -2.071     6.644&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;y&lt;/th&gt; &lt;td&gt;    4.0274&lt;/td&gt; &lt;td&gt;    0.378&lt;/td&gt; &lt;td&gt;   10.667&lt;/td&gt; &lt;td&gt; 0.000&lt;/td&gt; &lt;td&gt;    3.231     4.824&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;table class="simpletable"&gt;
+&lt;tr&gt;
+  &lt;th&gt;Omnibus:&lt;/th&gt;       &lt;td&gt; 3.159&lt;/td&gt; &lt;th&gt;  Durbin-Watson:     &lt;/th&gt; &lt;td&gt;   1.527&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Prob(Omnibus):&lt;/th&gt; &lt;td&gt; 0.206&lt;/td&gt; &lt;th&gt;  Jarque-Bera (JB):  &lt;/th&gt; &lt;td&gt;   1.277&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Skew:&lt;/th&gt;          &lt;td&gt; 0.090&lt;/td&gt; &lt;th&gt;  Prob(JB):          &lt;/th&gt; &lt;td&gt;   0.528&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;th&gt;Kurtosis:&lt;/th&gt;      &lt;td&gt; 1.775&lt;/td&gt; &lt;th&gt;  Cond. No.          &lt;/th&gt; &lt;td&gt;    158.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;p&gt;We can see that if we take away the constant, removing a degree of freedom, the R-squared becomes larger.   I think this could be a sign that we have a covariance in the variables. &lt;/p&gt;</summary><category term="data-science"></category><category term="galvanize"></category><category term="EDA"></category><category term="Linear Algebra"></category></entry><entry><title>Galvanize - Week 02 - Day 5</title><link href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-02-05/" rel="alternate"></link><updated>2015-06-12T10:30:00-07:00</updated><author><name>Bryan Smith</name></author><id>tag:www.bryantravissmith.com,2015-06-12:galvanize/galvanize-data-science-02-05/</id><summary type="html">&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
 &lt;h2&gt;Week 2 - Day 5&lt;/h2&gt;
 &lt;p&gt;Our more quiz was a survey about our progress in the program.  The morning lecture was about the beta distribution, and its relation to A/B testing from a Bayesian perspective, and a brief introduction to the multi-arm bandit method.   &lt;/p&gt;
 &lt;h2&gt;Individual Morning Sprint&lt;/h2&gt;
