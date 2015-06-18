@@ -173,7 +173,7 @@ We can look at the comparison between traiing and cross validaton as we increase
 
 
 
-![png](http://www.bryantravissmith.com/img/output_13_1.png)
+![png](http://www.bryantravissmith.com/img/GW03D3/output_13_1.png)
 
 
 In this case we see that the two values start to converge, but the CV is higher.  This make sense because it is hold out values to test on.   It should be a better approximation to applying it to a test set. 
@@ -203,7 +203,7 @@ We can look at the difference between the test and training sets as we increase 
         
 
 
-![png](http://www.bryantravissmith.com/img/output_15_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D3/output_15_0.png)
 
 
 
@@ -229,7 +229,7 @@ We can look at the difference between the test and training sets as we increase 
     plt.show()
 
 
-![png](http://www.bryantravissmith.com/img/output_16_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D3/output_16_0.png)
 
 
 As we increase features and data, our results on the training set go down and the test set values, in this case, look to converge.   
@@ -280,7 +280,7 @@ We are going to loop through these variables and use them as a fit.   We want to
     plt.show()
 
 
-![png](http://www.bryantravissmith.com/img/output_21_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D3/output_21_0.png)
 
 
 Instead of using RFE to do backward selection, we can create a class that implements sequential forward selection, which involves starting with no variables in the model, testing the addition of each variable using a chosen model comparison criterion, adding the variable (if any) that improves the model the most, and repeating this process until none improves the model.
@@ -396,7 +396,7 @@ Now we will look at how the parameters change as we increasee alpha.
     plt.show()
 
 
-![png](http://www.bryantravissmith.com/img/output_28_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D3/output_28_0.png)
 
 
 Given a large enough alpha/lambda, the coefficients go to zero   This is a property of the model, and we want to try to use this paramter to find the best model.  
@@ -421,7 +421,7 @@ Given a large enough alpha/lambda, the coefficients go to zero   This is a prope
     alpha_ridge = alphas[mse_test.index(min(mse_test))]
 
 
-![png](http://www.bryantravissmith.com/img/output_30_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D3/output_30_0.png)
 
 
     Best Alpha:  0.252582002696
@@ -444,7 +444,7 @@ Now we are going to do the same for Lasso Regresion
     plt.show()
 
 
-![png](http://www.bryantravissmith.com/img/output_32_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D3/output_32_0.png)
 
 
 The Lasso drops the paramters to zero much more quickly than the Ridge Method.  This is because of the absolut value in the prior.  
@@ -468,7 +468,7 @@ The Lasso drops the paramters to zero much more quickly than the Ridge Method.  
     alpha_lasso = alphas[mse_test.index(min(mse_test))]
 
 
-![png](http://www.bryantravissmith.com/img/output_34_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D3/output_34_0.png)
 
 
     Best Alpha:  0.286059553518

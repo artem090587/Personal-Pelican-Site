@@ -170,7 +170,7 @@ results of the regression model are only correct if our assumptions hold (at lea
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_9_1.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_9_1.png" /></p>
 <div class="highlight"><pre>plt.figure()
 prestige.boxplot()
 plt.show()
@@ -183,7 +183,7 @@ The default value for &#39;return_type&#39; will change to &#39;axes&#39; in a f
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_10_1.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_10_1.png" /></p>
 <div class="highlight"><pre>y = prestige[[&#39;prestige&#39;]]
 x = sm.add_constant(prestige[[&#39;income&#39;,&#39;education&#39;]])
 model1 = sm.OLS(y,x).fit()
@@ -276,12 +276,12 @@ stud_plot(model1)
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_13_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_13_0.png" /></p>
 <div class="highlight"><pre>qq_plot(model1)
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_14_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_14_0.png" /></p>
 <p>We see se have two outliers from the studentized plot, those that are more than 2 standard deviation from the fit.   The QQ-plot shows a fairly normal distributions of the residuals, suggesting the fit is okay.  We can also see if we have any points with high leverage.</p>
 <p>$$\hat{y} = X \dot \beta = X (X^T \ X)^{-1} \ X^T \ y = H \ y$$</p>
 <p>$$ H = X (X^T \ X)^{-1} \ X^T $$  </p>
@@ -304,7 +304,7 @@ lev_plot(model1,x.values)
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_17_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_17_0.png" /></p>
 <p>We can see that we have 3 points that are leveraging the results, and one of them is an outlier.</p>
 <p>Now we have the question - what do we do with the outliers and the high leverage points?  I think we will stick wih removing all the high leverage points.  We before we do lets look that these three points.</p>
 <div class="highlight"><pre>x[get_H(x.values)&gt;0.15]
@@ -448,9 +448,9 @@ lev_plot(model2,x[get_H(x.values)&lt;0.15].values)
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_24_0.png" /></p>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_24_1.png" /></p>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_24_2.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_24_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_24_1.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_24_2.png" /></p>
 <p>The leverage plot does not show a few points dominating the fit, buter there are a few outliers in the fit.   The QQ plot shows some signs of the erros not being normal.   </p>
 <div class="highlight"><pre>print &quot;Model 1 RSE: &quot;, np.sqrt(np.sum(np.power(y.values.reshape(1,45)-model1.predict(x),2))/(45-2-1))
 print &quot;Model 2 RSE: &quot;, np.sqrt(np.sum(np.power(y.values.reshape(1,45)-model2.predict(x),2))/(45-2-1))
@@ -480,7 +480,7 @@ plt.show()
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_30_1.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_30_1.png" /></p>
 <div class="highlight"><pre>credit_card.corr()
 </pre></div>
 
@@ -685,9 +685,9 @@ lev_plot(model3,xc.values)
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_35_0.png" /></p>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_35_1.png" /></p>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_35_2.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_35_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_35_1.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_35_2.png" /></p>
 <p>Our inital linear model is not a strong fit, age and own/rent are not significantly involved in the model, the residuals are not normally distributed, and there are outliers and high leverage points.   We clearly need to do something with this model.  The variances does not look constant.</p>
 <div class="highlight"><pre><span class="kn">from</span> <span class="nn">statsmodels.stats.diagnostic</span> <span class="kn">import</span> <span class="n">HetGoldfeldQuandt</span>
 <span class="n">HGQ</span> <span class="o">=</span> <span class="n">HetGoldfeldQuandt</span><span class="p">()</span>
@@ -797,9 +797,9 @@ lev_plot(model4,xc.values)
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_41_0.png" /></p>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_41_1.png" /></p>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_41_2.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_41_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_41_1.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_41_2.png" /></p>
 <div class="highlight"><pre>HGQ = HetGoldfeldQuandt()
 print HGQ.run(np.log(yc+1),xc)
 print equal_var(model4)
@@ -1032,7 +1032,7 @@ plt.show()
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_48_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_48_0.png" /></p>
 <p>In order to do regression we need to remove the categorical variables and replace them with variables that are zero or one.  With Ethnicity we need to decided ona  baseline, which we decided on african american (alphabetical order).</p>
 <div class="highlight"><pre>balance = balance.drop(&quot;Unnamed: 0&quot;,axis=1)
 balance.Gender = balance.Gender.str.strip()
@@ -1246,9 +1246,9 @@ lev_plot(modelb1,xb.values)
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_52_0.png" /></p>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_52_1.png" /></p>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_52_2.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_52_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_52_1.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_52_2.png" /></p>
 <p>We have some very strange behavor with our model.   I am currious what is happening here.  Lets start by looking at the data points where we have the strang line on the studentized plot.</p>
 <div class="highlight"><pre>balance[modelb1.fittedvalues &lt; 100].describe()
 </pre></div>
@@ -1794,9 +1794,9 @@ lev_plot(modelb2,xb[yb.values&gt;0].values)
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_59_0.png" /></p>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_59_1.png" /></p>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_59_2.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_59_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_59_1.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_59_2.png" /></p>
 <p>So we have a great fit where the variance is constant, the residuals are normally distributed, and there are no high leverage points if we fit the data with removing the zero-balance points.   People with zero balance, however, are in the data.   Our regression does not make valid predictions for people with zero balnce.  </p>
 <p>This seems like a two step process:</p>
 <ol>
@@ -1996,9 +1996,9 @@ lev_plot(modelb3,xb[xb.Rating&gt;350].values)
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_63_0.png" /></p>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_63_1.png" /></p>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_63_2.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_63_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_63_1.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_63_2.png" /></p>
 <p>The model for above 350 Credit Rating looks good.  Lets check below 350.</p>
 <div class="highlight"><pre>stud_plot(modelb4)
 qq_plot(modelb4)
@@ -2006,9 +2006,9 @@ lev_plot(modelb4,xb[xb.Rating&lt;=350].values)
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_65_0.png" /></p>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_65_1.png" /></p>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_65_2.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_65_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_65_1.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_65_2.png" /></p>
 <p>We have the same issue before.   We must made a cut to make a good prediction, then removed the values from the data that were causing issues without knowing the balance.   This can be useful in practice, but i find it a little unstatisfying.   For now we will stop with this exploration.  </p>
     </div>
   </div>

@@ -218,7 +218,7 @@ plt.show()
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_13_1.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D3/output_13_1.png" /></p>
 <p>In this case we see that the two values start to converge, but the CV is higher.  This make sense because it is hold out values to test on.   It should be a better approximation to applying it to a test set. </p>
 <p>We can look at the difference between the test and training sets as we increase the training size.</p>
 <div class="highlight"><pre>sample_sizes = np.arange(10,350,10)
@@ -243,7 +243,7 @@ plt.show()
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_15_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D3/output_15_0.png" /></p>
 <div class="highlight"><pre>test_mse = []
 train_mse = []
 num_feat = range(1,len(train_feature[0,:]))
@@ -266,7 +266,7 @@ plt.show()
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_16_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D3/output_16_0.png" /></p>
 <p>As we increase features and data, our results on the training set go down and the test set values, in this case, look to converge.   </p>
 <h2>Stepwise Regression</h2>
 <p>While stepwise regression has its many <a href="http://andrewgelman.com/2014/06/02/hate-stepwise-regression/">critics</a>, it is a useful exercise to introduce the concept of feature selection in the context of linear regression. This extra credit exercise has two components of different difficulties. First, use the <code>scikit-learn</code> reverse feature elimation (a greedy feature elimination algorithm) to implement something similar to sequential backward selection. The second, more difficult part is implementing sequential forward selection.</p>
@@ -308,7 +308,7 @@ plt.show()
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_21_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D3/output_21_0.png" /></p>
 <p>Instead of using RFE to do backward selection, we can create a class that implements sequential forward selection, which involves starting with no variables in the model, testing the addition of each variable using a chosen model comparison criterion, adding the variable (if any) that improves the model the most, and repeating this process until none improves the model.</p>
 <h4>Reference</h4>
 <ul>
@@ -407,7 +407,7 @@ True</p>
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_28_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D3/output_28_0.png" /></p>
 <p>Given a large enough alpha/lambda, the coefficients go to zero   This is a property of the model, and we want to try to use this paramter to find the best model.  </p>
 <div class="highlight"><pre>k = X.shape[1]
 alphas = np.logspace(-3,0,1000)
@@ -429,7 +429,7 @@ alpha_ridge = alphas[mse_test.index(min(mse_test))]
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_30_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D3/output_30_0.png" /></p>
 <div class="highlight"><pre>Best Alpha:  0.252582002696
 </pre></div>
 
@@ -450,7 +450,7 @@ plt.show()
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_32_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D3/output_32_0.png" /></p>
 <p>The Lasso drops the paramters to zero much more quickly than the Ridge Method.  This is because of the absolut value in the prior.  </p>
 <div class="highlight"><pre>k = X.shape[1]
 alphas = np.logspace(-3,0,1000)
@@ -471,7 +471,7 @@ alpha_lasso = alphas[mse_test.index(min(mse_test))]
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_34_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D3/output_34_0.png" /></p>
 <div class="highlight"><pre>Best Alpha:  0.286059553518
 </pre></div>
 

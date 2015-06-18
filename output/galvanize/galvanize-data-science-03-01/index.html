@@ -195,7 +195,7 @@ print "Shape: ",sepalLength_sepalWidth.shape</p>
 <p>Shape:  (150, 2)</p>
 </li>
 </ol>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_5_1.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_5_1.png" /></p>
 <ol>
 <li>
 <p>Write a function (<code>euclidean_dist</code>) to calculate the euclidean distance
@@ -256,8 +256,8 @@ plt.ylabel('Count')
 plt.show()</p>
 </li>
 </ol>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_11_0.png" /></p>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_11_1.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_11_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_11_1.png" /></p>
 <h2>Extra Credit: Implementing the PageRank Algorithm</h2>
 <p>The <a href="http://en.wikipedia.org/wiki/PageRank">Page Rank Algorithm</a> is used by Google
 Search (in their early days) to rank websites in their search engine in terms 
@@ -343,7 +343,7 @@ plt.show()
 print "Final Distribution: ",steps</p>
 </li>
 </ol>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_19_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_19_0.png" /></p>
 <div class="highlight"><pre>Final Distribution:  [[ 0.29401788]
  [ 0.38811497]
  [ 0.22055748]
@@ -388,7 +388,7 @@ steps</p>
        [ 0.07319274]])</p>
 </li>
 </ol>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_23_2.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_23_2.png" /></p>
 <p>We can see that the stationary state is found in 6 states.   The vector produced by this method matches the eigenvectors found by numpy linear algrebra library</p>
 <div class="highlight"><pre>PR.dot(steps)
 
@@ -461,7 +461,7 @@ ax.set_xticklabels(('Aug','Sep','Oct',"Nov","Dec",'Jan','Feb'))
 plt.show()</p>
 </li>
 </ol>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_30_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_30_0.png" /></p>
 <p>We see that we do not have data for the entire month of august, so it is not fair to evaluate it to the other months.  We see that there is a slowdown in december, and febuary has less days.   It might make more sense to look at the daily usage rates. </p>
 <ol>
 <li>
@@ -480,7 +480,7 @@ plt.ylabel('Daily User Count')
 plt.show()</p>
 </li>
 </ol>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_33_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_33_0.png" /></p>
 <p>The dashed black lines are the 'outlier' boundaries.   Though these are not the traditional definition of an outlire, we see points outside of these bounds.  The issues is that we have seasonal variation.  The low months pull down the average making high months look like possible outliers.   I do not believe we see any outlires in this data set, and won't believe it until I understand the cyclical nature of the data.</p>
 <ol>
 <li>
@@ -496,7 +496,7 @@ plt.plot(s, kde(s), color='indianred', lw=3)</p>
 <p>[<matplotlib.lines.Line2D at 0x11123e610>]</p>
 </li>
 </ol>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_36_1.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_36_1.png" /></p>
 <p>This looks like we could have two different contributers to daily user counts.   One that has a mean of around 1000, and another with a mean around 400.   The combination of the two sources could produce a double peaked distribution like this.  </p>
 <div class="highlight"><pre>plt.figure(figsize=(14,8))
 ax = plt.gca()
@@ -520,7 +520,7 @@ plt.show()
 </pre></div>
 
 
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_38_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_38_0.png" /></p>
 <p>We can see that from this distirbution that the weekend users seem to be around 400, and the weekday user counts seem to be peaked around 1000.  The combintation of the two distributions produces the initial histogram we looked at</p>
 <ol>
 <li>
@@ -541,8 +541,8 @@ plt.show()</p>
 plt.show()</p>
 </li>
 </ol>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_41_0.png" /></p>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_41_1.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_41_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_41_1.png" /></p>
 <ol>
 <li>
 <p>Replot the boxplot from above after binning your data into weekday and weekend. Describe the differences you observe between hour user activity between weekday and weekend? </p>
@@ -566,7 +566,7 @@ plt.title('Weekday Hourly User Counts')
 plt.show()</p>
 </li>
 </ol>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_43_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_43_0.png" /></p>
 <p>Weekend users center in daylight hours and peak shortly after lunch.   Weekday users seem to be commuters, using the bikes before and after work hours, with a similar proportion of users using the bikes around lunchtime as weekend users.</p>
 <ol>
 <li>
@@ -614,7 +614,7 @@ plt.title('Subscriber Weekday Hourly User Counts')</p>
 <p>plt.show()</p>
 </li>
 </ol>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_46_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_46_0.png" /></p>
 <p>It seems that subscribers are mostly commuters, and responsible for the weekday double peek.  Because there seems to be a large number of bikes not be used on the weekends, or during lunch periods, a promotion targeting customers during non-peak times could help bring in more revenue.  </p>
 <h2>Linear Regression</h2>
 <p>Linear regression is an approach to modeling the relationship between a continuous dependent (<strong>y</strong>) variable and 
@@ -679,8 +679,8 @@ plt.show()</p>
 plt.show()</p>
 </li>
 </ol>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_51_0.png" /></p>
-<p><img alt="png" src="http://www.bryantravissmith.com/img/output_51_1.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_51_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_51_1.png" /></p>
 <p>It seems that the values have been normalized between 0 and 100.  It also looks that prestige is related to education and income, but so are income and education.   Since these values are not independant, we might see funny results in our fits.</p>
 <ol>
 <li>The beta coefficients of a linear regression model can be calculated by solving the normal equation.

@@ -149,7 +149,7 @@ sepalLength_sepalWidth = datasets.load_iris().data[:, :2]
 
 
 
-![png](http://www.bryantravissmith.com/img/output_5_1.png)
+![png](http://www.bryantravissmith.com/img/GW03D1/output_5_1.png)
 
 
  3. Write a function (`euclidean_dist`) to calculate the euclidean distance
@@ -226,11 +226,11 @@ sepalLength_sepalWidth = datasets.load_iris().data[:, :2]
     plt.show()
 
 
-![png](http://www.bryantravissmith.com/img/output_11_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D1/output_11_0.png)
 
 
 
-![png](http://www.bryantravissmith.com/img/output_11_1.png)
+![png](http://www.bryantravissmith.com/img/GW03D1/output_11_1.png)
 
 
 ## Extra Credit: Implementing the PageRank Algorithm
@@ -333,7 +333,7 @@ know how we will move on this Markov Chain.
     print "Final Distribution: ",steps
 
 
-![png](http://www.bryantravissmith.com/img/output_19_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D1/output_19_0.png)
 
 
     Final Distribution:  [[ 0.29401788]
@@ -404,7 +404,7 @@ know how we will move on this Markov Chain.
 
 
 
-![png](http://www.bryantravissmith.com/img/output_23_2.png)
+![png](http://www.bryantravissmith.com/img/GW03D1/output_23_2.png)
 
 
 We can see that the stationary state is found in 6 states.   The vector produced by this method matches the eigenvectors found by numpy linear algrebra library
@@ -494,7 +494,7 @@ is to provide insights on bike user activity and behavior to the products team.
     plt.show()
 
 
-![png](http://www.bryantravissmith.com/img/output_30_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D1/output_30_0.png)
 
 
 We see that we do not have data for the entire month of august, so it is not fair to evaluate it to the other months.  We see that there is a slowdown in december, and febuary has less days.   It might make more sense to look at the daily usage rates. 
@@ -517,7 +517,7 @@ We see that we do not have data for the entire month of august, so it is not fai
     plt.show()
 
 
-![png](http://www.bryantravissmith.com/img/output_33_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D1/output_33_0.png)
 
 
 The dashed black lines are the 'outlier' boundaries.   Though these are not the traditional definition of an outlire, we see points outside of these bounds.  The issues is that we have seasonal variation.  The low months pull down the average making high months look like possible outliers.   I do not believe we see any outlires in this data set, and won't believe it until I understand the cyclical nature of the data.
@@ -544,7 +544,7 @@ The dashed black lines are the 'outlier' boundaries.   Though these are not the 
 
 
 
-![png](http://www.bryantravissmith.com/img/output_36_1.png)
+![png](http://www.bryantravissmith.com/img/GW03D1/output_36_1.png)
 
 
 This looks like we could have two different contributers to daily user counts.   One that has a mean of around 1000, and another with a mean around 400.   The combination of the two sources could produce a double peaked distribution like this.  
@@ -571,7 +571,7 @@ This looks like we could have two different contributers to daily user counts.  
     plt.show()
 
 
-![png](http://www.bryantravissmith.com/img/output_38_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D1/output_38_0.png)
 
 
 We can see that from this distirbution that the weekend users seem to be around 400, and the weekday user counts seem to be peaked around 1000.  The combintation of the two distributions produces the initial histogram we looked at
@@ -598,11 +598,11 @@ We can see that from this distirbution that the weekend users seem to be around 
     plt.show()
 
 
-![png](http://www.bryantravissmith.com/img/output_41_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D1/output_41_0.png)
 
 
 
-![png](http://www.bryantravissmith.com/img/output_41_1.png)
+![png](http://www.bryantravissmith.com/img/GW03D1/output_41_1.png)
 
 
 7. Replot the boxplot from above after binning your data into weekday and weekend. Describe the differences you observe between hour user activity between weekday and weekend? 
@@ -630,7 +630,7 @@ We can see that from this distirbution that the weekend users seem to be around 
     plt.show()
 
 
-![png](http://www.bryantravissmith.com/img/output_43_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D1/output_43_0.png)
 
 
 Weekend users center in daylight hours and peak shortly after lunch.   Weekday users seem to be commuters, using the bikes before and after work hours, with a similar proportion of users using the bikes around lunchtime as weekend users.
@@ -687,7 +687,7 @@ Weekend users center in daylight hours and peak shortly after lunch.   Weekday u
     plt.show()
 
 
-![png](http://www.bryantravissmith.com/img/output_46_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D1/output_46_0.png)
 
 
 It seems that subscribers are mostly commuters, and responsible for the weekday double peek.  Because there seems to be a large number of bikes not be used on the weekends, or during lunch periods, a promotion targeting customers during non-peak times could help bring in more revenue.  
@@ -765,11 +765,11 @@ the results before we dive more into the details of linear regression tomorrow.
     plt.show()
 
 
-![png](http://www.bryantravissmith.com/img/output_51_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D1/output_51_0.png)
 
 
 
-![png](http://www.bryantravissmith.com/img/output_51_1.png)
+![png](http://www.bryantravissmith.com/img/GW03D1/output_51_1.png)
 
 
 It seems that the values have been normalized between 0 and 100.  It also looks that prestige is related to education and income, but so are income and education.   Since these values are not independant, we might see funny results in our fits.

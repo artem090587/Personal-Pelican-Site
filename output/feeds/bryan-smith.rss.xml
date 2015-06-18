@@ -140,7 +140,7 @@ plt.show()
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_13_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D3/output_13_1.png" /&gt;&lt;/p&gt;
 &lt;p&gt;In this case we see that the two values start to converge, but the CV is higher.  This make sense because it is hold out values to test on.   It should be a better approximation to applying it to a test set. &lt;/p&gt;
 &lt;p&gt;We can look at the difference between the test and training sets as we increase the training size.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;sample_sizes = np.arange(10,350,10)
@@ -165,7 +165,7 @@ plt.show()
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_15_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D3/output_15_0.png" /&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;test_mse = []
 train_mse = []
 num_feat = range(1,len(train_feature[0,:]))
@@ -188,7 +188,7 @@ plt.show()
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_16_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D3/output_16_0.png" /&gt;&lt;/p&gt;
 &lt;p&gt;As we increase features and data, our results on the training set go down and the test set values, in this case, look to converge.   &lt;/p&gt;
 &lt;h2&gt;Stepwise Regression&lt;/h2&gt;
 &lt;p&gt;While stepwise regression has its many &lt;a href="http://andrewgelman.com/2014/06/02/hate-stepwise-regression/"&gt;critics&lt;/a&gt;, it is a useful exercise to introduce the concept of feature selection in the context of linear regression. This extra credit exercise has two components of different difficulties. First, use the &lt;code&gt;scikit-learn&lt;/code&gt; reverse feature elimation (a greedy feature elimination algorithm) to implement something similar to sequential backward selection. The second, more difficult part is implementing sequential forward selection.&lt;/p&gt;
@@ -230,7 +230,7 @@ plt.show()
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_21_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D3/output_21_0.png" /&gt;&lt;/p&gt;
 &lt;p&gt;Instead of using RFE to do backward selection, we can create a class that implements sequential forward selection, which involves starting with no variables in the model, testing the addition of each variable using a chosen model comparison criterion, adding the variable (if any) that improves the model the most, and repeating this process until none improves the model.&lt;/p&gt;
 &lt;h4&gt;Reference&lt;/h4&gt;
 &lt;ul&gt;
@@ -329,7 +329,7 @@ True&lt;/p&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_28_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D3/output_28_0.png" /&gt;&lt;/p&gt;
 &lt;p&gt;Given a large enough alpha/lambda, the coefficients go to zero   This is a property of the model, and we want to try to use this paramter to find the best model.  &lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;k = X.shape[1]
 alphas = np.logspace(-3,0,1000)
@@ -351,7 +351,7 @@ alpha_ridge = alphas[mse_test.index(min(mse_test))]
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_30_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D3/output_30_0.png" /&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;Best Alpha:  0.252582002696
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -372,7 +372,7 @@ plt.show()
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_32_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D3/output_32_0.png" /&gt;&lt;/p&gt;
 &lt;p&gt;The Lasso drops the paramters to zero much more quickly than the Ridge Method.  This is because of the absolut value in the prior.  &lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;k = X.shape[1]
 alphas = np.logspace(-3,0,1000)
@@ -393,7 +393,7 @@ alpha_lasso = alphas[mse_test.index(min(mse_test))]
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_34_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D3/output_34_0.png" /&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;Best Alpha:  0.286059553518
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -539,7 +539,7 @@ results of the regression model are only correct if our assumptions hold (at lea
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_9_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_9_1.png" /&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;plt.figure()
 prestige.boxplot()
 plt.show()
@@ -552,7 +552,7 @@ The default value for &amp;#39;return_type&amp;#39; will change to &amp;#39;axes
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_10_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_10_1.png" /&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;y = prestige[[&amp;#39;prestige&amp;#39;]]
 x = sm.add_constant(prestige[[&amp;#39;income&amp;#39;,&amp;#39;education&amp;#39;]])
 model1 = sm.OLS(y,x).fit()
@@ -645,12 +645,12 @@ stud_plot(model1)
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_13_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_13_0.png" /&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;qq_plot(model1)
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_14_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_14_0.png" /&gt;&lt;/p&gt;
 &lt;p&gt;We see se have two outliers from the studentized plot, those that are more than 2 standard deviation from the fit.   The QQ-plot shows a fairly normal distributions of the residuals, suggesting the fit is okay.  We can also see if we have any points with high leverage.&lt;/p&gt;
 &lt;p&gt;$$\hat{y} = X \dot \beta = X (X^T \ X)^{-1} \ X^T \ y = H \ y$$&lt;/p&gt;
 &lt;p&gt;$$ H = X (X^T \ X)^{-1} \ X^T $$  &lt;/p&gt;
@@ -673,7 +673,7 @@ lev_plot(model1,x.values)
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_17_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_17_0.png" /&gt;&lt;/p&gt;
 &lt;p&gt;We can see that we have 3 points that are leveraging the results, and one of them is an outlier.&lt;/p&gt;
 &lt;p&gt;Now we have the question - what do we do with the outliers and the high leverage points?  I think we will stick wih removing all the high leverage points.  We before we do lets look that these three points.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;x[get_H(x.values)&amp;gt;0.15]
@@ -817,9 +817,9 @@ lev_plot(model2,x[get_H(x.values)&amp;lt;0.15].values)
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_24_0.png" /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_24_1.png" /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_24_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_24_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_24_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_24_2.png" /&gt;&lt;/p&gt;
 &lt;p&gt;The leverage plot does not show a few points dominating the fit, buter there are a few outliers in the fit.   The QQ plot shows some signs of the erros not being normal.   &lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;print &amp;quot;Model 1 RSE: &amp;quot;, np.sqrt(np.sum(np.power(y.values.reshape(1,45)-model1.predict(x),2))/(45-2-1))
 print &amp;quot;Model 2 RSE: &amp;quot;, np.sqrt(np.sum(np.power(y.values.reshape(1,45)-model2.predict(x),2))/(45-2-1))
@@ -849,7 +849,7 @@ plt.show()
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_30_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_30_1.png" /&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;credit_card.corr()
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -1054,9 +1054,9 @@ lev_plot(model3,xc.values)
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_35_0.png" /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_35_1.png" /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_35_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_35_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_35_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_35_2.png" /&gt;&lt;/p&gt;
 &lt;p&gt;Our inital linear model is not a strong fit, age and own/rent are not significantly involved in the model, the residuals are not normally distributed, and there are outliers and high leverage points.   We clearly need to do something with this model.  The variances does not look constant.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;statsmodels.stats.diagnostic&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;HetGoldfeldQuandt&lt;/span&gt;
 &lt;span class="n"&gt;HGQ&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;HetGoldfeldQuandt&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
@@ -1166,9 +1166,9 @@ lev_plot(model4,xc.values)
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_41_0.png" /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_41_1.png" /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_41_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_41_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_41_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_41_2.png" /&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;HGQ = HetGoldfeldQuandt()
 print HGQ.run(np.log(yc+1),xc)
 print equal_var(model4)
@@ -1401,7 +1401,7 @@ plt.show()
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_48_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_48_0.png" /&gt;&lt;/p&gt;
 &lt;p&gt;In order to do regression we need to remove the categorical variables and replace them with variables that are zero or one.  With Ethnicity we need to decided ona  baseline, which we decided on african american (alphabetical order).&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;balance = balance.drop(&amp;quot;Unnamed: 0&amp;quot;,axis=1)
 balance.Gender = balance.Gender.str.strip()
@@ -1615,9 +1615,9 @@ lev_plot(modelb1,xb.values)
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_52_0.png" /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_52_1.png" /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_52_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_52_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_52_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_52_2.png" /&gt;&lt;/p&gt;
 &lt;p&gt;We have some very strange behavor with our model.   I am currious what is happening here.  Lets start by looking at the data points where we have the strang line on the studentized plot.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;balance[modelb1.fittedvalues &amp;lt; 100].describe()
 &lt;/pre&gt;&lt;/div&gt;
@@ -2163,9 +2163,9 @@ lev_plot(modelb2,xb[yb.values&amp;gt;0].values)
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_59_0.png" /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_59_1.png" /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_59_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_59_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_59_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_59_2.png" /&gt;&lt;/p&gt;
 &lt;p&gt;So we have a great fit where the variance is constant, the residuals are normally distributed, and there are no high leverage points if we fit the data with removing the zero-balance points.   People with zero balance, however, are in the data.   Our regression does not make valid predictions for people with zero balnce.  &lt;/p&gt;
 &lt;p&gt;This seems like a two step process:&lt;/p&gt;
 &lt;ol&gt;
@@ -2365,9 +2365,9 @@ lev_plot(modelb3,xb[xb.Rating&amp;gt;350].values)
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_63_0.png" /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_63_1.png" /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_63_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_63_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_63_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_63_2.png" /&gt;&lt;/p&gt;
 &lt;p&gt;The model for above 350 Credit Rating looks good.  Lets check below 350.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;stud_plot(modelb4)
 qq_plot(modelb4)
@@ -2375,9 +2375,9 @@ lev_plot(modelb4,xb[xb.Rating&amp;lt;=350].values)
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_65_0.png" /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_65_1.png" /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_65_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_65_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_65_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D2/output_65_2.png" /&gt;&lt;/p&gt;
 &lt;p&gt;We have the same issue before.   We must made a cut to make a good prediction, then removed the values from the data that were causing issues without knowing the balance.   This can be useful in practice, but i find it a little unstatisfying.   For now we will stop with this exploration.  &lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Bryan Smith</dc:creator><pubDate>Tue, 16 Jun 2015 10:30:00 -0700</pubDate><guid>tag:www.bryantravissmith.com,2015-06-16:galvanize/galvanize-data-science-03-02/</guid><category>data-science</category><category>galvanize</category><category>regression</category></item><item><title>Galvanize - Week 03 - Day 5</title><link>http://www.bryantravissmith.com/galvanize/galvanize-data-science-03-01/</link><description>&lt;h1&gt;Galvanize Immersive Data Science&lt;/h1&gt;
 &lt;h2&gt;Week 3 - Day 1&lt;/h2&gt;
 &lt;p&gt;Today we had the first quiz I did not finish.  I attempted to do algebra in latex, and made a sign mistake and had difficulty traking my mistake.   &lt;/p&gt;
@@ -2496,7 +2496,7 @@ print "Shape: ",sepalLength_sepalWidth.shape&lt;/p&gt;
 &lt;p&gt;Shape:  (150, 2)&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_5_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_5_1.png" /&gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;
 &lt;p&gt;Write a function (&lt;code&gt;euclidean_dist&lt;/code&gt;) to calculate the euclidean distance
@@ -2557,8 +2557,8 @@ plt.ylabel('Count')
 plt.show()&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_11_0.png" /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_11_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_11_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_11_1.png" /&gt;&lt;/p&gt;
 &lt;h2&gt;Extra Credit: Implementing the PageRank Algorithm&lt;/h2&gt;
 &lt;p&gt;The &lt;a href="http://en.wikipedia.org/wiki/PageRank"&gt;Page Rank Algorithm&lt;/a&gt; is used by Google
 Search (in their early days) to rank websites in their search engine in terms 
@@ -2644,7 +2644,7 @@ plt.show()
 print "Final Distribution: ",steps&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_19_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_19_0.png" /&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;Final Distribution:  [[ 0.29401788]
  [ 0.38811497]
  [ 0.22055748]
@@ -2689,7 +2689,7 @@ steps&lt;/p&gt;
        [ 0.07319274]])&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_23_2.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_23_2.png" /&gt;&lt;/p&gt;
 &lt;p&gt;We can see that the stationary state is found in 6 states.   The vector produced by this method matches the eigenvectors found by numpy linear algrebra library&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;PR.dot(steps)
 
@@ -2762,7 +2762,7 @@ ax.set_xticklabels(('Aug','Sep','Oct',"Nov","Dec",'Jan','Feb'))
 plt.show()&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_30_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_30_0.png" /&gt;&lt;/p&gt;
 &lt;p&gt;We see that we do not have data for the entire month of august, so it is not fair to evaluate it to the other months.  We see that there is a slowdown in december, and febuary has less days.   It might make more sense to look at the daily usage rates. &lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;
@@ -2781,7 +2781,7 @@ plt.ylabel('Daily User Count')
 plt.show()&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_33_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_33_0.png" /&gt;&lt;/p&gt;
 &lt;p&gt;The dashed black lines are the 'outlier' boundaries.   Though these are not the traditional definition of an outlire, we see points outside of these bounds.  The issues is that we have seasonal variation.  The low months pull down the average making high months look like possible outliers.   I do not believe we see any outlires in this data set, and won't believe it until I understand the cyclical nature of the data.&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;
@@ -2797,7 +2797,7 @@ plt.plot(s, kde(s), color='indianred', lw=3)&lt;/p&gt;
 &lt;p&gt;[&lt;matplotlib.lines.Line2D at 0x11123e610&gt;]&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_36_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_36_1.png" /&gt;&lt;/p&gt;
 &lt;p&gt;This looks like we could have two different contributers to daily user counts.   One that has a mean of around 1000, and another with a mean around 400.   The combination of the two sources could produce a double peaked distribution like this.  &lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;plt.figure(figsize=(14,8))
 ax = plt.gca()
@@ -2821,7 +2821,7 @@ plt.show()
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_38_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_38_0.png" /&gt;&lt;/p&gt;
 &lt;p&gt;We can see that from this distirbution that the weekend users seem to be around 400, and the weekday user counts seem to be peaked around 1000.  The combintation of the two distributions produces the initial histogram we looked at&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;
@@ -2842,8 +2842,8 @@ plt.show()&lt;/p&gt;
 plt.show()&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_41_0.png" /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_41_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_41_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_41_1.png" /&gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;
 &lt;p&gt;Replot the boxplot from above after binning your data into weekday and weekend. Describe the differences you observe between hour user activity between weekday and weekend? &lt;/p&gt;
@@ -2867,7 +2867,7 @@ plt.title('Weekday Hourly User Counts')
 plt.show()&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_43_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_43_0.png" /&gt;&lt;/p&gt;
 &lt;p&gt;Weekend users center in daylight hours and peak shortly after lunch.   Weekday users seem to be commuters, using the bikes before and after work hours, with a similar proportion of users using the bikes around lunchtime as weekend users.&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;
@@ -2915,7 +2915,7 @@ plt.title('Subscriber Weekday Hourly User Counts')&lt;/p&gt;
 &lt;p&gt;plt.show()&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_46_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_46_0.png" /&gt;&lt;/p&gt;
 &lt;p&gt;It seems that subscribers are mostly commuters, and responsible for the weekday double peek.  Because there seems to be a large number of bikes not be used on the weekends, or during lunch periods, a promotion targeting customers during non-peak times could help bring in more revenue.  &lt;/p&gt;
 &lt;h2&gt;Linear Regression&lt;/h2&gt;
 &lt;p&gt;Linear regression is an approach to modeling the relationship between a continuous dependent (&lt;strong&gt;y&lt;/strong&gt;) variable and 
@@ -2980,8 +2980,8 @@ plt.show()&lt;/p&gt;
 plt.show()&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_51_0.png" /&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/output_51_1.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_51_0.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="png" src="http://www.bryantravissmith.com/img/GW03D1/output_51_1.png" /&gt;&lt;/p&gt;
 &lt;p&gt;It seems that the values have been normalized between 0 and 100.  It also looks that prestige is related to education and income, but so are income and education.   Since these values are not independant, we might see funny results in our fits.&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;The beta coefficients of a linear regression model can be calculated by solving the normal equation.

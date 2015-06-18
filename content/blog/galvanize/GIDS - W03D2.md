@@ -132,7 +132,7 @@ This morning we will be exploring two datasets: `prestige` and `ccard`. Below is
 
 
 
-![png](http://www.bryantravissmith.com/img/output_9_1.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_9_1.png)
 
 
 
@@ -148,7 +148,7 @@ This morning we will be exploring two datasets: `prestige` and `ccard`. Below is
 
 
 
-![png](http://www.bryantravissmith.com/img/output_10_1.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_10_1.png)
 
 
 
@@ -246,14 +246,14 @@ So far we have looked at the data distributions, and the scatter matrix shows re
     stud_plot(model1)
 
 
-![png](http://www.bryantravissmith.com/img/output_13_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_13_0.png)
 
 
 
     qq_plot(model1)
 
 
-![png](http://www.bryantravissmith.com/img/output_14_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_14_0.png)
 
 
 We see se have two outliers from the studentized plot, those that are more than 2 standard deviation from the fit.   The QQ-plot shows a fairly normal distributions of the residuals, suggesting the fit is okay.  We can also see if we have any points with high leverage.
@@ -282,7 +282,7 @@ The diagonals of the hat matrix (H) are considered to be estimates of leverage o
     lev_plot(model1,x.values)
 
 
-![png](http://www.bryantravissmith.com/img/output_17_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_17_0.png)
 
 
 We can see that we have 3 points that are leveraging the results, and one of them is an outlier.
@@ -442,15 +442,15 @@ Removing 3 of the 45 data points slightly improved the R-squared value, but dram
     lev_plot(model2,x[get_H(x.values)<0.15].values)
 
 
-![png](http://www.bryantravissmith.com/img/output_24_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_24_0.png)
 
 
 
-![png](http://www.bryantravissmith.com/img/output_24_1.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_24_1.png)
 
 
 
-![png](http://www.bryantravissmith.com/img/output_24_2.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_24_2.png)
 
 
 The leverage plot does not show a few points dominating the fit, buter there are a few outliers in the fit.   The QQ plot shows some signs of the erros not being normal.   
@@ -487,7 +487,7 @@ On the subsetted data, the second model does do better.   If this model was unle
 
 
 
-![png](http://www.bryantravissmith.com/img/output_30_1.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_30_1.png)
 
 
 
@@ -706,15 +706,15 @@ We'll do a basic fit and see what we are starting with.
     lev_plot(model3,xc.values)
 
 
-![png](http://www.bryantravissmith.com/img/output_35_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_35_0.png)
 
 
 
-![png](http://www.bryantravissmith.com/img/output_35_1.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_35_1.png)
 
 
 
-![png](http://www.bryantravissmith.com/img/output_35_2.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_35_2.png)
 
 
 Our inital linear model is not a strong fit, age and own/rent are not significantly involved in the model, the residuals are not normally distributed, and there are outliers and high leverage points.   We clearly need to do something with this model.  The variances does not look constant.
@@ -832,15 +832,15 @@ We see that th HetGoldfeldQuandt test shows the variance of the data is not sign
     lev_plot(model4,xc.values)
 
 
-![png](http://www.bryantravissmith.com/img/output_41_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_41_0.png)
 
 
 
-![png](http://www.bryantravissmith.com/img/output_41_1.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_41_1.png)
 
 
 
-![png](http://www.bryantravissmith.com/img/output_41_2.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_41_2.png)
 
 
 
@@ -1083,7 +1083,7 @@ In the afternoon we were given a new data set and told to perform a regression f
     plt.show()
 
 
-![png](http://www.bryantravissmith.com/img/output_48_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_48_0.png)
 
 
 In order to do regression we need to remove the categorical variables and replace them with variables that are zero or one.  With Ethnicity we need to decided ona  baseline, which we decided on african american (alphabetical order).
@@ -1306,15 +1306,15 @@ In order to do regression we need to remove the categorical variables and replac
     lev_plot(modelb1,xb.values)
 
 
-![png](http://www.bryantravissmith.com/img/output_52_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_52_0.png)
 
 
 
-![png](http://www.bryantravissmith.com/img/output_52_1.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_52_1.png)
 
 
 
-![png](http://www.bryantravissmith.com/img/output_52_2.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_52_2.png)
 
 
 We have some very strange behavor with our model.   I am currious what is happening here.  Lets start by looking at the data points where we have the strang line on the studentized plot.
@@ -1879,15 +1879,15 @@ We see that relative to the averages, the trouble points looked to be people wit
     lev_plot(modelb2,xb[yb.values>0].values)
 
 
-![png](http://www.bryantravissmith.com/img/output_59_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_59_0.png)
 
 
 
-![png](http://www.bryantravissmith.com/img/output_59_1.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_59_1.png)
 
 
 
-![png](http://www.bryantravissmith.com/img/output_59_2.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_59_2.png)
 
 
 So we have a great fit where the variance is constant, the residuals are normally distributed, and there are no high leverage points if we fit the data with removing the zero-balance points.   People with zero balance, however, are in the data.   Our regression does not make valid predictions for people with zero balnce.  
@@ -2097,15 +2097,15 @@ Another solution would be to cut on credit rating.  One model for those above 35
     lev_plot(modelb3,xb[xb.Rating>350].values)
 
 
-![png](http://www.bryantravissmith.com/img/output_63_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_63_0.png)
 
 
 
-![png](http://www.bryantravissmith.com/img/output_63_1.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_63_1.png)
 
 
 
-![png](http://www.bryantravissmith.com/img/output_63_2.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_63_2.png)
 
 
 The model for above 350 Credit Rating looks good.  Lets check below 350.
@@ -2116,15 +2116,15 @@ The model for above 350 Credit Rating looks good.  Lets check below 350.
     lev_plot(modelb4,xb[xb.Rating<=350].values)
 
 
-![png](http://www.bryantravissmith.com/img/output_65_0.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_65_0.png)
 
 
 
-![png](http://www.bryantravissmith.com/img/output_65_1.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_65_1.png)
 
 
 
-![png](http://www.bryantravissmith.com/img/output_65_2.png)
+![png](http://www.bryantravissmith.com/img/GW03D2/output_65_2.png)
 
 
 We have the same issue before.   We must made a cut to make a good prediction, then removed the values from the data that were causing issues without knowing the balance.   This can be useful in practice, but i find it a little unstatisfying.   For now we will stop with this exploration.  
