@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-03-05/index.html" />
+
+    <title>  Bryan Travis Smith, Ph.D &mdash; Galvanize - Week 03 - Day 5
+</title>
+
+
+
+
+    <link rel="stylesheet" href="http://www.bryantravissmith.com/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-24340005-3', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+
+    <meta name="author" content="Bryan Smith">
+    <meta name="description" content="Today we covered logistic regression and ROC curves.">
+  <meta name="tags" contents="data-science, gradient decent, stocastic gradient decent, logistic regression, ">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+      <div class="header-image pull-left">
+        <a class="nodec" href="http://www.bryantravissmith.com"><img src=http://www.bryantravissmith.com/img/bryan.jpeg></a>
+      </div>
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="http://www.bryantravissmith.com">Bryan Travis Smith, Ph.D</a>
+      </h1>
+      <h3 class="header-text">Physicist, Data Scientist, Martial Artist, & Life Enthusiast</h3>
+      <ul class="header-menu list-inline">
+              <li class="muted">|</li>
+            <li><a class="nodec" href="http://www.bryantravissmith.com/about/">About</a></li>
+              <li class="muted">|</li>
+          <li><a class="nodec icon-mail-alt" href="mailto:bryantravissmith@gmail.com"></a></li>
+          <li><a class="nodec icon-github" href="https://github.com/bryantravissmith"></a></li>
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+      <a href="/galvanize/galvanize-data-science-03-05/" title="Permalink to Galvanize - Week 03 - Day 5">Galvanize - Week 03 - Day 5</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" href="/galvanize/galvanize-data-science-03-05/" title="2015-06-19T10:20:00-07:00">Fri 19 June 2015</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+        <a href="http://www.bryantravissmith.com/category/galvanize.html">Galvanize</a>
+      </li>
+        <li class="muted">&middot;</li>
+        <li>
+          <address class="post-author">
+            By <a href="http://www.bryantravissmith.com/author/bryan-smith.html">Bryan Smith</a>
+          </address>
+        </li>
+    </ul>
+    <div class="post-content">
+      <h1>Galvanize Immersive Data Science</h1>
+<h2>Week 3 - Day 5</h2>
+<p>Today we had our checkin survey as a quiz, then we had a lecture on gradient decent.  We covered examples using linear and logistic regression.  The assignment was an all day paired sprint. </p>
+<h2>Gradient Descent</h2>
+<p>We will be implementing logistic regression using the gradient descent algorithm.  The goal in to include regulation and stocastic gradient decent.  We will start by testing it on data that will allow for simple solutions.</p>
+<div class="highlight"><pre><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.optimize</span> <span class="kn">as</span> <span class="nn">op</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="s">&#39;data/testdata.csv&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s">&#39;,&#39;</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="n">xp</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">y</span><span class="o">==</span><span class="mi">1</span><span class="p">,:]</span>
+<span class="n">xn</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">y</span><span class="o">==</span><span class="mi">0</span><span class="p">,:]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xp</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">xp</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span><span class="s">&#39;go&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Positive&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xn</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">xn</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span><span class="s">&#39;ro&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Negative&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;First Feature&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;Second Feature&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D5/output_1_0.png" /></p>
+<p>This data set is very nice because the positive and negative examples are linearly separable.   I'll have to remember this dataset when I try to implement support vector machines.  I can guess the sigmoid function that will fit this data.</p>
+<p>$$y = \frac{1}{1+e^{-2x_1}}$$</p>
+<div class="highlight"><pre>x  = np.linspace(-6,8,100)
+y1 = 1/(1+np.exp(-2.*(x)))
+plt.plot(X[:,0],y,&#39;ro&#39;)
+plt.plot(x,y1,&#39;b-&#39;)
+plt.ylim([-0.1,1.1])
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D5/output_3_0.png" /></p>
+<h2>Cost function</h2>
+<p>In order to be able to evaluate if our gradient descent algorithm is working correctly, we will need to be able to calculate the cost.  The cost function we will be using is the <em>log likelihood</em>. Our goal will be to <em>maximize</em> this value, so we will actually be implementing gradient <em>ascent</em>.</p>
+<p>$$ \mathcal{l}(\Theta) = Log(\mathcal{L}(\Theta))= \Sigma_{i} ( \ y_i  \ log( \ h(x_i|\Theta) \ ) + (1-y_i) \ log( \ 1-h(x_i|\Theta) \ ) \ )$$</p>
+<p>where the hypothesis fucntion is </p>
+<p>$$ h(x|\Theta) = \frac{1}{1 \ + \ e^{\Theta x}} $$</p>
+<p>We will be using the gradient ascent potion of using </p>
+<p>$$\Theta_i = \Theta_i + \alpha \frac{\partial}{\partial\Theta_i} \mathcal{l}(\Theta)$$</p>
+<p>Where alpha is the learning rate for the update.   We can show that </p>
+<p>$$\frac{\partial}{\partial\Theta_i} \mathcal{l}(\Theta) = \Sigma_{i} ( \ y_i \ - \ h(x_i|\Theta) \ ) \ x_j $$</p>
+<p>We also implimented feature scaling, the options to fit the intercept, and Ridge (l2) penalizations.  This is done by subtracking a term from the cost function.</p>
+<p>$$ \mathcal{l}(\Theta) = Log(\mathcal{L}(\Theta))= \Sigma_{i} ( \ y_i  \ log( \ h(x_i|\Theta) \ ) + (1-y_i) \ log( \ 1-h(x_i|\Theta) \ ) \ ) - \lambda \Theta^2$$</p>
+<p>This changes the update function to</p>
+<p>$$\frac{\partial}{\partial\theta_i} \mathcal{l}(\Theta) = \Sigma_{i} ( \ y_i \ - \ h(x_i|\Theta) \ ) \ x_j - 2 \ \lambda \theta_i$$</p>
+<p>The larger the parameter lambda, the stronger the pull for the coefficients to be zero.</p>
+<p>The last method we implmeneted was a stocastic gradient decent. Where we shuffled the data and take a set for each data point.  We then reshuffle the data and take another stuff.   This, in practice, is faster than hill climbing.   We did not implement this with regularization.   </p>
+<div class="highlight"><pre><span class="kr">class</span> <span class="nx">regression_function</span><span class="o">:</span>
+
+    <span class="nx">def</span> <span class="nx">__init__</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span><span class="nx">x</span><span class="p">,</span><span class="nx">y</span><span class="p">,</span> <span class="nx">fit_intercept</span><span class="o">=</span><span class="nx">True</span><span class="p">,</span> <span class="nx">scale</span><span class="o">=</span><span class="nx">False</span><span class="p">,</span> <span class="nx">lamb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nx">tol</span><span class="o">=</span><span class="mi">1</span><span class="nx">e</span><span class="o">-</span><span class="mi">5</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">x</span> <span class="o">=</span> <span class="nx">x</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">y</span> <span class="o">=</span> <span class="nx">y</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">lamb</span> <span class="o">=</span> <span class="nx">lamb</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">y</span><span class="p">.</span><span class="nx">shape</span> <span class="o">=</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">y</span><span class="p">.</span><span class="nx">shape</span><span class="cp">[</span><span class="mi">0</span><span class="cp">]</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">theta</span> <span class="o">=</span> <span class="nx">np</span><span class="p">.</span><span class="nx">zeros</span><span class="p">((</span><span class="nx">len</span><span class="p">(</span><span class="nx">x</span><span class="cp">[</span><span class="mi">0</span><span class="p">,:</span><span class="cp">]</span><span class="p">),</span><span class="mi">1</span><span class="p">))</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">scale</span> <span class="o">=</span> <span class="nx">scale</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">fit_intercept</span> <span class="o">=</span> <span class="nx">fit_intercept</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">tol</span> <span class="o">=</span> <span class="nx">tol</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">x_mean</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">x</span><span class="p">.</span><span class="nx">mean</span><span class="p">(</span><span class="nx">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">x_std</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">x</span><span class="p">.</span><span class="nx">std</span><span class="p">(</span><span class="nx">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nx">scale</span><span class="o">:</span>    
+            <span class="nx">self</span><span class="p">.</span><span class="nx">x</span> <span class="o">=</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">x</span> <span class="o">-</span> <span class="nx">self</span><span class="p">.</span><span class="nx">x_mean</span><span class="p">)</span><span class="o">/</span><span class="nx">self</span><span class="p">.</span><span class="nx">x_std</span>
+        <span class="k">if</span> <span class="nx">fit_intercept</span><span class="o">:</span>
+            <span class="nx">self</span><span class="p">.</span><span class="nx">add_intercept</span><span class="p">()</span>
+
+    <span class="nx">def</span> <span class="nx">row_hypothesis</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span><span class="nx">row</span><span class="p">)</span><span class="o">:</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="nx">np</span><span class="p">.</span><span class="nx">exp</span><span class="p">(</span><span class="o">-</span><span class="nx">self</span><span class="p">.</span><span class="nx">x</span><span class="cp">[</span><span class="nx">row</span><span class="p">,:</span><span class="cp">]</span><span class="p">.</span><span class="nx">dot</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">theta</span><span class="p">)))</span>
+
+
+    <span class="nx">def</span> <span class="nx">hypothesis</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span><span class="nx">X</span><span class="o">=</span><span class="nx">None</span><span class="p">)</span><span class="o">:</span>
+        <span class="k">if</span> <span class="nx">X</span> <span class="o">==</span> <span class="nx">None</span><span class="o">:</span>
+            <span class="k">return</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="nx">np</span><span class="p">.</span><span class="nx">exp</span><span class="p">(</span><span class="o">-</span><span class="nx">self</span><span class="p">.</span><span class="nx">x</span><span class="p">.</span><span class="nx">dot</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">theta</span><span class="p">)))</span>
+        <span class="k">else</span><span class="o">:</span>
+            <span class="k">return</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="nx">np</span><span class="p">.</span><span class="nx">exp</span><span class="p">(</span><span class="o">-</span><span class="nx">X</span><span class="p">.</span><span class="nx">dot</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">theta</span><span class="p">)))</span>
+
+    <span class="nx">def</span> <span class="nx">predict</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span><span class="nx">X</span><span class="o">=</span><span class="nx">None</span><span class="p">,</span><span class="nx">thresh</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span><span class="o">:</span>
+        <span class="k">if</span> <span class="nx">X</span> <span class="o">==</span> <span class="nx">None</span><span class="o">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">hypothesis</span><span class="p">()</span><span class="o">&gt;</span><span class="nx">thresh</span><span class="p">).</span><span class="nx">astype</span><span class="p">(</span><span class="kr">int</span><span class="p">)</span>
+        <span class="k">else</span><span class="o">:</span>
+            <span class="k">if</span> <span class="nx">self</span><span class="p">.</span><span class="nx">scale</span><span class="o">:</span>
+                <span class="nx">X</span> <span class="o">=</span> <span class="p">(</span><span class="nx">X</span><span class="o">-</span><span class="nx">self</span><span class="p">.</span><span class="nx">x_mean</span><span class="p">)</span><span class="o">/</span><span class="nx">self</span><span class="p">.</span><span class="nx">x_std</span>
+            <span class="k">if</span> <span class="nx">self</span><span class="p">.</span><span class="nx">fit_intercept</span><span class="o">:</span>
+                <span class="nx">X</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">add_intercept</span><span class="p">(</span><span class="nx">X</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">hypothesis</span><span class="p">(</span><span class="nx">X</span><span class="p">)</span><span class="o">&gt;</span><span class="nx">thresh</span><span class="p">).</span><span class="nx">astype</span><span class="p">(</span><span class="kr">int</span><span class="p">)</span>
+
+    <span class="nx">def</span> <span class="nx">log_likelihood</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">llh</span> <span class="o">=</span> <span class="nx">np</span><span class="p">.</span><span class="nx">sum</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">y</span><span class="o">*</span><span class="nx">np</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">hypothesis</span><span class="p">())</span><span class="o">+</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="nx">self</span><span class="p">.</span><span class="nx">y</span><span class="p">)</span><span class="o">*</span><span class="nx">np</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="nx">self</span><span class="p">.</span><span class="nx">hypothesis</span><span class="p">()))</span><span class="o">-</span><span class="nx">self</span><span class="p">.</span><span class="nx">lamb</span><span class="o">*</span><span class="nx">self</span><span class="p">.</span><span class="nx">theta</span><span class="p">.</span><span class="nx">T</span><span class="p">.</span><span class="nx">dot</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">theta</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nx">llh</span><span class="cp">[</span><span class="mi">0</span><span class="cp">][</span><span class="mi">0</span><span class="cp">]</span>
+
+    <span class="nx">def</span> <span class="nx">log_likelihood_gradient</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>    
+        <span class="k">return</span> <span class="nx">self</span><span class="p">.</span><span class="nx">x</span><span class="p">.</span><span class="nx">T</span><span class="p">.</span><span class="nx">dot</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">y</span><span class="o">-</span><span class="nx">self</span><span class="p">.</span><span class="nx">hypothesis</span><span class="p">())</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="nx">self</span><span class="p">.</span><span class="nx">lamb</span><span class="o">*</span><span class="nx">self</span><span class="p">.</span><span class="nx">theta</span>
+
+
+    <span class="nx">def</span> <span class="nx">stoch_log_likelihood_gradient</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span><span class="nx">row</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">xt</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">x</span><span class="cp">[</span><span class="nx">row</span><span class="cp">]</span><span class="p">.</span><span class="nx">T</span><span class="p">.</span><span class="nx">reshape</span><span class="p">(</span><span class="nx">len</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">theta</span><span class="p">),</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nx">xt</span><span class="p">.</span><span class="nx">dot</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">y</span><span class="cp">[</span><span class="nx">row</span><span class="cp">]</span> <span class="o">-</span> <span class="nx">self</span><span class="p">.</span><span class="nx">row_hypothesis</span><span class="p">(</span><span class="nx">row</span><span class="p">)).</span><span class="nx">reshape</span><span class="p">(</span><span class="nx">len</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">theta</span><span class="p">),</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="nx">def</span> <span class="nx">gradient_ascent</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span><span class="nx">alpha</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">lik_diff</span> <span class="o">=</span> <span class="mi">1</span><span class="p">.</span>
+        <span class="nx">previous_likelihood</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">log_likelihood</span><span class="p">()</span>
+        <span class="k">while</span> <span class="nx">lik_diff</span> <span class="o">&gt;</span> <span class="nx">self</span><span class="p">.</span><span class="nx">tol</span><span class="o">:</span>
+            <span class="nx">self</span><span class="p">.</span><span class="nx">theta</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">theta</span> <span class="o">+</span> <span class="nx">alpha</span><span class="o">*</span><span class="nx">self</span><span class="p">.</span><span class="nx">log_likelihood_gradient</span><span class="p">()</span>
+            <span class="nx">temp</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">log_likelihood</span><span class="p">()</span>
+            <span class="nx">lik_diff</span> <span class="o">=</span> <span class="nx">temp</span> <span class="o">-</span> <span class="nx">previous_likelihood</span>
+            <span class="nx">previous_likelihood</span> <span class="o">=</span> <span class="nx">temp</span>
+
+    <span class="nx">def</span> <span class="nx">stoch_gradient_ascent</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span><span class="nx">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">lik_diff</span> <span class="o">=</span> <span class="mi">1</span><span class="p">.</span>
+        <span class="nx">previous_likelihood</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">log_likelihood</span><span class="p">()</span>
+        <span class="nx">rows</span> <span class="o">=</span> <span class="nx">range</span><span class="p">(</span><span class="nx">len</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">x</span><span class="p">))</span>
+        <span class="nx">np</span><span class="p">.</span><span class="nx">random</span><span class="p">.</span><span class="nx">shuffle</span><span class="p">(</span><span class="nx">rows</span><span class="p">)</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">x</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">x</span><span class="cp">[</span><span class="k">rows</span><span class="p">,:</span><span class="cp">]</span>
+        <span class="nx">self</span><span class="p">.</span><span class="nx">y</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">y</span><span class="cp">[</span><span class="k">rows</span><span class="cp">]</span>
+
+        <span class="k">while</span> <span class="nx">lik_diff</span> <span class="o">&gt;</span> <span class="nx">self</span><span class="p">.</span><span class="nx">tol</span><span class="o">:</span>
+            <span class="k">for</span> <span class="nx">i</span> <span class="k">in</span> <span class="nx">xrange</span><span class="p">(</span><span class="nx">len</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">x</span><span class="p">))</span><span class="o">:</span>
+                <span class="err">#</span><span class="nx">print</span> <span class="s2">&quot;STOCK LIKI:&quot;</span><span class="p">,</span> <span class="nx">self</span><span class="p">.</span><span class="nx">stoch_log_likelihood_gradient</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+                <span class="err">#</span><span class="nx">print</span> <span class="s2">&quot;Shapes:&quot;</span><span class="p">,</span> <span class="nx">self</span><span class="p">.</span><span class="nx">theta</span><span class="p">.</span><span class="nx">shape</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">stoch_log_likelihood_gradient</span><span class="p">(</span><span class="nx">i</span><span class="p">).</span><span class="nx">shape</span>
+                <span class="nx">self</span><span class="p">.</span><span class="nx">theta</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">theta</span> <span class="o">+</span> <span class="nx">alpha</span><span class="o">*</span><span class="nx">self</span><span class="p">.</span><span class="nx">stoch_log_likelihood_gradient</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+            <span class="nx">temp</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">log_likelihood</span><span class="p">()</span>
+            <span class="err">#</span><span class="nx">Sprint</span> <span class="s2">&quot;TEMP:&quot;</span><span class="p">,</span><span class="nx">temp</span>
+            <span class="nx">lik_diff</span> <span class="o">=</span> <span class="nx">temp</span> <span class="o">-</span> <span class="nx">previous_likelihood</span>
+            <span class="nx">previous_likelihood</span> <span class="o">=</span> <span class="nx">temp</span>
+
+            <span class="nx">np</span><span class="p">.</span><span class="nx">random</span><span class="p">.</span><span class="nx">shuffle</span><span class="p">(</span><span class="nx">rows</span><span class="p">)</span>
+            <span class="nx">self</span><span class="p">.</span><span class="nx">x</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">x</span><span class="cp">[</span><span class="k">rows</span><span class="p">,:</span><span class="cp">]</span>
+            <span class="nx">self</span><span class="p">.</span><span class="nx">y</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">y</span><span class="cp">[</span><span class="k">rows</span><span class="cp">]</span>
+
+    <span class="nx">def</span> <span class="nx">add_intercept</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span><span class="nx">X</span><span class="o">=</span><span class="nx">None</span><span class="p">)</span><span class="o">:</span>
+        <span class="k">if</span> <span class="nx">X</span><span class="o">==</span><span class="nx">None</span><span class="o">:</span>
+            <span class="nx">ones</span> <span class="o">=</span> <span class="nx">np</span><span class="p">.</span><span class="nx">ones</span><span class="p">((</span><span class="nx">len</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">x</span><span class="p">),</span><span class="nx">len</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">x</span><span class="cp">[</span><span class="mi">0</span><span class="p">,:</span><span class="cp">]</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+            <span class="nx">ones</span><span class="cp">[</span><span class="p">:,</span><span class="mi">1</span><span class="p">:</span><span class="cp">]</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">x</span>
+            <span class="nx">self</span><span class="p">.</span><span class="nx">x</span> <span class="o">=</span> <span class="nx">ones</span>
+            <span class="nx">self</span><span class="p">.</span><span class="nx">theta</span> <span class="o">=</span> <span class="nx">np</span><span class="p">.</span><span class="nx">zeros</span><span class="p">((</span><span class="nx">len</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">x</span><span class="cp">[</span><span class="mi">0</span><span class="p">,:</span><span class="cp">]</span><span class="p">),</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">else</span><span class="o">:</span>
+            <span class="nx">ones</span> <span class="o">=</span> <span class="nx">np</span><span class="p">.</span><span class="nx">ones</span><span class="p">((</span><span class="nx">len</span><span class="p">(</span><span class="nx">X</span><span class="p">),</span><span class="nx">len</span><span class="p">(</span><span class="nx">X</span><span class="cp">[</span><span class="mi">0</span><span class="p">,:</span><span class="cp">]</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+            <span class="nx">ones</span><span class="cp">[</span><span class="p">:,</span><span class="mi">1</span><span class="p">:</span><span class="cp">]</span> <span class="o">=</span> <span class="nx">X</span>
+            <span class="k">return</span> <span class="nx">ones</span>
+
+
+    <span class="nx">def</span> <span class="nx">get_coeff</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="k">if</span> <span class="nx">self</span><span class="p">.</span><span class="nx">scale</span><span class="o">:</span>
+            <span class="k">if</span> <span class="nx">self</span><span class="p">.</span><span class="nx">fit_intercept</span><span class="o">:</span>
+                <span class="k">return</span> <span class="nx">self</span><span class="p">.</span><span class="nx">theta</span><span class="p">.</span><span class="nx">T</span><span class="o">/</span><span class="nx">np</span><span class="p">.</span><span class="nx">hstack</span><span class="p">((</span><span class="cp">[</span><span class="mi">1</span><span class="cp">]</span><span class="p">,</span><span class="nx">self</span><span class="p">.</span><span class="nx">x_std</span><span class="p">))</span>
+
+            <span class="k">return</span> <span class="nx">self</span><span class="p">.</span><span class="nx">theta</span><span class="p">.</span><span class="nx">T</span><span class="o">/</span><span class="nx">self</span><span class="p">.</span><span class="nx">x_std</span> 
+        <span class="k">else</span><span class="o">:</span>
+            <span class="k">return</span> <span class="nx">self</span><span class="p">.</span><span class="nx">theta</span><span class="p">.</span><span class="nx">T</span>
+
+
+
+
+<span class="nx">r</span> <span class="o">=</span> <span class="nx">regression_function</span><span class="p">(</span><span class="nx">X</span><span class="p">,</span><span class="nx">y</span><span class="p">)</span>
+<span class="nx">delta</span> <span class="o">=</span> <span class="p">.</span><span class="mi">1</span>
+<span class="nx">t1</span> <span class="o">=</span> <span class="nx">np</span><span class="p">.</span><span class="nx">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="nx">delta</span><span class="p">)</span>
+<span class="nx">t2</span> <span class="o">=</span> <span class="nx">np</span><span class="p">.</span><span class="nx">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="nx">delta</span><span class="p">)</span>
+<span class="nx">T1</span><span class="p">,</span> <span class="nx">T2</span> <span class="o">=</span> <span class="nx">np</span><span class="p">.</span><span class="nx">meshgrid</span><span class="p">(</span><span class="nx">t1</span><span class="p">,</span> <span class="nx">t2</span><span class="p">)</span>
+<span class="nx">Z</span> <span class="o">=</span> <span class="nx">T1</span><span class="p">.</span><span class="nx">copy</span><span class="p">()</span>
+<span class="k">for</span> <span class="nx">i</span><span class="p">,</span><span class="nx">x1</span> <span class="k">in</span> <span class="nx">enumerate</span><span class="p">(</span><span class="nx">t1</span><span class="p">)</span><span class="o">:</span>
+    <span class="k">for</span> <span class="nx">j</span><span class="p">,</span><span class="nx">y1</span> <span class="k">in</span> <span class="nx">enumerate</span><span class="p">(</span><span class="nx">t2</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">r</span><span class="p">.</span><span class="nx">theta</span><span class="cp">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="cp">]</span> <span class="o">=</span> <span class="nx">x1</span>
+        <span class="nx">r</span><span class="p">.</span><span class="nx">theta</span><span class="cp">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="cp">]</span> <span class="o">=</span> <span class="nx">y1</span>
+        <span class="nx">Z</span><span class="cp">[</span><span class="nx">i</span><span class="p">,</span><span class="nx">j</span><span class="cp">]</span> <span class="o">=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">log_likelihood</span><span class="p">()</span>
+<span class="nx">plt</span><span class="p">.</span><span class="nx">figure</span><span class="p">()</span>
+<span class="nx">CS</span> <span class="o">=</span> <span class="nx">plt</span><span class="p">.</span><span class="nx">contour</span><span class="p">(</span><span class="nx">T1</span><span class="p">,</span> <span class="nx">T2</span><span class="p">,</span> <span class="nx">Z</span><span class="p">)</span>
+<span class="nx">plt</span><span class="p">.</span><span class="nx">clabel</span><span class="p">(</span><span class="nx">CS</span><span class="p">,</span> <span class="nx">inline</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nx">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="nx">plt</span><span class="p">.</span><span class="nx">xlabel</span><span class="p">(</span><span class="s1">&#39;First Feature&#39;</span><span class="p">)</span>
+<span class="nx">plt</span><span class="p">.</span><span class="nx">ylabel</span><span class="p">(</span><span class="s1">&#39;Second Feature&#39;</span><span class="p">)</span>
+<span class="nx">plt</span><span class="p">.</span><span class="nx">title</span><span class="p">(</span><span class="s1">&#39;Controur of Log Likelihood&#39;</span><span class="p">)</span>
+
+
+
+
+<span class="o">&lt;</span><span class="nx">matplotlib</span><span class="p">.</span><span class="nx">text</span><span class="p">.</span><span class="nx">Text</span> <span class="nx">at</span> <span class="mh">0x10a552c50</span><span class="o">&gt;</span>
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D5/output_6_1.png" /></p>
+<div class="highlight"><pre>plt.pcolor(Z)
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D5/output_7_0.png" /></p>
+<p>These plots are showing how seperable the data is.   We could fit this data with a number of logisitic function perfectly.  </p>
+<div class="highlight"><pre>x  = np.linspace(-6,8,100)
+y1 = 1/(1+np.exp(-2.*(x)))
+y2 = 1/(1+np.exp(-10.*(x)))
+y3 = 1/(1+np.exp(-100.*(x)))
+plt.plot(X[:,0],y,&#39;ro&#39;)
+plt.plot(x,y1,&#39;b-&#39;)
+plt.plot(x,y2,&#39;b-&#39;)
+plt.plot(x,y3,&#39;b-&#39;)
+plt.ylim([-0.1,1.1])
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW03D5/output_9_0.png" /></p>
+<p>So for any logistic function with a postive constant with a first feature will fit the data we have.  </p>
+<h2>Compare to Sklearn</h2>
+<div class="highlight"><pre><span class="n">r</span> <span class="o">=</span> <span class="n">regression_function</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+<span class="n">r</span><span class="o">.</span><span class="n">gradient_ascent</span><span class="p">(</span><span class="mf">0.00001</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">r</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">predict</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&quot;Accuracy: &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">predictions</span><span class="o">==</span><span class="n">r</span><span class="o">.</span><span class="n">y</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">y</span><span class="p">))</span>
+
+<span class="p">[[</span> <span class="mf">0.01688462</span>  <span class="mf">1.27894634</span>  <span class="mf">0.00995178</span><span class="p">]]</span>
+<span class="n">Accuracy</span><span class="p">:</span>  <span class="mf">1.0</span>
+
+
+
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LogisticRegression</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span>
+
+<span class="n">lin</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">lin</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">lin</span><span class="o">.</span><span class="n">intercept_</span><span class="p">,</span><span class="n">lin</span><span class="o">.</span><span class="n">coef_</span><span class="p">,</span>
+<span class="k">print</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">lin</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">),</span><span class="n">y</span><span class="p">)</span>
+
+<span class="p">[</span> <span class="mf">0.04652751</span><span class="p">]</span> <span class="p">[[</span> <span class="mf">1.2318561</span>   <span class="mf">0.02251709</span><span class="p">]]</span> <span class="mf">1.0</span>
+
+
+<span class="o">/</span><span class="n">Library</span><span class="o">/</span><span class="n">Python</span><span class="o">/</span><span class="mf">2.7</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">sklearn</span><span class="o">/</span><span class="n">utils</span><span class="o">/</span><span class="n">validation</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">449</span><span class="p">:</span> <span class="n">DataConversionWarning</span><span class="p">:</span> <span class="n">A</span> <span class="n">column</span><span class="o">-</span><span class="n">vector</span> <span class="n">y</span> <span class="n">was</span> <span class="n">passed</span> <span class="n">when</span> <span class="n">a</span> <span class="mi">1</span><span class="n">d</span> <span class="n">array</span> <span class="n">was</span> <span class="n">expected</span><span class="o">.</span> <span class="n">Please</span> <span class="n">change</span> <span class="n">the</span> <span class="n">shape</span> <span class="n">of</span> <span class="n">y</span> <span class="n">to</span> <span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="p">),</span> <span class="k">for</span> <span class="n">example</span> <span class="n">using</span> <span class="n">ravel</span><span class="p">()</span><span class="o">.</span>
+  <span class="n">y</span> <span class="o">=</span> <span class="n">column_or_1d</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">warn</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+
+
+<p>This give similar results to sklearn.   The sklearn package does seem to be faster, but I also believe it is using a c package called liblinear for its optimization, while we are doing it in pure python.</p>
+<h2>Checking Scaling</h2>
+<div class="highlight"><pre><span class="nx">r</span> <span class="o">=</span> <span class="nx">regression_function</span><span class="p">(</span><span class="nx">X</span><span class="p">,</span><span class="nx">y</span><span class="p">,</span><span class="nx">fit_intercept</span><span class="o">=</span><span class="nx">True</span><span class="p">,</span> <span class="nx">scale</span> <span class="o">=</span> <span class="nx">True</span><span class="p">)</span>
+<span class="nx">r</span><span class="p">.</span><span class="nx">gradient_ascent</span><span class="p">(</span><span class="mf">0.0001</span><span class="p">)</span>
+<span class="nx">print</span> <span class="nx">r</span><span class="p">.</span><span class="nx">get_coeff</span><span class="p">()</span>
+<span class="nx">predictions</span> <span class="o">=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">predict</span><span class="p">()</span>
+<span class="nx">print</span> <span class="s2">&quot;Accuracy: &quot;</span><span class="p">,</span> <span class="nx">np</span><span class="p">.</span><span class="nx">sum</span><span class="p">(</span><span class="nx">predictions</span><span class="o">==</span><span class="nx">r</span><span class="p">.</span><span class="nx">y</span><span class="p">)</span><span class="o">/</span><span class="kr">float</span><span class="p">(</span><span class="nx">len</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">y</span><span class="p">))</span>
+
+<span class="cp">[</span><span class="err">[</span> <span class="mf">0.17710665</span>  <span class="mf">1.17554584</span>  <span class="mf">0.05796619</span><span class="cp">]</span><span class="p">]</span>
+<span class="nx">Accuracy</span><span class="o">:</span>  <span class="mf">1.0</span>
+
+
+
+<span class="nx">r</span> <span class="o">=</span> <span class="nx">regression_function</span><span class="p">(</span><span class="nx">X</span><span class="p">,</span><span class="nx">y</span><span class="p">,</span><span class="nx">fit_intercept</span><span class="o">=</span><span class="nx">True</span><span class="p">,</span> <span class="nx">scale</span> <span class="o">=</span> <span class="nx">False</span><span class="p">)</span>
+<span class="nx">r</span><span class="p">.</span><span class="nx">gradient_ascent</span><span class="p">(</span><span class="mf">0.00001</span><span class="p">)</span>
+<span class="nx">print</span> <span class="nx">r</span><span class="p">.</span><span class="nx">get_coeff</span><span class="p">()</span>
+<span class="nx">predictions</span> <span class="o">=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">predict</span><span class="p">()</span>
+<span class="nx">print</span> <span class="s2">&quot;Accuracy: &quot;</span><span class="p">,</span> <span class="nx">np</span><span class="p">.</span><span class="nx">sum</span><span class="p">(</span><span class="nx">predictions</span><span class="o">==</span><span class="nx">r</span><span class="p">.</span><span class="nx">y</span><span class="p">)</span><span class="o">/</span><span class="kr">float</span><span class="p">(</span><span class="nx">len</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">y</span><span class="p">))</span>
+<span class="nx">print</span> <span class="nx">r</span><span class="p">.</span><span class="nx">log_likelihood</span><span class="p">()</span>
+
+<span class="cp">[</span><span class="err">[</span> <span class="mf">0.01688462</span>  <span class="mf">1.27894634</span>  <span class="mf">0.00995178</span><span class="cp">]</span><span class="p">]</span>
+<span class="nx">Accuracy</span><span class="o">:</span>  <span class="mf">1.0</span>
+<span class="o">-</span><span class="mf">0.227847971687</span>
+
+
+
+<span class="nx">r</span> <span class="o">=</span> <span class="nx">regression_function</span><span class="p">(</span><span class="nx">X</span><span class="p">,</span><span class="nx">y</span><span class="p">,</span><span class="nx">fit_intercept</span><span class="o">=</span><span class="nx">True</span><span class="p">,</span> <span class="nx">scale</span> <span class="o">=</span> <span class="nx">True</span><span class="p">)</span>
+<span class="nx">r</span><span class="p">.</span><span class="nx">gradient_ascent</span><span class="p">(</span><span class="mf">0.00001</span><span class="p">)</span>
+<span class="nx">print</span> <span class="nx">r</span><span class="p">.</span><span class="nx">get_coeff</span><span class="p">()</span>
+<span class="nx">predictions</span> <span class="o">=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">predict</span><span class="p">()</span>
+<span class="nx">print</span> <span class="s2">&quot;Accuracy: &quot;</span><span class="p">,</span> <span class="nx">np</span><span class="p">.</span><span class="nx">sum</span><span class="p">(</span><span class="nx">predictions</span><span class="o">==</span><span class="nx">r</span><span class="p">.</span><span class="nx">y</span><span class="p">)</span><span class="o">/</span><span class="kr">float</span><span class="p">(</span><span class="nx">len</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">y</span><span class="p">))</span>
+
+<span class="cp">[</span><span class="err">[</span> <span class="mf">0.09595542</span>  <span class="mf">0.92911705</span>  <span class="mf">0.0366225</span> <span class="cp">]</span><span class="p">]</span>
+<span class="nx">Accuracy</span><span class="o">:</span>  <span class="mf">1.0</span>
+</pre></div>
+
+
+<h2>Graduate Student Data</h2>
+<div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="s">&#39;data/grad.csv&#39;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">delimiter</span><span class="o">=</span><span class="s">&#39;,&#39;</span><span class="p">)</span>
+<span class="n">yg</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">xg</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:]</span>
+<span class="n">rg</span><span class="o">=</span> <span class="n">regression_function</span><span class="p">(</span><span class="n">xg</span><span class="p">,</span><span class="n">yg</span><span class="p">,</span><span class="n">fit_intercept</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">scale</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+<span class="n">rg</span><span class="o">.</span><span class="n">gradient_ascent</span><span class="p">(</span><span class="mf">0.000001</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">rg</span><span class="o">.</span><span class="n">get_coeff</span><span class="p">()</span>
+<span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">rg</span><span class="o">.</span><span class="n">predict</span><span class="p">()</span><span class="o">==</span><span class="n">rg</span><span class="o">.</span><span class="n">y</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rg</span><span class="o">.</span><span class="n">y</span><span class="p">))</span>
+
+<span class="p">[[</span><span class="o">-</span><span class="mf">0.84699307</span>  <span class="mf">0.00229446</span>  <span class="mf">0.76299305</span> <span class="o">-</span><span class="mf">0.54843734</span><span class="p">]]</span>
+
+
+
+
+
+<span class="mf">0.70499999999999996</span>
+
+
+
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">()</span>
+<span class="n">log</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">xg</span><span class="p">,</span><span class="n">yg</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">log</span><span class="o">.</span><span class="n">intercept_</span><span class="p">,</span><span class="n">log</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span>
+<span class="k">print</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">xg</span><span class="p">),</span><span class="n">yg</span><span class="p">)</span>
+
+<span class="p">[</span><span class="o">-</span><span class="mf">1.18847876</span>  <span class="mf">0.00191577</span>  <span class="mf">0.21564289</span> <span class="o">-</span><span class="mf">0.59842009</span><span class="p">]</span>
+<span class="mf">0.715</span>
+
+
+<span class="o">/</span><span class="n">Library</span><span class="o">/</span><span class="n">Python</span><span class="o">/</span><span class="mf">2.7</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">sklearn</span><span class="o">/</span><span class="n">utils</span><span class="o">/</span><span class="n">validation</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">449</span><span class="p">:</span> <span class="n">DataConversionWarning</span><span class="p">:</span> <span class="n">A</span> <span class="n">column</span><span class="o">-</span><span class="n">vector</span> <span class="n">y</span> <span class="n">was</span> <span class="n">passed</span> <span class="n">when</span> <span class="n">a</span> <span class="mi">1</span><span class="n">d</span> <span class="n">array</span> <span class="n">was</span> <span class="n">expected</span><span class="o">.</span> <span class="n">Please</span> <span class="n">change</span> <span class="n">the</span> <span class="n">shape</span> <span class="n">of</span> <span class="n">y</span> <span class="n">to</span> <span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="p">),</span> <span class="k">for</span> <span class="n">example</span> <span class="n">using</span> <span class="n">ravel</span><span class="p">()</span><span class="o">.</span>
+  <span class="n">y</span> <span class="o">=</span> <span class="n">column_or_1d</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">warn</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+
+
+<h2>Regularization</h2>
+<div class="highlight"><pre><span class="nx">r</span> <span class="o">=</span> <span class="nx">regression_function</span><span class="p">(</span><span class="nx">X</span><span class="p">,</span><span class="nx">y</span><span class="p">,</span><span class="nx">fit_intercept</span><span class="o">=</span><span class="nx">True</span><span class="p">,</span> <span class="nx">scale</span> <span class="o">=</span> <span class="nx">True</span><span class="p">,</span><span class="nx">lamb</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="nx">r</span><span class="p">.</span><span class="nx">gradient_ascent</span><span class="p">(</span><span class="mf">0.00001</span><span class="p">)</span>
+<span class="nx">print</span> <span class="nx">r</span><span class="p">.</span><span class="nx">get_coeff</span><span class="p">()</span>
+<span class="nx">predictions</span> <span class="o">=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">predict</span><span class="p">()</span>
+<span class="nx">print</span> <span class="s2">&quot;Accuracy: &quot;</span><span class="p">,</span> <span class="nx">np</span><span class="p">.</span><span class="nx">sum</span><span class="p">(</span><span class="nx">predictions</span><span class="o">==</span><span class="nx">r</span><span class="p">.</span><span class="nx">y</span><span class="p">)</span><span class="o">/</span><span class="kr">float</span><span class="p">(</span><span class="nx">len</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">y</span><span class="p">))</span>
+
+<span class="cp">[</span><span class="err">[</span> <span class="mf">0.09595542</span>  <span class="mf">0.92911705</span>  <span class="mf">0.0366225</span> <span class="cp">]</span><span class="p">]</span>
+<span class="nx">Accuracy</span><span class="o">:</span>  <span class="mf">1.0</span>
+
+
+
+<span class="nx">r</span> <span class="o">=</span> <span class="nx">regression_function</span><span class="p">(</span><span class="nx">X</span><span class="p">,</span><span class="nx">y</span><span class="p">,</span><span class="nx">fit_intercept</span><span class="o">=</span><span class="nx">True</span><span class="p">,</span> <span class="nx">scale</span> <span class="o">=</span> <span class="nx">True</span><span class="p">,</span><span class="nx">lamb</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="nx">r</span><span class="p">.</span><span class="nx">gradient_ascent</span><span class="p">(</span><span class="mf">0.00001</span><span class="p">)</span>
+<span class="nx">print</span> <span class="nx">r</span><span class="p">.</span><span class="nx">get_coeff</span><span class="p">()</span>
+<span class="nx">predictions</span> <span class="o">=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">predict</span><span class="p">()</span>
+<span class="nx">print</span> <span class="s2">&quot;Accuracy: &quot;</span><span class="p">,</span> <span class="nx">np</span><span class="p">.</span><span class="nx">sum</span><span class="p">(</span><span class="nx">predictions</span><span class="o">==</span><span class="nx">r</span><span class="p">.</span><span class="nx">y</span><span class="p">)</span><span class="o">/</span><span class="kr">float</span><span class="p">(</span><span class="nx">len</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">y</span><span class="p">))</span>
+
+<span class="cp">[</span><span class="err">[</span> <span class="mf">0.02568882</span>  <span class="mf">0.53308379</span>  <span class="mf">0.01324245</span><span class="cp">]</span><span class="p">]</span>
+<span class="nx">Accuracy</span><span class="o">:</span>  <span class="mf">1.0</span>
+
+
+
+<span class="nx">r</span> <span class="o">=</span> <span class="nx">regression_function</span><span class="p">(</span><span class="nx">X</span><span class="p">,</span><span class="nx">y</span><span class="p">,</span><span class="nx">fit_intercept</span><span class="o">=</span><span class="nx">True</span><span class="p">,</span> <span class="nx">scale</span> <span class="o">=</span> <span class="nx">True</span><span class="p">,</span><span class="nx">lamb</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="nx">r</span><span class="p">.</span><span class="nx">gradient_ascent</span><span class="p">(</span><span class="mf">0.00001</span><span class="p">)</span>
+<span class="nx">print</span> <span class="nx">r</span><span class="p">.</span><span class="nx">get_coeff</span><span class="p">()</span>
+<span class="nx">predictions</span> <span class="o">=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">predict</span><span class="p">()</span>
+<span class="nx">print</span> <span class="s2">&quot;Accuracy: &quot;</span><span class="p">,</span> <span class="nx">np</span><span class="p">.</span><span class="nx">sum</span><span class="p">(</span><span class="nx">predictions</span><span class="o">==</span><span class="nx">r</span><span class="p">.</span><span class="nx">y</span><span class="p">)</span><span class="o">/</span><span class="kr">float</span><span class="p">(</span><span class="nx">len</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">y</span><span class="p">))</span>
+
+<span class="cp">[</span><span class="err">[</span> <span class="mf">0.00178464</span>  <span class="mf">0.22617375</span>  <span class="mf">0.00074595</span><span class="cp">]</span><span class="p">]</span>
+<span class="nx">Accuracy</span><span class="o">:</span>  <span class="mf">1.0</span>
+
+
+
+<span class="nx">r</span> <span class="o">=</span> <span class="nx">regression_function</span><span class="p">(</span><span class="nx">X</span><span class="p">,</span><span class="nx">y</span><span class="p">,</span><span class="nx">fit_intercept</span><span class="o">=</span><span class="nx">True</span><span class="p">,</span> <span class="nx">scale</span> <span class="o">=</span> <span class="nx">True</span><span class="p">,</span><span class="nx">lamb</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="nx">r</span><span class="p">.</span><span class="nx">gradient_ascent</span><span class="p">(</span><span class="mf">0.00001</span><span class="p">)</span>
+<span class="nx">print</span> <span class="nx">r</span><span class="p">.</span><span class="nx">get_coeff</span><span class="p">()</span>
+<span class="nx">predictions</span> <span class="o">=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">predict</span><span class="p">()</span>
+<span class="nx">print</span> <span class="s2">&quot;Accuracy: &quot;</span><span class="p">,</span> <span class="nx">np</span><span class="p">.</span><span class="nx">sum</span><span class="p">(</span><span class="nx">predictions</span><span class="o">==</span><span class="nx">r</span><span class="p">.</span><span class="nx">y</span><span class="p">)</span><span class="o">/</span><span class="kr">float</span><span class="p">(</span><span class="nx">len</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">y</span><span class="p">))</span>
+
+<span class="cp">[</span><span class="err">[</span>  <span class="mf">3.04588371e-06</span>   <span class="mf">4.27234980e-02</span>  <span class="o">-</span><span class="mf">8.65650480e-04</span><span class="cp">]</span><span class="p">]</span>
+<span class="nx">Accuracy</span><span class="o">:</span>  <span class="mf">1.0</span>
+</pre></div>
+
+
+<h2>Stochastic Gradient Descent</h2>
+<div class="highlight"><pre><span class="n">r</span> <span class="o">=</span> <span class="n">regression_function</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">fit_intercept</span><span class="o">=</span><span class="n">True</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="n">True</span><span class="p">,</span><span class="n">lamb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-5</span><span class="p">)</span>
+<span class="n">print</span> <span class="n">r</span><span class="p">.</span><span class="n">log_likelihood</span><span class="p">()</span>
+<span class="nf">%timeit</span> <span class="n">r</span><span class="p">.</span><span class="n">stoch_gradient_ascent</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>
+<span class="n">print</span> <span class="n">r</span><span class="p">.</span><span class="n">log_likelihood</span><span class="p">()</span>
+<span class="n">print</span> <span class="n">r</span><span class="p">.</span><span class="n">get_coeff</span><span class="p">()</span>
+
+<span class="o">-</span><span class="mf">69.314718056</span>
+<span class="n">The</span> <span class="n">slowest</span> <span class="n">run</span> <span class="n">took</span> <span class="mf">68.69</span> <span class="n">times</span> <span class="n">longer</span> <span class="n">than</span> <span class="n">the</span> <span class="n">fastest</span><span class="p">.</span> <span class="n">This</span> <span class="n">could</span> <span class="n">mean</span> <span class="n">that</span> <span class="n">an</span> <span class="n">intermediate</span> <span class="n">result</span> <span class="n">is</span> <span class="n">being</span> <span class="n">cached</span> 
+<span class="mi">100</span> <span class="n">loops</span><span class="p">,</span> <span class="n">best</span> <span class="n">of</span> <span class="mi">3</span><span class="o">:</span> <span class="mf">2.29</span> <span class="n">ms</span> <span class="n">per</span> <span class="n">loop</span>
+<span class="o">-</span><span class="mf">0.000261667070057</span>
+<span class="p">[[</span> <span class="mf">1.40603903</span>  <span class="mf">2.90379792</span>  <span class="mf">0.22544191</span><span class="p">]]</span>
+
+
+
+<span class="n">r</span> <span class="o">=</span> <span class="n">regression_function</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">fit_intercept</span><span class="o">=</span><span class="n">True</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="n">True</span><span class="p">,</span><span class="n">lamb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-5</span><span class="p">)</span>
+<span class="n">print</span> <span class="n">r</span><span class="p">.</span><span class="n">log_likelihood</span><span class="p">()</span>
+<span class="nf">%timeit</span> <span class="n">r</span><span class="p">.</span><span class="n">gradient_ascent</span><span class="p">(</span><span class="mf">1e-1</span><span class="p">)</span>
+<span class="n">print</span> <span class="n">r</span><span class="p">.</span><span class="n">log_likelihood</span><span class="p">()</span>
+<span class="n">print</span> <span class="n">r</span><span class="p">.</span><span class="n">get_coeff</span><span class="p">()</span>
+
+<span class="o">-</span><span class="mf">69.314718056</span>
+<span class="n">The</span> <span class="n">slowest</span> <span class="n">run</span> <span class="n">took</span> <span class="mf">1034.52</span> <span class="n">times</span> <span class="n">longer</span> <span class="n">than</span> <span class="n">the</span> <span class="n">fastest</span><span class="p">.</span> <span class="n">This</span> <span class="n">could</span> <span class="n">mean</span> <span class="n">that</span> <span class="n">an</span> <span class="n">intermediate</span> <span class="n">result</span> <span class="n">is</span> <span class="n">being</span> <span class="n">cached</span> 
+<span class="mi">10000</span> <span class="n">loops</span><span class="p">,</span> <span class="n">best</span> <span class="n">of</span> <span class="mi">3</span><span class="o">:</span> <span class="mi">129</span> <span class="err">µ</span><span class="n">s</span> <span class="n">per</span> <span class="n">loop</span>
+<span class="o">-</span><span class="mf">0.000393662821043</span>
+<span class="p">[[</span> <span class="mf">1.31662671</span>  <span class="mf">2.79854521</span>  <span class="mf">0.25109632</span><span class="p">]]</span>
+</pre></div>
+
+
+<h2>Newton's Method for a single variable</h2>
+<p>We were told to use newton's method for root finding on the following function:</p>
+<p>$$f(x) = 6 \ x^2 + 3 \ x - 10$$</p>
+<p>This function has two roots: -1.565 and 1.0650.</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">6</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="n">x</span><span class="o">-</span><span class="mi">10</span>
+
+<span class="k">def</span> <span class="nf">df</span><span class="p">(</span><span class="n">func</span><span class="p">,</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="mf">0.00001</span><span class="p">)</span><span class="o">-</span><span class="n">func</span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="mf">0.00001</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">/</span><span class="p">(</span><span class="mf">0.00002</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">newton_roots</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="n">tolerance</span> <span class="o">=</span> <span class="mf">1e-3</span>
+    <span class="n">xo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">toll</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">while</span> <span class="n">math</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span><span class="n">toll</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">tolerance</span><span class="p">:</span>
+        <span class="n">xo</span> <span class="o">=</span> <span class="n">xo</span> <span class="o">-</span> <span class="n">func</span><span class="p">(</span><span class="n">xo</span><span class="p">)</span><span class="o">/</span><span class="n">df</span><span class="p">(</span><span class="n">func</span><span class="p">,</span><span class="n">xo</span><span class="p">)</span>
+        <span class="n">toll</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">xo</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mf">1e6</span><span class="p">:</span>
+            <span class="k">break</span>
+    <span class="k">return</span> <span class="n">xo</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+
+<span class="n">cnt</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">newton_roots</span><span class="p">(</span><span class="n">f</span><span class="p">),</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">cnt</span><span class="p">[</span><span class="n">root</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="k">print</span> <span class="n">cnt</span>
+
+<span class="n">Counter</span><span class="p">({</span><span class="mf">1.065</span><span class="p">:</span> <span class="mi">54</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.565</span><span class="p">:</span> <span class="mi">46</span><span class="p">})</span>
+</pre></div>
+
+
+<p>We can see that we get the two roots about equal number of times.  </p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'bryansmithphd';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=bryansmithphd">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      Bryan Smith, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="http://www.bryantravissmith.com/theme/js/jquery.min.js"></script>
+  <script src="http://www.bryantravissmith.com/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$$','$$'], ['\\(','\\)']]}
+});
+</script>
+</html>

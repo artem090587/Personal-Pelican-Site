@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-04-01/index.html" />
+
+    <title>  Bryan Travis Smith, Ph.D &mdash; Galvanize - Week 04 - Day 1
+</title>
+
+
+
+
+    <link rel="stylesheet" href="http://www.bryantravissmith.com/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-24340005-3', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+
+    <meta name="author" content="Bryan Smith">
+    <meta name="description" content="Today we covered K Nearest Neighbors and Decision Trees">
+  <meta name="tags" contents="data-science, galvanize, kNN, K Nearest Neighbors, Decision Trees, ">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+      <div class="header-image pull-left">
+        <a class="nodec" href="http://www.bryantravissmith.com"><img src=http://www.bryantravissmith.com/img/bryan.jpeg></a>
+      </div>
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="http://www.bryantravissmith.com">Bryan Travis Smith, Ph.D</a>
+      </h1>
+      <h3 class="header-text">Physicist, Data Scientist, Martial Artist, & Life Enthusiast</h3>
+      <ul class="header-menu list-inline">
+              <li class="muted">|</li>
+            <li><a class="nodec" href="http://www.bryantravissmith.com/about/">About</a></li>
+              <li class="muted">|</li>
+          <li><a class="nodec icon-mail-alt" href="mailto:bryantravissmith@gmail.com"></a></li>
+          <li><a class="nodec icon-github" href="https://github.com/bryantravissmith"></a></li>
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+      <a href="/galvanize/galvanize-data-science-04-01/" title="Permalink to Galvanize - Week 04 - Day 1">Galvanize - Week 04 - Day 1</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" href="/galvanize/galvanize-data-science-04-01/" title="2015-06-22T10:20:00-07:00">Mon 22 June 2015</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+        <a href="http://www.bryantravissmith.com/category/galvanize.html">Galvanize</a>
+      </li>
+        <li class="muted">&middot;</li>
+        <li>
+          <address class="post-author">
+            By <a href="http://www.bryantravissmith.com/author/bryan-smith.html">Bryan Smith</a>
+          </address>
+        </li>
+    </ul>
+    <div class="post-content">
+      <h1>Galvanize Immersive Data Science</h1>
+<h2>Week 4 - Day 1</h2>
+<p>Our quiz involved creating an SQL table that will determine churn for an fake web adervertising data.  Then with this new table, and a table of predictions, we had to come up with SQL queries that would calculate accuracy, precision, recall, and specificity.  </p>
+<h3>Tables</h3>
+<div class="highlight"><pre>advertisers
+    id
+    name
+    city
+    state
+    business_type
+
+campaigns
+    advertiser_id
+    campaign_id
+    start_date
+    duration
+    daily_budget
+
+predicted_churn
+    advertiser_id
+    churn
+</pre></div>
+
+
+<h3>Table Query</h3>
+<div class="highlight"><pre>CREATE TABLE churn 
+AS (SELECT a.id, 
+        a.name, 
+        a.city, 
+        a.state, 
+        a.business_type, 
+        (DATEDIFF(day,
+            GETDATE(),
+            c.start_date)
+            +c.duration &gt; 14) AS churn
+    FROM advertisers a 
+    JOIN (SELECT c.* 
+            FROM campaigns c 
+            JOIN (SELECT advertiser_id, 
+                    MAX(start_date) as last_campaign_date 
+                    GROUPBY advertiser_id) cc 
+            ON c.advertiser_id = cc.advertiser
+            AND c.start_date = cc.last_campaign_date) c
+    ON a.id = c.advertiser_id
+    );
+</pre></div>
+
+
+<h3>Metric Query</h3>
+<div class="highlight"><pre>SELECT CAST((TP+TN) AS FLOAT)/(TP+TN+FP+FN) as accuracy,
+            CAST(TP AS FLOAT)/(TP+FN) as recall,
+            CAST(TP AS FLOAT)/(TP+FP) as precision,
+            CAST(TN AS FLOAT)/(TN+FP) as specificity
+FROM (SELECT COUNT( CASE WHERE c.churn=1 AND pc.churn=1
+                          THEN 1 ELSE 0) as TP,
+             COUNT( CASE WHERE c.churn=1 AND pc.churn=0
+                          THEN 1 ELSE 0) as FN,
+             COUNT( CASE WHERE c.churn=0 AND pc.churn=1
+                          THEN 1 ELSE 0) as FP,
+             COUNT( CASE WHERE c.churn=0 AND pc.churn=0
+                          THEN 1 ELSE 0) as TN,
+      FROM churn c JOIN predicted_churn)
+</pre></div>
+
+
+<h2>k Nearest Neighbors</h2>
+<p>Our morning individual sprit was to implement a kNN class that can take differnt similarity functions as a measure of nearest.  For good for bad, mine was by var the tursted solution, but that is because I perfer to think interms of matrix operations.  Because of my use of numpy, mine was also the fastest!</p>
+<p>We will start with loading some data.</p>
+<div class="highlight"><pre><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">make_classification</span><span class="p">,</span><span class="n">load_iris</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_classification</span><span class="p">(</span><span class="n">n_features</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_redundant</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_informative</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                           <span class="n">n_clusters_per_class</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">class_sep</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">euclidean_distance</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="n">arr</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">            - row: 1d numpy array k x 1</span>
+<span class="sd">            - arr: 2d numpy array m x n</span>
+<span class="sd">        OUTPUT:</span>
+<span class="sd">            - 1d numpy array m x 1</span>
+
+<span class="sd">        Calculates the euclidean distance of row from each row in arr.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="kp">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="kp">power</span><span class="p">(</span><span class="n">row</span><span class="o">-</span><span class="n">arr</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">euclidean_distance</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="n">arr</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">            - row: 1d numpy array k x 1</span>
+<span class="sd">            - arr: 2d numpy array m x n</span>
+<span class="sd">        OUTPUT:</span>
+<span class="sd">            - 1d numpy array m x 1</span>
+
+<span class="sd">        Calculates the euclidean distance of row from each row in arr.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="kp">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="kp">power</span><span class="p">(</span><span class="n">row</span><span class="o">-</span><span class="n">arr</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">cosine_distance</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="n">arr</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">            - row: 1d numpy array k x 1</span>
+<span class="sd">            - arr: 2d numpy array m x n</span>
+<span class="sd">        OUTPUT:</span>
+<span class="sd">            - 1d numpy array m x 1</span>
+
+<span class="sd">        Calculates the cosign similarity of row from each row in arr.</span>
+<span class="sd">        cosign similarity = 1 - a.dot(b)/(|a||b|)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="mi">1</span><span class="o">-</span><span class="n">arr</span><span class="o">.</span><span class="kp">dot</span><span class="p">(</span><span class="n">row</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">row</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">KNN</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">similarity</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">            - k: int &gt; 0</span>
+<span class="sd">            - similarity: function(1d numpy array,2d numpy array) returns 1d numpy array</span>
+<span class="sd">        OUTPUT:</span>
+<span class="sd">            - None</span>
+
+<span class="sd">        Instantiates the KNN class</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">similarity</span> <span class="o">=</span> <span class="n">similarity</span>
+
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">            - X: 2d numpy array</span>
+<span class="sd">            - y: 1d numpy array of labels</span>
+<span class="sd">        OUTPUT:</span>
+<span class="sd">            - None</span>
+
+<span class="sd">        Stores training data</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">X</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
+
+    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">X</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">            - X: 2d numpy array</span>
+<span class="sd">        OUTPUT:</span>
+<span class="sd">            - 1d numpy array</span>
+
+<span class="sd">        Calculate the distances of each row in X from each row in the training data.  </span>
+<span class="sd">        Returns the max vote from k nearest points.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">apply_along_axis</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">similarity</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="kp">apply_along_axis</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="kp">argmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="kp">bincount</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="kp">argsort</span><span class="p">(</span><span class="n">x</span><span class="p">)[:</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">]])),</span><span class="mi">1</span><span class="p">,</span><span class="n">distances</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+
+<span class="sd">        OUTPUT:</span>
+<span class="sd">            - numpy float</span>
+
+<span class="sd">        Accurcy of kNN on training data</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="kp">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">)</span><span class="o">==</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">))</span>
+
+
+<span class="n">knn</span> <span class="o">=</span> <span class="n">KNN</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="n">euclidean_distance</span><span class="p">)</span>
+<span class="n">knn</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+<span class="n">knn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">knn</span><span class="o">.</span><span class="n">score</span><span class="p">()</span>
+
+
+
+
+<span class="mf">1.0</span>
+
+
+
+
+<span class="n">knn</span> <span class="o">=</span> <span class="n">KNN</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="n">cosine_distance</span><span class="p">)</span>
+<span class="n">knn</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+<span class="n">knn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">knn</span><span class="o">.</span><span class="n">score</span><span class="p">()</span>
+
+
+
+
+<span class="mf">1.0</span>
+</pre></div>
+
+
+<h2>kNN on Iris Data</h2>
+<p>I will apply my KNN class on the Iris dataset from sklearn, and compare my results to the sklearn results.  I will do this for both my metrics of euclidean and cosign.  </p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">matplotlib.colors</span> <span class="kn">import</span> <span class="n">ListedColormap</span>
+<span class="n">cmap_light</span> <span class="o">=</span> <span class="n">ListedColormap</span><span class="p">([</span><span class="s">&#39;#FFAAAA&#39;</span><span class="p">,</span> <span class="s">&#39;#AAFFAA&#39;</span><span class="p">,</span> <span class="s">&#39;#AAAAFF&#39;</span><span class="p">])</span>
+<span class="n">cmap_bold</span> <span class="o">=</span> <span class="n">ListedColormap</span><span class="p">([</span><span class="s">&#39;#FF0000&#39;</span><span class="p">,</span> <span class="s">&#39;#00FF00&#39;</span><span class="p">,</span> <span class="s">&#39;#0000FF&#39;</span><span class="p">])</span>
+
+<span class="n">n_neighbors</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">iris</span> <span class="o">=</span> <span class="n">load_iris</span><span class="p">()</span>
+<span class="n">XI</span> <span class="o">=</span> <span class="n">iris</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span> 
+<span class="n">yI</span> <span class="o">=</span> <span class="n">iris</span><span class="o">.</span><span class="n">target</span>
+
+<span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="p">[</span><span class="n">euclidean_distance</span><span class="p">,</span> <span class="n">cosine_distance</span><span class="p">]:</span>
+    <span class="n">knn</span> <span class="o">=</span> <span class="n">KNN</span><span class="p">(</span><span class="n">n_neighbors</span><span class="p">,</span><span class="n">func</span><span class="p">)</span>
+    <span class="n">knn</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">XI</span><span class="p">,</span><span class="n">yI</span><span class="p">)</span>
+
+    <span class="n">h</span> <span class="o">=</span> <span class="mf">0.2</span>
+    <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span> <span class="o">=</span> <span class="n">XI</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">XI</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">=</span> <span class="n">XI</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">XI</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">h</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">,</span> <span class="n">h</span><span class="p">))</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="n">knn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">xx</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span><span class="n">yy</span><span class="o">.</span><span class="n">ravel</span><span class="p">()])</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="n">Z</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">xx</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap_light</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">XI</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">XI</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">yI</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap_bold</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">xx</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">xx</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">yy</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">yy</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Bryan &quot;</span> <span class="o">+</span> <span class="n">func</span><span class="o">.</span><span class="n">__name__</span> <span class="o">+</span> <span class="s">&quot; KNN 3-Class classification (k = </span><span class="si">%i</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">n_neighbors</span><span class="p">))</span>
+
+
+    <span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">KNeighborsClassifier</span> <span class="k">as</span> <span class="n">sKNN</span>
+    <span class="n">sknn</span> <span class="o">=</span> <span class="n">sKNN</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="n">n_neighbors</span><span class="p">)</span>
+    <span class="n">sknn</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">XI</span><span class="p">,</span> <span class="n">yI</span><span class="p">)</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="mf">0.2</span>
+    <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span> <span class="o">=</span> <span class="n">XI</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">XI</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">=</span> <span class="n">XI</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">XI</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">h</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">,</span> <span class="n">h</span><span class="p">))</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="n">sknn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">xx</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span><span class="n">yy</span><span class="o">.</span><span class="n">ravel</span><span class="p">()])</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="n">Z</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">xx</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap_light</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">XI</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">XI</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">yI</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap_bold</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">xx</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">xx</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">yy</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">yy</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Sklearn KNN 3-Class classification (k = </span><span class="si">%i</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">n_neighbors</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW04D1/output_7_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW04D1/output_7_1.png" /></p>
+<h2>Best K</h2>
+<p>We can use cross validation to try to find the best K to optimize for a metric.  Because the Iris data set has 3 labels, we can not use precision or recall.   We can use accuracy.   With a 20 Fold Cross Validation, we can estimate the accuracy for different K values.  </p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span><span class="n">recall_score</span><span class="p">,</span><span class="n">precision_score</span>
+<span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="kn">import</span> <span class="n">KFold</span>
+<span class="n">mean_accuracy</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">mean_precision</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">mean_recall</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">k_range</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">200</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">k_range</span><span class="p">:</span>
+    <span class="n">kf</span> <span class="o">=</span> <span class="n">KFold</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">yI</span><span class="p">),</span> <span class="n">n_folds</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">knn</span> <span class="o">=</span> <span class="n">KNN</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">euclidean_distance</span><span class="p">)</span>
+    <span class="n">accuracy</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">precision</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">recall</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">train_index</span><span class="p">,</span> <span class="n">test_index</span> <span class="ow">in</span> <span class="n">kf</span><span class="p">:</span>
+        <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span> <span class="o">=</span> <span class="n">XI</span><span class="p">[</span><span class="n">train_index</span><span class="p">],</span> <span class="n">XI</span><span class="p">[</span><span class="n">test_index</span><span class="p">]</span>
+        <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">yI</span><span class="p">[</span><span class="n">train_index</span><span class="p">],</span> <span class="n">yI</span><span class="p">[</span><span class="n">test_index</span><span class="p">]</span>
+        <span class="n">knn</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">)</span>
+        <span class="n">pred</span> <span class="o">=</span> <span class="n">knn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+        <span class="n">accuracy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="n">pred</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">yI</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">precision</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">precision_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="n">pred</span><span class="p">))</span>
+            <span class="n">recall</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">recall_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="n">pred</span><span class="p">))</span>
+    <span class="n">mean_accuracy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">accuracy</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">yI</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">mean_precision</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">precision</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+        <span class="n">mean_recall</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">recall</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">k_range</span><span class="p">,</span><span class="n">mean_accuracy</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Accuracy&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">yI</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">k_range</span><span class="p">,</span><span class="n">mean_precision</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Precision&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">k_range</span><span class="p">,</span><span class="n">mean_recall</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Recall&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">1.1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW04D1/output_9_0.png" /></p>
+<p>It seems like any k &gt; 5 and k &lt; 50 will do well this data set.  Really this should be done on a hold out set for a final estimate of the model.</p>
+<h2>Recusion</h2>
+<p>We had an optional assignment to work on Recursive methods to preare for our afternoon spring involving decision trees.  We had to make trees and print trees using the following tree class.</p>
+<div class="highlight"><pre><span class="k">class</span> <span class="n">TreeNode</span>(<span class="n">object</span>):
+    <span class="n">def</span> <span class="n">__init__</span>(<span class="k">self</span>, <span class="nb">value</span>, <span class="n">left</span>=<span class="n">None</span>, <span class="n">right</span>=<span class="n">None</span>):
+        <span class="k">self</span>.<span class="nb">value</span> = <span class="nb">value</span>
+        <span class="k">self</span>.<span class="n">left</span> = <span class="n">left</span>
+        <span class="k">self</span>.<span class="n">right</span> = <span class="n">right</span>
+</pre></div>
+
+
+<p>The print method I developed was just to us a "|_" style to represent branches of the tree.</p>
+<div class="highlight"><pre>def print_all(tree,level=1):
+    response = &quot;|_&quot; + str(tree.value)
+    if tree.left != None:
+        response += &#39;\n&#39; +  &quot; &quot;*2*level +print_all(tree.left,level+1)
+    if tree.right != None:
+        response += &quot;\n&quot; +  &quot; &quot;*2*level +print_all(tree.right,level+1)
+    return response
+
+Tree = TreeNode(10,TreeNode(5,TreeNode(4),TreeNode(5)),TreeNode(10))
+print print_all(Tree)
+
+|_10
+  |_5
+    |_4
+    |_5
+  |_10
+</pre></div>
+
+
+<p>We were asked to also find a method to find a value of a tree by summing.</p>
+<div class="highlight"><pre>def sum_tree(root):
+    if root.left == None:
+        if root.right==None:
+            return root.value
+        else:
+            return root.value+sum_tree(root.right)
+    elif root.right == None:
+        return root.value + sum_tree(root.left)
+    else:
+        return sum_tree(root.left) + sum_tree(root.right) + root.value
+
+sum_tree(Tree)
+
+
+
+
+34
+</pre></div>
+
+
+<p>We were also asked to come up with a pay to construct a tree that would give all possible out comes of n coin flips:</p>
+<div class="highlight"><pre>def build_coinflip_tree(n,root=TreeNode(&quot;&quot;)):
+    if n == 0:
+        return root
+    root.left = build_coinflip_tree(n-1,root=TreeNode(&quot;H&quot;))
+    root.right = build_coinflip_tree(n-1,root=TreeNode(&quot;T&quot;))
+    return root
+
+print print_all(build_coinflip_tree(3))
+
+|_
+  |_H
+    |_H
+      |_H
+      |_T
+    |_T
+      |_H
+      |_T
+  |_T
+    |_H
+      |_H
+      |_T
+    |_T
+      |_H
+      |_T
+</pre></div>
+
+
+<h2>Decision Trees</h2>
+<p>The afternoon paired spring involved creating and appending pythong classes to implement a Decision tree with pre and post purning.   We started with the simple golf dataset.</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">DecisionTree</span> <span class="kn">import</span> <span class="n">DecisionTree</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;../data/playgolf.csv&#39;</span><span class="p">)</span>
+<span class="n">df</span>
+</pre></div>
+
+
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Outlook</th>
+      <th>Temperature</th>
+      <th>Humidity</th>
+      <th>Windy</th>
+      <th>Result</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>sunny</td>
+      <td>85</td>
+      <td>85</td>
+      <td>False</td>
+      <td>Don't Play</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>sunny</td>
+      <td>80</td>
+      <td>90</td>
+      <td>True</td>
+      <td>Don't Play</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>overcast</td>
+      <td>83</td>
+      <td>78</td>
+      <td>False</td>
+      <td>Play</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>rain</td>
+      <td>70</td>
+      <td>96</td>
+      <td>False</td>
+      <td>Play</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>rain</td>
+      <td>68</td>
+      <td>80</td>
+      <td>False</td>
+      <td>Play</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>rain</td>
+      <td>65</td>
+      <td>70</td>
+      <td>True</td>
+      <td>Don't Play</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>overcast</td>
+      <td>64</td>
+      <td>65</td>
+      <td>True</td>
+      <td>Play</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>sunny</td>
+      <td>72</td>
+      <td>95</td>
+      <td>False</td>
+      <td>Don't Play</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>sunny</td>
+      <td>69</td>
+      <td>70</td>
+      <td>False</td>
+      <td>Play</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>rain</td>
+      <td>75</td>
+      <td>80</td>
+      <td>False</td>
+      <td>Play</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>sunny</td>
+      <td>75</td>
+      <td>70</td>
+      <td>True</td>
+      <td>Play</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>overcast</td>
+      <td>72</td>
+      <td>90</td>
+      <td>True</td>
+      <td>Play</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>overcast</td>
+      <td>81</td>
+      <td>75</td>
+      <td>False</td>
+      <td>Play</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>rain</td>
+      <td>71</td>
+      <td>80</td>
+      <td>True</td>
+      <td>Don't Play</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>First we will show the results of the Decision Tree we made:</p>
+<div class="highlight"><pre>y = df.Result.values
+x = df.drop(&#39;Result&#39;,axis=1).values
+dt = DecisionTree()
+dt.fit(x, y,df.drop(&#39;Result&#39;,axis=1).columns)
+print dt
+
+Outlook
+  |-&gt; overcast:
+  |     Play
+  |-&gt; no overcast:
+  |     Temperature
+  |     |-&gt; &lt; 80:
+  |     |     Temperature
+  |     |     |-&gt; &lt; 75:
+  |     |     |     Temperature
+  |     |     |     |-&gt; &lt; 71:
+  |     |     |     |     Temperature
+  |     |     |     |     |-&gt; &lt; 68:
+  |     |     |     |     |     Don&#39;t Play
+  |     |     |     |     |-&gt; &gt;= 68:
+  |     |     |     |     |     Play
+  |     |     |     |-&gt; &gt;= 71:
+  |     |     |     |     Don&#39;t Play
+  |     |     |-&gt; &gt;= 75:
+  |     |     |     Play
+  |     |-&gt; &gt;= 80:
+  |     |     Don&#39;t Play
+</pre></div>
+
+
+<p>We can see the decision tree can split on the same variable multiple times, and we can change the spliting criteria.</p>
+<div class="highlight"><pre>dt = DecisionTree(impurity_criterion=&#39;gini&#39;)
+dt.fit(x, y,df.drop(&#39;Result&#39;,axis=1).columns)
+print dt
+
+Outlook
+  |-&gt; overcast:
+  |     Play
+  |-&gt; no overcast:
+  |     Temperature
+  |     |-&gt; &lt; 80:
+  |     |     Temperature
+  |     |     |-&gt; &lt; 68:
+  |     |     |     Don&#39;t Play
+  |     |     |-&gt; &gt;= 68:
+  |     |     |     Temperature
+  |     |     |     |-&gt; &lt; 71:
+  |     |     |     |     Play
+  |     |     |     |-&gt; &gt;= 71:
+  |     |     |     |     Temperature
+  |     |     |     |     |-&gt; &lt; 75:
+  |     |     |     |     |     Don&#39;t Play
+  |     |     |     |     |-&gt; &gt;= 75:
+  |     |     |     |     |     Play
+  |     |-&gt; &gt;= 80:
+  |     |     Don&#39;t Play
+
+
+
+dt = DecisionTree(depth=2)
+dt.fit(x, y,df.drop(&#39;Result&#39;,axis=1).columns)
+print dt
+
+Outlook
+  |-&gt; overcast:
+  |     Play
+  |-&gt; no overcast:
+  |     Temperature
+  |     |-&gt; &lt; 80:
+  |     |     Play
+  |     |-&gt; &gt;= 80:
+  |     |     Don&#39;t Play
+
+
+
+dt = DecisionTree(leaf_size=7)
+dt.fit(x, y,df.drop(&#39;Result&#39;,axis=1).columns)
+print dt
+
+Outlook
+  |-&gt; overcast:
+  |     Play
+  |-&gt; no overcast:
+  |     Temperature
+  |     |-&gt; &lt; 80:
+  |     |     Temperature
+  |     |     |-&gt; &lt; 75:
+  |     |     |     Play
+  |     |     |-&gt; &gt;= 75:
+  |     |     |     Play
+  |     |-&gt; &gt;= 80:
+  |     |     Don&#39;t Play
+</pre></div>
+
+
+<h2>Post Pruning</h2>
+<p>We also implementing a post pruning procedure that takes a test set of data and labels, then prunes the tree to non decrease accuracy while reducing the size of the tree.</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span>
+<span class="n">iris</span> <span class="o">=</span> <span class="n">load_iris</span><span class="p">()</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">iris</span><span class="o">.</span><span class="n">target</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">iris</span><span class="o">.</span><span class="n">data</span>
+<span class="n">X_trn</span><span class="p">,</span><span class="n">X_tst</span><span class="p">,</span><span class="n">y_trn</span><span class="p">,</span><span class="n">y_tst</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">test_size</span><span class="o">=.</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="n">dt</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_trn</span><span class="p">,</span><span class="n">y_trn</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">dt</span>
+<span class="k">print</span> <span class="s">&quot;Accuracy On Test Set:&quot;</span><span class="p">,</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_tst</span><span class="p">),</span><span class="n">y_tst</span><span class="p">)</span>
+<span class="n">dt</span><span class="o">.</span><span class="n">prune</span><span class="p">(</span><span class="n">X_tst</span><span class="p">,</span><span class="n">y_tst</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">dt</span>
+<span class="k">print</span> <span class="s">&quot;Accuracy On Test Set:&quot;</span><span class="p">,</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_tst</span><span class="p">),</span><span class="n">y_tst</span><span class="p">)</span>
+
+<span class="mi">2</span>
+  <span class="o">|-&gt;</span> <span class="o">&lt;</span> <span class="mf">3.5</span><span class="p">:</span>
+  <span class="o">|</span>     <span class="mi">0</span>
+  <span class="o">|-&gt;</span> <span class="o">&gt;=</span> <span class="mf">3.5</span><span class="p">:</span>
+  <span class="o">|</span>     <span class="mi">3</span>
+  <span class="o">|</span>     <span class="o">|-&gt;</span> <span class="o">&lt;</span> <span class="mf">1.8</span><span class="p">:</span>
+  <span class="o">|</span>     <span class="o">|</span>     <span class="mi">2</span>
+  <span class="o">|</span>     <span class="o">|</span>     <span class="o">|-&gt;</span> <span class="o">&lt;</span> <span class="mf">5.6</span><span class="p">:</span>
+  <span class="o">|</span>     <span class="o">|</span>     <span class="o">|</span>     <span class="mi">1</span>
+  <span class="o">|</span>     <span class="o">|</span>     <span class="o">|-&gt;</span> <span class="o">&gt;=</span> <span class="mf">5.6</span><span class="p">:</span>
+  <span class="o">|</span>     <span class="o">|</span>     <span class="o">|</span>     <span class="mi">2</span>
+  <span class="o">|</span>     <span class="o">|-&gt;</span> <span class="o">&gt;=</span> <span class="mf">1.8</span><span class="p">:</span>
+  <span class="o">|</span>     <span class="o">|</span>     <span class="mi">2</span>
+  <span class="o">|</span>     <span class="o">|</span>     <span class="o">|-&gt;</span> <span class="o">&lt;</span> <span class="mf">4.9</span><span class="p">:</span>
+  <span class="o">|</span>     <span class="o">|</span>     <span class="o">|</span>     <span class="mi">1</span>
+  <span class="o">|</span>     <span class="o">|</span>     <span class="o">|-&gt;</span> <span class="o">&gt;=</span> <span class="mf">4.9</span><span class="p">:</span>
+  <span class="o">|</span>     <span class="o">|</span>     <span class="o">|</span>     <span class="mi">2</span>
+<span class="n">Accuracy</span> <span class="n">On</span> <span class="n">Test</span> <span class="n">Set</span><span class="p">:</span> <span class="mf">0.906666666667</span>
+<span class="mi">2</span>
+  <span class="o">|-&gt;</span> <span class="o">&lt;</span> <span class="mf">3.5</span><span class="p">:</span>
+  <span class="o">|</span>     <span class="mi">0</span>
+  <span class="o">|-&gt;</span> <span class="o">&gt;=</span> <span class="mf">3.5</span><span class="p">:</span>
+  <span class="o">|</span>     <span class="mi">3</span>
+  <span class="o">|</span>     <span class="o">|-&gt;</span> <span class="o">&lt;</span> <span class="mf">1.8</span><span class="p">:</span>
+  <span class="o">|</span>     <span class="o">|</span>     <span class="mi">1</span>
+  <span class="o">|</span>     <span class="o">|-&gt;</span> <span class="o">&gt;=</span> <span class="mf">1.8</span><span class="p">:</span>
+  <span class="o">|</span>     <span class="o">|</span>     <span class="mi">2</span>
+<span class="n">Accuracy</span> <span class="n">On</span> <span class="n">Test</span> <span class="n">Set</span><span class="p">:</span> <span class="mf">0.92</span>
+</pre></div>
+
+
+<h2>Decision Tree Code</h2>
+<p>The decision tree class is built on a TreeNode class, similar to the recusion part of the lesson.   We altered the original to allow tracking of parent nodes for up and down tree transversals.</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+
+<span class="k">class</span> <span class="nc">TreeNode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A node class for a decision tree.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">column</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c"># (int)    index of feature to split on</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c"># value of the feature to split on</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">categorical</span> <span class="o">=</span> <span class="bp">True</span>  <span class="c"># (bool) whether or not node is split on</span>
+                                 <span class="c"># categorial feature</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">None</span>    <span class="c"># (string) name of feature (or name of class in the</span>
+                            <span class="c">#          case of a list)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="bp">None</span>    <span class="c"># (TreeNode) left child</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="bp">None</span>   <span class="c"># (TreeNode) right child</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">leaf</span> <span class="o">=</span> <span class="bp">False</span>   <span class="c"># (bool)   true if node is a leaf, false otherwise</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">classes</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>  <span class="c"># (Counter) only necessary for leaf node:</span>
+                                  <span class="c">#           key is class name and value is</span>
+                                  <span class="c">#           count of the count of data points</span>
+                                  <span class="c">#           that terminate at this leaf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">X_test</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">predict_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">            - x: 1d numpy array (single data point)</span>
+<span class="sd">        OUTPUT:</span>
+<span class="sd">            - y: predicted label</span>
+
+<span class="sd">        Return the predicted label for a single data point.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">leaf</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">col_value</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">col_value</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>  <span class="c">### REPLACE WITH YOUR CODE</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">col_value</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>  <span class="c">### REPLACE WITH YOUR CODE</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">prune</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span><span class="n">parent</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">            - X_test: 2d np array</span>
+<span class="sd">            - y_test: 1d np array</span>
+<span class="sd">            - parent: Boolean</span>
+<span class="sd">        OUTPUT:</span>
+
+<span class="sd">        Prunes node if both children are leaves.  </span>
+<span class="sd">        If not, call prune on children.</span>
+<span class="sd">        If prune successful, call prune on parent node. </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">parent</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">X_test</span> <span class="o">=</span> <span class="n">X_test</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span> <span class="o">=</span> <span class="n">y_test</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">leaf</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical</span><span class="p">:</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">[:,</span><span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="p">]</span><span class="o">==</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">[:,</span><span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">leaf</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">leaf</span><span class="p">:</span>                
+                <span class="n">leftX</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">[</span><span class="n">mask</span><span class="p">,:]</span>
+                <span class="n">rightX</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="p">,:]</span>
+                <span class="n">lefty</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+                <span class="n">righty</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">leftX</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">left_y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">apply_along_axis</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">predict_one</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">leftX</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">left_y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rightX</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">right_y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">apply_along_axis</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">predict_one</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">rightX</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">right_y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+                <span class="n">accuracy</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">left_y_pred</span><span class="o">==</span><span class="n">lefty</span><span class="p">)</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">right_y_pred</span><span class="o">==</span><span class="n">righty</span><span class="p">))</span>
+
+                <span class="n">new_counter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">classes</span><span class="p">:</span>
+                    <span class="n">new_counter</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+                <span class="n">most_common</span> <span class="o">=</span> <span class="n">new_counter</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="n">node_acc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_test</span> <span class="o">==</span> <span class="n">most_common</span><span class="p">))</span>
+
+                <span class="k">if</span> <span class="n">node_acc</span> <span class="o">&gt;=</span> <span class="n">accuracy</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="bp">None</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="bp">None</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">leaf</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">classes</span> <span class="o">=</span> <span class="n">new_counter</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">most_common</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">prune</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span><span class="n">parent</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span> <span class="o">!=</span> <span class="bp">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">leaf</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">prune</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">[</span><span class="n">mask</span><span class="p">,:],</span><span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span> <span class="o">!=</span> <span class="bp">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">leaf</span><span class="p">:</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">prune</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="p">,:],</span><span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="p">])</span>
+
+
+
+    <span class="c"># This is for visualizing your tree. You don&#39;t need to look into this code.</span>
+    <span class="k">def</span> <span class="nf">as_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">            - level: int (amount to indent)</span>
+<span class="sd">        OUTPUT:</span>
+<span class="sd">            - prefix: str (to start the line with)</span>
+
+<span class="sd">        Return a string representation of the tree rooted at this node.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
+            <span class="n">indent</span> <span class="o">=</span> <span class="s">&quot;  |   &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">level</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;  |-&gt; &quot;</span>
+            <span class="n">result</span> <span class="o">+=</span> <span class="n">indent</span> <span class="o">+</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+        <span class="n">indent</span> <span class="o">=</span> <span class="s">&quot;  |   &quot;</span> <span class="o">*</span> <span class="n">level</span>
+        <span class="n">result</span> <span class="o">+=</span> <span class="n">indent</span> <span class="o">+</span> <span class="s">&quot;  &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">leaf</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical</span><span class="p">:</span>
+                <span class="n">left_key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">right_key</span> <span class="o">=</span> <span class="s">&quot;no &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">left_key</span> <span class="o">=</span> <span class="s">&quot;&lt; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">right_key</span> <span class="o">=</span> <span class="s">&quot;&gt;= &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">as_string</span><span class="p">(</span><span class="n">level</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">left_key</span> <span class="o">+</span> <span class="s">&quot;:&quot;</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">as_string</span><span class="p">(</span><span class="n">level</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">right_key</span> <span class="o">+</span> <span class="s">&quot;:&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_string</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+
+
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">class</span> <span class="nc">DecisionTree</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A decision tree class.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">leaf_size</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">stop_percentage</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">error_threshold</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">impurity_criterion</span><span class="o">=</span><span class="s">&#39;entropy&#39;</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Initialize an empty DecisionTree.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c"># root Node</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feature_names</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c"># string names of features (for interpreting</span>
+                                   <span class="c"># the tree)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">categorical</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c"># Boolean array of whether variable is</span>
+                                 <span class="c"># categorical (or continuous)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">impurity_criterion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entropy</span> \
+                                  <span class="k">if</span> <span class="n">impurity_criterion</span> <span class="o">==</span> <span class="s">&#39;entropy&#39;</span> \
+                                  <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gini</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">leaf_size</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">leaf_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">leaf_size</span> <span class="o">=</span> <span class="n">leaf_size</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">leaf_size</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">depth</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">depth</span> <span class="o">=</span> <span class="mf">1e10</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">stop_percentage</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="mf">1.</span><span class="p">)</span> <span class="ow">and</span> <span class="n">stop_percentage</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stop_percentage</span> <span class="o">=</span> <span class="n">stop_percentage</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stop_percentage</span> <span class="o">=</span> <span class="mf">1.</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">error_threshold</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="mf">1.</span><span class="p">)</span> <span class="ow">and</span> <span class="n">error_threshold</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">error_threshold</span> <span class="o">=</span> <span class="n">error_threshold</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">error_threshold</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">feature_names</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">            - X: 2d numpy array</span>
+<span class="sd">            - y: 1d numpy array</span>
+<span class="sd">            - feature_names: numpy array of strings</span>
+<span class="sd">        OUTPUT: None</span>
+
+<span class="sd">        Build the decision tree.</span>
+<span class="sd">        X is a 2 dimensional array with each column being a feature and each</span>
+<span class="sd">        row a data point.</span>
+<span class="sd">        y is a 1 dimensional array with each value being the corresponding</span>
+<span class="sd">        label.</span>
+<span class="sd">        feature_names is an optional list containing the names of each of the</span>
+<span class="sd">        features.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="n">feature_names</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">feature_names</span><span class="p">)</span> <span class="o">!=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">feature_names</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">feature_names</span> <span class="o">=</span> <span class="n">feature_names</span>
+
+        <span class="c"># Create True/False array of whether the variable is categorical</span>
+        <span class="n">is_categorical</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> \
+                                   <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">or</span> \
+                                   <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">categorical</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">is_categorical</span><span class="p">)(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_tree</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_build_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span><span class="n">counter</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">            - X: 2d numpy array</span>
+<span class="sd">            - y: 1d numpy array</span>
+<span class="sd">        OUTPUT:</span>
+<span class="sd">            - TreeNode</span>
+
+<span class="sd">        Recursively build the decision tree. Return the root node.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">node</span> <span class="o">=</span> <span class="n">TreeNode</span><span class="p">()</span>
+        <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">splits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_choose_split_index</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">return_counts</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">))</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">counter</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span> <span class="ow">or</span> <span class="n">p</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_percentage</span><span class="p">:</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">leaf</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">classes</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">X1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">X2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">splits</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">column</span> <span class="o">=</span> <span class="n">index</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_names</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">categorical</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+            <span class="n">node</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_tree</span><span class="p">(</span><span class="n">X1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span><span class="n">counter</span><span class="o">=</span><span class="p">(</span><span class="n">counter</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">node</span>
+
+            <span class="n">node</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_tree</span><span class="p">(</span><span class="n">X2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span><span class="n">counter</span><span class="o">=</span><span class="p">(</span><span class="n">counter</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">node</span>
+        <span class="k">return</span> <span class="n">node</span>
+
+    <span class="k">def</span> <span class="nf">_entropy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">            - y: 1d numpy array</span>
+<span class="sd">        OUTPUT:</span>
+<span class="sd">            - float</span>
+
+<span class="sd">        Return the entropy of the array y.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">return_counts</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">p</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_gini</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">            - y: 1d numpy array</span>
+<span class="sd">        OUTPUT:</span>
+<span class="sd">            - float</span>
+
+<span class="sd">        Return the gini impurity of the array y.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">return_counts</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_make_split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">split_index</span><span class="p">,</span> <span class="n">split_value</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">            - X: 2d numpy array</span>
+<span class="sd">            - y: 1d numpy array</span>
+<span class="sd">            - split_index: int (index of feature)</span>
+<span class="sd">            - split_value: int/float/bool/str (value of feature)</span>
+<span class="sd">        OUTPUT:</span>
+<span class="sd">            - X1: 2d numpy array (feature matrix for subset 1)</span>
+<span class="sd">            - y1: 1d numpy array (labels for subset 1)</span>
+<span class="sd">            - X2: 2d numpy array (feature matrix for subset 2)</span>
+<span class="sd">            - y2: 1d numpy array (labels for subset 2)</span>
+
+<span class="sd">        Return the two subsets of the dataset achieved by the given feature and</span>
+<span class="sd">        value to split on.</span>
+
+<span class="sd">        Call the method like this:</span>
+<span class="sd">        &gt;&gt;&gt; X1, y1, X2, y2 = self._make_split(X, y, split_index, split_value)</span>
+
+<span class="sd">        X1, y1 is a subset of the data.</span>
+<span class="sd">        X2, y2 is the other subset of the data.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical</span><span class="p">[</span><span class="n">split_index</span><span class="p">]:</span>
+            <span class="n">condition</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:,</span><span class="n">split_index</span><span class="p">]</span> <span class="o">==</span> <span class="n">split_value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">condition</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:,</span><span class="n">split_index</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">split_value</span>
+        <span class="k">return</span> <span class="n">X</span><span class="p">[</span><span class="n">condition</span> <span class="o">==</span> <span class="bp">True</span><span class="p">,:],</span> <span class="n">y</span><span class="p">[</span><span class="n">condition</span> <span class="o">==</span> <span class="bp">True</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="n">condition</span> <span class="o">==</span> <span class="bp">False</span><span class="p">,:],</span> <span class="n">y</span><span class="p">[</span><span class="n">condition</span> <span class="o">==</span> <span class="bp">False</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_information_gain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">y2</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">            - y: 1d numpy array</span>
+<span class="sd">            - y1: 1d numpy array (labels for subset 1)</span>
+<span class="sd">            - y2: 1d numpy array (labels for subset 2)</span>
+<span class="sd">        OUTPUT:</span>
+<span class="sd">            - float</span>
+
+<span class="sd">        Return the information gain of making the given split.</span>
+
+<span class="sd">        Use self.impurity_criterion(y) rather than calling _entropy or _gini</span>
+<span class="sd">        directly.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">impurity_criterion</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">y1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">impurity_criterion</span><span class="p">(</span><span class="n">y1</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> \
+                <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">y2</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">impurity_criterion</span><span class="p">(</span><span class="n">y2</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_choose_split_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">            - X: 2d numpy array</span>
+<span class="sd">            - y: 1d numpy array</span>
+<span class="sd">        OUTPUT:</span>
+<span class="sd">            - index: int (index of feature)</span>
+<span class="sd">            - value: int/float/bool/str (value of feature)</span>
+<span class="sd">            - splits: (2d array, 1d array, 2d array, 1d array)</span>
+
+<span class="sd">        Determine which feature and value to split on. Return the index and</span>
+<span class="sd">        value of the optimal split along with the split of the dataset.</span>
+
+<span class="sd">        Return None, None, None if there is no split which improves information</span>
+<span class="sd">        gain.</span>
+
+<span class="sd">        Call the method like this:</span>
+<span class="sd">        &gt;&gt;&gt; index, value, splits = self._choose_split_index(X, y)</span>
+<span class="sd">        &gt;&gt;&gt; X1, y1, X2, y2 = splits</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">leaf_size</span> <span class="o">!=</span> <span class="bp">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">leaf_size</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+
+        <span class="n">index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">max_gain</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1e10</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+            <span class="k">for</span> <span class="n">split_value</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]):</span>
+                <span class="n">X1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">X2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">split_value</span><span class="p">)</span>
+                <span class="n">gain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_information_gain</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">gain</span> <span class="o">&gt;</span> <span class="n">max_gain</span><span class="p">:</span>
+                    <span class="n">max_gain</span> <span class="o">=</span> <span class="n">gain</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">split_value</span>
+                    <span class="n">index</span> <span class="o">=</span> <span class="n">i</span>
+
+        <span class="k">if</span> <span class="n">max_gain</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">error_threshold</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">            - X: 2d numpy array</span>
+<span class="sd">        OUTPUT:</span>
+<span class="sd">            - y: 1d numpy array</span>
+
+<span class="sd">        Return an array of predictions for the feature matrix X.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">apply_along_axis</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">predict_one</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">arr</span><span class="o">=</span><span class="n">X</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">prune</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">X_test</span><span class="p">,</span><span class="n">y_test</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">prune</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span><span class="n">y_test</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Return string representation of the Decision Tree.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+</pre></div>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'bryansmithphd';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=bryansmithphd">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      Bryan Smith, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="http://www.bryantravissmith.com/theme/js/jquery.min.js"></script>
+  <script src="http://www.bryantravissmith.com/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$$','$$'], ['\\(','\\)']]}
+});
+</script>
+</html>
