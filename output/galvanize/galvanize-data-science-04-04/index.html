@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-04-04/index.html" />
+
+    <title>  Bryan Travis Smith, Ph.D &mdash; Galvanize - Week 04 - Day 4
+</title>
+
+
+
+
+    <link rel="stylesheet" href="http://www.bryantravissmith.com/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-24340005-3', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+
+    <meta name="author" content="Bryan Smith">
+    <meta name="description" content="Today we covered Boosting.">
+  <meta name="tags" contents="data-science, galvanize, Boosting, AdaBoost, GradientBoosting, machines, ">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+      <div class="header-image pull-left">
+        <a class="nodec" href="http://www.bryantravissmith.com"><img src=http://www.bryantravissmith.com/img/bryan.jpeg></a>
+      </div>
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="http://www.bryantravissmith.com">Bryan Travis Smith, Ph.D</a>
+      </h1>
+      <h3 class="header-text">Physicist, Data Scientist, Martial Artist, & Life Enthusiast</h3>
+      <ul class="header-menu list-inline">
+              <li class="muted">|</li>
+            <li><a class="nodec" href="http://www.bryantravissmith.com/about/">About</a></li>
+              <li class="muted">|</li>
+          <li><a class="nodec icon-mail-alt" href="mailto:bryantravissmith@gmail.com"></a></li>
+          <li><a class="nodec icon-github" href="https://github.com/bryantravissmith"></a></li>
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+      <a href="/galvanize/galvanize-data-science-04-04/" title="Permalink to Galvanize - Week 04 - Day 4">Galvanize - Week 04 - Day 4</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" href="/galvanize/galvanize-data-science-04-04/" title="2015-06-25T10:20:00-07:00">Thu 25 June 2015</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+        <a href="http://www.bryantravissmith.com/category/galvanize.html">Galvanize</a>
+      </li>
+        <li class="muted">&middot;</li>
+        <li>
+          <address class="post-author">
+            By <a href="http://www.bryantravissmith.com/author/bryan-smith.html">Bryan Smith</a>
+          </address>
+        </li>
+    </ul>
+    <div class="post-content">
+      <h1>Galvanize Immersive Data Science</h1>
+<h2>Week 4 - Day 4</h2>
+<p>Our quiz today had to do with the birthday problem and another problem that involved two hunting hounds.  The question was if there are two hunting hounds that successfully track with a probability p, is the strategy of following both hounds if they go in the same direction on a fork in the round, otherwise randomly guessing, better then just following 1 hound?  </p>
+<p>The probability of both hounds being successful and matching is $p^2$ and the probability of both hounds matching and being unsuccessful is $(1-p)^2$.   The probability of not matching is $2p(1-p)$, and half of each time the hunter will randomly pick correct.  The exepected odds of success is $p^2 + p(1-p) = p^2 + p - p^2 = p$, the same as following one hound.   When I first read the problem I was not expecting that solution.   I like when I see something I was not expected!</p>
+<h2>Morning Boosting</h2>
+<p>This morning we discussed boosting, and our morning sprint was to predict the bosting house prices using boosting on regression classifieres in <a href="http://scikit-learn.org/stable/">sklearn</a>.   </p>
+<div class="highlight"><pre><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+<span class="kn">from</span> <span class="nn">sklearn.tree</span> <span class="kn">import</span> <span class="n">DecisionTreeRegressor</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestRegressor</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">GradientBoostingRegressor</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">AdaBoostRegressor</span>
+<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">load_boston</span>
+<span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="kn">import</span> <span class="n">train_test_split</span><span class="p">,</span> <span class="n">cross_val_score</span>
+<span class="kn">from</span> <span class="nn">sklearn.grid_search</span> <span class="kn">import</span> <span class="n">GridSearchCV</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_squared_error</span><span class="p">,</span> <span class="n">r2_score</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble.partial_dependence</span> <span class="kn">import</span> <span class="n">plot_partial_dependence</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+
+<span class="n">boston</span> <span class="o">=</span> <span class="n">load_boston</span><span class="p">()</span>
+<span class="c"># House Prices</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">boston</span><span class="o">.</span><span class="n">target</span>
+<span class="c"># The other 13 features</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">boston</span><span class="o">.</span><span class="n">data</span>
+
+<span class="c">#train and test set</span>
+<span class="n">x_trn</span><span class="p">,</span><span class="n">x_test</span><span class="p">,</span><span class="n">y_trn</span><span class="p">,</span><span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">test_size</span><span class="o">=.</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span><span class="n">i</span><span class="p">],</span><span class="n">y</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;steelblue&#39;</span><span class="p">,</span><span class="n">marker</span><span class="o">=</span><span class="s">&#39;o&#39;</span><span class="p">,</span><span class="n">lw</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW04D4/output_1_0.png" /></p>
+<p>For this sprint we really are not concerned with the distributions, but I still like to plot.   We see the house prices targets vary from 5 to 50.</p>
+<div class="highlight"><pre>pd.Series(y).describe()
+
+
+
+
+count    506.000000
+mean      22.532806
+std        9.197104
+min        5.000000
+25%       17.025000
+50%       21.200000
+75%       25.000000
+max       50.000000
+dtype: float64
+
+
+
+
+print &quot;MSE From Average: &quot;, np.sum(np.power(y-y.mean(),2))/len(y)
+
+MSE From Average:  84.4195561562
+</pre></div>
+
+
+<p>Now that we have some baselines, we can now start to train our regressors and compare thier performance.  For this first trail I am going to make a Random Forest, GradientBoostingRegressor, and a AdaBoostRegressor.   I will be comparing the cross validated MSE and $r^2$ on the training set.</p>
+<div class="highlight"><pre><span class="n">rf</span> <span class="o">=</span> <span class="n">RandomForestRegressor</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                           <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                           <span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">gdbr</span> <span class="o">=</span> <span class="n">GradientBoostingRegressor</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=.</span><span class="mi">1</span><span class="p">,</span>
+                                 <span class="n">loss</span><span class="o">=</span><span class="s">&#39;ls&#39;</span><span class="p">,</span>
+                                 <span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                                 <span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">abr</span> <span class="o">=</span> <span class="n">AdaBoostRegressor</span><span class="p">(</span><span class="n">DecisionTreeRegressor</span><span class="p">(),</span>
+                        <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+                        <span class="n">loss</span><span class="o">=</span><span class="s">&#39;linear&#39;</span><span class="p">,</span>
+                        <span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                        <span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">mse</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_squared_error</span>
+    <span class="k">return</span> <span class="n">mean_squared_error</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="n">y</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">r2</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">r2_score</span>
+    <span class="k">return</span> <span class="mi">1</span><span class="o">-</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="n">y</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">y</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span><span class="mi">2</span><span class="p">)))</span>
+
+<span class="k">print</span> <span class="n">rf</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span><span class="n">cross_val_score</span><span class="p">(</span><span class="n">rf</span><span class="p">,</span><span class="n">x_trn</span><span class="p">,</span><span class="n">y_trn</span><span class="p">,</span><span class="n">scoring</span><span class="o">=</span><span class="n">mse</span><span class="p">,</span><span class="n">cv</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span><span class="n">cross_val_score</span><span class="p">(</span><span class="n">rf</span><span class="p">,</span><span class="n">x_trn</span><span class="p">,</span><span class="n">y_trn</span><span class="p">,</span><span class="n">scoring</span><span class="o">=</span><span class="n">r2</span><span class="p">,</span><span class="n">cv</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">gdbr</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span><span class="n">cross_val_score</span><span class="p">(</span><span class="n">gdbr</span><span class="p">,</span><span class="n">x_trn</span><span class="p">,</span><span class="n">y_trn</span><span class="p">,</span><span class="n">scoring</span><span class="o">=</span><span class="n">mse</span><span class="p">,</span><span class="n">cv</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span><span class="n">cross_val_score</span><span class="p">(</span><span class="n">gdbr</span><span class="p">,</span><span class="n">x_trn</span><span class="p">,</span><span class="n">y_trn</span><span class="p">,</span><span class="n">scoring</span><span class="o">=</span><span class="n">r2</span><span class="p">,</span><span class="n">cv</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">abr</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span><span class="n">cross_val_score</span><span class="p">(</span><span class="n">abr</span><span class="p">,</span><span class="n">x_trn</span><span class="p">,</span><span class="n">y_trn</span><span class="p">,</span><span class="n">scoring</span><span class="o">=</span><span class="n">mse</span><span class="p">,</span><span class="n">cv</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span><span class="n">cross_val_score</span><span class="p">(</span><span class="n">abr</span><span class="p">,</span><span class="n">x_trn</span><span class="p">,</span><span class="n">y_trn</span><span class="p">,</span><span class="n">scoring</span><span class="o">=</span><span class="n">r2</span><span class="p">,</span><span class="n">cv</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+
+
+<span class="n">RandomForestRegressor</span> <span class="mf">11.6404925079</span> <span class="mf">0.848311635198</span>
+<span class="n">GradientBoostingRegressor</span> <span class="mf">9.78445216743</span> <span class="mf">0.871926100237</span>
+<span class="n">AdaBoostRegressor</span> <span class="mf">11.757802439</span> <span class="mf">0.846590661377</span>
+</pre></div>
+
+
+<p>The 10 fold cross validation on the training set gives MSE of order 10, much smaller than the naive estimate of 80.   All three of these models are doing well on the training set.   I would not pick one model over until I have tested them on the hold out set.  We can plot the performance of these models as we trained them.</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">stage_score_plot</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">train_x</span><span class="p">,</span> <span class="n">train_y</span><span class="p">,</span> <span class="n">test_x</span><span class="p">,</span> <span class="n">test_y</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_squared_error</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_x</span><span class="p">,</span><span class="n">train_y</span><span class="p">)</span>
+    <span class="n">mse_train</span> <span class="o">=</span> <span class="p">[</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">train_y</span><span class="p">,</span><span class="n">yy</span><span class="p">)</span> <span class="k">for</span> <span class="n">yy</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">staged_predict</span><span class="p">(</span><span class="n">train_x</span><span class="p">)]</span>
+    <span class="n">mse_test</span> <span class="o">=</span> <span class="p">[</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">test_y</span><span class="p">,</span><span class="n">yy</span><span class="p">)</span> <span class="k">for</span> <span class="n">yy</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">staged_predict</span><span class="p">(</span><span class="n">test_x</span><span class="p">)]</span>
+    <span class="n">xx</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">mse_test</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">+</span> <span class="s">&quot; {} - Learning Rate &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">learning_rate</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span><span class="n">mse_train</span><span class="p">,</span><span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;Train&quot;</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span><span class="n">mse_test</span><span class="p">,</span><span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;Test&quot;</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;Number of Iterations&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;Mean Square Error&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="n">stage_score_plot</span><span class="p">(</span><span class="n">gdbr</span><span class="p">,</span> <span class="n">x_trn</span><span class="p">,</span> <span class="n">y_trn</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW04D4/output_8_0.png" /></p>
+<p>Looking at the Gradient Boosting Regressor we see that as we add more weak learners/iterations, the training and test error drop together.  The Training error is still dropping, but the test error has leveled off around 8.  This result is also affected by the learning rate.  If we change it we get different results.</p>
+<div class="highlight"><pre>plt.figure(figsize=(14,10))
+stage_score_plot(GradientBoostingRegressor(learning_rate=.1,loss=&#39;ls&#39;, n_estimators=100, random_state=1), x_trn, y_trn, x_test, y_test)
+stage_score_plot(GradientBoostingRegressor(learning_rate=1,loss=&#39;ls&#39;, n_estimators=100, random_state=1), x_trn, y_trn, x_test, y_test)
+plt.legend()
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW04D4/output_10_0.png" /></p>
+<p>The higher learning rate leads to over fitting.   The training error goes to zero almost immediately, but the error on the test set is very high.</p>
+<p>We can also lower the learning rate.  </p>
+<div class="highlight"><pre>plt.figure(figsize=(16,8))
+plt.subplot(1,2,1)
+stage_score_plot(GradientBoostingRegressor(learning_rate=.1,loss=&#39;ls&#39;, n_estimators=100, random_state=1), x_trn, y_trn, x_test, y_test)
+stage_score_plot(GradientBoostingRegressor(learning_rate=.01,loss=&#39;ls&#39;, n_estimators=100, random_state=1), x_trn, y_trn, x_test, y_test)
+plt.legend()
+plt.subplot(1,2,2)
+stage_score_plot(GradientBoostingRegressor(learning_rate=.1,loss=&#39;ls&#39;, n_estimators=1000, random_state=1), x_trn, y_trn, x_test, y_test)
+stage_score_plot(GradientBoostingRegressor(learning_rate=.01,loss=&#39;ls&#39;, n_estimators=1000, random_state=1), x_trn, y_trn, x_test, y_test)
+plt.legend()
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW04D4/output_12_0.png" /></p>
+<p>In this case we see that the test error levels off to the same place for these two rates, but the lower learning rate takes more iterations to get there.</p>
+<p>We can also compare the results of the gradient boosting to the random forest algorithm.</p>
+<div class="highlight"><pre>plt.figure(figsize=(14,10))
+stage_score_plot(GradientBoostingRegressor(learning_rate=.1,loss=&#39;ls&#39;, n_estimators=100, random_state=1), x_trn, y_trn, x_test, y_test)
+plt.axhline(y=mean_squared_error(rf.fit(x_trn,y_trn).predict(x_test),y_test),color=&#39;orange&#39;,lw=3,linestyle=&#39;--&#39;,label=&#39;Random Forest Test&#39;)
+plt.legend()
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW04D4/output_15_0.png" /></p>
+<p>The random forest does not have the stage predict function that allows you to retroactively calculate the predictions at each stage of the training.   The end result is that for the same number of estimators/iterations, the Gradient Boosting Regressor does better on the Boston dataset.  </p>
+<p>We can also look at the AdaBoostingRegessor because it does have stage predict.</p>
+<div class="highlight"><pre>plt.figure(figsize=(14,10))
+plt.subplot(1,2,1)
+stage_score_plot(AdaBoostRegressor(learning_rate=1,loss=&#39;linear&#39;, n_estimators=100, random_state=1), x_trn, y_trn, x_test, y_test)
+stage_score_plot(AdaBoostRegressor(learning_rate=.1,loss=&#39;linear&#39;, n_estimators=100, random_state=1), x_trn, y_trn, x_test, y_test)
+#stage_score_plot(AdaBoostRegressor(learning_rate=.01,loss=&#39;linear&#39;, n_estimators=100, random_state=1), x_trn, y_trn, x_test, y_test)
+plt.axhline(y=mean_squared_error(rf.fit(x_trn,y_trn).predict(x_test),y_test),color=&#39;orange&#39;,linestyle=&#39;--&#39;,label=&#39;Random Forest&#39;)
+plt.legend()
+plt.subplot(1,2,2)
+stage_score_plot(AdaBoostRegressor(learning_rate=1,loss=&#39;linear&#39;, n_estimators=1000, random_state=1), x_trn, y_trn, x_test, y_test)
+stage_score_plot(AdaBoostRegressor(learning_rate=.1,loss=&#39;linear&#39;, n_estimators=1000, random_state=1), x_trn, y_trn, x_test, y_test)
+#stage_score_plot(AdaBoostRegressor(learning_rate=.01,loss=&#39;linear&#39;, n_estimators=100, random_state=1), x_trn, y_trn, x_test, y_test)
+plt.axhline(y=mean_squared_error(rf.fit(x_trn,y_trn).predict(x_test),y_test),color=&#39;orange&#39;,linestyle=&#39;--&#39;,label=&#39;Random Forest&#39;)
+plt.legend()
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW04D4/output_17_0.png" /></p>
+<p>In this case the AdaBoostRegressor does not do better than RandomForest on the test set.  Even allowing for more iterations (which takes a fair amoutn of time to fit).   We are using the naive parameters to fit the model.  We should really search for the best parameters in each model.</p>
+<h2>Grid Search</h2>
+<p>The goal of grid searching is to fit the model using different parameters, and choose the result that has the best cross validated score.   This is not guaranteed to give the best results, but currently I do not know a better way to tune a model.  </p>
+<div class="highlight"><pre>random_forest_grid = {&#39;max_depth&#39;: [3, None],
+                      &#39;max_features&#39;: [&#39;sqrt&#39;, &#39;log2&#39;, None],
+                      &#39;min_samples_split&#39;: [1, 2, 4],
+                      &#39;min_samples_leaf&#39;: [1, 2, 4],
+                      &#39;bootstrap&#39;: [True, False],
+                      &#39;n_estimators&#39;: [40, 80, 160, 320],
+                      &#39;random_state&#39;: [1]}
+
+rf_gridsearch = GridSearchCV(RandomForestRegressor(),
+                             random_forest_grid,
+                             n_jobs=-1,
+                             verbose=True,
+                             scoring=&#39;mean_squared_error&#39;)
+rf_gridsearch.fit(x_trn, y_trn)
+
+print &quot;best parameters:&quot;, rf_gridsearch.best_params_
+print &quot;best score:&quot;,rf_gridsearch.best_score_
+best_rf_model = rf_gridsearch.best_estimator_
+
+
+Fitting 3 folds for each of 432 candidates, totalling 1296 fits
+
+
+[Parallel(n_jobs=-1)]: Done   1 jobs       | elapsed:    0.1s
+[Parallel(n_jobs=-1)]: Done  50 jobs       | elapsed:    1.9s
+[Parallel(n_jobs=-1)]: Done 200 jobs       | elapsed:    8.2s
+[Parallel(n_jobs=-1)]: Done 450 jobs       | elapsed:   19.9s
+[Parallel(n_jobs=-1)]: Done 800 jobs       | elapsed:   42.4s
+[Parallel(n_jobs=-1)]: Done 1250 jobs       | elapsed:  1.2min
+[Parallel(n_jobs=-1)]: Done 1296 out of 1296 | elapsed:  1.3min finished
+
+
+best parameters: {&#39;bootstrap&#39;: True, &#39;min_samples_leaf&#39;: 1, &#39;n_estimators&#39;: 40, &#39;min_samples_split&#39;: 1, &#39;random_state&#39;: 1, &#39;max_features&#39;: &#39;sqrt&#39;, &#39;max_depth&#39;: None}
+best score: -14.0843113088
+</pre></div>
+
+
+<p>You can see the MSE is negative, but that is an artifact of the fit used by sklearn.  The MSE is just the absolute value of that parameter.   We can use the best model from the search and get a feel for the results on the test set.</p>
+<div class="highlight"><pre>mean_squared_error(best_rf_model.predict(x_test),y_test),mean_squared_error(RandomForestRegressor().fit(x_trn,y_trn).predict(x_test),y_test)
+
+
+
+
+(12.737843504901965, 9.5049568627450984)
+</pre></div>
+
+
+<p>Our tuned random forest did worse on the test set than our untuned model.  We would need to estimate the uncertainty of the MSE of both classifiers to get a feel for if this is a statisically significant difference. </p>
+<div class="highlight"><pre>gb_grid = {&#39;learning_rate&#39;: [1,0.1,0.01],
+                      &#39;max_depth&#39;: [2,4,6],
+                      &#39;min_samples_leaf&#39;: [1, 2, 4],
+                      &#39;n_estimators&#39;: [20, 40, 80, 160],
+                      &#39;max_features&#39;: [&#39;sqrt&#39;,&#39;log2&#39;,None],
+                      &#39;random_state&#39;: [1]}
+
+gb_gridsearch = GridSearchCV(GradientBoostingRegressor(),
+                             gb_grid,
+                             n_jobs=-1,
+                             verbose=True,
+                             scoring=&#39;mean_squared_error&#39;)
+gb_gridsearch.fit(x_trn, y_trn)
+
+print &quot;best parameters:&quot;, gb_gridsearch.best_params_
+print &quot;best score:&quot;, gb_gridsearch.best_score_
+best_gb_model = gb_gridsearch.best_estimator_
+
+
+Fitting 3 folds for each of 324 candidates, totalling 972 fits
+
+
+[Parallel(n_jobs=-1)]: Done   1 jobs       | elapsed:    0.0s
+[Parallel(n_jobs=-1)]: Done  50 jobs       | elapsed:    0.3s
+[Parallel(n_jobs=-1)]: Done 200 jobs       | elapsed:    1.8s
+[Parallel(n_jobs=-1)]: Done 450 jobs       | elapsed:    4.7s
+[Parallel(n_jobs=-1)]: Done 800 jobs       | elapsed:   10.7s
+[Parallel(n_jobs=-1)]: Done 972 out of 972 | elapsed:   13.9s finished
+
+
+best parameters: {&#39;learning_rate&#39;: 0.1, &#39;min_samples_leaf&#39;: 4, &#39;n_estimators&#39;: 160, &#39;random_state&#39;: 1, &#39;max_features&#39;: &#39;sqrt&#39;, &#39;max_depth&#39;: 4}
+best score: -13.2445739497
+
+
+
+mean_squared_error(best_gb_model.predict(x_test),y_test),mean_squared_error(GradientBoostingRegressor().fit(x_trn,y_trn).predict(x_test),y_test)
+
+
+
+
+(10.363886409362564, 6.8593273937564954)
+</pre></div>
+
+
+<p>We see a similar result in the Gradient Boosting Regressor.</p>
+<div class="highlight"><pre>ada_grid = {&#39;base_estimator&#39;: [best_gb_model,best_rf_model],
+            &#39;learning_rate&#39;: [1,0.1,0.01],
+            &#39;n_estimators&#39;: [20, 40, 80, 160],
+            &#39;random_state&#39;: [1]}
+
+ada_gridsearch = GridSearchCV(AdaBoostRegressor(),
+                             ada_grid,
+                             n_jobs=-1,
+                             verbose=True,
+                             scoring=&#39;mean_squared_error&#39;)
+ada_gridsearch.fit(x_trn, y_trn)
+
+print &quot;best parameters:&quot;, ada_gridsearch.best_params_
+print &quot;best score:&quot;, ada_gridsearch.best_score_
+best_ada_model = ada_gridsearch.best_estimator_
+
+
+Fitting 3 folds for each of 24 candidates, totalling 72 fits
+
+
+[Parallel(n_jobs=-1)]: Done   1 jobs       | elapsed:    1.6s
+[Parallel(n_jobs=-1)]: Done  50 jobs       | elapsed:  1.0min
+[Parallel(n_jobs=-1)]: Done  72 out of  72 | elapsed:  1.6min finished
+
+
+best parameters: {&#39;n_estimators&#39;: 20, &#39;base_estimator&#39;: GradientBoostingRegressor(alpha=0.9, init=None, learning_rate=0.1, loss=&#39;ls&#39;,
+             max_depth=4, max_features=&#39;sqrt&#39;, max_leaf_nodes=None,
+             min_samples_leaf=4, min_samples_split=2,
+             min_weight_fraction_leaf=0.0, n_estimators=160,
+             random_state=1, subsample=1.0, verbose=0, warm_start=False), &#39;random_state&#39;: 1, &#39;learning_rate&#39;: 0.1}
+best score: -12.8839320317
+
+
+
+mean_squared_error(best_ada_model.predict(x_test),y_test),mean_squared_error(AdaBoostRegressor().fit(x_trn,y_trn).predict(x_test),y_test)
+
+
+
+
+(11.267204239234372, 12.438897032159721)
+</pre></div>
+
+
+<p>The AdaBoostRegressor did improve over the default values, but in the end they all gave around the same MSE on the test set using the Bosting Housing Data.  </p>
+<h1>Afternoon - AdaBoost</h1>
+<p>We started out the afternoon buliding our own AdaBoost Classification Algorithm, then we explored using sklearn's implementation to explore partial dependency plots.  </p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn.tree</span> <span class="kn">import</span> <span class="n">DecisionTreeClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">clone</span>
+
+
+<span class="k">class</span> <span class="nc">AdaBoostBinaryClassifier</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    INPUT:</span>
+<span class="sd">    - n_estimator (int)</span>
+<span class="sd">      * The number of estimators to use in boosting</span>
+<span class="sd">      * Default: 50</span>
+
+<span class="sd">    - learning_rate (float)</span>
+<span class="sd">      * Determines how fast the error would shrink</span>
+<span class="sd">      * Lower learning rate means more accurate decision boundary,</span>
+<span class="sd">        but slower to converge</span>
+<span class="sd">      * Default: 1</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">n_estimators</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+                 <span class="n">learning_rate</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_estimator</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_estimator</span> <span class="o">=</span> <span class="n">n_estimators</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">learning_rate</span> <span class="o">=</span> <span class="n">learning_rate</span>
+
+        <span class="c"># Will be filled-in in the fit() step</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">estimators_</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">estimator_weight_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_estimator</span><span class="p">,</span> <span class="kp">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">        - x: 2d numpy array, feature matrix</span>
+<span class="sd">        - y: numpy array, labels</span>
+
+<span class="sd">        Build the estimators for the AdaBoost estimator.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">))</span><span class="o">.</span><span class="kp">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_estimator</span><span class="p">):</span>
+            <span class="n">estimator</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boost</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">w</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">estimators_</span><span class="o">.</span><span class="kp">append</span><span class="p">(</span><span class="n">estimator</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">estimator_weight_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">alpha</span>
+
+
+    <span class="k">def</span> <span class="nf">_I</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">y2</span><span class="p">):</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="p">(</span><span class="n">y1</span><span class="o">!=</span><span class="n">y2</span><span class="p">)</span><span class="o">.</span><span class="kp">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="o">-</span><span class="mi">1</span>
+        <span class="c">#print temp</span>
+        <span class="c">#return temp</span>
+
+    <span class="k">def</span> <span class="nf">_boost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">sample_weight</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">        - x: 2d numpy array, feature matrix</span>
+<span class="sd">        - y: numpy array, labels</span>
+<span class="sd">        - sample_weight: numpy array</span>
+
+<span class="sd">        OUTPUT:</span>
+<span class="sd">        - estimator: DecisionTreeClassifier</span>
+<span class="sd">        - sample_weight: numpy array (updated weights)</span>
+<span class="sd">        - estimator_weight: float (weight of estimator)</span>
+
+<span class="sd">        Go through one iteration of the AdaBoost algorithm. Build one estimator.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">estimator</span> <span class="o">=</span> <span class="n">clone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_estimator</span><span class="p">)</span>
+        <span class="n">estimator</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">sample_weight</span><span class="o">=</span><span class="n">sample_weight</span><span class="p">)</span>
+        <span class="n">ypred</span> <span class="o">=</span> <span class="n">estimator</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">err_m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">sum</span><span class="p">(</span><span class="n">sample_weight</span><span class="o">*</span><span class="p">(</span><span class="n">ypred</span><span class="o">!=</span><span class="n">y</span><span class="p">))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="kp">sum</span><span class="p">(</span><span class="n">sample_weight</span><span class="p">)</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">log</span><span class="p">((</span><span class="mi">1</span><span class="o">-</span><span class="n">err_m</span><span class="p">)</span><span class="o">/</span><span class="n">err_m</span><span class="p">)</span>
+
+
+        <span class="n">yp</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">ypred</span><span class="o">-</span><span class="mi">1</span>
+        <span class="n">yy</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">y</span><span class="o">-</span><span class="mi">1</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">sample_weight</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="kp">exp</span><span class="p">(</span><span class="n">alpha</span><span class="o">*</span><span class="p">(</span><span class="n">ypred</span><span class="o">!=</span><span class="n">y</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">estimator</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">alpha</span>
+
+
+    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">        - x: 2d numpy array, feature matrix</span>
+
+<span class="sd">        OUTPUT:</span>
+<span class="sd">        - labels: numpy array of predictions (0 or 1)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="n">x</span><span class="o">.</span><span class="kp">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">estimator</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">estimators_</span><span class="p">):</span>
+            <span class="n">pred</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimator_weight_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">estimator</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c">#pred += self.estimator_weight_[i]*estimator.predict(x)</span>
+
+        <span class="n">pred</span> <span class="o">=</span> <span class="n">pred</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="kp">abs</span><span class="p">(</span><span class="n">pred</span><span class="p">)</span>
+        <span class="n">pred</span> <span class="o">=</span> <span class="p">(</span><span class="n">pred</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+        <span class="k">print</span> <span class="n">pred</span>
+        <span class="k">return</span> <span class="n">pred</span><span class="o">.</span><span class="kp">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+
+
+    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">        - x: 2d numpy array, feature matrix</span>
+<span class="sd">        - y: numpy array, labels</span>
+
+<span class="sd">        OUTPUT:</span>
+<span class="sd">        - score: float (accuracy score between 0 and 1)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="kp">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">==</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="kp">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+
+
+<p>The above is our AdaBoost Classifory class.  We will be using it on spam data.</p>
+<div class="highlight"><pre><span class="s-Atom">data</span> <span class="o">=</span> <span class="s-Atom">np</span><span class="p">.</span><span class="nf">genfromtxt</span><span class="p">(</span><span class="s-Atom">&#39;boosting/data/spam.csv&#39;</span><span class="p">,</span> <span class="s-Atom">delimiter=&#39;,&#39;</span><span class="p">)</span>
+<span class="s-Atom">y</span> <span class="o">=</span> <span class="s-Atom">data</span><span class="p">[</span><span class="s-Atom">:</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="s-Atom">x</span> <span class="o">=</span> <span class="s-Atom">data</span><span class="p">[</span><span class="s-Atom">:</span><span class="p">,</span> <span class="mi">0</span><span class="p">:-</span><span class="mi">1</span><span class="p">]</span>
+<span class="s-Atom">train_x</span><span class="p">,</span> <span class="s-Atom">test_x</span><span class="p">,</span> <span class="s-Atom">train_y</span><span class="p">,</span> <span class="s-Atom">test_y</span> <span class="o">=</span> <span class="nf">train_test_split</span><span class="p">(</span><span class="s-Atom">x</span><span class="p">,</span> <span class="s-Atom">y</span><span class="p">)</span>
+
+<span class="s-Atom">my_ada</span> <span class="o">=</span> <span class="nv">AdaBoostBinaryClassifier</span><span class="p">(</span><span class="s-Atom">n_estimators</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="s-Atom">my_ada</span><span class="p">.</span><span class="nf">fit</span><span class="p">(</span><span class="s-Atom">train_x</span><span class="p">,</span> <span class="s-Atom">train_y</span><span class="p">)</span>
+<span class="s-Atom">print</span> <span class="s2">&quot;Accuracy:&quot;</span><span class="p">,</span> <span class="s-Atom">my_ada</span><span class="p">.</span><span class="nf">score</span><span class="p">(</span><span class="s-Atom">test_x</span><span class="p">,</span> <span class="s-Atom">test_y</span><span class="p">)</span>
+
+<span class="nv">Accuracy</span><span class="s-Atom">:</span> <span class="p">[[</span> <span class="mf">0.</span>  <span class="mf">0.</span>  <span class="mf">1.</span> <span class="p">...,</span>  <span class="mf">1.</span>  <span class="mf">1.</span>  <span class="mf">1.</span><span class="p">]]</span>
+<span class="mf">0.917463075586</span>
+</pre></div>
+
+
+<p>Our out of the box score is around 92% accuracy.   We will be exploring feature importance using sklearn's implementation, so I will read in the naems from the clipboard.</p>
+<div class="highlight"><pre>df = pd.read_clipboard()
+names = df.values[:,0]
+names
+
+
+
+
+array([&#39;word_freq_make:&#39;, &#39;word_freq_address:&#39;, &#39;word_freq_all:&#39;,
+       &#39;word_freq_3d:&#39;, &#39;word_freq_our:&#39;, &#39;word_freq_over:&#39;,
+       &#39;word_freq_remove:&#39;, &#39;word_freq_internet:&#39;, &#39;word_freq_order:&#39;,
+       &#39;word_freq_mail:&#39;, &#39;word_freq_receive:&#39;, &#39;word_freq_will:&#39;,
+       &#39;word_freq_people:&#39;, &#39;word_freq_report:&#39;, &#39;word_freq_addresses:&#39;,
+       &#39;word_freq_free:&#39;, &#39;word_freq_business:&#39;, &#39;word_freq_email:&#39;,
+       &#39;word_freq_you:&#39;, &#39;word_freq_credit:&#39;, &#39;word_freq_your:&#39;,
+       &#39;word_freq_font:&#39;, &#39;word_freq_000:&#39;, &#39;word_freq_money:&#39;,
+       &#39;word_freq_hp:&#39;, &#39;word_freq_hpl:&#39;, &#39;word_freq_george:&#39;,
+       &#39;word_freq_650:&#39;, &#39;word_freq_lab:&#39;, &#39;word_freq_labs:&#39;,
+       &#39;word_freq_telnet:&#39;, &#39;word_freq_857:&#39;, &#39;word_freq_data:&#39;,
+       &#39;word_freq_415:&#39;, &#39;word_freq_85:&#39;, &#39;word_freq_technology:&#39;,
+       &#39;word_freq_1999:&#39;, &#39;word_freq_parts:&#39;, &#39;word_freq_pm:&#39;,
+       &#39;word_freq_direct:&#39;, &#39;word_freq_cs:&#39;, &#39;word_freq_meeting:&#39;,
+       &#39;word_freq_original:&#39;, &#39;word_freq_project:&#39;, &#39;word_freq_re:&#39;,
+       &#39;word_freq_edu:&#39;, &#39;word_freq_table:&#39;, &#39;word_freq_conference:&#39;,
+       &#39;char_freq_;:&#39;, &#39;char_freq_(:&#39;, &#39;char_freq_[:&#39;, &#39;char_freq_!:&#39;,
+       &#39;char_freq_$:&#39;, &#39;char_freq_#:&#39;, &#39;capital_run_length_average:&#39;,
+       &#39;capital_run_length_longest:&#39;, &#39;capital_run_length_total:&#39;], dtype=object)
+</pre></div>
+
+
+<p>To explore this we want to get a feel for the misclassification error of databoost.  We redefined our plot function to score misclassification instead of MSE.</p>
+<div class="highlight"><pre><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+<span class="k">def</span> <span class="nf">stage_score_plot</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">train_x</span><span class="p">,</span> <span class="n">train_y</span><span class="p">,</span> <span class="n">test_x</span><span class="p">,</span> <span class="n">test_y</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_x</span><span class="p">,</span><span class="n">train_y</span><span class="p">)</span>
+    <span class="n">acc_train</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">train_y</span><span class="p">,</span><span class="n">yy</span><span class="p">)</span> <span class="k">for</span> <span class="n">yy</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">staged_predict</span><span class="p">(</span><span class="n">train_x</span><span class="p">)]</span>
+    <span class="n">acc_test</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">test_y</span><span class="p">,</span><span class="n">yy</span><span class="p">)</span> <span class="k">for</span> <span class="n">yy</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">staged_predict</span><span class="p">(</span><span class="n">test_x</span><span class="p">)]</span>
+    <span class="n">xx</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">acc_test</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">+</span> <span class="s">&quot; {} - Learning Rate &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">learning_rate</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span><span class="n">acc_train</span><span class="p">,</span><span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;Train&quot;</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span><span class="n">acc_test</span><span class="p">,</span><span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;Test&quot;</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;Number of Iterations&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;Misclassification&quot;</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">AdaBoostClassifier</span><span class="p">,</span> <span class="n">GradientBoostingClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.tree</span> <span class="kn">import</span> <span class="n">DecisionTreeClassifier</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="n">clf</span> <span class="o">=</span> <span class="n">AdaBoostClassifier</span><span class="p">(</span><span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">stage_score_plot</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span><span class="n">train_x</span><span class="p">,</span> <span class="n">train_y</span><span class="p">,</span> <span class="n">test_x</span><span class="p">,</span> <span class="n">test_y</span><span class="p">)</span>
+
+<span class="n">clf</span> <span class="o">=</span> <span class="n">GradientBoostingClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">stage_score_plot</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span><span class="n">train_x</span><span class="p">,</span> <span class="n">train_y</span><span class="p">,</span> <span class="n">test_x</span><span class="p">,</span> <span class="n">test_y</span><span class="p">)</span>
+
+<span class="n">clf</span> <span class="o">=</span> <span class="n">GradientBoostingClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="n">max_depth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">stage_score_plot</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span><span class="n">train_x</span><span class="p">,</span> <span class="n">train_y</span><span class="p">,</span> <span class="n">test_x</span><span class="p">,</span> <span class="n">test_y</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="n">clf</span> <span class="o">=</span> <span class="n">AdaBoostClassifier</span><span class="p">(</span><span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">stage_score_plot</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span><span class="n">train_x</span><span class="p">,</span> <span class="n">train_y</span><span class="p">,</span> <span class="n">test_x</span><span class="p">,</span> <span class="n">test_y</span><span class="p">)</span>
+
+<span class="n">clf</span> <span class="o">=</span> <span class="n">GradientBoostingClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="n">max_depth</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">stage_score_plot</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span><span class="n">train_x</span><span class="p">,</span> <span class="n">train_y</span><span class="p">,</span> <span class="n">test_x</span><span class="p">,</span> <span class="n">test_y</span><span class="p">)</span>
+
+<span class="n">clf</span> <span class="o">=</span> <span class="n">GradientBoostingClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="n">max_depth</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">stage_score_plot</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span><span class="n">train_x</span><span class="p">,</span> <span class="n">train_y</span><span class="p">,</span> <span class="n">test_x</span><span class="p">,</span> <span class="n">test_y</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW04D4/output_36_0.png" /></p>
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW04D4/output_36_1.png" /></p>
+<p>The top plot shows AdaBoost vs GradientBoosting with differnt max depths set.   The Ada performas better on the test set.  As we increase the depth of the trees used in the GradientBoosting, we see in the bottom plot the over fitting is abundant.   We need to have week learners to get optimal results with this method.  A strong learner will still overfit the data when boosted.</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.grid_search</span> <span class="kn">import</span> <span class="n">GridSearchCV</span>
+
+<span class="n">gb_grid</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;learning_rate&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+           <span class="s">&#39;n_estimators&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">150</span><span class="p">,</span><span class="mi">200</span><span class="p">],</span>
+           <span class="s">&#39;max_depth&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">],</span>
+           <span class="s">&#39;max_features&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;sqrt&#39;</span><span class="p">,</span> <span class="s">&#39;log2&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">],</span>
+           <span class="s">&#39;random_state&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">]}</span>
+
+<span class="n">gb_gridsearch</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">GradientBoostingClassifier</span><span class="p">(),</span>
+                             <span class="n">gb_grid</span><span class="p">,</span>
+                             <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                             <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                             <span class="n">scoring</span><span class="o">=</span><span class="s">&#39;accuracy&#39;</span><span class="p">)</span>
+<span class="n">gb_gridsearch</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_x</span><span class="p">,</span> <span class="n">train_y</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&quot;best parameters:&quot;</span><span class="p">,</span> <span class="n">gb_gridsearch</span><span class="o">.</span><span class="n">best_params_</span>
+<span class="k">print</span> <span class="s">&quot;best score:&quot;</span><span class="p">,</span> <span class="n">gb_gridsearch</span><span class="o">.</span><span class="n">best_score_</span>
+
+<span class="n">best_gb_model</span> <span class="o">=</span> <span class="n">gb_gridsearch</span><span class="o">.</span><span class="n">best_estimator_</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span>
+<span class="n">accuracy_score</span><span class="p">(</span><span class="n">best_gb_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_x</span><span class="p">),</span><span class="n">test_y</span><span class="p">)</span>
+
+<span class="n">Fitting</span> <span class="mi">3</span> <span class="n">folds</span> <span class="k">for</span> <span class="n">each</span> <span class="n">of</span> <span class="mi">108</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">totalling</span> <span class="mi">324</span> <span class="n">fits</span>
+
+
+<span class="p">[</span><span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)]:</span> <span class="n">Done</span>   <span class="mi">1</span> <span class="n">jobs</span>       <span class="o">|</span> <span class="n">elapsed</span><span class="p">:</span>    <span class="mf">0.2</span><span class="n">s</span>
+<span class="p">[</span><span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)]:</span> <span class="n">Done</span>  <span class="mi">50</span> <span class="n">jobs</span>       <span class="o">|</span> <span class="n">elapsed</span><span class="p">:</span>    <span class="mf">8.1</span><span class="n">s</span>
+<span class="p">[</span><span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)]:</span> <span class="n">Done</span> <span class="mi">200</span> <span class="n">jobs</span>       <span class="o">|</span> <span class="n">elapsed</span><span class="p">:</span>  <span class="mf">1.0</span><span class="nb">min</span>
+<span class="p">[</span><span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)]:</span> <span class="n">Done</span> <span class="mi">318</span> <span class="n">out</span> <span class="n">of</span> <span class="mi">324</span> <span class="o">|</span> <span class="n">elapsed</span><span class="p">:</span>  <span class="mf">1.5</span><span class="nb">min</span> <span class="n">remaining</span><span class="p">:</span>    <span class="mf">1.7</span><span class="n">s</span>
+<span class="p">[</span><span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)]:</span> <span class="n">Done</span> <span class="mi">324</span> <span class="n">out</span> <span class="n">of</span> <span class="mi">324</span> <span class="o">|</span> <span class="n">elapsed</span><span class="p">:</span>  <span class="mf">1.6</span><span class="nb">min</span> <span class="n">finished</span>
+
+
+<span class="n">best</span> <span class="n">parameters</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;max_features&#39;</span><span class="p">:</span> <span class="s">&#39;log2&#39;</span><span class="p">,</span> <span class="s">&#39;n_estimators&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span> <span class="s">&#39;learning_rate&#39;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> <span class="s">&#39;random_state&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&#39;max_depth&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">}</span>
+<span class="n">best</span> <span class="n">score</span><span class="p">:</span> <span class="mf">0.952463768116</span>
+
+
+
+
+
+<span class="mf">0.95221546481320596</span>
+</pre></div>
+
+
+<p>This is a good improvement over the previous model.   With GradientBoosting, we cal now explore which features are the most important features for identifying spam.</p>
+<h2>Feature Importance</h2>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="n">indexes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">argsort</span><span class="p">(</span><span class="n">best_gb_model</span><span class="o">.</span><span class="n">feature_importances_</span><span class="p">)</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">18</span><span class="p">))</span>
+<span class="n">x_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">arange</span><span class="p">(</span><span class="n">best_gb_model</span><span class="o">.</span><span class="n">feature_importances_</span><span class="o">.</span><span class="kp">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="n">x_ind</span><span class="p">,</span> <span class="n">best_gb_model</span><span class="o">.</span><span class="n">feature_importances_</span><span class="p">[</span><span class="n">indexes</span><span class="p">],</span> <span class="n">height</span><span class="o">=.</span><span class="mi">3</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s">&#39;center&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">x_ind</span><span class="o">.</span><span class="kp">min</span><span class="p">()</span> <span class="o">+</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="n">x_ind</span><span class="o">.</span><span class="kp">max</span><span class="p">()</span> <span class="o">+</span> <span class="o">.</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">x_ind</span><span class="p">,</span> <span class="n">names</span><span class="p">[</span><span class="n">indexes</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW04D4/output_40_0.png" /></p>
+<p>We see that use of excessive capitalizaiton and expclaimations are important for predicting spam.   The use of 'cs' or 'telnet' are not.   The use of a partial dependency plot allows us to get a feel for how changing the values of these features affect the outcome of the predictions.</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.ensemble.partial_dependence</span> <span class="kn">import</span> <span class="n">plot_partial_dependence</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble.partial_dependence</span> <span class="kn">import</span> <span class="n">partial_dependence</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">14</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indexes</span><span class="p">[:</span><span class="mi">12</span><span class="p">]:</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">partial_dependence</span><span class="p">(</span><span class="n">best_gb_model</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">X</span><span class="o">=</span><span class="n">train_x</span><span class="p">,</span> <span class="n">grid_resolution</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">((</span><span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">-</span><span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()),</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="c">#plot_partial_dependence(best_gb_model, train_x,indexes[:12],feature_names=names,n_jobs=3, grid_resolution=50,ax=ax)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">[</span><span class="mf">1.25</span><span class="p">,</span><span class="mf">1.005</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW04D4/output_42_0.png" /></p>
+<p>As we increase the freq_lab or freq_address, we have a incrasing and decreasing accuracy of spam classification.  The parital dependency on these features is high.  Lab and telenet are also more than most, which is interesting because telent is low feature importance. </p>
+<p>It is possible to make 2D plots and 3D plots of partial dependancies.</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.ensemble.partial_dependence</span> <span class="kn">import</span> <span class="n">partial_dependence</span>
+
+<span class="n">couple_of_tuples</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">indexes</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">indexes</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">]]</span>
+<span class="n">plot_partial_dependence</span><span class="p">(</span><span class="n">best_gb_model</span><span class="p">,</span> <span class="n">train_x</span><span class="p">,</span><span class="n">couple_of_tuples</span><span class="p">,</span><span class="n">feature_names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span><span class="n">n_jobs</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">grid_resolution</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">14</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW04D4/output_44_0.png" /></p>
+<p>From these plots we can see that word-frequency has co-dependency with freq data and freq_parts </p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'bryansmithphd';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=bryansmithphd">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      Bryan Smith, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="http://www.bryantravissmith.com/theme/js/jquery.min.js"></script>
+  <script src="http://www.bryantravissmith.com/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$$','$$'], ['\\(','\\)']]}
+});
+</script>
+</html>

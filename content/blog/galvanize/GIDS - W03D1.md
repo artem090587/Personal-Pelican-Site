@@ -1,4 +1,4 @@
-Title: Galvanize - Week 03 - Day 5
+Title: Galvanize - Week 03 - Day 1
 Date: 2015-06-15 10:20
 Modified: 2015-06-15 10:30
 Category: Galvanize

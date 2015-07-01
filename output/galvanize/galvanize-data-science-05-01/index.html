@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-05-01/index.html" />
+
+    <title>  Bryan Travis Smith, Ph.D &mdash; Galvanize - Week 05 - Day 1
+</title>
+
+
+
+
+    <link rel="stylesheet" href="http://www.bryantravissmith.com/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-24340005-3', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+
+    <meta name="author" content="Bryan Smith">
+    <meta name="description" content="Today we covered web scraping.">
+  <meta name="tags" contents="data-science, galvanize, web scraping, ">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+      <div class="header-image pull-left">
+        <a class="nodec" href="http://www.bryantravissmith.com"><img src=http://www.bryantravissmith.com/img/bryan.jpeg></a>
+      </div>
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="http://www.bryantravissmith.com">Bryan Travis Smith, Ph.D</a>
+      </h1>
+      <h3 class="header-text">Physicist, Data Scientist, Martial Artist, & Life Enthusiast</h3>
+      <ul class="header-menu list-inline">
+              <li class="muted">|</li>
+            <li><a class="nodec" href="http://www.bryantravissmith.com/about/">About</a></li>
+              <li class="muted">|</li>
+          <li><a class="nodec icon-mail-alt" href="mailto:bryantravissmith@gmail.com"></a></li>
+          <li><a class="nodec icon-github" href="https://github.com/bryantravissmith"></a></li>
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+      <a href="/galvanize/galvanize-data-science-05-01/" title="Permalink to Galvanize - Week 05 - Day 1">Galvanize - Week 05 - Day 1</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" href="/galvanize/galvanize-data-science-05-01/" title="2015-06-29T10:20:00-07:00">Mon 29 June 2015</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+        <a href="http://www.bryantravissmith.com/category/galvanize.html">Galvanize</a>
+      </li>
+        <li class="muted">&middot;</li>
+        <li>
+          <address class="post-author">
+            By <a href="http://www.bryantravissmith.com/author/bryan-smith.html">Bryan Smith</a>
+          </address>
+        </li>
+    </ul>
+    <div class="post-content">
+      <h1>Galvanize Immersive Data Science</h1>
+<h2>Week 5 - Day 1</h2>
+<p>Today we had an introduction to webscraping, web apis, and <a href="http://www.mongodb.org/">MongoDB</a>.  </p>
+<p>The morning quiz was on answer questions using data stored in a 5 table PostgreSQL database that were suppose to simulate <a href="http://hitchapp.com">Hithc</a>.  An example question is: Find the number of unique users that used the service over the last 10 days that were driven by drivers who started driving between DATE1 and DATE2.  Are not important.  </p>
+<h2>MongoDB</h2>
+<p>We started off by downloading and installing a local copy of MongoDB from <a href="http://www.mongodb.org/downloads?_ga=1.2370361.886345798.1422741448">here</a>.  Some of the issues my cohort ran into was the database locking because proper permissions were to given to the 'data/db/' directory on the mac.   Other then that, it was a very easy processes.   </p>
+<p>Though it was not part of the exercise, I also installed pymongo and used that.   I would then do what was asked directly in the database terminal, then replicate it with pymongo in an IPython Notebook.  We were given an option of downloading some GUI interfaces, but I opted not to use them.   Just incase I change my mind in the future I will list them here:</p>
+<ul>
+<li><a href="http://robomongo.org/">Robomongo (Multiplatform)</a></li>
+<li><a href="https://github.com/fotonauts/MongoHub-Mac">MongoHub (Mac OSX)</a> 
+   with down-loadable <a href="https://mongohub.s3.amazonaws.com/MongoHub.zip">binary</a></li>
+<li><a href="https://github.com/bagwanpankaj/humongous">Humongous (web based)</a></li>
+</ul>
+<h2>Mongo Queries</h2>
+<p>Our first task was to load in some messy click data into our MongoDB database.  I used the command line for this.</p>
+<blockquote>
+<p>mongoimport --db clicks --collection log &lt; click_log.json</p>
+</blockquote>
+<p>I then used the mongo db to findOne() and find().limit(3).  There are over 2000 click results of different lengths.</p>
+<blockquote>
+<p>db.log.findOne()</p>
+<blockquote>
+<p>{ "<em>id" : ObjectId("559198d72c8e29706d471d8e"), "_heartbeat</em>" : 1368774601 }</p>
+</blockquote>
+<p>db.log.find().limit(3)</p>
+<blockquote>
+<p -116.345802_="-116.345802," 0_="0," 1368774179_="1368774179," 33.7724="33.7724" 6_1_3="6_1_3" :=":" AppleWebKit_536.26="AppleWebKit/536.26" CPU="CPU" Desert_="Desert&quot;," Gecko_="Gecko)" ISODate_2013-05-17T07:09:59Z_="ISODate(&quot;2013-05-17T07:09:59Z&quot;)," Mac="Mac" Mobile_10B329_="Mobile/10B329&quot;," OS="OS" ObjectId_559198d72c8e29706d471d90_="ObjectId(&quot;559198d72c8e29706d471d90&quot;)," X_="X)" _="]" _1.usa.gov_="&quot;1.usa.gov&quot;," _1084Psg_="&quot;1084Psg&quot;," _19Cztuz_="&quot;19Cztuz&quot;," _America_Los_Angeles_="&quot;America/Los_Angeles&quot;," _CA_="&quot;CA&quot;," _KHTML_="(KHTML," _Mozilla_5.0="&quot;Mozilla/5.0" _Palm="&quot;Palm" _US_="&quot;US&quot;," __id_="&quot;_id&quot;" _a_="&quot;a&quot;" _al_="&quot;al&quot;" _c_="&quot;c&quot;" _cy_="&quot;cy&quot;" _en-us_="&quot;en-us&quot;," _g_="&quot;g&quot;" _gr_="&quot;gr&quot;" _h_="&quot;h&quot;" _hc_="&quot;hc&quot;" _hh_="&quot;hh&quot;" _http:_science.nasa.gov_science-news_science-at-nasa_2013_16may_lunarimpact_="&quot;http://science.nasa.gov/science-news/science-at-nasa/2013/16may_lunarimpact/&quot;," _http:_t.co_btKvKFBaF5_="&quot;http://t.co/btKvKFBaF5&quot;," _iPhone_="(iPhone;" _l_="&quot;l&quot;" _ll_="&quot;ll&quot;" _nk_="&quot;nk&quot;" _r_="&quot;r&quot;" _t_="&quot;t&quot;" _tweetdeckapi_="&quot;tweetdeckapi&quot;," _tz_="&quot;tz&quot;" _u_="&quot;u&quot;" iPhone="iPhone" like="like">{ "<em>id" : ObjectId("559198d72c8e29706d471d8e"), "_heartbeat</em>" : 1368774601 }
+{ "_id" : ObjectId("559198d72c8e29706d471d8f"), "a" : "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)", "c" : "NL", "nk" : 0, "tz" : "Europe/Amsterdam", "gr" : "06", "g" : "15r91", "h" : "10OBm3W", "l" : "pontifier", "al" : "en-GB", "hh" : "j.mp", "r" : "direct", "u" : "http://www.nsa.gov/", "t" : ISODate("2013-05-17T07:09:59Z"), "hc" : 1365701422, "cy" : "Oss", "ll" : [ 5.5333, 51.766701 ] }</p>
+</blockquote>
+</blockquote>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">27017</span><span class="p">)</span>
+<span class="n">db_nyt</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">test_database</span>
+<span class="n">ny</span> <span class="o">=</span> <span class="n">db_nyt</span><span class="o">.</span><span class="n">ny_times</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">clicks</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">log</span>
+<span class="k">print</span> <span class="n">log</span><span class="o">.</span><span class="n">find_one</span><span class="p">()</span>
+<span class="k">print</span>
+<span class="k">print</span> <span class="s">&quot;Limit 3&quot;</span>
+<span class="k">print</span> 
+<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">log</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="k">print</span> <span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+
+
+<span class="p">{</span><span class="s">u&#39;_id&#39;</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="s">&#39;559198d72c8e29706d471d8e&#39;</span><span class="p">),</span> <span class="s">u&#39;_heartbeat_&#39;</span><span class="p">:</span> <span class="mi">1368774601</span><span class="p">}</span>
+
+<span class="n">Limit</span> <span class="mi">3</span>
+
+<span class="p">{</span><span class="s">u&#39;_id&#39;</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="s">&#39;559198d72c8e29706d471d8e&#39;</span><span class="p">),</span> <span class="s">u&#39;_heartbeat_&#39;</span><span class="p">:</span> <span class="mi">1368774601</span><span class="p">}</span>
+
+<span class="p">{</span><span class="s">u&#39;a&#39;</span><span class="p">:</span> <span class="s">u&#39;Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)&#39;</span><span class="p">,</span> <span class="s">u&#39;c&#39;</span><span class="p">:</span> <span class="s">u&#39;NL&#39;</span><span class="p">,</span> <span class="s">u&#39;nk&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s">u&#39;tz&#39;</span><span class="p">:</span> <span class="s">u&#39;Europe/Amsterdam&#39;</span><span class="p">,</span> <span class="s">u&#39;gr&#39;</span><span class="p">:</span> <span class="s">u&#39;06&#39;</span><span class="p">,</span> <span class="s">u&#39;g&#39;</span><span class="p">:</span> <span class="s">u&#39;15r91&#39;</span><span class="p">,</span> <span class="s">u&#39;h&#39;</span><span class="p">:</span> <span class="s">u&#39;10OBm3W&#39;</span><span class="p">,</span> <span class="s">u&#39;cy&#39;</span><span class="p">:</span> <span class="s">u&#39;Oss&#39;</span><span class="p">,</span> <span class="s">u&#39;l&#39;</span><span class="p">:</span> <span class="s">u&#39;pontifier&#39;</span><span class="p">,</span> <span class="s">u&#39;al&#39;</span><span class="p">:</span> <span class="s">u&#39;en-GB&#39;</span><span class="p">,</span> <span class="s">u&#39;hh&#39;</span><span class="p">:</span> <span class="s">u&#39;j.mp&#39;</span><span class="p">,</span> <span class="s">u&#39;r&#39;</span><span class="p">:</span> <span class="s">u&#39;direct&#39;</span><span class="p">,</span> <span class="s">u&#39;u&#39;</span><span class="p">:</span> <span class="s">u&#39;http://www.nsa.gov/&#39;</span><span class="p">,</span> <span class="s">u&#39;t&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2013</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">59</span><span class="p">),</span> <span class="s">u&#39;hc&#39;</span><span class="p">:</span> <span class="mi">1365701422</span><span class="p">,</span> <span class="s">u&#39;_id&#39;</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="s">&#39;559198d72c8e29706d471d8f&#39;</span><span class="p">),</span> <span class="s">u&#39;ll&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">5.5333</span><span class="p">,</span> <span class="mf">51.766701</span><span class="p">]}</span>
+
+<span class="p">{</span><span class="s">u&#39;a&#39;</span><span class="p">:</span> <span class="s">u&#39;Mozilla/5.0 (iPhone; CPU iPhone OS 6_1_3 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Mobile/10B329&#39;</span><span class="p">,</span> <span class="s">u&#39;c&#39;</span><span class="p">:</span> <span class="s">u&#39;US&#39;</span><span class="p">,</span> <span class="s">u&#39;nk&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s">u&#39;tz&#39;</span><span class="p">:</span> <span class="s">u&#39;America/Los_Angeles&#39;</span><span class="p">,</span> <span class="s">u&#39;gr&#39;</span><span class="p">:</span> <span class="s">u&#39;CA&#39;</span><span class="p">,</span> <span class="s">u&#39;g&#39;</span><span class="p">:</span> <span class="s">u&#39;1084Psg&#39;</span><span class="p">,</span> <span class="s">u&#39;h&#39;</span><span class="p">:</span> <span class="s">u&#39;19Cztuz&#39;</span><span class="p">,</span> <span class="s">u&#39;cy&#39;</span><span class="p">:</span> <span class="s">u&#39;Palm Desert&#39;</span><span class="p">,</span> <span class="s">u&#39;l&#39;</span><span class="p">:</span> <span class="s">u&#39;tweetdeckapi&#39;</span><span class="p">,</span> <span class="s">u&#39;al&#39;</span><span class="p">:</span> <span class="s">u&#39;en-us&#39;</span><span class="p">,</span> <span class="s">u&#39;hh&#39;</span><span class="p">:</span> <span class="s">u&#39;1.usa.gov&#39;</span><span class="p">,</span> <span class="s">u&#39;r&#39;</span><span class="p">:</span> <span class="s">u&#39;http://t.co/btKvKFBaF5&#39;</span><span class="p">,</span> <span class="s">u&#39;u&#39;</span><span class="p">:</span> <span class="s">u&#39;http://science.nasa.gov/science-news/science-at-nasa/2013/16may_lunarimpact/&#39;</span><span class="p">,</span> <span class="s">u&#39;t&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2013</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">59</span><span class="p">),</span> <span class="s">u&#39;hc&#39;</span><span class="p">:</span> <span class="mi">1368774179</span><span class="p">,</span> <span class="s">u&#39;_id&#39;</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="s">&#39;559198d72c8e29706d471d90&#39;</span><span class="p">),</span> <span class="s">u&#39;ll&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">116.345802</span><span class="p">,</span> <span class="mf">33.7724</span><span class="p">]}</span>
+</pre></div>
+
+
+<p>We can see the pymongo results are identical to the commandline results.   What I like about pymongo, as we will see later, is that I can pull data from different sources and use that information to make queries to the MongoDB database.</p>
+<p>Our next task was to find out how many clicks were in San Francisco.  This is relatively easy becasue we can see that the records that are clearly user click have an element 'cy' which looks to be the city they are in.  It seems the two users above are in Palm Desert and Oss.</p>
+<blockquote>
+<p>db.log.find({'cy':'San Francisco'}).count()</p>
+<blockquote>
+<p>11</p>
+</blockquote>
+</blockquote>
+<div class="highlight"><pre>log.find({&#39;cy&#39;:&#39;San Francisco&#39;}).count()
+
+
+
+
+11
+</pre></div>
+
+
+<p>Back in my "I want to be a front end web developer" days, I was very much aware that there are different browsers, and they can have different features avaialbe or represent css in slightly different ways.   I had no idea how many different browers there were.  We can see in the query results there is an element 'a' that is the webbrowser.</p>
+<blockquote>
+<p>db.log.distinct('a').length</p>
+<blockquote>
+<p>559</p>
+</blockquote>
+</blockquote>
+<p>There are over 559 different browers types/versions in this dataset.   I do not miss front end development in the least! </p>
+<div class="highlight"><pre>len(log.distinct(&#39;a&#39;))
+
+
+
+
+559
+</pre></div>
+
+
+<p>We learned that one of the strong use cases for MongoDB is text data.   We did an afternoon project that will be covered later scaping the New York Times.  More on that to come.</p>
+<p>MongoDB, like almost all other databases, support regular expressions.  We can do a simple query and find out how many user use Mozilla, Opera, or both.</p>
+<blockquote>
+<p>db.log.find({'a': {'\$regex':'Mozilla|Opera'} }).count()</p>
+<blockquote>
+<p>2830</p>
+</blockquote>
+<p>db.log.find({'a': {'\$regex':'Mozilla'} }).count()</p>
+<blockquote>
+<p>2723</p>
+</blockquote>
+<p>db.log.find({'a': {'\$regex':'Opera'} }).count()</p>
+<blockquote>
+<p>107</p>
+</blockquote>
+</blockquote>
+<div class="highlight"><pre><span class="x">print log.find(</span><span class="err">{</span><span class="x">&#39;a&#39;: </span><span class="err">{</span><span class="x">&#39;</span><span class="p">$</span><span class="nv">regex</span><span class="x">&#39;:&#39;Mozilla|Opera&#39;} }).count()</span>
+<span class="x">print log.find(</span><span class="err">{</span><span class="x">&#39;a&#39;: </span><span class="err">{</span><span class="x">&#39;</span><span class="p">$</span><span class="nv">regex</span><span class="x">&#39;:&#39;Mozilla&#39;} }).count()</span>
+<span class="x">print log.find(</span><span class="err">{</span><span class="x">&#39;a&#39;: </span><span class="err">{</span><span class="x">&#39;</span><span class="p">$</span><span class="nv">regex</span><span class="x">&#39;:&#39;Opera&#39;} }).count()</span>
+
+<span class="x">2830</span>
+<span class="x">2723</span>
+<span class="x">107</span>
+</pre></div>
+
+
+<p>A careful inspect will show that there is a variable 't' that is a DateTime object.   Originally it was the unix timestamp in seconds.   We had ot convert it to the datetime object, that was was doing with the following code:</p>
+<div class="highlight"><pre>   <span class="nx">db</span><span class="p">.</span><span class="nx">log</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span><span class="s1">&#39;t&#39;</span><span class="o">:</span> <span class="p">{</span><span class="s1">&#39;\$exists&#39;</span><span class="o">:</span> <span class="kc">true</span><span class="p">}}).</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">entry</span><span class="p">){</span> 
+       <span class="nx">entry</span><span class="p">.</span><span class="nx">t</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Data</span><span class="p">(</span><span class="nx">entry</span><span class="p">.</span><span class="nx">t</span><span class="o">*</span><span class="mi">1000</span><span class="p">);</span> 
+       <span class="nx">db</span><span class="p">.</span><span class="nx">log</span><span class="p">.</span><span class="nx">update</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="o">:</span><span class="nx">entry</span><span class="p">.</span><span class="nx">_id</span><span class="p">},{</span><span class="s1">&#39;$set&#39;</span><span class="o">:</span><span class="nx">entry</span><span class="p">});</span>
+   <span class="p">})</span>
+</pre></div>
+
+
+<p>This is important because we were next asked to findout how many clicks were in the first hours.  I just happened to notice this:</p>
+<blockquote>
+<p>db.log.find({'t':{\$exists:1}}).sort({'t':-1})[0].t</p>
+<blockquote>
+<p>ISODate("2013-05-17T08:09:56Z")</p>
+</blockquote>
+<p>db.log.find({'t':{\$exists:1}}).sort({'t':1})[0].t</p>
+<blockquote>
+<p>ISODate("2013-05-17T07:09:57Z")</p>
+</blockquote>
+</blockquote>
+<p>We were were given only 1 hours worth of data!  So all the records should be there when we do the correct query.  The query to do this if we did not notice this fact would look like:</p>
+<blockquote>
+<p>t1 = db.log.find({'t':{'\$exists':'true'}}).sort({'t':1})[0].t</p>
+<p>t2 = new Date(t1.getTime()+3600000)</p>
+<p>db.log.find({'t':{\$gte:t1,\$lte:t2}}).count()</p>
+<blockquote>
+<p>2949</p>
+</blockquote>
+</blockquote>
+<p>And if were just to count rectors where the 't' variable exists:</p>
+<blockquote>
+<p>db.log.find({'t':{'$exists':'true'}}).count()</p>
+<blockquote>
+<p>2949</p>
+</blockquote>
+</blockquote>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="n">t1</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s">&#39;t&#39;</span><span class="p">:{</span><span class="s">&#39;$exists&#39;</span><span class="p">:</span><span class="s">&#39;true&#39;</span><span class="p">}})</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s">&#39;t&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;t&#39;</span><span class="p">]</span>
+<span class="n">t2</span> <span class="o">=</span> <span class="n">t1</span><span class="o">+</span><span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">log</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s">&#39;t&#39;</span><span class="p">:{</span><span class="s">&#39;$gte&#39;</span><span class="p">:</span><span class="n">t1</span><span class="p">,</span><span class="s">&#39;$lte&#39;</span><span class="p">:</span><span class="n">t2</span><span class="p">}})</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+
+
+
+<span class="mi">2949</span>
+</pre></div>
+
+
+<p>The last question we had to answer was about what links the users clicked on the most.   This was an introduction to MongoDB's <a href="http://docs.mongodb.org/manual/reference/sql-aggregation-comparison/">aggregation</a> functionality.</p>
+<p>My first idea worked.  In terms of SQL I would group by the link address, count the number of records for each link, and sort by the link results.  In MongoDB this looks like the following:</p>
+<blockquote>
+<p>db.log.aggregate([{\$group:{_id:'\$u',count:{\$sum:1}}},{\$sort:{count:-1}},{\$limit:1}])</p>
+<blockquote>
+<p>{ "_id" : "http://www.nsa.gov/", "count" : 478 }</p>
+</blockquote>
+</blockquote>
+<div class="highlight"><pre><span class="x">pipeline = [</span><span class="err">{</span><span class="x">&quot;</span><span class="p">$</span><span class="nv">group</span><span class="x">&quot;: </span><span class="err">{</span><span class="x">&#39;_id&#39;:&#39;</span><span class="p">$</span><span class="nv">u</span><span class="x">&#39;,&#39;count&#39;:</span><span class="err">{</span><span class="x">&#39;</span><span class="p">$</span><span class="nv">sum</span><span class="x">&#39;:1}}},</span>
+<span class="x">            </span><span class="err">{</span><span class="x">&quot;</span><span class="p">$</span><span class="nv">sort</span><span class="x">&quot;: </span><span class="err">{</span><span class="x">&quot;count&quot;: -1}},</span>
+<span class="x">            </span><span class="err">{</span><span class="x">&quot;</span><span class="p">$</span><span class="nv">limit</span><span class="x">&quot;: 1}]</span>
+<span class="x">for r in log.aggregate(pipeline):</span>
+<span class="x">    print str(r) + &quot;\n&quot;</span>
+
+<span class="err">{</span><span class="x">u&#39;count&#39;: 478, u&#39;_id&#39;: u&#39;http://www.nsa.gov/&#39;}</span>
+</pre></div>
+
+
+<h2>Geospacial</h2>
+<p>We were given some extra-credit MongoDB tasks involving <a href="http://docs.mongodb.org/manual/administration/indexes-geo/">geospatial</a> data.  MongoDB requires that the data be longitude, latitude, but our data is stored as latitude, longitude.  We need to go through the data base and fix this.</p>
+<div class="highlight"><pre>    <span class="nx">db</span><span class="p">.</span><span class="nx">log</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span><span class="s1">&#39;ll&#39;</span><span class="o">:</span><span class="p">{</span><span class="err">\</span><span class="nx">$exists</span><span class="o">:</span><span class="s1">&#39;true&#39;</span><span class="p">}}).</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">entry</span><span class="p">){</span> 
+        <span class="nx">entry</span><span class="p">.</span><span class="nx">ll</span> <span class="o">=</span> <span class="cp">[</span><span class="nx">entry.ll</span><span class="err">[</span><span class="mi">1</span><span class="cp">]</span><span class="p">,</span><span class="nx">entry</span><span class="p">.</span><span class="nx">ll</span><span class="cp">[</span><span class="mi">0</span><span class="cp">]</span><span class="p">];</span> 
+        <span class="nx">db</span><span class="p">.</span><span class="nx">log</span><span class="p">.</span><span class="nx">update</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="o">:</span><span class="nx">entry</span><span class="p">.</span><span class="nx">_id</span><span class="p">},{</span><span class="nx">$set</span><span class="o">:</span><span class="nx">entry</span><span class="p">});</span> 
+    <span class="p">})</span>
+</pre></div>
+
+
+<p>Now that our database is in the correct format, we need to create an 2D Spacial indexo n the data.</p>
+<blockquote>
+<p>db.log.createIndex( { ll : "2d" } )</p>
+</blockquote>
+<p>Now we can ask questions about how many clicks are within 50 miles of San Francisco:</p>
+<blockquote>
+<p>db.log.find( { 'll' : { \$geoWithin :{ \$centerSphere : [ [  -122.4167, 37.7833 ] , 50 / 3963.2 ] } } } ).count()</p>
+<blockquote>
+<p>226</p>
+</blockquote>
+</blockquote>
+<div class="highlight"><pre><span class="x">log.find(</span><span class="err">{</span><span class="x">&#39;ll&#39;:</span>
+<span class="x">          </span><span class="err">{</span><span class="x">&#39;</span><span class="p">$</span><span class="nv">geoWithin</span><span class="x">&#39; :</span>
+<span class="x">           </span><span class="err">{</span><span class="x">&#39;</span><span class="p">$</span><span class="nv">centerSphere</span><span class="x">&#39; : [ [ -122.4167, 37.7833 ] , 50 / 3963.2 ] } </span><span class="cp">#</span><span class="nf">Lat</span><span class="x">,Lng SF 50 Miles/3964.2 Miles/Degree</span>
+<span class="x">          } </span>
+<span class="x">         }).count()</span>
+
+
+
+
+<span class="x">226</span>
+</pre></div>
+
+
+<p>We could ask the questions:  "How many users are in Maine?" </p>
+<blockquote>
+<p>db.log.find({'gr':'ME'}).count()</p>
+<blockquote>
+<p>2</p>
+</blockquote>
+</blockquote>
+<div class="highlight"><pre>log.find({&#39;gr&#39;:&#39;ME&#39;}).count()
+
+
+
+
+2
+</pre></div>
+
+
+<p>That was easy, but if we did not have the state information, we would use the location data.   I found a site that hosts maps of the state boundries as polylines of gps coordinates.   This is where pymongo comes in handy over the command line.  I read in the data from a webrequest, then constructed a query from the GPS data using MongoDB's geo-features.</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="kn">as</span> <span class="nn">ET</span>
+<span class="kn">import</span> <span class="nn">urllib2</span>
+<span class="n">request</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="s">&#39;http://econym.org.uk/gmap/states.xml&#39;</span><span class="p">)</span>
+<span class="n">contents</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="n">ll</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">lng</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">lat</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">root</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">contents</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+<span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">getchildren</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">child</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;Maine&#39;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">child</span><span class="o">.</span><span class="n">getchildren</span><span class="p">():</span>
+            <span class="n">ll</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s">&#39;lng&#39;</span><span class="p">]),</span><span class="nb">float</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s">&#39;lat&#39;</span><span class="p">])])</span>
+            <span class="n">lng</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s">&#39;lng&#39;</span><span class="p">])</span>
+            <span class="n">lat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s">&#39;lat&#39;</span><span class="p">])</span>
+<span class="n">ll</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ll</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">log</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s">&quot;ll&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&quot;$geoWithin&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&quot;$geometry&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&quot;Polygon&quot;</span><span class="p">,</span> <span class="s">&quot;coordinates&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">ll</span><span class="p">]</span> <span class="p">}</span> <span class="p">}}})</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+
+
+
+<span class="mi">2</span>
+</pre></div>
+
+
+<p>We also get 2, without using any pre-identified cate information.   This allows us to check for consistency incase we need to clean data.  This is awesome.   </p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lng</span><span class="p">,</span><span class="n">lat</span><span class="p">,</span><span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;seagreen&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">log</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s">&#39;gr&#39;</span><span class="p">:</span><span class="s">&#39;ME&#39;</span><span class="p">}):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s">&#39;ll&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">r</span><span class="p">[</span><span class="s">&#39;ll&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="s">&#39;go&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mi">72</span><span class="p">,</span><span class="o">-</span><span class="mi">62</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Longitude&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Latitude&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW05D1/output_19_0.png" /></p>
+<p>We can see where our two Maine users in the map.  This is a feature of using pymongo that is not avaialble in just the termial application of MongoDB.</p>
+<p>Just for reference I wanted to list the geospacial tools listed for us if we wanted to explore them.  I did not, but I am using this post as a reference.  </p>
+<p>-<a href="http://cartodb.com/">CartoDB</a></p>
+<p>-<a href="http://blog.cartodb.com/post/66687861735/torque-is-live-try-it-on-your-cartodb-maps-today">torque map</a>.</p>
+<h2>Web Scraping:  Ebay</h2>
+<p>In the afternoon we were asked to engage in a couple of web scraping projects.  One was to find a topic on ebay, and retreive all the images on the search result page.   I, of course, searched for <a href="http://www.ebay.com/sch/i.html?_from=R40&amp;_trksid=p2050601.m570.l1313.TR5.TRC0.A0.H0.Xtesla.TRS0&amp;_nkw=tesla&amp;_sacat=0">Teslas</a></p>
+<p>The first thing we need is a place to store our images:</p>
+<div class="highlight"><pre><span class="nf">%mkdir</span> <span class="n">tesla</span>
+<span class="nf">%ls</span> <span class="n">tesla</span><span class="o">/</span>
+</pre></div>
+
+
+<p>We can see I just made the directory and that it is empty.  Now its type to scrape the webpage and pull out the images features.  The process we will do is request the webpage, use Beautiful soup to get the image sources, then down load each image source and store it in the tesla directory</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
+
+
+<span class="n">tesla_html</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;http://www.ebay.com/sch/i.html?_from=R40&amp;_trksid=p2050601.m570.l1313.TR5.TRC0.A0.H0.Xtesla.TRS0&amp;_nkw=tesla&amp;_sacat=0&#39;</span><span class="p">)</span>
+<span class="n">sup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">tesla_html</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<span class="n">imgs</span> <span class="o">=</span> <span class="p">[</span><span class="n">el</span><span class="p">[</span><span class="s">&#39;src&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">sup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s">&#39;div.lvpicinner a img&#39;</span><span class="p">)</span> <span class="p">]</span>
+
+<span class="k">for</span> <span class="n">img_str</span> <span class="ow">in</span> <span class="n">imgs</span><span class="p">:</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">img_str</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
+    <span class="n">to_img</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;tesla/&#39;</span><span class="o">+</span><span class="n">img_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">to_img</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+
+<span class="o">%</span><span class="n">ls</span> <span class="n">tesla</span><span class="o">/</span>
+
+<span class="n">m0Q3jSK6NQ9_Hu_YIl38T9g</span><span class="o">.</span><span class="n">jpg</span>  <span class="n">mbbybBkxozI9joXb1CgjfKQ</span><span class="o">.</span><span class="n">jpg</span>
+<span class="n">m45xVWpc86gaOwXzaWdXXOQ</span><span class="o">.</span><span class="n">jpg</span>  <span class="n">mgTnEkhYXi4kepjp3aNCx7Q</span><span class="o">.</span><span class="n">jpg</span>
+<span class="n">m52qwfleCJ</span><span class="o">-</span><span class="n">encMaAJO9Taw</span><span class="o">.</span><span class="n">jpg</span>  <span class="n">mgoIrvmOD</span><span class="o">-</span><span class="n">scAVdqXD1pirA</span><span class="o">.</span><span class="n">jpg</span>
+<span class="n">mDbg8VxsScOpYeQ6VH1TBEg</span><span class="o">.</span><span class="n">jpg</span>  <span class="n">mjMTLKMNaSsJNsRzn</span><span class="o">-</span><span class="n">zhQPg</span><span class="o">.</span><span class="n">jpg</span>
+<span class="n">mEDv_smHtanyCtScA1bCnpA</span><span class="o">.</span><span class="n">jpg</span>  <span class="n">ml5LUVDTC8ysTyvl70jOZMQ</span><span class="o">.</span><span class="n">jpg</span>
+<span class="n">mEEQdnmeKYAH32KJpZElmfw</span><span class="o">.</span><span class="n">jpg</span>  <span class="n">mmstVHfStN09f4KjbYZpQyA</span><span class="o">.</span><span class="n">jpg</span>
+<span class="n">mE_xrXWO7xW9JF0uKYi6YZA</span><span class="o">.</span><span class="n">jpg</span>  <span class="n">mpSnWCeMxvy3kVTjq3Ij44A</span><span class="o">.</span><span class="n">jpg</span>
+<span class="n">mV4lwZBpH6</span><span class="o">-</span><span class="n">wbB6xoZhRB1A</span><span class="o">.</span><span class="n">jpg</span>  <span class="n">mu5fgrRMhaOCwRhDu_eI1sw</span><span class="o">.</span><span class="n">jpg</span>
+<span class="n">mVP1Wc7_ekfxObQrj4DaqtQ</span><span class="o">.</span><span class="n">jpg</span>  <span class="n">mwdcx7MTbRMNuGi_4k7FiSw</span><span class="o">.</span><span class="n">jpg</span>
+<span class="n">mWrzlrW8xau7TE3WtJJtE9Q</span><span class="o">.</span><span class="n">jpg</span>  <span class="n">mzqPumoh3YFjZ8kvXLi2oMw</span><span class="o">.</span><span class="n">jpg</span>
+<span class="n">mXyFRK9gbpV9</span><span class="o">-</span><span class="mi">5</span><span class="n">f3</span><span class="o">-</span><span class="mi">4</span><span class="n">QVuzA</span><span class="o">.</span><span class="n">jpg</span>  <span class="n">s_1x2</span><span class="o">.</span><span class="n">gif</span>
+</pre></div>
+
+
+<p>We see that we have downlaoded 22</p>
+<div class="highlight"><pre>img = plt.imread(open(&#39;tesla/m0Q3jSK6NQ9_Hu_YIl38T9g.jpg&#39;))
+plt.imshow(img)
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW05D1/output_26_0.png" /></p>
+<p>I'm in love!!!!!   Only 55K, what a steal!</p>
+<p>This was fun, but my partner got burned out.  Ebay is full of iframes when looking at an individual description of a car, and I had us jumping to thhose pages to also scrape descriptions and prices.   Since we were not asked to do this, we moved on with our afternoon sprint. </p>
+<h1>New York Times Scraping</h1>
+<p>The NY times has, as we learned, over 15 Million articles posted on this website, some going back to 1851.   These are images/pdfs that you can view, but text you can easily scrape.  Reguardless, they are there.  </p>
+<p>Probably because of people like us, the New York Times also has an API to access aspects of their data base.  This makes it easier for us to get data and allows them to manage/mitigate the affect these requests have on their servers.</p>
+<p>The api requires an api.  You will see reference to it as a variable, but for obvious reasons I will not post my actual api key.  We have a simple function that allows us to send and process the response from the NY Times API.  </p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">requests</span>
+<span class="k">def</span> <span class="nf">single_query</span><span class="p">(</span><span class="n">link</span><span class="p">,</span> <span class="n">payload</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">link</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;WARNING&#39;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+<span class="n">pay</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;sort&#39;</span><span class="p">:</span><span class="s">&#39;oldest&#39;</span><span class="p">,</span> <span class="s">&#39;api-key&#39;</span><span class="p">:</span><span class="n">ny_key</span><span class="p">}</span>
+<span class="n">link</span> <span class="o">=</span> <span class="s">&#39;http://api.nytimes.com/svc/search/v2/articlesearch.json&#39;</span>
+
+<span class="n">ny_articles</span> <span class="o">=</span> <span class="n">single_query</span><span class="p">(</span><span class="n">link</span><span class="p">,</span><span class="n">pay</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">ny_articles</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+<span class="p">[</span><span class="s">u&#39;status&#39;</span><span class="p">,</span> <span class="s">u&#39;response&#39;</span><span class="p">,</span> <span class="s">u&#39;copyright&#39;</span><span class="p">]</span>
+</pre></div>
+
+
+<p>The response is a JSON document, and the first level has data about the query.   The next level has information about the responses, and then we have meta data about the article documents.</p>
+<div class="highlight"><pre>ny_articles[&#39;response&#39;].keys()
+
+
+
+
+[u&#39;docs&#39;, u&#39;meta&#39;]
+
+
+
+
+ny_articles[&#39;response&#39;][&#39;meta&#39;]
+
+
+
+
+{u&#39;hits&#39;: 15569986, u&#39;offset&#39;: 0, u&#39;time&#39;: 179}
+</pre></div>
+
+
+<p>We see that our response has 15,569,986 matches, taking 179ms to response.  Our offset is 0.</p>
+<div class="highlight"><pre>ny_articles[&#39;response&#39;][&#39;docs&#39;][0]
+
+
+
+
+{u&#39;_id&#39;: u&#39;4fbfd23e45c1498b0d004db6&#39;,
+ u&#39;abstract&#39;: None,
+ u&#39;blog&#39;: [],
+ u&#39;byline&#39;: None,
+ u&#39;document_type&#39;: u&#39;article&#39;,
+ u&#39;headline&#39;: {u&#39;kicker&#39;: u&#39;1&#39;,
+  u&#39;main&#39;: u&#39;??itive Salve Case in Philadelphia&#39;},
+ u&#39;keywords&#39;: [],
+ u&#39;lead_paragraph&#39;: None,
+ u&#39;multimedia&#39;: [],
+ u&#39;news_desk&#39;: None,
+ u&#39;print_page&#39;: u&#39;4&#39;,
+ u&#39;pub_date&#39;: u&#39;1851-09-18T00:03:58Z&#39;,
+ u&#39;section_name&#39;: None,
+ u&#39;snippet&#39;: None,
+ u&#39;source&#39;: u&#39;The New York Times&#39;,
+ u&#39;subsection_name&#39;: None,
+ u&#39;type_of_material&#39;: u&#39;Article&#39;,
+ u&#39;web_url&#39;: u&#39;http://query.nytimes.com/gst/abstract.html?res=9904E7DE1430EF33A2575BC1A96F9C946092D7CF&#39;,
+ u&#39;word_count&#39;: 74}
+</pre></div>
+
+
+<p>The docs are a list of 10 document's JSON formated meta data.  We originally sorted by oldest, but we can look at the meta data for current documents.</p>
+<div class="highlight"><pre>pay = {&#39;sort&#39;:&#39;newest&#39;, &#39;api-key&#39;:ny_key}
+ny_articles = single_query(link,pay)
+print ny_articles[&#39;response&#39;][&#39;docs&#39;][0]
+
+{u&#39;type_of_material&#39;: u&#39;Op-Ed&#39;, u&#39;blog&#39;: [], u&#39;news_desk&#39;: u&#39;OpEd&#39;, u&#39;lead_paragraph&#39;: u&#39;The Greek debt crisis taxes the best minds of Europe.&#39;, u&#39;headline&#39;: {u&#39;main&#39;: u&#39;Do We Have a Plan?&#39;, u&#39;content_kicker&#39;: u&#39;Op-Ed Columnist&#39;}, u&#39;abstract&#39;: None, u&#39;print_page&#39;: None, u&#39;word_count&#39;: u&#39;10&#39;, u&#39;_id&#39;: u&#39;557ec00038f0d86829e412aa&#39;, u&#39;snippet&#39;: u&#39;The Greek debt crisis taxes the best minds of Europe.&#39;, u&#39;source&#39;: u&#39;The New York Times&#39;, u&#39;web_url&#39;: u&#39;http://www.nytimes.com/2015/07/12/opinion/do-we-have-a-plan.html&#39;, u&#39;multimedia&#39;: [{u&#39;subtype&#39;: u&#39;wide&#39;, u&#39;url&#39;: u&#39;images/2015/06/15/opinion/15edchapart/15edchapart-thumbWide.jpg&#39;, u&#39;height&#39;: 126, u&#39;width&#39;: 190, u&#39;legacy&#39;: {u&#39;wide&#39;: u&#39;images/2015/06/15/opinion/15edchapart/15edchapart-thumbWide.jpg&#39;, u&#39;wideheight&#39;: u&#39;126&#39;, u&#39;widewidth&#39;: u&#39;190&#39;}, u&#39;type&#39;: u&#39;image&#39;}, {u&#39;subtype&#39;: u&#39;xlarge&#39;, u&#39;url&#39;: u&#39;images/2015/06/15/opinion/15edchapart/15edchapart-articleLarge.jpg&#39;, u&#39;height&#39;: 443, u&#39;width&#39;: 600, u&#39;legacy&#39;: {u&#39;xlargewidth&#39;: u&#39;600&#39;, u&#39;xlarge&#39;: u&#39;images/2015/06/15/opinion/15edchapart/15edchapart-articleLarge.jpg&#39;, u&#39;xlargeheight&#39;: u&#39;443&#39;}, u&#39;type&#39;: u&#39;image&#39;}, {u&#39;subtype&#39;: u&#39;thumbnail&#39;, u&#39;url&#39;: u&#39;images/2015/06/15/opinion/15edchapart/15edchapart-thumbStandard.jpg&#39;, u&#39;height&#39;: 75, u&#39;width&#39;: 75, u&#39;legacy&#39;: {u&#39;thumbnailheight&#39;: u&#39;75&#39;, u&#39;thumbnail&#39;: u&#39;images/2015/06/15/opinion/15edchapart/15edchapart-thumbStandard.jpg&#39;, u&#39;thumbnailwidth&#39;: u&#39;75&#39;}, u&#39;type&#39;: u&#39;image&#39;}], u&#39;subsection_name&#39;: None, u&#39;keywords&#39;: [{u&#39;value&#39;: u&#39;European Sovereign Debt Crisis (2010- )&#39;, u&#39;is_major&#39;: u&#39;N&#39;, u&#39;rank&#39;: u&#39;1&#39;, u&#39;name&#39;: u&#39;subject&#39;}, {u&#39;value&#39;: u&#39;Greece&#39;, u&#39;is_major&#39;: u&#39;N&#39;, u&#39;rank&#39;: u&#39;2&#39;, u&#39;name&#39;: u&#39;glocations&#39;}, {u&#39;value&#39;: u&#39;Europe&#39;, u&#39;is_major&#39;: u&#39;N&#39;, u&#39;rank&#39;: u&#39;3&#39;, u&#39;name&#39;: u&#39;glocations&#39;}, {u&#39;value&#39;: u&#39;European Union&#39;, u&#39;is_major&#39;: u&#39;N&#39;, u&#39;rank&#39;: u&#39;4&#39;, u&#39;name&#39;: u&#39;organizations&#39;}, {u&#39;value&#39;: u&#39;European Central Bank&#39;, u&#39;is_major&#39;: u&#39;N&#39;, u&#39;rank&#39;: u&#39;5&#39;, u&#39;name&#39;: u&#39;organizations&#39;}, {u&#39;value&#39;: u&#39;Eurozone&#39;, u&#39;is_major&#39;: u&#39;N&#39;, u&#39;rank&#39;: u&#39;6&#39;, u&#39;name&#39;: u&#39;organizations&#39;}], u&#39;byline&#39;: {u&#39;person&#39;: [{u&#39;organization&#39;: u&#39;&#39;, u&#39;role&#39;: u&#39;reported&#39;, u&#39;rank&#39;: 1, u&#39;firstname&#39;: u&#39;Patrick&#39;, u&#39;lastname&#39;: u&#39;CHAPPATTE&#39;}], u&#39;original&#39;: u&#39;By PATRICK CHAPPATTE&#39;}, u&#39;document_type&#39;: u&#39;article&#39;, u&#39;pub_date&#39;: u&#39;2015-07-12T00:00:00Z&#39;, u&#39;section_name&#39;: u&#39;Opinion&#39;}
+</pre></div>
+
+
+<p>The NYT has different information for different articles.  We decided we would see how many we would download before we reached our daily limit.  It turns out that it was over 30,000 articles.   Since we were encoraged to see how many articles we could pull, we did not do it thoughtfully.  The NY times is fill of videos and receipes and other content that is not text based.   In retrospect I wish we focused on only 'News' articles.</p>
+<p>A number of our cohort had trouble getting past 1000 articles.  This is because the NY Times limits the pagation of their response to 99.  We got around this by cycling through endates as well as pages in the response.   We also found, that because of the type of material that they post, some days have more than 1000 articles.  We limited our selves to 1000 articles from a given day, then moved on to the previous day.  </p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">time</span>
+
+<span class="c">#day we did the assignment</span>
+<span class="n">end_date</span> <span class="o">=</span> <span class="s">&#39;20150622&#39;</span>
+
+<span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">:</span>
+    <span class="n">pay</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;sort&#39;</span><span class="p">:</span><span class="s">&#39;newest&#39;</span><span class="p">,</span><span class="s">&#39;end_date&#39;</span><span class="p">:</span><span class="n">end_date</span><span class="p">,</span> <span class="s">&#39;api-key&#39;</span><span class="p">:</span><span class="n">ny_key</span><span class="p">,</span><span class="s">&#39;page&#39;</span><span class="p">:</span><span class="n">i</span><span class="p">}</span>
+    <span class="n">articles</span> <span class="o">=</span> <span class="n">single_query</span><span class="p">(</span><span class="n">link</span><span class="p">,</span><span class="n">pay</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">articles</span><span class="p">[</span><span class="s">&#39;response&#39;</span><span class="p">][</span><span class="s">&#39;docs&#39;</span><span class="p">]:</span>
+        <span class="c">##We upsert into the database because we when change the </span>
+        <span class="c">##enddate we get some redundant articles</span>
+        <span class="n">ny</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&quot;_id&quot;</span><span class="p">:</span><span class="n">doc</span><span class="p">[</span><span class="s">&#39;_id&#39;</span><span class="p">]},</span><span class="n">doc</span><span class="p">,</span><span class="n">upsert</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">i</span><span class="o">%</span><span class="mi">49</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">i</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> 
+    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">99</span><span class="p">:</span>
+        <span class="n">end_date</span> <span class="o">=</span> <span class="n">articles</span><span class="p">[</span><span class="s">&#39;response&#39;</span><span class="p">][</span><span class="s">&#39;docs&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;pub_date&#39;</span><span class="p">][:</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;-&#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">end_date</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">end_date</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c">##Avoid being blocked by a too high query rate</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mi">15</span><span class="p">)</span>
+</pre></div>
+
+
+<p>I am not going to run this code for this post, but it allowed us to pull 30,000+ articles and store them in our MongoDB database.  But we can look at the results.</p>
+<div class="highlight"><pre>ny.find().count()
+
+
+
+
+31140
+</pre></div>
+
+
+<p>This is only meta-data however, and not the actual articles from the website.   The final project was to download all the article text for each article.  It is clear that we were not expected to be able to download 30,000+ articles for this assignment.   We started the project by only downloading the articles a few news articles.</p>
+<p>We we also structured it in a way that allowed us to look for articles that have not yet been scraped and stored in our database.   We wanted to avoid double scraping at all cost.  </p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">time</span>
+<span class="k">def</span> <span class="nf">pull_articles</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ny</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s">&#39;type_of_material&#39;</span><span class="p">:</span> <span class="s">&#39;News&#39;</span><span class="p">,</span> <span class="s">&#39;HTML_content&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;$exists&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">},</span> <span class="s">&#39;web_url&#39;</span><span class="p">:{</span><span class="s">&#39;$exists&#39;</span><span class="p">:</span><span class="s">&#39;true&#39;</span><span class="p">}})</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s">&#39;pub_date&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">sup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s">&#39;web_url&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+        <span class="n">art</span> <span class="o">=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">text</span><span class="o">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">sup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s">&#39;.story-content&#39;</span><span class="p">)])</span>
+        <span class="k">print</span> <span class="n">art</span><span class="p">[:</span><span class="mi">75</span><span class="p">]</span>
+        <span class="n">x</span><span class="p">[</span><span class="s">&#39;HTML_content&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">art</span>
+        <span class="n">ny</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;_id&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s">&#39;_id&#39;</span><span class="p">]},</span> <span class="n">x</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="n">pull_articles</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">The</span> <span class="n">movable</span> <span class="n">feast</span> <span class="n">of</span> <span class="n">fashion</span> <span class="n">weeks</span> <span class="n">continues</span><span class="o">.</span> <span class="n">After</span> <span class="n">Valentino</span> <span class="n">decided</span> <span class="n">to</span> <span class="n">ho</span>
+</pre></div>
+
+
+<p>I did not print out the entire articles because I am affid of being in violation of copyright with the New York Times.  We did scrape a modest amount of articles.  After pulling the meta data for 30,000 articles we did not want to continue to scrape the web articles as well</p>
+<div class="highlight"><pre><span class="x">ny.find(</span><span class="err">{</span><span class="x">&#39;HTML_content&#39;: </span><span class="err">{</span><span class="x">&#39;</span><span class="p">$</span><span class="nv">exists</span><span class="x">&#39;:1}}).count()</span>
+
+
+
+
+<span class="x">65</span>
+</pre></div>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'bryansmithphd';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=bryansmithphd">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      Bryan Smith, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="http://www.bryantravissmith.com/theme/js/jquery.min.js"></script>
+  <script src="http://www.bryantravissmith.com/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$$','$$'], ['\\(','\\)']]}
+});
+</script>
+</html>
