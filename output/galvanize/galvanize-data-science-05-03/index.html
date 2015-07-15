@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-05-03/index.html" />
+
+    <title>  Bryan Travis Smith, Ph.D &mdash; Galvanize - Week 05 - Day 3
+</title>
+
+
+
+
+    <link rel="stylesheet" href="http://www.bryantravissmith.com/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-24340005-3', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+
+    <meta name="author" content="Bryan Smith">
+    <meta name="description" content="Today we were introduced to natural language processing (nlp)">
+  <meta name="tags" contents="data-science, galvanize, natural language processing, nlp, yelp, new york times, , ">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+      <div class="header-image pull-left">
+        <a class="nodec" href="http://www.bryantravissmith.com"><img src=http://www.bryantravissmith.com/img/bryan.jpeg></a>
+      </div>
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="http://www.bryantravissmith.com">Bryan Travis Smith, Ph.D</a>
+      </h1>
+      <h3 class="header-text">Physicist, Data Scientist, Martial Artist, & Life Enthusiast</h3>
+      <ul class="header-menu list-inline">
+              <li class="muted">|</li>
+            <li><a class="nodec" href="http://www.bryantravissmith.com/about/">About</a></li>
+              <li class="muted">|</li>
+          <li><a class="nodec icon-mail-alt" href="mailto:bryantravissmith@gmail.com"></a></li>
+          <li><a class="nodec icon-github" href="https://github.com/bryantravissmith"></a></li>
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+      <a href="/galvanize/galvanize-data-science-05-03/" title="Permalink to Galvanize - Week 05 - Day 3">Galvanize - Week 05 - Day 3</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" href="/galvanize/galvanize-data-science-05-03/" title="2015-07-01T10:20:00-07:00">Wed 01 July 2015</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+        <a href="http://www.bryantravissmith.com/category/galvanize.html">Galvanize</a>
+      </li>
+        <li class="muted">&middot;</li>
+        <li>
+          <address class="post-author">
+            By <a href="http://www.bryantravissmith.com/author/bryan-smith.html">Bryan Smith</a>
+          </address>
+        </li>
+    </ul>
+    <div class="post-content">
+      <h1>Galvanize Immersive Data Science</h1>
+<h2>Week 5 - Day 3</h2>
+<p>Today we covered natural language processing and and NaiveBayes methods of machine learning.   We were introduced to the NLTK package of python, and the sklearn text processing packagages.</p>
+<h2>Yelp</h2>
+<p>We started of with a daily quiz, per usual.   We were suppose to signup for the Yelp! API and find out how many gastropubs are in San Francisco.  </p>
+<p>Looking at the Yelp! API I see there is a 'category_filter' term and one of the valid inputs is 'gastropubs'.   </p>
+<p>Yelp, unlike any service we used before, requires oAuth.   This was the most difficult part of the quiz for me.  Not difficult in hard, but in that I had zero experience and it was a tall order to get it figured out in a short time.  One convoluting factor was that Yelp! gives you your tokens and keys, but they do not work for the first 10 minutes if you have a new account.   Once I refreshed them, everything worked beautifully</p>
+<p>Today is my first day attending Galvanize's Immersive Data Science Program in San Francisco, CA.   The program is a 12 week program that is approximately 10 hours a day of learning and activities to reinforce and refine the learning.   I am very excited to be a part of this program.</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">urllib2</span>
+<span class="kn">import</span> <span class="nn">oauth2</span>
+
+
+<span class="n">url_params</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;category_filter&#39;</span> <span class="p">:</span> <span class="s">&#39;gastropubs&#39;</span><span class="p">,</span> <span class="s">&#39;location&#39;</span><span class="p">:</span><span class="s">&#39;San Francisco&#39;</span><span class="p">}</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s">&#39;http://api.yelp.com/v2/search/?&#39;</span>
+<span class="n">consumer</span> <span class="o">=</span> <span class="n">oauth2</span><span class="o">.</span><span class="n">Consumer</span><span class="p">(</span><span class="n">CONSUMER_KEY</span><span class="p">,</span> <span class="n">CONSUMER_SECRET</span><span class="p">)</span>
+<span class="n">oauth_request</span> <span class="o">=</span> <span class="n">oauth2</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">url_params</span><span class="p">)</span>
+
+<span class="n">oauth_request</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s">&#39;oauth_nonce&#39;</span><span class="p">:</span> <span class="n">oauth2</span><span class="o">.</span><span class="n">generate_nonce</span><span class="p">(),</span>
+        <span class="s">&#39;oauth_timestamp&#39;</span><span class="p">:</span> <span class="n">oauth2</span><span class="o">.</span><span class="n">generate_timestamp</span><span class="p">(),</span>
+        <span class="s">&#39;oauth_token&#39;</span><span class="p">:</span> <span class="n">TOKEN</span><span class="p">,</span>
+        <span class="s">&#39;oauth_consumer_key&#39;</span><span class="p">:</span> <span class="n">CONSUMER_KEY</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+<span class="n">token</span> <span class="o">=</span> <span class="n">oauth2</span><span class="o">.</span><span class="n">Token</span><span class="p">(</span><span class="n">TOKEN</span><span class="p">,</span> <span class="n">TOKEN_SECRET</span><span class="p">)</span>
+<span class="n">oauth_request</span><span class="o">.</span><span class="n">sign_request</span><span class="p">(</span><span class="n">oauth2</span><span class="o">.</span><span class="n">SignatureMethod_HMAC_SHA1</span><span class="p">(),</span> <span class="n">consumer</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
+<span class="n">signed_url</span> <span class="o">=</span> <span class="n">oauth_request</span><span class="o">.</span><span class="n">to_url</span><span class="p">()</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">signed_url</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">conn</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+    <span class="k">print</span> <span class="n">response</span><span class="p">[</span><span class="s">&#39;total&#39;</span><span class="p">]</span>
+    <span class="k">print</span> <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s">&#39;businesses&#39;</span><span class="p">])</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+
+<p>The YELP! API limits you to twenty detailed responses, but it does let you know that there are 48 Businesses in San Francisco listed in the gastropub category.</p>
+<h2>Natural Language Processing</h2>
+<p>The goal of today's morning sprint is to use a subset of New York Times articles and attempt to find related articles.   We are also starting out by going through the process ourselves, then using sklearn's packages for processing text.</p>
+<p>First we will need to pull articles from the database.</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">nyt_dump</span>
+<span class="n">coll</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">articles</span>
+<span class="n">docs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">d</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">coll</span><span class="o">.</span><span class="n">find</span><span class="p">()):</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s">&#39;content&#39;</span><span class="p">])</span>
+
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf8&#39;</span><span class="p">,</span> <span class="s">&#39;replace&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf8&#39;</span><span class="p">)</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+        <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s">&#39;section_name&#39;</span><span class="p">])</span>
+<span class="k">print</span> <span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+
+<span class="mi">984</span> <span class="mi">984</span>
+</pre></div>
+
+
+<p>Of the 999 documents that are in our subset, a few are empty of text.  The web scraper must not have found the text when pulling it from the ny times.   We will drop these words from our corpus.  </p>
+<p>For our purpose we have going to take the words in the NY Times articles and lemmatize them, then stem them.   The lemmatize them will take words that are in difference contexts but have similar meaning to a signular word.  The stemmmer will remove other 'decorative' aspect of the word to capture just the word.   </p>
+<p>The reason I am lemmatize this is that NY times is documented of having one of the highest vocabularities online, which means that there will be a pleathor of word choice for similar ideas.   If we want to capture related articles, then we will need to attempt to captures words that are similar.</p>
+<p>We also removed the common english stopwords.  Because of the unicode characters, I will be using a regular expression tokenizer.  </p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">nltk</span> <span class="kn">import</span> <span class="n">word_tokenize</span><span class="p">,</span> <span class="n">wordpunct_tokenize</span><span class="p">,</span><span class="n">RegexpTokenizer</span>
+<span class="kn">from</span> <span class="nn">nltk.corpus</span> <span class="kn">import</span> <span class="n">stopwords</span>
+<span class="kn">from</span> <span class="nn">nltk.stem.porter</span> <span class="kn">import</span> <span class="n">PorterStemmer</span>
+<span class="kn">from</span> <span class="nn">nltk.stem.snowball</span> <span class="kn">import</span> <span class="n">SnowballStemmer</span>
+<span class="kn">from</span> <span class="nn">nltk.stem.wordnet</span> <span class="kn">import</span> <span class="n">WordNetLemmatizer</span>
+<span class="kn">from</span> <span class="nn">nltk</span> <span class="kn">import</span> <span class="n">Text</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="n">sw</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">stopwords</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="s">&#39;english&#39;</span><span class="p">))</span>
+<span class="n">porter</span> <span class="o">=</span> <span class="n">PorterStemmer</span><span class="p">()</span>
+<span class="n">snowball</span> <span class="o">=</span> <span class="n">SnowballStemmer</span><span class="p">(</span><span class="s">&#39;english&#39;</span><span class="p">)</span>
+<span class="n">wordnet</span> <span class="o">=</span> <span class="n">WordNetLemmatizer</span><span class="p">()</span>
+<span class="n">reg</span> <span class="o">=</span> <span class="n">RegexpTokenizer</span><span class="p">(</span><span class="s">r&#39;\w+&#39;</span><span class="p">,</span><span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">UNICODE</span><span class="p">)</span>
+<span class="n">stemmer_words</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">doc_tokens</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+    <span class="n">tokens</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">reg</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">t</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sw</span><span class="p">:</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="n">wordnet</span><span class="o">.</span><span class="n">lemmatize</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">snowball</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+            <span class="n">stemmer_words</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">porter</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">t</span><span class="p">),</span><span class="n">snowball</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">t</span><span class="p">),</span><span class="n">wordnet</span><span class="o">.</span><span class="n">lemmatize</span><span class="p">(</span><span class="n">t</span><span class="p">),</span><span class="n">snowball</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">wordnet</span><span class="o">.</span><span class="n">lemmatize</span><span class="p">(</span><span class="n">t</span><span class="p">))])</span>
+            <span class="n">tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>      
+    <span class="n">doc_tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+</pre></div>
+
+
+<p>If you inspect the above code you noticed that I make a list of each word and the results of the different stemmers.  We can see for a random selection of 20 words that the the stemming all lead to the same outcome.   The lemmatizer gave different results, but once that result was fed to the stemmer it was identical.   </p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+    <span class="k">print</span> <span class="n">stemmer_words</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="kp">randint</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">stemmer_words</span><span class="p">))]</span>
+
+<span class="p">[</span><span class="s">u&#39;fashion&#39;</span><span class="p">,</span> <span class="s">u&#39;fashion&#39;</span><span class="p">,</span> <span class="s">u&#39;fashion&#39;</span><span class="p">,</span> <span class="s">u&#39;fashion&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s">u&#39;mr&#39;</span><span class="p">,</span> <span class="s">u&#39;mr&#39;</span><span class="p">,</span> <span class="s">u&#39;mr&#39;</span><span class="p">,</span> <span class="s">u&#39;mr&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s">u&#39;could&#39;</span><span class="p">,</span> <span class="s">u&#39;could&#39;</span><span class="p">,</span> <span class="s">u&#39;could&#39;</span><span class="p">,</span> <span class="s">u&#39;could&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s">u&#39;u&#39;</span><span class="p">,</span> <span class="s">u&#39;u&#39;</span><span class="p">,</span> <span class="s">u&#39;u&#39;</span><span class="p">,</span> <span class="s">u&#39;u&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s">u&#39;3&#39;</span><span class="p">,</span> <span class="s">u&#39;3&#39;</span><span class="p">,</span> <span class="s">u&#39;3&#39;</span><span class="p">,</span> <span class="s">u&#39;3&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s">u&#39;day&#39;</span><span class="p">,</span> <span class="s">u&#39;day&#39;</span><span class="p">,</span> <span class="s">u&#39;day&#39;</span><span class="p">,</span> <span class="s">u&#39;day&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s">u&#39;flagship</span><span class="se">\xe2</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">u&#39;flagship</span><span class="se">\xe2</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">u&#39;flagship</span><span class="se">\xe2</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">u&#39;flagship</span><span class="se">\xe2</span><span class="s">&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s">u&#39;germani&#39;</span><span class="p">,</span> <span class="s">u&#39;germani&#39;</span><span class="p">,</span> <span class="s">u&#39;germany&#39;</span><span class="p">,</span> <span class="s">u&#39;germani&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s">u&#39;bleak&#39;</span><span class="p">,</span> <span class="s">u&#39;bleak&#39;</span><span class="p">,</span> <span class="s">u&#39;bleak&#39;</span><span class="p">,</span> <span class="s">u&#39;bleak&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s">u&#39;one&#39;</span><span class="p">,</span> <span class="s">u&#39;one&#39;</span><span class="p">,</span> <span class="s">u&#39;one&#39;</span><span class="p">,</span> <span class="s">u&#39;one&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s">u&#39;would&#39;</span><span class="p">,</span> <span class="s">u&#39;would&#39;</span><span class="p">,</span> <span class="s">u&#39;would&#39;</span><span class="p">,</span> <span class="s">u&#39;would&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s">u&#39;make&#39;</span><span class="p">,</span> <span class="s">u&#39;make&#39;</span><span class="p">,</span> <span class="s">u&#39;making&#39;</span><span class="p">,</span> <span class="s">u&#39;make&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s">u&#39;point&#39;</span><span class="p">,</span> <span class="s">u&#39;point&#39;</span><span class="p">,</span> <span class="s">u&#39;point&#39;</span><span class="p">,</span> <span class="s">u&#39;point&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s">u&#39;also&#39;</span><span class="p">,</span> <span class="s">u&#39;also&#39;</span><span class="p">,</span> <span class="s">u&#39;also&#39;</span><span class="p">,</span> <span class="s">u&#39;also&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s">u&#39;spi&#39;</span><span class="p">,</span> <span class="s">u&#39;spi&#39;</span><span class="p">,</span> <span class="s">u&#39;spy&#39;</span><span class="p">,</span> <span class="s">u&#39;spi&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s">u&#39;sergeant&#39;</span><span class="p">,</span> <span class="s">u&#39;sergeant&#39;</span><span class="p">,</span> <span class="s">u&#39;sergeant&#39;</span><span class="p">,</span> <span class="s">u&#39;sergeant&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s">u&#39;divorc&#39;</span><span class="p">,</span> <span class="s">u&#39;divorc&#39;</span><span class="p">,</span> <span class="s">u&#39;divorced&#39;</span><span class="p">,</span> <span class="s">u&#39;divorc&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s">u&#39;deni&#39;</span><span class="p">,</span> <span class="s">u&#39;deni&#39;</span><span class="p">,</span> <span class="s">u&#39;denied&#39;</span><span class="p">,</span> <span class="s">u&#39;deni&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s">u&#39;don</span><span class="se">\xe2</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">u&#39;don</span><span class="se">\xe2</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">u&#39;don</span><span class="se">\xe2</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">u&#39;don</span><span class="se">\xe2</span><span class="s">&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s">u&#39;battl&#39;</span><span class="p">,</span> <span class="s">u&#39;battl&#39;</span><span class="p">,</span> <span class="s">u&#39;battle&#39;</span><span class="p">,</span> <span class="s">u&#39;battl&#39;</span><span class="p">]</span>
+</pre></div>
+
+
+<h2>Bag of Words</h2>
+<p>Now that we have stemmed all the words in our document, we likely have duplicates.  We want to get a vocabulary of our corpus, the 984 new york times articles.   We can do this with a simple list comprehension to flatten the list, perform a set operation, then turn it back into a list.  I will sort it just because.</p>
+<p>Because we will be cycling through this list, it will be able to look up the location of a particlar word.  We will also make a dictionary of each word and its index in the list.  </p>
+<div class="highlight"><pre>bag = [item for row in doc_tokens for item in row]
+bag = set(bag)
+bag = sorted(list(bag))
+
+bag_dict = dict()
+for i,word in enumerate(bag):
+    bag_dict[word] = i
+
+print len(bag),len(bag_dict)
+
+26505 26505
+</pre></div>
+
+
+<p>The next step in finding similarity between documents is finding the frequency of each word in each document.   For our purposes, each document has a potential of having some number of the 26505 words in our bag, and we have 984 documents.   That means we need a matrix that has a shape of (984,26505)</p>
+<div class="highlight"><pre>#make word frequency
+word_freq = np.zeros((len(doc_tokens),len(bag_dict)))
+
+#iterate through each doc
+for i, tokens in enumerate(doc_tokens):
+    #iterate through the word tokens of the doc
+    for token in tokens:
+        #us the lookup dictionary and add one to that word position
+        word_freq[i,bag_dict[token]] +=1
+</pre></div>
+
+
+<p>Now that we have the word frequency, we need a way to find if this is a relevant similarity between two documents.  If a word is popular in all documents, then it is not particularly special.  If a word is only freqnency in a 2 or 3 docs, there is an increased likelihood that they are related.</p>
+<p>Unlike the word frequency, the document frequency does not care how many times the word appears in the document.  It is a boolean measure.   Either 'USS' appears in the document or not.  It does not mater that it apears 10 times in an article about a naval yard.  </p>
+<div class="highlight"><pre>#Convert the word frequency to a bool, then an int.  Sum along the documents.
+#Use the sum along the documents to identify how many documents the word apears in
+#Divide by the number of documents to get the document frequency for each word
+doc_freq = np.sum((word_freq&gt;0).astype(int),axis=0).astype(float)/word_freq.shape[0]
+doc_freq.shape
+
+
+
+
+(26505,)
+</pre></div>
+
+
+<p>One problem we have at the moment is that we have word frequencies, but articles have different length.  They also have a different number of words.   Two articles on the same topic many have different lengths, thus different word counts.  The relative frequency is not necessarily similary, but if you just copied and pasted the same document it should also not be different.  To address this we need to normalize the rows in our word freqency matrix.</p>
+<div class="highlight"><pre>#calculate the row norms
+row_norms = np.linalg.norm(word_freq,axis=1)
+#if we have empty documents we need this line (but we dont!)
+row_norms[row_norms==0] = 1
+#reshape so that we can use broadcast division in numpy
+row_norms = row_norms.reshape(row_norms.shape[0],1)
+#have a row normalized row frequency
+norm_word_freq = word_freq/row_norms
+</pre></div>
+
+
+<p>The final feature vector we are constructing is the tf-idf vector that is the product of the normalized term frequency times the log of one over the document frquency of the term.   This operation changes the scale of the vector, so they must be renormalized after.   </p>
+<p>There are theoretical reason for the log, but I honestly have not understood them yet.  </p>
+<div class="highlight"><pre>#make tfidf vector
+tfidf = norm_word_freq*np.log(1/doc_freq)
+#find norms of each row
+tfidf_norms = np.linalg.norm(tfidf,axis=1)
+#needs this line for empty documents
+tfidf_norms[tfidf_norms==0] = 1
+#reshape for numpy broadcast division
+tfidf_norms = tfidf_norms.reshape(tfidf_norms.shape[0],1)
+#normlize tfidf
+norm_tfidf = tfidf/tfidf_norms
+</pre></div>
+
+
+<p>Now that we have these tfidf vectors, we can find document vectors that are similar to each other.   Similarity in a normalized vector space is similarity in direction.  This is known as cosign similarity.</p>
+<p>I am going to cycle through the 984x984 similarity calculations of similarity by the linear_kernel function of sklearn.   If the vectors are less than 30 degrees appart in this word-vector space, I will find the second most similar article.   I skip the first most because that will be its self.   They will have a similarity of 1.  </p>
+<div class="highlight"><pre><span class="s-Atom">from</span> <span class="s-Atom">sklearn</span><span class="p">.</span><span class="s-Atom">metrics</span><span class="p">.</span><span class="s-Atom">pairwise</span> <span class="s-Atom">import</span> <span class="s-Atom">linear_kernel</span>
+<span class="s-Atom">cosine_similarities</span> <span class="o">=</span> <span class="nf">linear_kernel</span><span class="p">(</span><span class="s-Atom">norm_tfidf</span><span class="p">,</span> <span class="s-Atom">norm_tfidf</span><span class="p">)</span>
+<span class="s-Atom">for</span> <span class="s-Atom">i</span><span class="p">,</span> <span class="s-Atom">row</span> <span class="s-Atom">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="s-Atom">cosine_similarities</span><span class="p">)</span><span class="s-Atom">:</span>
+    <span class="s-Atom">if</span> <span class="s-Atom">row</span><span class="p">[</span><span class="s-Atom">np</span><span class="p">.</span><span class="nf">argsort</span><span class="p">(</span><span class="s-Atom">row</span><span class="p">)[</span><span class="s-Atom">::-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="s-Atom">:</span><span class="mi">2</span><span class="p">]][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.707</span><span class="s-Atom">:</span>
+        <span class="s-Atom">print</span> <span class="s-Atom">i</span><span class="p">,</span><span class="s-Atom">np</span><span class="p">.</span><span class="nf">argsort</span><span class="p">(</span><span class="s-Atom">row</span><span class="p">)[</span><span class="s-Atom">::-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="s-Atom">:</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="mi">7</span> <span class="mi">158</span>
+<span class="mi">113</span> <span class="mi">712</span>
+<span class="mi">158</span> <span class="mi">7</span>
+<span class="mi">174</span> <span class="mi">521</span>
+<span class="mi">187</span> <span class="mi">960</span>
+<span class="mi">240</span> <span class="mi">251</span>
+<span class="mi">251</span> <span class="mi">251</span>
+<span class="mi">260</span> <span class="mi">425</span>
+<span class="mi">289</span> <span class="mi">474</span>
+<span class="mi">335</span> <span class="mi">372</span>
+<span class="mi">372</span> <span class="mi">372</span>
+<span class="mi">425</span> <span class="mi">260</span>
+<span class="mi">431</span> <span class="mi">810</span>
+<span class="mi">439</span> <span class="mi">615</span>
+<span class="mi">444</span> <span class="mi">445</span>
+<span class="mi">445</span> <span class="mi">444</span>
+<span class="mi">463</span> <span class="mi">700</span>
+<span class="mi">474</span> <span class="mi">289</span>
+<span class="mi">508</span> <span class="mi">508</span>
+<span class="mi">509</span> <span class="mi">508</span>
+<span class="mi">521</span> <span class="mi">174</span>
+<span class="mi">615</span> <span class="mi">439</span>
+<span class="mi">700</span> <span class="mi">463</span>
+<span class="mi">710</span> <span class="mi">756</span>
+<span class="mi">712</span> <span class="mi">920</span>
+<span class="mi">756</span> <span class="mi">710</span>
+<span class="mi">767</span> <span class="mi">767</span>
+<span class="mi">768</span> <span class="mi">767</span>
+<span class="mi">810</span> <span class="mi">431</span>
+<span class="mi">919</span> <span class="mi">756</span>
+<span class="mi">920</span> <span class="mi">712</span>
+<span class="mi">939</span> <span class="mi">956</span>
+<span class="mi">956</span> <span class="mi">939</span>
+<span class="mi">960</span> <span class="mi">187</span>
+</pre></div>
+
+
+<h2>We have a match</h2>
+<p>We can see that document 7 and 158 should be similar to each other.  I will print them out.  </p>
+<p>As you read through them you will find that they are two different articles on the same story about crashed cruise ship, both writen by the same author.   That is awesome that it found this.    </p>
+<div class="highlight"><pre>print docs[7]
+
+giglio, italy â after a costly, painstaking and potentially perilous operation to raise the battered hull of the cruise ship costa concordia, engineers said early tuesday that they had succeeded in righting the ship, removing it from two granite reefs where it ran aground last year, killing 32 people.
+
+
+the 19-hour, highly complicated salvage operation had managed to completely rotate the ship, leaning it on an underwater platform built underneath, the engineers said.        
+âthis was an important, visible step,â franco gabrielli, head of italyâs civil protection agency, told reporters at 4 a.m., accompanied by applause from a few residents who had stayed up all night to follow the operation.        
+âthe rotation happened in the way we thought and hoped it would happen,â echoed franco porcellacchia, project manager for costa cruises, the shipâs operator. âthere is no evidence so far of any impact to the environment. if there are debris to be removed, we will do it tomorrow.â        
+as parts of the vessel emerged in the later afternoon on monday, discolored and rusting, from the waters where the concordia had languished, listing on its side, engineers said the operation would most likely take longer than initially planned.        
+salvage experts have said the dimensions of the stricken 951-foot vessel made the operation unparalleled in the annals of marine salvage, as more than 500 divers, technicians, engineers and biologists prepared the ship for what is known as âparbucklingâ to bring it upright and minimize environmental risks to giglio island, a marine sanctuary.        
+using huge jacks, cables, pulleys and specialized equipment, the salvage effort had been set to begin at first light, but a sudden storm prevented workers from moving a barge and rubber booms close to the ship.        
+three hours after work started, engineers said the first phase of the operation â easing the vessel away from its rocky perch â was going according to plan. âthese hours were the most uncertain, as we could not establish how much the hull was wedged,â said sergio girotto, project manager with micoperi, the projectâs underwater construction and offshore contractor. ânow we have to guide it into the desired position.â        
+the next phase of the salvage, engineers said, involved settling the wreck on an artificial seabed made of bags of cement next to underwater steel platforms. to achieve that, the cruise liner needed to be rotated about 65 degrees, they said. if it all goes well, the ship will be towed away and broken up for scrap by spring.        
+the operation was broadcast live on television and the internet. the italian news media portrayed the salvage as a chance for italy to revamp its image after the wreck, in which the captain fled the damaged ship and the evacuation was chaotic.        
+the leading national daily, corriere della sera, called the shipwreck âa monument to human stupidityâ and a âhumiliationâ for italy. it said it hoped that the salvage effort would provide a ânew and different storyâ for the country.        
+the shipâs captain, francesco schettino, is scheduled to go on trial this fall on charges of multiple manslaughter, causing a shipwreck and abandoning â the vessel before everyone was safe. he has denied wrongdoing. a company official and four crew members have already pleaded guilty to reduced charges.        
+preparations for the salvage operation took 14 months, and the cost has increased to $799 million from $300 million and could rise further, according to costa cruises. the costa concordia has been stabilized with anchors and cement bags, and underwater platforms have been built on the port side. salvage crews used pulleys, strand jacks and steel cables placed on nine caissons attached to the left side of the ship to slowly dislodge it on monday from the two rocks where it had been resting.        
+the operation was monitored by engineers and remotely operated vehicle pilots from a control room on a barge close to the bow of the ship. if images or sonar showed dangerous twisting, the technicians could adjust the process. at a command center onshore, engineers could intervene if the ship did not rotate, or did not rotate properly.        
+salvage masters and the italian authorities had prepared for complications. most of the fuel was siphoned off within months of the wreck. but the vessel that once transported and entertained 4,229 people still contains chemicals and diesel fuel that could leak into the pristine waters for which giglio, a popular tourist spot, is known.        
+during the rotation process, the regionâs environmental agency took samples to monitor water quality.        
+âdetaching the ship from the rocks was the most complicated phase, which is probably why they decided to do it very cautiously,â said emilio campana, the director of the research office for naval and maritime engineering at italyâs national research council. âwe have to keep in mind that the structure is heavily damaged, and see if and how it holds together from now on.â
+
+
+
+
+gaia pianigiani reported from giglio, and alan cowell from london.
+
+
+
+print docs[158]
+
+giglio, italy â salvage workers righted the scarred and discolored hull of the cruise ship costa concordia early tuesday after coaxing it from two granite reefs it ran aground on just off this tiny tourist island 20 months ago, killing 32 people.
+
+
+as the vast hull slowly emerged during the complex, 19-hour salvage operation, the full extent of damage to the vessel became apparent. it looked as if a giant fist had driven into the shipâs flank.        
+shipsâ horns blared over giglioâs tiny port to celebrate the moment, and some of the islandâs 1,500 residents hugged salvage workers as they came ashore from what is likely to be seen as a bold step toward redressing some of italyâs anguish after the costa concordia, the length of three football fields, careened into the reefs on a wintry night in january 2012.        
+âthis was an important, visible step,â franco gabrielli, head of italyâs civil protection agency, told reporters at 4 a.m., accompanied by applause from a few residents who had stayed up all night to follow the operation.        
+he was echoed by franco porcellacchia, project manager for costa cruises, the shipâs operator. âthere is no evidence so far of any impact to the environment,â he said. âif there are debris to be removed, we will do it tomorrow.â        
+on tuesday morning, at a crowded news conference on giglio port, italian officials seemed almost surprised by how precisely their calculations had worked, but expressed caution about future steps to secure the vessel before it can be towed away and scrapped, probably in the spring. âthe phases to come will be just as complicated,â mr. porcellacchia said.        
+nick sloane, the salvage master, said the operation exceeded his expectations. âit was nice to see that at 4 a.m.,â he told reporters tuesday afternoon.        
+mr. sloane explained that a full survey of the damage, which he called substantial, would be possible only after italian authorities carried out their inspections and searched for the bodies of two people aboard the ship who are still missing.        
+the operation left the 951-foot ship resting on an artificial platform 90 feet below the surface, with only about a third of its once-sleek white lines visible above water. engineers said the badly damaged starboard side would need to be welded and reinforced, so that other steel chambers, known as caissons and crucial to the operation to right the ship, can be attached. the vessel will also need to be further secured to withstand winter weather, engineers said.        
+âwe will consider the operation concluded once the ship leaves giglio island,â mr. gabrielli told reporters, acknowledging that risks remained while the wreck was at sea. âweâll carry out all the needed interventions to mitigate it and allow the ship to face the next winter in secure conditions,â he said.        
+mr. sloane said he could hear workers jumping around with relief and delight as the ship was gently laid on the platform. âit was like a roller coaster,â he said.        
+the righting of the vessel did not draw universal applause.        
+âi donât necessarily think that this is a great victory for italy, maybe for the italian and american companies involved,â said suzanne kmetyko, 50, a tourist from austria who has visited the island for the past seven years.        
+âand the real success for the island will come only once people around the world will stop remembering it for the shipwreck rather than for its natural beauty,â she said. âa long way to go.â        
+italian news media, by contrast, portrayed the salvage, broadcast live on television and the internet, as a chance for the country to revamp its image after the wreck, in which the captain fled the damaged ship and the evacuation was chaotic. the leading national daily, corriere della sera, called the shipwreck âa monument to human stupidityâ and a âhumiliationâ for italy. it said it hoped that the salvage effort would provide a ânew and different storyâ for the country.        
+it was not always clear what that story would be.        
+as parts of the concordia emerged in the late afternoon on monday, stained and rusting, from the waters where the vessel had languished, engineers had said the operation would most likely take longer than initially planned.        
+the sheer size of the concordia had created what salvage specialists called unparalleled challenges not only to right the ship but also to protect giglio island, a marine sanctuary, from environmental hazard.        
+salvage workers used huge jacks, cables, pulleys and specialized equipment, first to ease the vessel off its rocky perch and then to right it. the first few hours âwere the most uncertain, as we could not establish how much the hull was wedged,â sergio girotto, project manager with micoperi, the projectâs underwater construction and offshore contractor, said on monday.        
+the shipâs captain, francesco schettino, is scheduled to go on trial this fall on charges of multiple manslaughter, causing a shipwreck and abandoning the vessel before everyone was safe. he has denied wrongdoing. a company official and four crew members have already pleaded guilty to reduced charges.        
+salvage masters and the italian authorities had prepared for complications. most of the fuel was siphoned off within months of the wreck. but the vessel that once transported and entertained 4,229 people still contains chemicals and diesel fuel that could leak into the pristine mediterranean waters for which giglio, a popular tourist spot, is known.
+
+
+
+
+gaia pianigiani reported from giglio, and alan cowell from london.
+</pre></div>
+
+
+<h2>Sklearn</h2>
+<p>In this section I will redo the procedure we did above using sklearn's methods.   To get similar results, I have to use the same tokenizer I used above.   Sklearn makes that relatively easy.  I just need to defien it and pass it into the constructor of the text processing object I am using.  I am going to include the sklearn stopwords the strip unicode.  This will lead to a slightly smaller word-matrix than in the previous part. </p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">CountVectorizer</span><span class="p">,</span> <span class="n">TfidfVectorizer</span>
+<span class="k">def</span> <span class="nf">tokenize</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    INPUT: string</span>
+<span class="sd">    OUTPUT: list of strings</span>
+
+<span class="sd">    Tokenize and stem/lemmatize the document.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">sw</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">stopwords</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="s">&#39;english&#39;</span><span class="p">))</span>
+    <span class="n">snowball</span> <span class="o">=</span> <span class="n">SnowballStemmer</span><span class="p">(</span><span class="s">&#39;english&#39;</span><span class="p">)</span>
+    <span class="n">wordnet</span> <span class="o">=</span> <span class="n">WordNetLemmatizer</span><span class="p">()</span>
+    <span class="n">reg</span> <span class="o">=</span> <span class="n">RegexpTokenizer</span><span class="p">(</span><span class="s">r&#39;\w+&#39;</span><span class="p">,</span><span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">UNICODE</span><span class="p">)</span>
+    <span class="n">doc_tokens</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">reg</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">t</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sw</span><span class="p">:</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="n">wordnet</span><span class="o">.</span><span class="n">lemmatize</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">snowball</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+            <span class="n">doc_tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>    
+    <span class="k">return</span> <span class="n">doc_tokens</span>
+
+<span class="n">vect</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">(</span><span class="n">stop_words</span><span class="o">=</span><span class="s">&#39;english&#39;</span><span class="p">,</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenize</span><span class="p">,</span><span class="n">strip_accents</span><span class="o">=</span><span class="s">&#39;unicode&#39;</span><span class="p">)</span>
+<span class="n">word_counts</span> <span class="o">=</span> <span class="n">vect</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+<span class="n">word_counts</span>
+
+
+
+
+<span class="o">&lt;</span><span class="mi">984</span><span class="n">x26280</span> <span class="n">sparse</span> <span class="n">matrix</span> <span class="n">of</span> <span class="nb">type</span> <span class="s">&#39;&lt;type &#39;</span><span class="n">numpy</span><span class="o">.</span><span class="n">int64</span><span class="s">&#39;&gt;&#39;</span>
+    <span class="k">with</span> <span class="mi">220702</span> <span class="n">stored</span> <span class="n">elements</span> <span class="ow">in</span> <span class="n">Compressed</span> <span class="n">Sparse</span> <span class="n">Row</span> <span class="n">format</span><span class="o">&gt;</span>
+</pre></div>
+
+
+<p>We do not need construct the wordcount, however, to get the tfidf.  Sklearn can construct it directly.  When can then do the same calculation and find the most related documents by the measure of cosign similarity.   </p>
+<div class="highlight"><pre><span class="s-Atom">from</span> <span class="s-Atom">sklearn</span><span class="p">.</span><span class="s-Atom">feature_extraction</span><span class="p">.</span><span class="s-Atom">text</span> <span class="s-Atom">import</span> <span class="nv">TfidfVectorizer</span>
+<span class="s-Atom">results</span> <span class="o">=</span> <span class="nv">TfidfVectorizer</span><span class="p">(</span><span class="s-Atom">tokenizer</span><span class="o">=</span><span class="s-Atom">tokenize</span><span class="p">,</span><span class="s-Atom">strip_accents=&#39;unicode&#39;</span><span class="p">,</span><span class="s-Atom">stop_words=&#39;english&#39;</span><span class="p">)</span>
+<span class="s-Atom">sp</span> <span class="o">=</span> <span class="s-Atom">results</span><span class="p">.</span><span class="nf">fit_transform</span><span class="p">(</span><span class="s-Atom">docs</span><span class="p">)</span>
+<span class="s-Atom">sp</span>
+
+
+
+
+<span class="o">&lt;</span><span class="mi">984</span><span class="s-Atom">x26280</span> <span class="s-Atom">sparse</span> <span class="s-Atom">matrix</span> <span class="s-Atom">of</span> <span class="s-Atom">type</span> <span class="s-Atom">&#39;&lt;type &#39;numpy</span><span class="p">.</span><span class="s-Atom">float64&#39;&gt;&#39;</span>
+    <span class="s-Atom">with</span> <span class="mi">220702</span> <span class="s-Atom">stored</span> <span class="s-Atom">elements</span> <span class="s-Atom">in</span> <span class="nv">Compressed</span> <span class="nv">Sparse</span> <span class="nv">Row</span> <span class="s-Atom">format</span><span class="o">&gt;</span>
+
+
+
+
+<span class="s-Atom">from</span> <span class="s-Atom">sklearn</span><span class="p">.</span><span class="s-Atom">metrics</span><span class="p">.</span><span class="s-Atom">pairwise</span> <span class="s-Atom">import</span> <span class="s-Atom">linear_kernel</span>
+<span class="s-Atom">cosine_similarities</span> <span class="o">=</span> <span class="nf">linear_kernel</span><span class="p">(</span><span class="s-Atom">sp</span><span class="p">,</span> <span class="s-Atom">sp</span><span class="p">)</span>
+<span class="s-Atom">for</span> <span class="s-Atom">i</span><span class="p">,</span> <span class="s-Atom">row</span> <span class="s-Atom">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="s-Atom">cosine_similarities</span><span class="p">)</span><span class="s-Atom">:</span>
+    <span class="s-Atom">if</span> <span class="s-Atom">row</span><span class="p">[</span><span class="s-Atom">np</span><span class="p">.</span><span class="nf">argsort</span><span class="p">(</span><span class="s-Atom">row</span><span class="p">)[</span><span class="s-Atom">::-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="s-Atom">:</span><span class="mi">2</span><span class="p">]][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.707</span><span class="s-Atom">:</span>
+        <span class="s-Atom">print</span> <span class="s-Atom">i</span><span class="p">,</span><span class="s-Atom">np</span><span class="p">.</span><span class="nf">argsort</span><span class="p">(</span><span class="s-Atom">row</span><span class="p">)[</span><span class="s-Atom">::-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="s-Atom">:</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="mi">7</span> <span class="mi">158</span>
+<span class="mi">113</span> <span class="mi">712</span>
+<span class="mi">158</span> <span class="mi">7</span>
+<span class="mi">174</span> <span class="mi">521</span>
+<span class="mi">187</span> <span class="mi">960</span>
+<span class="mi">240</span> <span class="mi">251</span>
+<span class="mi">251</span> <span class="mi">251</span>
+<span class="mi">253</span> <span class="mi">563</span>
+<span class="mi">260</span> <span class="mi">425</span>
+<span class="mi">289</span> <span class="mi">474</span>
+<span class="mi">335</span> <span class="mi">372</span>
+<span class="mi">372</span> <span class="mi">372</span>
+<span class="mi">425</span> <span class="mi">260</span>
+<span class="mi">439</span> <span class="mi">615</span>
+<span class="mi">444</span> <span class="mi">445</span>
+<span class="mi">445</span> <span class="mi">444</span>
+<span class="mi">463</span> <span class="mi">700</span>
+<span class="mi">474</span> <span class="mi">289</span>
+<span class="mi">508</span> <span class="mi">509</span>
+<span class="mi">509</span> <span class="mi">509</span>
+<span class="mi">521</span> <span class="mi">174</span>
+<span class="mi">563</span> <span class="mi">253</span>
+<span class="mi">615</span> <span class="mi">439</span>
+<span class="mi">700</span> <span class="mi">463</span>
+<span class="mi">710</span> <span class="mi">756</span>
+<span class="mi">712</span> <span class="mi">920</span>
+<span class="mi">756</span> <span class="mi">710</span>
+<span class="mi">767</span> <span class="mi">767</span>
+<span class="mi">768</span> <span class="mi">767</span>
+<span class="mi">919</span> <span class="mi">756</span>
+<span class="mi">920</span> <span class="mi">712</span>
+<span class="mi">939</span> <span class="mi">956</span>
+<span class="mi">956</span> <span class="mi">939</span>
+<span class="mi">960</span> <span class="mi">187</span>
+</pre></div>
+
+
+<p>Shockingly they produce the same pairs!   That is so cool.   Maybe I should be less surprised than I am, but I think this is cool.   We just made word vector, found vectors pointing in similar directions, and the documents are similar.   Abstractly it makes complete and simple sense.  On an emotional level, this is fracking cool!</p>
+<h2>Part of speech tagging</h2>
+<p>I did not end up pursuing this today because we had to move onto the afternoon assignment, but I am leaving this here as a reminder to go back an explore it.   It is realted to a topic in AI called 'Incremental Concept Learning' that allow an agent to learn concepts.   When I learned it at the time I thought it was a cool concept, but not practical.  Now I see some direct applications.</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">nltk.tokenize</span> <span class="kn">import</span> <span class="n">word_tokenize</span>
+<span class="kn">from</span> <span class="nn">nltk</span> <span class="kn">import</span> <span class="n">pos_tag</span>
+<span class="n">tokens</span> <span class="o">=</span> <span class="n">word_tokenize</span><span class="p">(</span><span class="n">docs</span><span class="p">[</span><span class="mi">7</span><span class="p">][</span><span class="mi">18</span><span class="p">:</span><span class="mi">304</span><span class="p">])</span>
+<span class="n">pos_tag</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+
+
+
+
+<span class="p">[(</span><span class="s">u&#39;after&#39;</span><span class="p">,</span> <span class="s">&#39;IN&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;DT&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;costly&#39;</span><span class="p">,</span> <span class="s">&#39;JJ&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;,&#39;</span><span class="p">,</span> <span class="s">&#39;,&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;painstaking&#39;</span><span class="p">,</span> <span class="s">&#39;VBG&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;and&#39;</span><span class="p">,</span> <span class="s">&#39;CC&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;potentially&#39;</span><span class="p">,</span> <span class="s">&#39;RB&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;perilous&#39;</span><span class="p">,</span> <span class="s">&#39;JJ&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;operation&#39;</span><span class="p">,</span> <span class="s">&#39;NN&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;to&#39;</span><span class="p">,</span> <span class="s">&#39;TO&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;raise&#39;</span><span class="p">,</span> <span class="s">&#39;VB&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;the&#39;</span><span class="p">,</span> <span class="s">&#39;DT&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;battered&#39;</span><span class="p">,</span> <span class="s">&#39;VBN&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;hull&#39;</span><span class="p">,</span> <span class="s">&#39;NN&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;of&#39;</span><span class="p">,</span> <span class="s">&#39;IN&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;the&#39;</span><span class="p">,</span> <span class="s">&#39;DT&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;cruise&#39;</span><span class="p">,</span> <span class="s">&#39;NN&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;ship&#39;</span><span class="p">,</span> <span class="s">&#39;NN&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;costa&#39;</span><span class="p">,</span> <span class="s">&#39;NN&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;concordia&#39;</span><span class="p">,</span> <span class="s">&#39;NN&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;,&#39;</span><span class="p">,</span> <span class="s">&#39;,&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;engineers&#39;</span><span class="p">,</span> <span class="s">&#39;NNS&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;said&#39;</span><span class="p">,</span> <span class="s">&#39;VBD&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;early&#39;</span><span class="p">,</span> <span class="s">&#39;RB&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;tuesday&#39;</span><span class="p">,</span> <span class="s">&#39;NN&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;that&#39;</span><span class="p">,</span> <span class="s">&#39;IN&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;they&#39;</span><span class="p">,</span> <span class="s">&#39;PRP&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;had&#39;</span><span class="p">,</span> <span class="s">&#39;VBD&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;succeeded&#39;</span><span class="p">,</span> <span class="s">&#39;VBN&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;in&#39;</span><span class="p">,</span> <span class="s">&#39;IN&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;righting&#39;</span><span class="p">,</span> <span class="s">&#39;NN&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;the&#39;</span><span class="p">,</span> <span class="s">&#39;DT&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;ship&#39;</span><span class="p">,</span> <span class="s">&#39;NN&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;,&#39;</span><span class="p">,</span> <span class="s">&#39;,&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;removing&#39;</span><span class="p">,</span> <span class="s">&#39;VBG&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;it&#39;</span><span class="p">,</span> <span class="s">&#39;PRP&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;from&#39;</span><span class="p">,</span> <span class="s">&#39;IN&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;two&#39;</span><span class="p">,</span> <span class="s">&#39;CD&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;granite&#39;</span><span class="p">,</span> <span class="s">&#39;JJ&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;reefs&#39;</span><span class="p">,</span> <span class="s">&#39;NNS&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;where&#39;</span><span class="p">,</span> <span class="s">&#39;WRB&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;it&#39;</span><span class="p">,</span> <span class="s">&#39;PRP&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;ran&#39;</span><span class="p">,</span> <span class="s">&#39;VBD&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;aground&#39;</span><span class="p">,</span> <span class="s">&#39;NN&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;last&#39;</span><span class="p">,</span> <span class="s">&#39;JJ&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;year&#39;</span><span class="p">,</span> <span class="s">&#39;NN&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;,&#39;</span><span class="p">,</span> <span class="s">&#39;,&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;killing&#39;</span><span class="p">,</span> <span class="s">&#39;VBG&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;32&#39;</span><span class="p">,</span> <span class="s">&#39;CD&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;people&#39;</span><span class="p">,</span> <span class="s">&#39;NNS&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;.&#39;</span><span class="p">,</span> <span class="s">&#39;.&#39;</span><span class="p">)]</span>
+</pre></div>
+
+
+<h2>Naive Bayes</h2>
+<p>The afternoon assignment was on Naive Bayes, and its use with text classification.   Our first goal was to implement our own Naive Bayes algorithm, then to use in on a text problem.</p>
+<p>The Naive part of Naive bases is the assumption that all the features are independant of each other.  Bayes Rule states:</p>
+<p>$$P(C|X) = \mbox{Probability of Label C given data X} = \frac{P(X|C) \ P(C)}{P(X)}$$</p>
+<p>The naive assumption of Naive Bayes assumed the data is independant.  This is expressed using the following formula.</p>
+<p>$$P(C|X) = \mbox{Probability of Label C given data X} = \frac{P(x_1|C) \ P(x_2|C) \ ... \ P(x_n|C) \ P(C)}{P(X)}$$</p>
+<p>So given the data, we choose the c with the maximium probability or likely hood.</p>
+<p>$$\mbox{argmax}_c \left[ \ P(C|X) \ \right]  = \mbox{argmax}_c \left[ \  P(C) \ P(x_1|C) \ P(x_2|C) \ ... \ P(x_n|C)  \ \right]$$</p>
+<p>We can ignore the Probability of getting the data X becuase that is independant of the C.  For a host of reason, but mostly floating point limitations, we often calculated the log maximum and solve this equation.</p>
+<p>$$\mbox{argmax}_c \left[ \ logP(C|X) \ \right]  = \mbox{argmax}_c \left[ \ log(P(C)) + \sum_i log(P(x_i|C))  \ \right]$$</p>
+<p>Another limitation is dealing with data/featuers that are zero or missing.  We can not compute the log of zero, so we have to do a smoothing on the probability to allow it to be small, but not zero.  The standard is to perform a Laplace smoothing:</p>
+<p>$$P(x_i|C) = \frac{\sum x_{iC} + \alpha}{\sum X + \alpha \ p}$$</p>
+<p>Where $p$ is the number of features in the dataset and $\alpha$ is a smoothing parameter.   It is commonly chosen to be 1.   This is also assuming we are dealing with count data.   If we are not, then we use a normal distrubtion for the probability.</p>
+<p>Below is my implementation of the NaiveBayes function</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+
+<span class="k">class</span> <span class="nc">NaiveBayes</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">        - alpha: float, laplace smoothing constant</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">class_totals</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">class_feature_totals</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">class_counts</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_features</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_trains</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">_compute_likelihood</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">        - X: 2d numpy array, feature matrix</span>
+<span class="sd">        - y: numpy array, labels</span>
+
+<span class="sd">        Compute the totals for each class and the totals for each feature</span>
+<span class="sd">        and class.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_features</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="kp">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_trains</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="kp">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">class_totals</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">yp</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="kp">unique</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">class_totals</span><span class="p">[</span><span class="n">yp</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">sum</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">y</span><span class="o">==</span><span class="n">yp</span><span class="p">,:])</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">class_feature_totals</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">yp</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="kp">unique</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">class_feature_totals</span><span class="p">[</span><span class="n">yp</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">sum</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">y</span><span class="o">==</span><span class="n">yp</span><span class="p">,:],</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">,:]</span>
+
+
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">        - X: 2d numpy array, feature matrix</span>
+<span class="sd">        - y: numpy array, labels</span>
+
+<span class="sd">        OUTPUT: None</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c"># compute priors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">class_counts</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+        <span class="c">#print Counter(y)</span>
+
+        <span class="c"># compute likelihoods</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compute_likelihood</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">        - X: 2d numpy array, feature matrix</span>
+
+<span class="sd">        OUTPUT:</span>
+<span class="sd">        - predictions: numpy array</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">predictions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">zeros</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="kp">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="kp">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+        <span class="n">ys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_counts</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
+            <span class="n">best_y</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">logs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">yp</span> <span class="ow">in</span> <span class="n">ys</span><span class="p">:</span>
+                <span class="n">loglike</span> <span class="o">=</span> <span class="p">(</span><span class="n">row</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="kp">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_feature</span><span class="p">(</span><span class="n">yp</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">loglike</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="kp">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_counts</span><span class="p">[</span><span class="n">yp</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">num_trains</span><span class="p">)</span>
+                <span class="n">logs</span><span class="o">.</span><span class="kp">append</span><span class="p">(</span><span class="n">loglike</span><span class="p">)</span>
+            <span class="n">predictions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ys</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="kp">argmax</span><span class="p">(</span><span class="n">logs</span><span class="p">)]</span>
+
+        <span class="k">return</span> <span class="n">predictions</span>
+
+    <span class="k">def</span> <span class="nf">p_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">yp</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_feature_totals</span><span class="p">[</span><span class="n">yp</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">/</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_totals</span><span class="p">[</span><span class="n">yp</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">num_features</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT:</span>
+<span class="sd">        - X: 2d numpy array, feature matrix</span>
+<span class="sd">        - y: numpy array, labels</span>
+
+<span class="sd">        OUTPUT:</span>
+<span class="sd">        - accuracy: float between 0 and 1</span>
+
+<span class="sd">        Calculate the accuracy, the percent predicted correctly.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="kp">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">==</span> <span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+</pre></div>
+
+
+<p>We are going to test this classifier against the sklearn implementation of Naive Bayese by taking a secion of Spors and Fasion articles from our new york times MongoDB database.  </p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+<span class="kn">from</span> <span class="nn">nltk.tokenize</span> <span class="kn">import</span> <span class="n">word_tokenize</span>
+<span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">CountVectorizer</span><span class="p">,</span> <span class="n">TfidfVectorizer</span>
+<span class="kn">from</span> <span class="nn">nltk.stem.snowball</span> <span class="kn">import</span> <span class="n">SnowballStemmer</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">preprocessing</span>
+<span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.naive_bayes</span> <span class="kn">import</span> <span class="n">MultinomialNB</span>
+<span class="c">#from naive_bayes import NaiveBayes</span>
+
+
+<span class="k">def</span> <span class="nf">tokenize</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        INPUT: string</span>
+<span class="sd">        OUTPUT: list of strings</span>
+
+<span class="sd">        Tokenize and stem/lemmatize the document.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">snowball</span> <span class="o">=</span> <span class="n">SnowballStemmer</span><span class="p">(</span><span class="s">&#39;english&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">snowball</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">word_tokenize</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">lower</span><span class="p">())]</span>
+
+<span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="n">sections</span><span class="p">):</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">nyt_dump</span>
+    <span class="n">coll</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">articles</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">docs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">article</span> <span class="ow">in</span> <span class="n">coll</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s">&#39;section_name&#39;</span><span class="p">:{</span><span class="s">&#39;$in&#39;</span><span class="p">:</span><span class="n">sections</span><span class="p">}}):</span>
+        <span class="n">y</span><span class="o">.</span><span class="kp">append</span><span class="p">(</span><span class="n">article</span><span class="p">[</span><span class="s">&#39;section_name&#39;</span><span class="p">])</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">article</span><span class="p">[</span><span class="s">&#39;content&#39;</span><span class="p">])</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf8&#39;</span><span class="p">,</span> <span class="s">&#39;replace&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf8&#39;</span><span class="p">)</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">docs</span><span class="o">.</span><span class="kp">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+
+    <span class="n">results</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenize</span><span class="p">,</span><span class="n">strip_accents</span><span class="o">=</span><span class="s">&#39;unicode&#39;</span><span class="p">,</span><span class="n">stop_words</span><span class="o">=</span><span class="s">&#39;english&#39;</span><span class="p">)</span>
+    <span class="n">tfidf_vectorized</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+    <span class="n">sections</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tfidf_vectorized</span><span class="p">,</span> <span class="n">sections</span>
+
+<span class="k">def</span> <span class="nf">run_trial</span><span class="p">(</span><span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;Sports&#39;</span><span class="p">,</span><span class="s">&#39;Fashion &amp; Style&#39;</span><span class="p">]):</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="n">sections</span><span class="p">)</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+    <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;Train shape:&#39;</span><span class="p">,</span> <span class="n">X_train</span><span class="o">.</span><span class="kp">shape</span>
+    <span class="k">print</span> <span class="s">&#39;Test shape:&#39;</span><span class="p">,</span> <span class="n">X_test</span><span class="o">.</span><span class="kp">shape</span>
+
+    <span class="k">print</span>
+
+    <span class="k">print</span> <span class="s">&quot;My Implementation:&quot;</span>
+    <span class="n">my_nb</span> <span class="o">=</span> <span class="n">NaiveBayes</span><span class="p">()</span>
+    <span class="n">my_nb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;Accuracy:&#39;</span><span class="p">,</span> <span class="n">my_nb</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
+    <span class="n">my_predictions</span> <span class="o">=</span>  <span class="n">my_nb</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+
+    <span class="k">print</span> <span class="n">my_predictions</span>
+
+    <span class="k">print</span> <span class="s">&quot;sklearn&#39;s Implementation&quot;</span>
+    <span class="n">mnb</span> <span class="o">=</span> <span class="n">MultinomialNB</span><span class="p">()</span>
+    <span class="n">mnb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;Accuracy:&#39;</span><span class="p">,</span> <span class="n">mnb</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
+    <span class="n">sklearn_predictions</span> <span class="o">=</span> <span class="n">mnb</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+    <span class="k">print</span> <span class="n">sklearn_predictions</span>
+
+    <span class="c"># Assert I get the same results as sklearn</span>
+    <span class="c"># (will give an error if different)</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="kp">all</span><span class="p">(</span><span class="n">sklearn_predictions</span> <span class="o">==</span> <span class="n">my_predictions</span><span class="p">)</span>
+
+<span class="n">run_trial</span><span class="p">()</span>
+
+<span class="n">Train</span> <span class="kp">shape</span><span class="p">:</span> <span class="p">(</span><span class="mi">134</span><span class="p">,</span> <span class="mi">11470</span><span class="p">)</span>
+<span class="n">Test</span> <span class="kp">shape</span><span class="p">:</span> <span class="p">(</span><span class="mi">45</span><span class="p">,</span> <span class="mi">11470</span><span class="p">)</span>
+
+<span class="n">My</span> <span class="n">Implementation</span><span class="p">:</span>
+<span class="n">Accuracy</span><span class="p">:</span> <span class="mf">0.755555555556</span>
+<span class="p">[</span><span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span>
+ <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span>
+ <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span>
+ <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span>
+ <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span>
+ <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span> <span class="s">&#39;Sports&#39;</span><span class="p">]</span>
+<span class="n">sklearn</span><span class="s">&#39;s Implementation</span>
+<span class="n">Accuracy</span><span class="p">:</span> <span class="mf">0.755555555556</span>
+<span class="p">[</span><span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span>
+ <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span>
+ <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span>
+ <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span>
+ <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span>
+ <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span>
+ <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span> <span class="s">u&#39;Sports&#39;</span><span class="p">]</span>
+</pre></div>
+
+
+<p>The lack of an error of the last line says they're prediction match.  Now this is not a well defined measure of consistency between the two classes both prediction all articles are sports pages.   What we would like to see is there to be same predictions when there are different precictions for each article.   We can see in going through the counts of articles we have text for that the "World" section and the "Sports" section have a similar count.   We will re-run this for those two sections.  </p>
+<div class="highlight"><pre><span class="x">client = MongoClient()</span>
+<span class="x">db = client.nyt_dump</span>
+<span class="x">coll = db.articles</span>
+<span class="x">coll.distinct(&#39;section_name&#39;)</span>
+<span class="x">for x in coll.aggregate([</span><span class="err">{</span><span class="x">&#39;</span><span class="p">$</span><span class="nv">group</span><span class="x">&#39;:</span><span class="err">{</span><span class="x">&#39;_id&#39;:&#39;</span><span class="p">$</span><span class="nv">section_name</span><span class="x">&#39;,&#39;count&#39;:</span><span class="err">{</span><span class="x">&quot;</span><span class="p">$</span><span class="nv">sum</span><span class="x">&quot;:1}}}]):</span>
+<span class="x">    print x</span>
+
+<span class="err">{</span><span class="x">u&#39;count&#39;: 5, u&#39;_id&#39;: u&#39;Automobiles&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 2, u&#39;_id&#39;: u&#39;Crosswords &amp; Games&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 5, u&#39;_id&#39;: u&#39;Great Homes and Destinations&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 11, u&#39;_id&#39;: u&#39;Paid Death Notices&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 9, u&#39;_id&#39;: u&#39;Travel&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 7, u&#39;_id&#39;: u&#39;Booming&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 11, u&#39;_id&#39;: u&#39;Magazine&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 10, u&#39;_id&#39;: u&#39;Corrections&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 16, u&#39;_id&#39;: u&#39;Theater&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 133, u&#39;_id&#39;: u&#39;Sports&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 91, u&#39;_id&#39;: u&#39;Arts&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 88, u&#39;_id&#39;: u&#39;U.S.&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 46, u&#39;_id&#39;: u&#39;Fashion &amp; Style&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 92, u&#39;_id&#39;: u&#39;N.Y. / Region&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 100, u&#39;_id&#39;: u&#39;Business Day&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 28, u&#39;_id&#39;: u&#39;Movies&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 18, u&#39;_id&#39;: u&#39;Science&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 13, u&#39;_id&#39;: u&#39;Technology&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 10, u&#39;_id&#39;: u&#39;Home &amp; Garden&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 84, u&#39;_id&#39;: u&#39;Opinion&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 131, u&#39;_id&#39;: u&#39;World&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 6, u&#39;_id&#39;: u&#39;Your Money&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 19, u&#39;_id&#39;: u&#39;Dining &amp; Wine&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 10, u&#39;_id&#39;: u&#39;Health&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 4, u&#39;_id&#39;: u&#39;Education&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 13, u&#39;_id&#39;: u&#39;Real Estate&#39;}</span>
+<span class="err">{</span><span class="x">u&#39;count&#39;: 37, u&#39;_id&#39;: u&#39;Books&#39;}</span>
+
+
+
+<span class="x">run_trial([&#39;Sports&#39;,&#39;World&#39;])</span>
+
+<span class="x">Train shape: (198, 12872)</span>
+<span class="x">Test shape: (66, 12872)</span>
+
+<span class="x">My Implementation:</span>
+<span class="x">Accuracy: 0.984848484848</span>
+<span class="x">[&#39;World&#39; &#39;Sports&#39; &#39;Sports&#39; &#39;Sports&#39; &#39;Sports&#39; &#39;World&#39; &#39;Sports&#39; &#39;Sports&#39;</span>
+<span class="x"> &#39;World&#39; &#39;World&#39; &#39;Sports&#39; &#39;World&#39; &#39;Sports&#39; &#39;Sports&#39; &#39;World&#39; &#39;World&#39; &#39;World&#39;</span>
+<span class="x"> &#39;World&#39; &#39;Sports&#39; &#39;Sports&#39; &#39;Sports&#39; &#39;World&#39; &#39;Sports&#39; &#39;Sports&#39; &#39;Sports&#39;</span>
+<span class="x"> &#39;Sports&#39; &#39;World&#39; &#39;Sports&#39; &#39;Sports&#39; &#39;World&#39; &#39;World&#39; &#39;World&#39; &#39;World&#39;</span>
+<span class="x"> &#39;Sports&#39; &#39;Sports&#39; &#39;World&#39; &#39;World&#39; &#39;Sports&#39; &#39;World&#39; &#39;Sports&#39; &#39;Sports&#39;</span>
+<span class="x"> &#39;Sports&#39; &#39;Sports&#39; &#39;Sports&#39; &#39;World&#39; &#39;Sports&#39; &#39;World&#39; &#39;Sports&#39; &#39;Sports&#39;</span>
+<span class="x"> &#39;Sports&#39; &#39;World&#39; &#39;World&#39; &#39;Sports&#39; &#39;World&#39; &#39;World&#39; &#39;Sports&#39; &#39;World&#39; &#39;World&#39;</span>
+<span class="x"> &#39;Sports&#39; &#39;World&#39; &#39;World&#39; &#39;Sports&#39; &#39;World&#39; &#39;Sports&#39; &#39;World&#39; &#39;World&#39;]</span>
+<span class="x">sklearn&#39;s Implementation</span>
+<span class="x">Accuracy: 0.984848484848</span>
+<span class="x">[u&#39;World&#39; u&#39;Sports&#39; u&#39;Sports&#39; u&#39;Sports&#39; u&#39;Sports&#39; u&#39;World&#39; u&#39;Sports&#39;</span>
+<span class="x"> u&#39;Sports&#39; u&#39;World&#39; u&#39;World&#39; u&#39;Sports&#39; u&#39;World&#39; u&#39;Sports&#39; u&#39;Sports&#39;</span>
+<span class="x"> u&#39;World&#39; u&#39;World&#39; u&#39;World&#39; u&#39;World&#39; u&#39;Sports&#39; u&#39;Sports&#39; u&#39;Sports&#39; u&#39;World&#39;</span>
+<span class="x"> u&#39;Sports&#39; u&#39;Sports&#39; u&#39;Sports&#39; u&#39;Sports&#39; u&#39;World&#39; u&#39;Sports&#39; u&#39;Sports&#39;</span>
+<span class="x"> u&#39;World&#39; u&#39;World&#39; u&#39;World&#39; u&#39;World&#39; u&#39;Sports&#39; u&#39;Sports&#39; u&#39;World&#39; u&#39;World&#39;</span>
+<span class="x"> u&#39;Sports&#39; u&#39;World&#39; u&#39;Sports&#39; u&#39;Sports&#39; u&#39;Sports&#39; u&#39;Sports&#39; u&#39;Sports&#39;</span>
+<span class="x"> u&#39;World&#39; u&#39;Sports&#39; u&#39;World&#39; u&#39;Sports&#39; u&#39;Sports&#39; u&#39;Sports&#39; u&#39;World&#39;</span>
+<span class="x"> u&#39;World&#39; u&#39;Sports&#39; u&#39;World&#39; u&#39;World&#39; u&#39;Sports&#39; u&#39;World&#39; u&#39;World&#39; u&#39;Sports&#39;</span>
+<span class="x"> u&#39;World&#39; u&#39;World&#39; u&#39;Sports&#39; u&#39;World&#39; u&#39;Sports&#39; u&#39;World&#39; u&#39;World&#39;]</span>
+</pre></div>
+
+
+<p>Now we have a more likely comparision between the classifieres.  Here there is high accuracy and diversity in choices.   The two classifieres still match, so I am more conviced they are implementing the same algorithm.</p>
+<h2>News Groups</h2>
+<p>A common natural language processing task is to explore and find related posts among the 20 news groupds datasets that come with a number of packages including sklearn and nltk.  Another task is to find important topics among the news groups.   We will be exploring both in our afternoon assignment.   I will start off by taking 4 groups from the newgroups and transforming their text into a text frequuency, inverse document frequency vector for each post.</p>
+<div class="highlight"><pre><span class="s-Atom">from</span> <span class="s-Atom">sklearn</span><span class="p">.</span><span class="s-Atom">datasets</span> <span class="s-Atom">import</span> <span class="s-Atom">fetch_20newsgroups</span>
+<span class="s-Atom">newsgroups_train</span> <span class="o">=</span> <span class="nf">fetch_20newsgroups</span><span class="p">(</span><span class="s-Atom">subset=&#39;train&#39;</span><span class="p">,</span><span class="s-Atom">categories</span><span class="o">=</span><span class="p">[</span><span class="s-Atom">&#39;sci.crypt&#39;</span><span class="p">,</span>
+                                     <span class="s-Atom">&#39;sci.electronics&#39;</span><span class="p">,</span>
+                                     <span class="s-Atom">&#39;sci.med&#39;</span><span class="p">,</span>
+                                     <span class="s-Atom">&#39;sci.space&#39;</span><span class="p">])</span>
+<span class="s-Atom">vectorizor</span> <span class="o">=</span> <span class="nv">TfidfVectorizer</span><span class="p">(</span><span class="s-Atom">stop_words=&#39;english&#39;</span><span class="p">,</span><span class="s-Atom">strip_accents=&#39;unicode&#39;</span><span class="p">)</span>
+<span class="s-Atom">tfidf</span> <span class="o">=</span> <span class="s-Atom">vectorizor</span><span class="p">.</span><span class="nf">fit_transform</span><span class="p">(</span><span class="s-Atom">newsgroups_train</span><span class="p">.</span><span class="s-Atom">data</span><span class="p">)</span>
+<span class="s-Atom">tfidf</span>
+
+
+
+
+<span class="o">&lt;</span><span class="mi">2373</span><span class="s-Atom">x38375</span> <span class="s-Atom">sparse</span> <span class="s-Atom">matrix</span> <span class="s-Atom">of</span> <span class="s-Atom">type</span> <span class="s-Atom">&#39;&lt;type &#39;numpy</span><span class="p">.</span><span class="s-Atom">float64&#39;&gt;&#39;</span>
+    <span class="s-Atom">with</span> <span class="mi">283932</span> <span class="s-Atom">stored</span> <span class="s-Atom">elements</span> <span class="s-Atom">in</span> <span class="nv">Compressed</span> <span class="nv">Sparse</span> <span class="nv">Row</span> <span class="s-Atom">format</span><span class="o">&gt;</span>
+
+
+
+
+<span class="s-Atom">for</span> <span class="s-Atom">top10index</span> <span class="s-Atom">in</span> <span class="s-Atom">np</span><span class="p">.</span><span class="nf">argsort</span><span class="p">(</span><span class="s-Atom">vectorizor</span><span class="p">.</span><span class="s-Atom">vocabulary_</span><span class="p">.</span><span class="nf">values</span><span class="p">())[</span><span class="s-Atom">::-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="s-Atom">:</span><span class="mi">10</span><span class="p">]</span><span class="s-Atom">:</span>
+    <span class="s-Atom">print</span> <span class="s-Atom">vectorizor</span><span class="p">.</span><span class="s-Atom">vocabulary_</span><span class="p">.</span><span class="nf">keys</span><span class="p">()[</span><span class="s-Atom">top10index</span><span class="p">],</span><span class="s-Atom">vectorizor</span><span class="p">.</span><span class="s-Atom">vocabulary_</span><span class="p">.</span><span class="nf">values</span><span class="p">()[</span><span class="s-Atom">top10index</span><span class="p">]</span>
+
+ <span class="s-Atom">zzz</span> <span class="mi">38374</span>
+<span class="s-Atom">zzi776</span> <span class="mi">38373</span>
+<span class="s-Atom">zzcrm</span> <span class="mi">38372</span>
+<span class="s-Atom">zz</span> <span class="mi">38371</span>
+<span class="s-Atom">zysv</span> <span class="mi">38370</span>
+<span class="s-Atom">zy</span> <span class="mi">38369</span>
+<span class="s-Atom">zxgxrggwf6wp2edst</span> <span class="mi">38368</span>
+<span class="s-Atom">zwp4q</span> <span class="mi">38367</span>
+<span class="s-Atom">zwl76</span> <span class="mi">38366</span>
+<span class="s-Atom">zwarte</span> <span class="mi">38365</span>
+</pre></div>
+
+
+<p>These are the most frequently used words in the corpus, and to someone who did not use news groups, it looks like garbage.  We can do this another way by using the tfidf vector, taking the words with the greatest score.  We can do this by summing or averaging over the tfidf values over the documents for each word.   When we average, we will remove zero values.  </p>
+<div class="highlight"><pre><span class="s-Atom">words</span> <span class="o">=</span> <span class="s-Atom">np</span><span class="p">.</span><span class="nf">array</span><span class="p">(</span><span class="s-Atom">vectorizor</span><span class="p">.</span><span class="s-Atom">vocabulary_</span><span class="p">.</span><span class="nf">keys</span><span class="p">())</span>
+<span class="s-Atom">tfdif_scores_by_wordl</span> <span class="o">=</span> <span class="s-Atom">np</span><span class="p">.</span><span class="nf">array</span><span class="p">(</span><span class="s-Atom">np</span><span class="p">.</span><span class="nf">sum</span><span class="p">(</span><span class="s-Atom">tfidf</span><span class="p">.</span><span class="nf">todense</span><span class="p">(),</span><span class="s-Atom">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+<span class="s-Atom">words</span><span class="p">[</span><span class="s-Atom">np</span><span class="p">.</span><span class="nf">argsort</span><span class="p">(</span><span class="s-Atom">tfdif_scores_by_wordl</span><span class="p">)[</span><span class="s-Atom">::-</span><span class="mi">1</span><span class="p">][</span><span class="s-Atom">:</span><span class="mi">10</span><span class="p">]]</span>
+
+
+
+
+<span class="nf">array</span><span class="p">([</span><span class="s-Atom">u&#39;iv&#39;</span><span class="p">,</span> <span class="s-Atom">u&#39;contestents&#39;</span><span class="p">,</span> <span class="s-Atom">u&#39;jams&#39;</span><span class="p">,</span> <span class="s-Atom">u&#39;noah&#39;</span><span class="p">,</span> <span class="s-Atom">u&#39;aloud&#39;</span><span class="p">,</span> <span class="s-Atom">u&#39;taf&#39;</span><span class="p">,</span> <span class="s-Atom">u&#39;chen&#39;</span><span class="p">,</span>
+       <span class="s-Atom">u&#39;19600&#39;</span><span class="p">,</span> <span class="s-Atom">u&#39;sensitive&#39;</span><span class="p">,</span> <span class="s-Atom">u&#39;pjs269&#39;</span><span class="p">],</span> 
+      <span class="s-Atom">dtype=&#39;&lt;U180&#39;</span><span class="p">)</span>
+
+
+
+
+<span class="s-Atom">tfdif_avg_scores_by_word</span> <span class="o">=</span> <span class="s-Atom">np</span><span class="p">.</span><span class="nf">array</span><span class="p">(</span><span class="s-Atom">np</span><span class="p">.</span><span class="nf">average</span><span class="p">(</span><span class="s-Atom">tfidf</span><span class="p">.</span><span class="nf">todense</span><span class="p">(),</span><span class="s-Atom">weights</span><span class="o">=</span><span class="s-Atom">tfidf</span><span class="p">.</span><span class="nf">todense</span><span class="p">().</span><span class="nf">astype</span><span class="p">(</span><span class="s-Atom">bool</span><span class="p">),</span><span class="s-Atom">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">).</span><span class="nf">tolist</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+<span class="s-Atom">words</span><span class="p">[</span><span class="s-Atom">np</span><span class="p">.</span><span class="nf">argsort</span><span class="p">(</span><span class="s-Atom">tfdif_avg_scores_by_word</span><span class="p">)[</span><span class="s-Atom">::-</span><span class="mi">1</span><span class="p">][</span><span class="s-Atom">:</span><span class="mi">10</span><span class="p">]]</span>
+
+
+
+
+<span class="nf">array</span><span class="p">([</span><span class="s-Atom">u&#39;mjzzs&#39;</span><span class="p">,</span> <span class="s-Atom">u&#39;7394&#39;</span><span class="p">,</span> <span class="s-Atom">u&#39;casserole&#39;</span><span class="p">,</span> <span class="s-Atom">u&#39;1r47l1inn8gq&#39;</span><span class="p">,</span> <span class="s-Atom">u&#39;perihelions&#39;</span><span class="p">,</span>
+       <span class="s-Atom">u&#39;transistors&#39;</span><span class="p">,</span> <span class="s-Atom">u&#39;afoxx&#39;</span><span class="p">,</span> <span class="s-Atom">u&#39;92621&#39;</span><span class="p">,</span> <span class="s-Atom">u&#39;curt&#39;</span><span class="p">,</span> <span class="s-Atom">u&#39;necisa&#39;</span><span class="p">],</span> 
+      <span class="s-Atom">dtype=&#39;&lt;U180&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>In all of these methods, we are left with words that do not given human insight into the problem. We are left with words that are not anchor words.   What I mean by that is that if a new's article mentions President Obama then we know it is highly likely for it be in some sections, like World, and not others, like Fashion.  If we break the newsgroups up by category we might see some anchor words for that section. </p>
+<div class="highlight"><pre><span class="s-Atom">for</span> <span class="s-Atom">c</span> <span class="s-Atom">in</span> <span class="p">[</span><span class="s-Atom">&#39;sci.crypt&#39;</span><span class="p">,</span><span class="s-Atom">&#39;sci.electronics&#39;</span><span class="p">,</span><span class="s-Atom">&#39;sci.med&#39;</span><span class="p">,</span><span class="s-Atom">&#39;sci.space&#39;</span><span class="p">]</span><span class="s-Atom">:</span>
+    <span class="s-Atom">newsgroups_train</span> <span class="o">=</span> <span class="nf">fetch_20newsgroups</span><span class="p">(</span><span class="s-Atom">subset=&#39;train&#39;</span><span class="p">,</span><span class="s-Atom">categories</span><span class="o">=</span><span class="p">[</span><span class="s-Atom">c</span><span class="p">])</span>
+    <span class="s-Atom">vectorizor</span> <span class="o">=</span> <span class="nv">TfidfVectorizer</span><span class="p">(</span><span class="s-Atom">stop_words=&#39;english&#39;</span><span class="p">,</span><span class="s-Atom">strip_accents=&#39;unicode&#39;</span><span class="p">)</span>
+    <span class="s-Atom">tfidf</span> <span class="o">=</span> <span class="s-Atom">vectorizor</span><span class="p">.</span><span class="nf">fit_transform</span><span class="p">(</span><span class="s-Atom">newsgroups_train</span><span class="p">.</span><span class="s-Atom">data</span><span class="p">)</span>
+    <span class="s-Atom">print</span> <span class="s-Atom">c</span>
+    <span class="s-Atom">print</span> <span class="s-Atom">np</span><span class="p">.</span><span class="nf">array</span><span class="p">(</span><span class="s-Atom">vectorizor</span><span class="p">.</span><span class="s-Atom">vocabulary_</span><span class="p">.</span><span class="nf">keys</span><span class="p">())[</span><span class="s-Atom">np</span><span class="p">.</span><span class="nf">argsort</span><span class="p">(</span><span class="s-Atom">np</span><span class="p">.</span><span class="nf">array</span><span class="p">(</span><span class="s-Atom">np</span><span class="p">.</span><span class="nf">sum</span><span class="p">(</span><span class="s-Atom">tfidf</span><span class="p">.</span><span class="nf">todense</span><span class="p">(),</span><span class="s-Atom">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">).</span><span class="nf">tolist</span><span class="p">()[</span><span class="mi">0</span><span class="p">]))[</span><span class="s-Atom">::-</span><span class="mi">1</span><span class="p">][</span><span class="s-Atom">:</span><span class="mi">10</span><span class="p">]]</span>
+    <span class="s-Atom">print</span> <span class="s-Atom">np</span><span class="p">.</span><span class="nf">array</span><span class="p">(</span><span class="s-Atom">vectorizor</span><span class="p">.</span><span class="s-Atom">vocabulary_</span><span class="p">.</span><span class="nf">keys</span><span class="p">())[</span><span class="s-Atom">np</span><span class="p">.</span><span class="nf">argsort</span><span class="p">(</span><span class="s-Atom">np</span><span class="p">.</span><span class="nf">array</span><span class="p">(</span><span class="s-Atom">np</span><span class="p">.</span><span class="nf">average</span><span class="p">(</span><span class="s-Atom">tfidf</span><span class="p">.</span><span class="nf">todense</span><span class="p">(),</span><span class="s-Atom">weights</span><span class="o">=</span><span class="s-Atom">tfidf</span><span class="p">.</span><span class="nf">todense</span><span class="p">().</span><span class="nf">astype</span><span class="p">(</span><span class="s-Atom">bool</span><span class="p">),</span><span class="s-Atom">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">).</span><span class="nf">tolist</span><span class="p">()[</span><span class="mi">0</span><span class="p">]))[</span><span class="s-Atom">::-</span><span class="mi">1</span><span class="p">][</span><span class="s-Atom">:</span><span class="mi">10</span><span class="p">]]</span>
+    <span class="s-Atom">print</span> <span class="s-Atom">np</span><span class="p">.</span><span class="nf">array</span><span class="p">(</span><span class="s-Atom">vectorizor</span><span class="p">.</span><span class="s-Atom">vocabulary_</span><span class="p">.</span><span class="nf">keys</span><span class="p">())[</span><span class="s-Atom">np</span><span class="p">.</span><span class="nf">argsort</span><span class="p">(</span><span class="s-Atom">np</span><span class="p">.</span><span class="nf">array</span><span class="p">(</span><span class="s-Atom">vectorizor</span><span class="p">.</span><span class="s-Atom">vocabulary_</span><span class="p">.</span><span class="nf">values</span><span class="p">()))[</span><span class="s-Atom">::-</span><span class="mi">1</span><span class="p">][</span><span class="s-Atom">:</span><span class="mi">10</span><span class="p">]]</span>
+    <span class="s-Atom">print</span> <span class="s2">&quot;&quot;</span>
+
+<span class="s-Atom">sci</span><span class="p">.</span><span class="s-Atom">crypt</span>
+<span class="p">[</span><span class="s-Atom">u&#39;93apr21095141&#39;</span> <span class="s-Atom">u&#39;kennedys&#39;</span> <span class="s-Atom">u&#39;kronos&#39;</span> <span class="s-Atom">u&#39;reasonable&#39;</span> <span class="s-Atom">u&#39;roomful&#39;</span>
+ <span class="s-Atom">u&#39;adventurers&#39;</span> <span class="s-Atom">u&#39;decwrl&#39;</span> <span class="s-Atom">u&#39;altran&#39;</span> <span class="s-Atom">u&#39;patterns&#39;</span> <span class="s-Atom">u&#39;usage&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s-Atom">u&#39;sacrifice&#39;</span> <span class="s-Atom">u&#39;incrimination&#39;</span> <span class="s-Atom">u&#39;archived&#39;</span> <span class="s-Atom">u&#39;enemy&#39;</span> <span class="s-Atom">u&#39;figure&#39;</span> <span class="s-Atom">u&#39;sudden&#39;</span>
+ <span class="s-Atom">u&#39;invent&#39;</span> <span class="s-Atom">u&#39;doen&#39;</span> <span class="s-Atom">u&#39;inversions&#39;</span> <span class="s-Atom">u&#39;value&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s-Atom">u&#39;zzi776&#39;</span> <span class="s-Atom">u&#39;zzcrm&#39;</span> <span class="s-Atom">u&#39;zz&#39;</span> <span class="s-Atom">u&#39;zysv&#39;</span> <span class="s-Atom">u&#39;zy&#39;</span> <span class="s-Atom">u&#39;zxgxrggwf6wp2edst&#39;</span> <span class="s-Atom">u&#39;zwp4q&#39;</span>
+ <span class="s-Atom">u&#39;zwl76&#39;</span> <span class="s-Atom">u&#39;zvt&#39;</span> <span class="s-Atom">u&#39;zusman&#39;</span><span class="p">]</span>
+
+<span class="s-Atom">sci</span><span class="p">.</span><span class="s-Atom">electronics</span>
+<span class="p">[</span><span class="s-Atom">u&#39;dissertation&#39;</span> <span class="s-Atom">u&#39;w1gsl&#39;</span> <span class="s-Atom">u&#39;advance&#39;</span> <span class="s-Atom">u&#39;facetious&#39;</span> <span class="s-Atom">u&#39;amplified&#39;</span> <span class="s-Atom">u&#39;dealt&#39;</span>
+ <span class="s-Atom">u&#39;gerg&#39;</span> <span class="s-Atom">u&#39;site&#39;</span> <span class="s-Atom">u&#39;govern&#39;</span> <span class="s-Atom">u&#39;finite&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s-Atom">u&#39;illuminators&#39;</span> <span class="s-Atom">u&#39;constructs&#39;</span> <span class="s-Atom">u&#39;lc&#39;</span> <span class="s-Atom">u&#39;laserjet&#39;</span> <span class="s-Atom">u&#39;drove&#39;</span> <span class="s-Atom">u&#39;floors&#39;</span>
+ <span class="s-Atom">u&#39;sincerely&#39;</span> <span class="s-Atom">u&#39;136&#39;</span> <span class="s-Atom">u&#39;9995&#39;</span> <span class="s-Atom">u&#39;confirms&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s-Atom">u&#39;zucchini&#39;</span> <span class="s-Atom">u&#39;ztimer&#39;</span> <span class="s-Atom">u&#39;zstewart&#39;</span> <span class="s-Atom">u&#39;zoology&#39;</span> <span class="s-Atom">u&#39;zoo&#39;</span> <span class="s-Atom">u&#39;zone&#39;</span> <span class="s-Atom">u&#39;zlau&#39;</span>
+ <span class="s-Atom">u&#39;zl1ttg&#39;</span> <span class="s-Atom">u&#39;zklf0b&#39;</span> <span class="s-Atom">u&#39;zjoc01&#39;</span><span class="p">]</span>
+
+<span class="s-Atom">sci</span><span class="p">.</span><span class="s-Atom">med</span>
+<span class="p">[</span><span class="s-Atom">u&#39;fermi&#39;</span> <span class="s-Atom">u&#39;merkle&#39;</span> <span class="s-Atom">u&#39;weinreigh&#39;</span> <span class="s-Atom">u&#39;steve&#39;</span> <span class="s-Atom">u&#39;scallop&#39;</span> <span class="s-Atom">u&#39;jmeritt&#39;</span> <span class="s-Atom">u&#39;chairs&#39;</span>
+ <span class="s-Atom">u&#39;wg&#39;</span> <span class="s-Atom">u&#39;reduce&#39;</span> <span class="s-Atom">u&#39;britain&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s-Atom">u&#39;gw&#39;</span> <span class="s-Atom">u&#39;iastate&#39;</span> <span class="s-Atom">u&#39;126645&#39;</span> <span class="s-Atom">u&#39;donnell&#39;</span> <span class="s-Atom">u&#39;l988&#39;</span> <span class="s-Atom">u&#39;mini&#39;</span> <span class="s-Atom">u&#39;pot&#39;</span> <span class="s-Atom">u&#39;2423&#39;</span>
+ <span class="s-Atom">u&#39;smoky&#39;</span> <span class="s-Atom">u&#39;foxxjac&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s-Atom">u&#39;zzz&#39;</span> <span class="s-Atom">u&#39;zz&#39;</span> <span class="s-Atom">u&#39;zurich&#39;</span> <span class="s-Atom">u&#39;zubkoff&#39;</span> <span class="s-Atom">u&#39;zooid&#39;</span> <span class="s-Atom">u&#39;zonker&#39;</span> <span class="s-Atom">u&#39;zone&#39;</span> <span class="s-Atom">u&#39;zonal&#39;</span>
+ <span class="s-Atom">u&#39;zoloft&#39;</span> <span class="s-Atom">u&#39;zolft&#39;</span><span class="p">]</span>
+
+<span class="s-Atom">sci</span><span class="p">.</span><span class="s-Atom">space</span>
+<span class="p">[</span><span class="s-Atom">u&#39;206265&#39;</span> <span class="s-Atom">u&#39;507&#39;</span> <span class="s-Atom">u&#39;mmc&#39;</span> <span class="s-Atom">u&#39;convenient&#39;</span> <span class="s-Atom">u&#39;gap&#39;</span> <span class="s-Atom">u&#39;maneuvers&#39;</span> <span class="s-Atom">u&#39;3rds&#39;</span>
+ <span class="s-Atom">u&#39;extension&#39;</span> <span class="s-Atom">u&#39;gateway&#39;</span> <span class="s-Atom">u&#39;winner&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s-Atom">u&#39;wesley&#39;</span> <span class="s-Atom">u&#39;lonely&#39;</span> <span class="s-Atom">u&#39;flexibility&#39;</span> <span class="s-Atom">u&#39;replacement&#39;</span> <span class="s-Atom">u&#39;curry&#39;</span> <span class="s-Atom">u&#39;robert&#39;</span>
+ <span class="s-Atom">u&#39;barium&#39;</span> <span class="s-Atom">u&#39;restricted&#39;</span> <span class="s-Atom">u&#39;dia&#39;</span> <span class="s-Atom">u&#39;164655&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s-Atom">u&#39;zwarte&#39;</span> <span class="s-Atom">u&#39;zware&#39;</span> <span class="s-Atom">u&#39;zwakke&#39;</span> <span class="s-Atom">u&#39;zwak&#39;</span> <span class="s-Atom">u&#39;zwaartepunten&#39;</span> <span class="s-Atom">u&#39;zurbrin&#39;</span> <span class="s-Atom">u&#39;zulu&#39;</span>
+ <span class="s-Atom">u&#39;zullen&#39;</span> <span class="s-Atom">u&#39;zowie&#39;</span> <span class="s-Atom">u&#39;zoology&#39;</span><span class="p">]</span>
+</pre></div>
+
+
+<p>We do not see clear anchor words in the top 10 rankings, but we do ahve some likely words.   Seeing 'patterns' and 'inversions' in the crypto section is suggestive.  As is 'amplified' and 'illuminators' in the electronics section.   I do not know enough abou thte medical words to know if some of those are distincitive, but I do know the space ones are not.   I would argue that 'maneuvers' is consistent with 'space', but 'space' is not the MLE from 'maneuvers'.   </p>
+<p>The most frequent words do not tells us anything useful in these corpuses, but the sum and average of the TFIDF vector along documents for each word does give us some interesting words.  </p>
+<h2>Searching Newsgroups</h2>
+<p>After exploring the most important words in the corpus, we were asked to use a text file with search terms to search the documents and find the top 3 results for each search.  Our search is going to do something naive.  Since each tfidf vector is a normalized, we can find the difference in direction of the two vectors.  If they are small, we assume they are related documents.   If they are in very different directions, we will assume they are very different documents.   </p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics.pairwise</span> <span class="kn">import</span> <span class="n">pairwise_distances</span>
+
+<span class="n">search_terms</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;data/queries.txt&#39;</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">newsgroups_train</span> <span class="o">=</span> <span class="n">fetch_20newsgroups</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s">&#39;train&#39;</span><span class="p">)</span>
+<span class="n">vectorizor</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">stop_words</span><span class="o">=</span><span class="s">&#39;english&#39;</span><span class="p">)</span>
+<span class="n">tfidf</span> <span class="o">=</span> <span class="n">vectorizor</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">newsgroups_train</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="n">search</span> <span class="o">=</span> <span class="n">vectorizor</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">search_terms</span><span class="p">)</span>
+<span class="n">cos_sim</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">search</span><span class="p">,</span><span class="n">tfidf</span><span class="p">,</span><span class="n">metric</span><span class="o">=</span><span class="s">&#39;cosine&#39;</span><span class="p">)</span>
+<span class="n">top_3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">cos_sim</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,:</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">results</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">search_terms</span><span class="p">,</span><span class="n">top_3</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">budget</span> <span class="n">rental</span> <span class="n">cars</span>   <span class="p">[</span> <span class="mi">5769</span> <span class="mi">10771</span>  <span class="mi">4253</span><span class="p">]</span>
+<span class="n">children</span> <span class="n">who</span> <span class="n">have</span> <span class="n">died</span> <span class="kn">from</span> <span class="nn">moms</span> <span class="nn">postpartum</span> <span class="nn">depression</span>   <span class="p">[</span> <span class="mi">197</span>  <span class="mi">798</span> <span class="mi">2240</span><span class="p">]</span>
+<span class="n">compaq</span> <span class="n">presario</span> <span class="n">notebook</span> <span class="n">v5005us</span> <span class="p">[</span><span class="mi">2561</span> <span class="mi">7748</span> <span class="mi">8640</span><span class="p">]</span>
+<span class="n">boxed</span> <span class="nb">set</span> <span class="n">of</span> <span class="n">fruits</span> <span class="n">basket</span>  <span class="p">[</span><span class="mi">4644</span> <span class="mi">8917</span> <span class="mi">7505</span><span class="p">]</span>
+<span class="n">sun</span> <span class="n">sentinal</span> <span class="n">news</span> <span class="n">paper</span> <span class="p">[</span><span class="mi">3110</span> <span class="mi">5378</span> <span class="mi">3719</span><span class="p">]</span>
+<span class="n">puerto</span> <span class="n">rico</span> <span class="n">economy</span>  <span class="p">[</span> <span class="mi">4179</span> <span class="mi">10372</span>  <span class="mi">4811</span><span class="p">]</span>
+<span class="n">wireless</span> <span class="n">networking</span>  <span class="p">[</span><span class="mi">10486</span>  <span class="mi">7180</span>   <span class="mi">695</span><span class="p">]</span>
+<span class="n">hidden</span> <span class="n">valley</span> <span class="n">ranch</span> <span class="n">commercials</span> <span class="p">[</span><span class="mi">1410</span> <span class="mi">1228</span> <span class="mi">4285</span><span class="p">]</span>
+<span class="n">jimmy</span> <span class="n">carter</span> <span class="n">the</span> <span class="n">panama</span> <span class="n">canal</span> <span class="p">[</span><span class="mi">10580</span>  <span class="mi">3322</span>   <span class="mi">147</span><span class="p">]</span>
+
+
+
+<span class="k">print</span> <span class="n">newsgroups_train</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]][:</span><span class="mi">1000</span><span class="p">]</span>
+
+<span class="n">From</span><span class="p">:</span> <span class="n">joes</span><span class="nd">@telxon.mis.telxon.com</span> <span class="p">(</span><span class="n">Joe</span> <span class="n">Staudt</span><span class="p">)</span>
+<span class="n">Subject</span><span class="p">:</span> <span class="n">Re</span><span class="p">:</span> <span class="n">Renting</span> <span class="kn">from</span> <span class="nn">Alamo</span> 
+<span class="n">Organization</span><span class="p">:</span> <span class="n">TELXON</span> <span class="n">Corporation</span>
+<span class="n">Lines</span><span class="p">:</span> <span class="mi">45</span>
+
+<span class="n">In</span> <span class="n">article</span> <span class="o">&lt;</span><span class="mi">1993</span><span class="n">Apr20</span><span class="o">.</span><span class="mf">142818.14969</span><span class="nd">@ericsson.se</span><span class="o">&gt;</span> <span class="n">etxmst</span><span class="nd">@sta.ericsson.se</span> <span class="n">writes</span><span class="p">:</span>
+<span class="o">&gt;</span><span class="n">Hello</span> <span class="n">netters</span><span class="err">!</span>
+<span class="o">&gt;</span>
+<span class="o">&gt;</span><span class="n">I</span><span class="s">&#39;m visiting the US (I&#39;</span><span class="n">m</span> <span class="kn">from</span> <span class="nn">Sweden</span><span class="p">)</span> <span class="ow">in</span> <span class="n">August</span><span class="o">.</span> <span class="n">I</span> <span class="n">will</span> <span class="n">probably</span> <span class="n">rent</span> <span class="n">a</span> <span class="n">Chevy</span>
+<span class="o">&gt;</span><span class="n">Beretta</span> <span class="kn">from</span> <span class="nn">Alamo.</span> <span class="nn">I</span><span class="s">&#39;ve been quoted $225 for a week/ $54 for additional days.</span>
+<span class="o">&gt;</span><span class="n">This</span> <span class="n">would</span> <span class="n">include</span> <span class="n">free</span> <span class="n">driving</span> <span class="n">distance</span><span class="p">,</span> <span class="n">but</span> <span class="ow">not</span> <span class="n">local</span> <span class="n">taxes</span> <span class="p">(</span><span class="n">Baltimore</span><span class="p">)</span><span class="o">.</span> 
+<span class="o">&gt;</span><span class="n">They</span> <span class="n">also</span> <span class="n">told</span> <span class="n">me</span> <span class="nb">all</span> <span class="n">insurance</span> <span class="n">thats</span> <span class="n">necessary</span> <span class="ow">is</span> <span class="n">included</span><span class="p">,</span> <span class="n">but</span> <span class="n">I</span> <span class="n">doubt</span> <span class="n">that</span><span class="p">,</span>
+<span class="o">&gt;</span> <span class="s">&#39;cause a friend rented a car last year and it turned out he needed a lot more</span>
+<span class="o">&gt;</span><span class="n">insurance</span> <span class="n">than</span> <span class="n">what</span><span class="s">&#39;s included in the base price. But on the other hand he </span>
+<span class="o">&gt;</span><span class="n">didn</span><span class="s">&#39;t rent it from Alamo.</span>
+<span class="o">&gt;</span>
+<span class="o">&gt;</span><span class="n">Does</span> <span class="n">anyone</span> <span class="n">have</span> <span class="n">some</span> <span class="n">info</span> <span class="n">on</span> <span class="n">this</span><span class="err">?</span>
+<span class="o">&gt;</span>
+<span class="o">&gt;</span><span class="n">Is</span> <span class="err">$</span><span class="mi">225</span> <span class="n">a</span> <span class="n">rip</span><span class="o">-</span><span class="n">off</span><span class="err">?</span> 
+<span class="n">No</span><span class="p">,</span> <span class="n">that</span> <span class="n">sounds</span> <span class="n">pretty</span> <span class="n">reasonable</span> <span class="k">for</span> <span class="n">that</span> <span class="n">car</span> <span class="ow">and</span> <span class="n">that</span> <span class="n">city</span><span class="o">.</span>
+
+<span class="o">&gt;</span><span class="n">Probability</span> <span class="n">that</span> <span class="n">I</span><span class="s">&#39;ll be needing more insurance?</span>
+<span class="n">Unless</span> <span class="n">you</span> <span class="n">have</span> <span class="n">an</span> <span class="n">accident</span><span class="p">,</span> <span class="n">you</span> <span class="n">won</span><span class="s">&#39;t need more.  If you plan on</span>
+<span class="n">paying</span> <span class="k">for</span> <span class="n">the</span> <span class="n">car</span> <span class="k">with</span> <span class="n">a</span> <span class="n">credit</span> <span class="n">card</span><span class="p">,</span>
+
+
+
+<span class="k">print</span> <span class="n">newsgroups_train</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]][:</span><span class="mi">1000</span><span class="p">]</span>
+
+<span class="n">From</span><span class="p">:</span> <span class="n">cds7k</span><span class="nd">@Virginia.EDU</span> <span class="p">(</span><span class="n">Christopher</span> <span class="n">Douglas</span> <span class="n">Saady</span><span class="p">)</span>
+<span class="n">Subject</span><span class="p">:</span> <span class="n">Re</span><span class="p">:</span> <span class="n">Looking</span> <span class="k">for</span> <span class="n">MOVIES</span> <span class="n">w</span><span class="o">/</span> <span class="n">BIKES</span>
+<span class="n">Organization</span><span class="p">:</span> <span class="n">University</span> <span class="n">of</span> <span class="n">Virginia</span>
+<span class="n">Lines</span><span class="p">:</span> <span class="mi">4</span>
+
+<span class="n">There</span><span class="s">&#39;s also Billy Jack, The Wild One, Smokey and the Bandit</span>
+<span class="p">(</span><span class="n">Where</span> <span class="n">Jerry</span> <span class="n">Reed</span> <span class="n">runs</span> <span class="n">his</span> <span class="n">truck</span> <span class="n">over</span> <span class="n">Motorcycle</span> <span class="n">Gangs</span> <span class="n">Bikes</span><span class="p">),</span>
+<span class="ow">and</span> <span class="n">a</span> <span class="n">video</span> <span class="n">tape</span> <span class="n">documentary</span> <span class="n">on</span> <span class="n">the</span> <span class="n">Hell</span><span class="s">&#39;s Angels I</span>
+<span class="n">found</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">rental</span> <span class="n">store</span> <span class="n">once</span>
+
+
+
+
+<span class="k">print</span> <span class="n">newsgroups_train</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]][:</span><span class="mi">1000</span><span class="p">]</span>
+
+<span class="n">From</span><span class="p">:</span> <span class="n">Clinton</span><span class="o">-</span><span class="n">HQ</span><span class="nd">@Campaign92.Org</span> <span class="p">(</span><span class="n">Clinton</span><span class="o">/</span><span class="n">Gore</span> <span class="s">&#39;92)</span>
+<span class="n">Subject</span><span class="p">:</span> <span class="n">CLINTON</span><span class="p">:</span> <span class="n">President</span><span class="s">&#39;s Radio Interview in Pittsburgh 4.17.93</span>
+<span class="n">Organization</span><span class="p">:</span> <span class="n">MIT</span> <span class="n">Artificial</span> <span class="n">Intelligence</span> <span class="n">Lab</span>
+<span class="n">Lines</span><span class="p">:</span> <span class="mi">212</span>
+<span class="n">NNTP</span><span class="o">-</span><span class="n">Posting</span><span class="o">-</span><span class="n">Host</span><span class="p">:</span> <span class="n">life</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">mit</span><span class="o">.</span><span class="n">edu</span>
+
+
+
+
+
+                         <span class="n">THE</span> <span class="n">WHITE</span> <span class="n">HOUSE</span>
+
+                  <span class="n">Office</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Press</span> <span class="n">Secretary</span>
+                    <span class="p">(</span><span class="n">Pittsburgh</span><span class="p">,</span> <span class="n">Pennsylvania</span><span class="p">)</span>
+<span class="n">______________________________________________________________</span>
+<span class="n">For</span> <span class="n">Immediate</span> <span class="n">Release</span>                         <span class="n">April</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">1993</span>
+
+
+                    <span class="n">INTERVIEW</span> <span class="n">OF</span> <span class="n">THE</span> <span class="n">PRESIDENT</span>
+                      <span class="n">BY</span> <span class="n">MICHAEL</span> <span class="n">WHITELY</span> <span class="n">OF</span>
+                    <span class="n">KDKA</span><span class="o">-</span><span class="n">AM</span> <span class="n">RADIO</span><span class="p">,</span> <span class="n">PITTSBURGH</span>
+
+                 <span class="n">Pittsburgh</span> <span class="n">International</span> <span class="n">Airport</span>
+                     <span class="n">Pittsburgh</span><span class="p">,</span> <span class="n">Pennsylvania</span>
+
+
+
+<span class="mi">10</span><span class="p">:</span><span class="mi">40</span> <span class="n">A</span><span class="o">.</span><span class="n">M</span><span class="o">.</span> <span class="n">EDT</span>
+
+
+         <span class="n">Q</span>    <span class="n">For</span> <span class="n">everyone</span> <span class="n">listening</span> <span class="n">on</span> <span class="n">KDKA</span> <span class="n">Radio</span><span class="p">,</span> <span class="n">I</span><span class="s">&#39;m Mike </span>
+<span class="n">Whitely</span><span class="p">,</span> <span class="n">KDKA</span> <span class="n">Radio</span> <span class="n">News</span><span class="o">.</span>  <span class="n">We</span><span class="s">&#39;re here at the Pittsburgh </span>
+<span class="n">International</span> <span class="n">Airport</span> <span class="ow">and</span> <span class="k">with</span> <span class="n">me</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">President</span> <span class="n">of</span> <span class="n">the</span> <span class="n">United</span> 
+<span class="n">States</span> <span class="n">Bill</span> <span class="n">Clinton</span><span class="o">.</span>
+
+         <span class="n">And</span> <span class="n">I</span><span class="s">&#39;d like to wel</span>
+</pre></div>
+
+
+<p>We can see the first response is spot on.  The second two values are not similar in the way of topics, but the preseidential document says budget a lot.   From the TFIDF perspective, the search term has a high ration of budget, a word with a low frequency over the documents.   The same is true for this presidential interview.   Obviously this can help find related documents, but there are obvious limitations for this methodology.   I am impressed that it does as well as it does, but as we get more documents there will be more overlap.   We need an additional filter in finding related documents before we measure similarity.   </p>
+<h2>NLP with SQL</h2>
+<p>The goal of this section is to perform natural language processing using SQL for our New York times article data.  To do this we will need to make a table of documents, a table of words, and a connecting table between words and documents.   I am going to be doing this in a local PostgreSQL database where I created a new database called articles.</p>
+<p>The structure of the database is there are 3 tables.</p>
+<ol>
+<li>article_id =&gt; url, category  </li>
+<li>word_id =&gt; word  </li>
+<li>
+<p>id =&gt; article_id, word_id, location  </p>
+<p>import psycopg2</p>
+<p>conn = psycopg2.connect(dbname='articles', 
+                        user='postgres',
+                        password='password', 
+                        host='/tmp')
+cur = conn.cursor()</p>
+<p>client = MongoClient()
+db = client.nyt_dump
+coll = db.articles
+article_dict = dict()
+for i, article in enumerate(coll.find()):
+    article_dict[article['_id']] = i
+    cur.execute("INSERT INTO url VALUES (%s,%s,%s);", [i,article['web_url'], article['section_name']])
+    conn.commit()</p>
+<p>from nltk import RegexpTokenizer
+from nltk.corpus import stopwords
+from nltk.stem.snowball import SnowballStemmer
+from nltk import Text
+import re</p>
+<p>sw = set(stopwords.words('english'))
+snowball = SnowballStemmer('english')
+reg = RegexpTokenizer(r'\w+',flags=re.UNICODE)
+words = []
+doc_tokens = []
+for doc in coll.find():
+    doc = "".join(doc['content']).strip()
+    tokens = []
+    for t in reg.tokenize(doc):
+        if t not in sw:
+            t = t.encode('ascii','ignore')
+            if str(t) != str():
+                s = snowball.stem(str(t))
+                tokens.append(s)
+                words.append(s)
+    doc_tokens.append(tokens)
+words = set(words)</p>
+<p>len(words)</p>
+<p>23917</p>
+<p>word_dict = dict()
+for i, word in enumerate(words):
+    word_dict[word] = i
+    cur.execute("INSERT INTO wordlist VALUES (%s,%s);", [i,word])
+    conn.commit()</p>
+<p>cur.execute("SELECT COUNT(<em>) FROM url;")
+print "Article Count: ", cur.fetchone()
+cur.execute("SELECT COUNT(</em>) FROM wordlist;")
+print "Stemmed Word Count: ", cur.fetchone()</p>
+<p>Article Count:  (999L,)
+Stemmed Word Count:  (23917L,)</p>
+<p>for i, tokens in enumerate(doc_tokens):
+    for j, token in enumerate(tokens):
+        cur.execute("INSERT INTO wordlocation VALUES (%s, %s, %s,%s);", [100000*i+j,i,word_dict[token],j])
+        conn.commit()</p>
+<p>cur.execute("SELECT COUNT(*) FROM wordlocation;")
+cur.fetchone()</p>
+<p>(374759L,)</p>
+</li>
+</ol>
+<p>So far we have set up the SQL tables, tokenized the words, recorded the 374759 locations of the 23917 stemmed words in 99 articles.</p>
+<p>The next step we are going to engage in is the bag of words method.   Previous, we used sparse matrixes to represent the words in each article.  That is not a realisitic option for an sql table.  We do not want wide tables.  Instead we are going to make a new table and record the counts appropriately.</p>
+<h2>Bag of words</h2>
+<p>The bag of words model counts the number of occurence of each word in each article.   We are going to create a new table that uses the url id (article id) the word id, and the count of occurance.</p>
+<div class="highlight"><pre>cur.execute(&quot;&quot;&quot;
+            CREATE TABLE bagofwords AS
+              SELECT a.id, b.word_id, COUNT(*) 
+              FROM url a 
+              JOIN wordlocation b
+              ON a.id = b.url_id
+              GROUP BY a.id, b.word_id;
+            &quot;&quot;&quot;)
+conn.commit()
+</pre></div>
+
+
+<p>From the bagofwords table we created, we can construct the term frequency and inverse document frequency.   There are many definitions of <a href="https://en.wikipedia.org/wiki/Tf%E2%80%93idf">term frequency</a>, and we will use the double normalized 0.5 defintion:</p>
+<p>$$tf(t,d) = 0.5 + \frac{0.5 \ f(t,d)}{ max(f(w,d): \ w \in d) } $$</p>
+<div class="highlight"><pre>cur.execute(&quot;&quot;&quot;
+            SELECT a.id, a.word_id, (0.5 + 0.5*a.count/b.max) as tf 
+            FROM bagofwords a JOIN
+            (SELECT id, MAX(count) as max 
+                FROM bagofwords 
+                GROUP BY id) b
+            ON a.id=b.id
+            ORDER BY a.id, a.word_id;
+            &quot;&quot;&quot;)
+cur.fetchmany(10)
+
+
+
+
+[(0, 75, Decimal(&#39;0.55555555555555555556&#39;)),
+ (0, 124, Decimal(&#39;0.55555555555555555556&#39;)),
+ (0, 247, Decimal(&#39;0.66666666666666666667&#39;)),
+ (0, 315, Decimal(&#39;0.61111111111111111111&#39;)),
+ (0, 516, Decimal(&#39;0.55555555555555555556&#39;)),
+ (0, 590, Decimal(&#39;0.55555555555555555556&#39;)),
+ (0, 728, Decimal(&#39;0.55555555555555555556&#39;)),
+ (0, 885, Decimal(&#39;0.55555555555555555556&#39;)),
+ (0, 930, Decimal(&#39;0.55555555555555555556&#39;)),
+ (0, 993, Decimal(&#39;0.55555555555555555556&#39;))]
+</pre></div>
+
+
+<p>The inverse document frequency also has many definitions, but we will use the base definition:</p>
+<p>$$idf(t,D) = log_{10}(\frac{N_{D}}{N_{D,t}})$$</p>
+<div class="highlight"><pre>cur.execute(&quot;&quot;&quot;
+            SELECT word_id, 
+                   LOG( (SELECT COUNT(*) FROM url) / doc_count ) as df 
+            FROM (SELECT word_id, COUNT(1) as doc_count 
+                  FROM bagofwords 
+                  GROUP BY word_id) a;
+            &quot;&quot;&quot;)
+cur.fetchmany(10)
+
+
+
+
+[(21370, 1.43136376415899),
+ (2848, 2.99956548822598),
+ (2026, 1.53147891704226),
+ (10295, 2.99956548822598),
+ (11890, 2.99956548822598),
+ (17928, 2.52244423350632),
+ (22262, 2.99956548822598),
+ (16703, 2.09342168516224),
+ (9545, 2.39619934709574),
+ (14724, 2.99956548822598)]
+
+
+
+
+cur.execute(&quot;&quot;&quot; CREATE TABLE tfidf AS
+            SELECT tf.id, tf.word_id, tf.tf*idf.idf as tfidf
+            FROM (SELECT a.id, a.word_id, (0.5 + 0.5*a.count/b.max) as tf 
+                  FROM bagofwords a JOIN
+                    (SELECT id, MAX(count) as max 
+                     FROM bagofwords 
+                     GROUP BY id) b
+                  ON a.id=b.id
+                  ) tf 
+            JOIN (SELECT word_id, 
+                         LOG( (SELECT COUNT(*) FROM url) / doc_count ) as idf 
+                  FROM (SELECT word_id, COUNT(1) as doc_count 
+                        FROM bagofwords 
+                        GROUP BY word_id) a 
+                  ) idf 
+            ON tf.word_id=idf.word_id;
+            &quot;&quot;&quot;
+           )
+conn.commit()
+</pre></div>
+
+
+<h2>SQL NYT Ranking</h2>
+<p>We are going to write a query function that will take a search term and return the top 3 articles that 'match' the query by summing the tfidf scores.</p>
+<div class="highlight"><pre><span class="x">def query(string):</span>
+<span class="x">    query_string = &quot;&quot;&quot;SELECT a.id, SUM(a.tfidf) as total </span>
+<span class="x">                      FROM tfidf a </span>
+<span class="x">                      JOIN (SELECT id FROM wordlist WHERE word in (</span><span class="err">{</span><span class="x">})) b </span>
+<span class="x">                      ON a.word_id = b.id GROUP BY a.id ORDER BY total DESC limit 3;&quot;&quot;&quot;</span>
+<span class="x">    string = &quot; &quot;.join([snowball.stem(word) for word in string.split()])</span>
+<span class="x">    cur.execute(query_string.format(&quot;&#39;&quot;+&quot;&#39;,&#39;&quot;.join(string.split())+&quot;&#39;&quot;))</span>
+<span class="x">    print string</span>
+<span class="x">    return [x[0] for x in cur.fetchall()]</span>
+
+
+<span class="x">def get_headlines(query_string):</span>
+<span class="x">    results = query(query_string)</span>
+<span class="x">    article_ids = [article_dict.keys()[article_dict.values().index(x)] for x in results]</span>
+<span class="x">    print&quot;&quot;</span>
+<span class="x">    for art in coll.find(</span><span class="err">{</span><span class="x">&quot;_id&quot;:</span><span class="err">{</span><span class="x">&quot;</span><span class="p">$</span><span class="nv">in</span><span class="x">&quot;:article_ids}}):</span>
+<span class="x">        print art[&#39;headline&#39;][&#39;print_headline&#39;]</span>
+<span class="x">        print &quot;&quot;</span>
+
+
+<span class="x">get_headlines(&quot;Obama upsets Congress&quot;)</span>
+
+<span class="x">obama upset congress</span>
+
+<span class="x">5 Years After Financial Collapse, Obama Says House G.O.P. Could Reverse Gains</span>
+
+<span class="x">As Budget Fight Looms, Obama Sees Defiance in His Own Party</span>
+
+<span class="x">Obama Highlights Fiscal Risks in Addressing Business Group</span>
+
+
+
+
+<span class="x">get_headlines(&quot;Cowboys win&quot;)</span>
+
+<span class="x">cowboy win</span>
+
+<span class="x">The Good and the Bad Of the Saints, Reversed</span>
+
+<span class="x">Giants Hope for U-Turn On Familiar Road Trip</span>
+
+<span class="x">Overhaul Of Red Sox Is Beyond Their Chins</span>
+</pre></div>
+
+
+<p>We see that the search for terms related to Obama, a common topic in the NYT, return relavant results.  Searching for something the NYTimes does not normally cover returns unrelated results.   </p>
+<p>Another method we could use to filter would be to select based on word location.</p>
+<div class="highlight"><pre><span class="x">def query_by_location(query):</span>
+<span class="x">    query_string = &quot;&quot;&quot;</span>
+<span class="x">    SELECT a.url_id, 1./SUM(a.min) as loc </span>
+<span class="x">    FROM (SELECT a.url_id, a.word_id, MIN(a.location) </span>
+<span class="x">          FROM wordlocation a </span>
+<span class="x">          WHERE word_id IN</span>
+<span class="x">             (SELECT id FROM wordlist </span>
+<span class="x">              WHERE word IN (</span><span class="err">{</span><span class="x">})) </span>
+<span class="x">              GROUP BY a.url_id, a.word_id) a </span>
+<span class="x">    GROUP BY a.url_id ORDER BY loc DESC LIMIT 3;</span>
+<span class="x">    &quot;&quot;&quot;</span>
+<span class="x">    query = &quot; &quot;.join([snowball.stem(word) for word in query.split()])</span>
+<span class="x">    cur.execute(query_string.format(&quot;&#39;&quot;+&quot;&#39;,&#39;&quot;.join(query.split())+&quot;&#39;&quot;))</span>
+<span class="x">    print query</span>
+<span class="x">    return [x[0] for x in cur.fetchall()]</span>
+
+<span class="x">query_by_location(&quot;Obama upsets Congress&quot;)</span>
+
+<span class="x">obama upset congress</span>
+
+
+
+
+
+<span class="x">[314, 193, 17]</span>
+
+
+
+
+<span class="x">def get_headlines_by_location(query_string):</span>
+<span class="x">    results = query_by_location(query_string)</span>
+<span class="x">    article_ids = [article_dict.keys()[article_dict.values().index(x)] for x in results]</span>
+<span class="x">    print&quot;&quot;</span>
+<span class="x">    for art in coll.find(</span><span class="err">{</span><span class="x">&quot;_id&quot;:</span><span class="err">{</span><span class="x">&quot;</span><span class="p">$</span><span class="nv">in</span><span class="x">&quot;:article_ids}}):</span>
+<span class="x">        print art[&#39;headline&#39;][&#39;print_headline&#39;]</span>
+<span class="x">        print &quot;&quot;</span>
+
+
+<span class="x">get_headlines_by_location(&quot;Obama upsets Congress&quot;)</span>
+
+<span class="x">obama upset congress</span>
+
+<span class="x">How Old a Democracy?</span>
+
+<span class="x">Wage Law Will Cover Home Aides</span>
+
+<span class="x">New Chief Nominated For Justice Dept. Division</span>
+
+
+
+
+<span class="x">def get_content_by_location(query_string):</span>
+<span class="x">    results = query_by_location(query_string)</span>
+<span class="x">    article_ids = [article_dict.keys()[article_dict.values().index(x)] for x in results]</span>
+<span class="x">    print&quot;&quot;</span>
+<span class="x">    for art in coll.find(</span><span class="err">{</span><span class="x">&quot;_id&quot;:</span><span class="err">{</span><span class="x">&quot;</span><span class="p">$</span><span class="nv">in</span><span class="x">&quot;:article_ids}}):</span>
+<span class="x">        print &quot;&quot;.join(art[&#39;content&#39;]).strip()[:500]</span>
+<span class="x">        print &quot;&quot;</span>
+<span class="x">get_content_by_location(&quot;Obama upsets Congress&quot;)</span>
+
+<span class="x">obama upset congress</span>
+
+<span class="x">President Obama recently declared that the United States is âthe worldâs oldest constitutional democracy,â and he is echoed by Timothy Egan (âA brilliant mess,â Sept. 14), without challenge. It is, nonetheless, a historically dubious claim. That honor might belong to either Iceland or Switzerland, though the details are open to debate. But since the United States did not allow equal voting rights for all its citizens until 1965, its democracy, by that standard, must be counted young. A</span>
+
+<span class="x">The Obama administration announced on Tuesday that it was extending minimum wage and overtime protections to the nationâs nearly two million home care workers.         </span>
+<span class="x">Advocates for low-wage workers have pushed for this change, asserting that home care workers, who care for elderly and disabled Americans, were wrongly classified into the same âcompanionship servicesâ category as baby sitters â a group that is exempt from minimum wage and overtime coverage. Under the new rule, home care</span>
+
+<span class="x">President Obama on Tuesday nominated Leslie R. Caldwell, a defense lawyer specializing in white-collar cases, to be assistant attorney general for the Justice Departmentâs criminal division. From 2002 to 2004, Ms. Caldwell, a former federal prosecutor, was the director of the Justice Departmentâs task force that handled prosecutions related to the 2001 collapse of Enron. Ms. Caldwell is a graduate of Penn State and George Washington University Law School and has worked in the United States a</span>
+</pre></div>
+
+
+<p>These results give different values.   We could potentially combine these two metrics in a way to give the most relavant results using a weighting sceme.  That way we can use both word location and word uniqueness to determine which articles are most important to show.</p>
+<h2>Tuning and Model Comparison</h2>
+<p>We are going through the New York Times articles and attempt to identify which section they are apprt of using different supervised learning techniques.  First we need to encode the section names to variables, then we need to make a training and testing set.</p>
+<p>We will make a tfidf on the training set, train our algorithm on the training set, then convert the test set and predict.  We will be using accuracy as our metrics.</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelEncoder</span>
+<span class="n">le_section_name</span> <span class="o">=</span> <span class="n">LabelEncoder</span><span class="p">()</span>
+<span class="n">le_section_name</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">coll</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s">&#39;section_name&#39;</span><span class="p">))</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">le_section_name</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+
+
+
+<span class="p">(</span><span class="mi">984</span><span class="p">,</span> <span class="mi">984</span><span class="p">)</span>
+
+
+
+
+<span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="n">doc_trn</span><span class="p">,</span> <span class="n">doc_tst</span><span class="p">,</span> <span class="n">y_trn</span><span class="p">,</span><span class="n">y_tst</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span><span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+
+<span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">TfidfVectorizer</span>
+<span class="n">vectorizer</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenize</span><span class="p">,</span><span class="n">strip_accents</span><span class="o">=</span><span class="s">&#39;unicode&#39;</span><span class="p">,</span><span class="n">stop_words</span><span class="o">=</span><span class="s">&#39;english&#39;</span><span class="p">)</span>
+<span class="n">tfidf_trn</span> <span class="o">=</span> <span class="n">vectorizer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">doc_trn</span><span class="p">)</span>
+<span class="n">tfidf_tst</span> <span class="o">=</span> <span class="n">vectorizer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">doc_tst</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Now we are going to compare the different algorithms.  Today I will stick with the methods that have built-in multi-classification.  I could us One vs. One or One vs All, but I will save that for another time.  Today's work has already taken a significant amount of time!</p>
+<div class="highlight"><pre><span class="n">clf</span> <span class="o">=</span> <span class="n">MultinomialNB</span><span class="p">()</span>
+<span class="n">clf</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+
+
+
+
+<span class="s">&#39;MultinomialNB&#39;</span>
+
+
+
+
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">sklearn.naive_bayes</span> <span class="kn">import</span> <span class="n">MultinomialNB</span>
+<span class="kn">from</span> <span class="nn">sklearn.tree</span> <span class="kn">import</span> <span class="n">DecisionTreeClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestClassifier</span><span class="p">,</span><span class="n">AdaBoostClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">KNeighborsClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span>
+<span class="k">def</span> <span class="nf">supervise_time</span><span class="p">(</span><span class="n">clf</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&quot;&quot;</span>
+    <span class="k">print</span> <span class="n">clf</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">tfidf_trn</span><span class="p">,</span><span class="n">y_trn</span><span class="p">)</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s">&quot;Time to Fit:&quot;</span><span class="p">,</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">pred</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">tfidf_tst</span><span class="p">)</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s">&quot;Time to Predict:&quot;</span><span class="p">,</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span>
+    <span class="k">print</span> <span class="s">&quot;Accuracy: &quot;</span><span class="p">,</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_tst</span><span class="p">,</span><span class="n">pred</span><span class="p">)</span>
+
+<span class="n">supervise_time</span><span class="p">(</span><span class="n">MultinomialNB</span><span class="p">())</span>
+<span class="n">supervise_time</span><span class="p">(</span><span class="n">DecisionTreeClassifier</span><span class="p">())</span>
+<span class="n">supervise_time</span><span class="p">(</span><span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">1000</span><span class="p">))</span>
+<span class="n">supervise_time</span><span class="p">(</span><span class="n">AdaBoostClassifier</span><span class="p">())</span>
+<span class="n">supervise_time</span><span class="p">(</span><span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="mi">15</span><span class="p">))</span>
+<span class="n">supervise_time</span><span class="p">(</span><span class="n">AdaBoostClassifier</span><span class="p">(</span><span class="n">base_estimator</span><span class="o">=</span><span class="n">MultinomialNB</span><span class="p">(),</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">5000</span><span class="p">))</span>
+
+
+<span class="n">MultinomialNB</span>
+<span class="n">Time</span> <span class="n">to</span> <span class="n">Fit</span><span class="p">:</span> <span class="mf">0.0335011482239</span>
+<span class="n">Time</span> <span class="n">to</span> <span class="n">Predict</span><span class="p">:</span> <span class="mf">0.00691485404968</span>
+<span class="n">Accuracy</span><span class="p">:</span>  <span class="mf">0.493243243243</span>
+
+<span class="n">DecisionTreeClassifier</span>
+<span class="n">Time</span> <span class="n">to</span> <span class="n">Fit</span><span class="p">:</span> <span class="mf">0.796107053757</span>
+<span class="n">Time</span> <span class="n">to</span> <span class="n">Predict</span><span class="p">:</span> <span class="mf">0.00192499160767</span>
+<span class="n">Accuracy</span><span class="p">:</span>  <span class="mf">0.371621621622</span>
+
+<span class="n">RandomForestClassifier</span>
+<span class="n">Time</span> <span class="n">to</span> <span class="n">Fit</span><span class="p">:</span> <span class="mf">10.8660159111</span>
+<span class="n">Time</span> <span class="n">to</span> <span class="n">Predict</span><span class="p">:</span> <span class="mf">0.547387123108</span>
+<span class="n">Accuracy</span><span class="p">:</span>  <span class="mf">0.614864864865</span>
+
+<span class="n">AdaBoostClassifier</span>
+<span class="n">Time</span> <span class="n">to</span> <span class="n">Fit</span><span class="p">:</span> <span class="mf">3.87863016129</span>
+<span class="n">Time</span> <span class="n">to</span> <span class="n">Predict</span><span class="p">:</span> <span class="mf">0.0303628444672</span>
+<span class="n">Accuracy</span><span class="p">:</span>  <span class="mf">0.222972972973</span>
+
+<span class="n">KNeighborsClassifier</span>
+<span class="n">Time</span> <span class="n">to</span> <span class="n">Fit</span><span class="p">:</span> <span class="mf">0.000900983810425</span>
+<span class="n">Time</span> <span class="n">to</span> <span class="n">Predict</span><span class="p">:</span> <span class="mf">0.037672996521</span>
+<span class="n">Accuracy</span><span class="p">:</span>  <span class="mf">0.652027027027</span>
+
+<span class="n">AdaBoostClassifier</span>
+<span class="n">Time</span> <span class="n">to</span> <span class="n">Fit</span><span class="p">:</span> <span class="mf">233.7222929</span>
+<span class="n">Time</span> <span class="n">to</span> <span class="n">Predict</span><span class="p">:</span> <span class="mf">276.877113819</span>
+<span class="n">Accuracy</span><span class="p">:</span>  <span class="mf">0.652027027027</span>
+</pre></div>
+
+
+<p>We see that the classification of text (sparse) data is not well done by untuned classifiers.   The KNN method does well, and I am sure that if we used a cosine similarity metric, it would do even better.</p>
+<p>The most interest point of this exercise was that I Adaboosted a NaiveBayes classifier to the point that it gave the exact results of the nearest neighbor method.   I am wondering if the sparse data lead to this fact, and if this can be generalized in other contexts</p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'bryansmithphd';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=bryansmithphd">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      Bryan Smith, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="http://www.bryantravissmith.com/theme/js/jquery.min.js"></script>
+  <script src="http://www.bryantravissmith.com/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$$','$$'], ['\\(','\\)']]}
+});
+</script>
+</html>

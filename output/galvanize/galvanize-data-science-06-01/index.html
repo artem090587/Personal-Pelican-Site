@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-06-01/index.html" />
+
+    <title>  Bryan Travis Smith, Ph.D &mdash; Galvanize - Week 06 - Day 1
+</title>
+
+
+
+
+    <link rel="stylesheet" href="http://www.bryantravissmith.com/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-24340005-3', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+
+    <meta name="author" content="Bryan Smith">
+    <meta name="description" content="Today we covered clustering PCA and SVD">
+  <meta name="tags" contents="data-science, galvanize, nlp, PCA, SVD, ">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+      <div class="header-image pull-left">
+        <a class="nodec" href="http://www.bryantravissmith.com"><img src=http://www.bryantravissmith.com/img/bryan.jpeg></a>
+      </div>
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="http://www.bryantravissmith.com">Bryan Travis Smith, Ph.D</a>
+      </h1>
+      <h3 class="header-text">Physicist, Data Scientist, Martial Artist, & Life Enthusiast</h3>
+      <ul class="header-menu list-inline">
+              <li class="muted">|</li>
+            <li><a class="nodec" href="http://www.bryantravissmith.com/about/">About</a></li>
+              <li class="muted">|</li>
+          <li><a class="nodec icon-mail-alt" href="mailto:bryantravissmith@gmail.com"></a></li>
+          <li><a class="nodec icon-github" href="https://github.com/bryantravissmith"></a></li>
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+      <a href="/galvanize/galvanize-data-science-06-01/" title="Permalink to Galvanize - Week 06 - Day 1">Galvanize - Week 06 - Day 1</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" href="/galvanize/galvanize-data-science-06-01/" title="2015-07-06T10:20:00-07:00">Mon 06 July 2015</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+        <a href="http://www.bryantravissmith.com/category/galvanize.html">Galvanize</a>
+      </li>
+        <li class="muted">&middot;</li>
+        <li>
+          <address class="post-author">
+            By <a href="http://www.bryantravissmith.com/author/bryan-smith.html">Bryan Smith</a>
+          </address>
+        </li>
+    </ul>
+    <div class="post-content">
+      <h1>Galvanize Immersive Data Science</h1>
+<h2>Week 6 - Day 1</h2>
+<p>Today we had a quiz where we continued yesterday's work of vectorizing documents in a corpus, and finding similar documents.   The idea of two day's miniquiz was to treat a document like a corpus, and treat sentence's like documents.   We then clustered related sentences together to find related topics in the document.   </p>
+<h2>PCA</h2>
+<p>Our morning lesson was on Dimensional Reduction with the focus on Priciple Components Analysis.  PCA is finding orthogonal directions in a feature space that are directed along the direction of maximum variation.  The idea is that you can represent the variation of the data while reducing the number of features in the data set.  Our exploration of this begins with sklearn's digit dataset.</p>
+<h2>Digits</h2>
+<p>The digits dataset is 100 hand written images of numeric digits.   The version we are exploring are 64 pixel square images.  You can see the images below.</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">load_digits</span>
+<span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">PCA</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span>
+
+<span class="n">digits</span> <span class="o">=</span> <span class="n">load_digits</span><span class="p">()</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">digits</span><span class="o">.</span><span class="n">data</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">digits</span><span class="o">.</span><span class="n">target</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">14</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="kp">reshape</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">),</span><span class="n">cmap</span><span class="o">=</span><span class="s">&#39;Greys&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">([])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">([])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s">&#39;off&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW06D1/output_1_0.png" /></p>
+<p>We can see that most of the digits are clear and distinct for a human to classify.   An algorithm, may have some work cutout for it when it comes to separate some of the 4's, 7's, and 9's.  Despite being 8x8 images, it looks like a large number of them are also cut off.   This likely has to do with the compression that took them from the original 128x128 resolution.</p>
+<p>The PCA algorithm looks for the direction of maximum variation, then projects along the data onto the axis.   The next direction is the new direction of maximimun variation.  The plot of the variance explained is called a Scree plot, and you can see this for the digits dataset.  </p>
+<div class="highlight"><pre>scaler = StandardScaler()
+sX = scaler.fit_transform(X)
+pca = PCA(63)
+psX = pca.fit_transform(X)
+plt.figure(figsize=(14,6))
+plt.subplot(121)
+plt.plot(range(63),pca.explained_variance_ratio_,&#39;r--&#39;)
+plt.ylabel(&#39;Precent Variance Explained&#39;)
+plt.xlabel(&#39;Number of Components&#39;)
+plt.subplot(122)
+plt.plot(range(63),np.cumsum(pca.explained_variance_ratio_),&#39;g--&#39;)
+plt.ylabel(&#39;Precent Cumlative Variance Explained&#39;)
+plt.xlabel(&#39;Number of Components&#39;)
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW06D1/output_3_0.png" /></p>
+<p>Each image is 64 features, and we are reduce the number of features, or compress the data, while maintain a fixed amount of variation.   We can keep 80% by compressiong it to 10 features, or 90% if we compress it down to 20 features.  </p>
+<p>Lets look at what these images look like for the 1st, and the 10th compoents.</p>
+<div class="highlight"><pre>scaler = StandardScaler()
+sX = scaler.fit_transform(X)
+pca = PCA(1)
+psX = pca.fit_transform(X)
+Xcompressed = pca.inverse_transform(psX)
+plt.figure(figsize=(14,14))
+for i in range(100):
+    plt.subplot(10,10,i+1)
+    plt.imshow(Xcompressed[i].reshape(8,8),cmap=&#39;Greys&#39;)
+    plt.xticks([])
+    plt.yticks([])
+    plt.axis(&#39;off&#39;)
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW06D1/output_5_0.png" /></p>
+<p>We see that the first axis projects the image into how much like a 3 or a 6 does it look like.  The 6 makes sense because it fills the most space that is not used by other numbers.  That is the bottom left quadrant.  The 3 is other side.  I was surprised the 9 was not the other digit shown.  Reguardless, the 3's look a lot like 3's, and the 6's look a lot like 6's.  The problem is that the information about the other digits are lost.  We can look at the first 10 components.</p>
+<div class="highlight"><pre>scaler = StandardScaler()
+sX = scaler.fit_transform(X)
+pca = PCA(10)
+psX = pca.fit_transform(X)
+Xcompressed = pca.inverse_transform(psX)
+plt.figure(figsize=(14,14))
+for i in range(100):
+    plt.subplot(10,10,i+1)
+    plt.imshow(Xcompressed[i].reshape(8,8),cmap=&#39;Greys&#39;)
+    plt.xticks([])
+    plt.yticks([])
+    plt.axis(&#39;off&#39;)
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW06D1/output_7_0.png" /></p>
+<p>The images are much clearer than 1 component, but we can see them as being blur.  We have effectively compressed the images.   A human can easily tell which digit most of the images are, but there are some that are still clear.  The first 5 is a good example of that.  Finally, lets look at 20 compoents.</p>
+<div class="highlight"><pre>scaler = StandardScaler()
+sX = scaler.fit_transform(X)
+pca = PCA(20)
+psX = pca.fit_transform(X)
+Xcompressed = pca.inverse_transform(psX)
+plt.figure(figsize=(14,14))
+for i in range(100):
+    plt.subplot(10,10,i+1)
+    plt.imshow(Xcompressed[i].reshape(8,8),cmap=&#39;Greys&#39;)
+    plt.xticks([])
+    plt.yticks([])
+    plt.axis(&#39;off&#39;)
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW06D1/output_9_0.png" /></p>
+<p>At this point all the images are clear enough for a human with fair eyesight to make out.   We have cut the features size by a 1/3 while maintaining human readibility.  This is the idea behind PCA.  We can still maintain the predictive ability or use case while reducing the feature size.</p>
+<p>You can also see how different digits cluster in the space of the PCA compoents.  Below is a plot of the first PCA direction on the x axis, and the second PCA direction on the y axis.   The color identify which digit the data is for.  We can see that there is overlap, but the same digits cluster together, and related digits cluster next to each other.  </p>
+<div class="highlight"><pre>scaler = StandardScaler()
+sX = scaler.fit_transform(X)
+pca = PCA(2)
+psX = pca.fit_transform(X)
+plt.figure(figsize=(14,14))
+for i in range(10):
+    plt.plot(psX[y==i,0],psX[y==i,1],color=plt.cm.Set1(i*3),marker=&#39;o&#39;,alpha=0.9,label=str(i),lw=0,markersize=10)
+plt.legend()
+
+
+
+
+&lt;matplotlib.legend.Legend at 0x10db23690&gt;
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW06D1/output_11_1.png" /></p>
+<div class="highlight"><pre>plt.figure(figsize=(14,14))
+ax = plt.gca()
+for i in range(psX.shape[0]):
+    #print psX[i,0],psX[i,1],y[i]
+    ax.annotate(str(y[i]),xy=(psX[i,0],psX[i,1]),color=plt.cm.Set1(y[i]*3), fontsize=14,alpha=0.6)
+plt.xlim([-40,40])
+plt.ylim([-40,40])
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW06D1/output_12_0.png" /></p>
+<p>We replaced each point with the label of the digit.  In this plot it is clear that 5's are difficult to distingust with the first 2 compoents, but zeros and ones seem well clusted.   The 3's, 9's and 7's have a lot of overlap.   As we add more features, we saw visually the images become more distinct.</p>
+<h2>Cars</h2>
+<p>The cars dataset is a default package in R, and we are going to use it to predict the mpg of the car using a linear fit.   The goals is to do it for the dataset, then for the PCA compoents of the dataset.  The goal is to see that as we increase the pca, our fit matches the full it, but it is well appoximated by a subset of features.  </p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="n">cars</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_table</span><span class="p">(</span><span class="s">&#39;data/cars.tsv&#39;</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+<span class="n">cars</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">cars</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()),</span><span class="n">cars</span><span class="p">[[</span><span class="mi">1</span><span class="p">]]],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">ignore_index</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">cars</span> <span class="o">=</span> <span class="n">cars</span><span class="p">[</span><span class="n">cars</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&#39;?&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,:</span><span class="mi">8</span><span class="p">]</span>
+<span class="n">cars</span> <span class="o">=</span> <span class="n">cars</span><span class="o">.</span><span class="n">convert_objects</span><span class="p">(</span><span class="n">convert_numeric</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">cars</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;mpg&#39;</span><span class="p">,</span> <span class="s">&#39;cylinders&#39;</span><span class="p">,</span><span class="s">&#39;displacement&#39;</span><span class="p">,</span><span class="s">&#39;horsepower&#39;</span><span class="p">,</span><span class="s">&#39;weight&#39;</span><span class="p">,</span><span class="s">&#39;acceleration&#39;</span><span class="p">,</span><span class="s">&#39;model_year&#39;</span><span class="p">,</span> <span class="s">&#39;origin&#39;</span><span class="p">]</span>
+<span class="n">cars</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>mpg</th>
+      <th>cylinders</th>
+      <th>displacement</th>
+      <th>horsepower</th>
+      <th>weight</th>
+      <th>acceleration</th>
+      <th>model_year</th>
+      <th>origin</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>18</td>
+      <td>8</td>
+      <td>307</td>
+      <td>130</td>
+      <td>3504</td>
+      <td>12.0</td>
+      <td>70</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>15</td>
+      <td>8</td>
+      <td>350</td>
+      <td>165</td>
+      <td>3693</td>
+      <td>11.5</td>
+      <td>70</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>18</td>
+      <td>8</td>
+      <td>318</td>
+      <td>150</td>
+      <td>3436</td>
+      <td>11.0</td>
+      <td>70</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>16</td>
+      <td>8</td>
+      <td>304</td>
+      <td>150</td>
+      <td>3433</td>
+      <td>12.0</td>
+      <td>70</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>17</td>
+      <td>8</td>
+      <td>302</td>
+      <td>140</td>
+      <td>3449</td>
+      <td>10.5</td>
+      <td>70</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>We can produce a scree plot to where we can estiate the number of components necessary for making consistent predictions with the full dataset.   </p>
+<div class="highlight"><pre>sca = StandardScaler()
+pca = PCA(8)
+sCar = sca.fit_transform(cars.values)
+pCar = pca.fit_transform(sCar)
+plt.plot(range(1,9),np.cumsum(pca.explained_variance_ratio_))
+
+
+
+
+[&lt;matplotlib.lines.Line2D at 0x109c12bd0&gt;]
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW06D1/output_16_1.png" /></p>
+<p>From this plt we see most fo the variance can be explained with 3 to 4 components depending on if we want 90% or 95% of the variation explained.   I will expect that our adjusted R-square will get better for the first 3 or 4 PCA components, then level off to the adjusted R-square of the full fit.</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">r2_score</span>
+
+<span class="n">y</span> <span class="o">=</span> <span class="n">cars</span><span class="p">[[</span><span class="s">&#39;mpg&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">cars</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s">&#39;mpg&#39;</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+<span class="n">x_trn</span><span class="p">,</span><span class="n">x_tst</span><span class="p">,</span><span class="n">y_trn</span><span class="p">,</span><span class="n">y_tst</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+
+<span class="n">sca</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
+<span class="n">pca</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+<span class="n">sx_trn</span> <span class="o">=</span> <span class="n">sca</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_trn</span><span class="p">)</span>
+<span class="n">px_trn</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">sx_trn</span><span class="p">)</span>
+
+<span class="n">lin1</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>
+<span class="n">lin1</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_trn</span><span class="p">,</span><span class="n">y_trn</span><span class="p">)</span>
+<span class="n">y_pred</span> <span class="o">=</span> <span class="n">lin1</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_tst</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;Full Fit Adjusted R-Square&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="o">-</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">r2_score</span><span class="p">(</span><span class="n">y_tst</span><span class="p">,</span><span class="n">y_pred</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y_tst</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y_tst</span><span class="p">)</span><span class="o">-</span><span class="n">x_trn</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">):</span>
+    <span class="n">pca</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">sx_trn</span> <span class="o">=</span> <span class="n">sca</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_trn</span><span class="p">)</span>
+    <span class="n">px_trn</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">sx_trn</span><span class="p">)</span>
+    <span class="n">linP</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>
+    <span class="n">linP</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">px_trn</span><span class="p">,</span><span class="n">y_trn</span><span class="p">)</span>
+
+    <span class="n">sx_tst</span> <span class="o">=</span> <span class="n">sca</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">x_tst</span><span class="p">)</span>
+    <span class="n">px_tst</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">sx_tst</span><span class="p">)</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">linP</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">px_tst</span><span class="p">)</span>
+    <span class="n">adj_r2</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">r2_score</span><span class="p">(</span><span class="n">y_tst</span><span class="p">,</span><span class="n">y_pred</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y_tst</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y_tst</span><span class="p">)</span><span class="o">-</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&quot;PCA Adjusted R-Square {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">adj_r2</span>
+
+<span class="n">Full</span> <span class="n">Fit</span> <span class="n">Adjusted</span> <span class="n">R</span><span class="o">-</span><span class="n">Square</span> <span class="mf">0.817772756314</span>
+<span class="n">PCA</span> <span class="n">Adjusted</span> <span class="n">R</span><span class="o">-</span><span class="n">Square</span> <span class="mi">1</span> <span class="mf">0.69397778532</span>
+<span class="n">PCA</span> <span class="n">Adjusted</span> <span class="n">R</span><span class="o">-</span><span class="n">Square</span> <span class="mi">2</span> <span class="mf">0.696494130123</span>
+<span class="n">PCA</span> <span class="n">Adjusted</span> <span class="n">R</span><span class="o">-</span><span class="n">Square</span> <span class="mi">3</span> <span class="mf">0.791628786462</span>
+<span class="n">PCA</span> <span class="n">Adjusted</span> <span class="n">R</span><span class="o">-</span><span class="n">Square</span> <span class="mi">4</span> <span class="mf">0.797026468934</span>
+<span class="n">PCA</span> <span class="n">Adjusted</span> <span class="n">R</span><span class="o">-</span><span class="n">Square</span> <span class="mi">5</span> <span class="mf">0.807152321105</span>
+<span class="n">PCA</span> <span class="n">Adjusted</span> <span class="n">R</span><span class="o">-</span><span class="n">Square</span> <span class="mi">6</span> <span class="mf">0.813375746265</span>
+<span class="n">PCA</span> <span class="n">Adjusted</span> <span class="n">R</span><span class="o">-</span><span class="n">Square</span> <span class="mi">7</span> <span class="mf">0.817772756314</span>
+</pre></div>
+
+
+<p>The above first are just a section of data.  Because we have a small dataset and a 20% split on the data to run on the test set, we will see large variation in the results.  Reguardless of the quality of the fit on the test set, what we always see is the we have dramatic increases in the adjusted r-square until we get to the 4th component, then we get incremental increase. </p>
+<h2>Singular Value Decomposition</h2>
+<p>The idea behind SVD's is that any matrix can be factors into the product of 3 matrixes.  We have a dataset of book reviews for users, and we want to try to decompose these relationships into the idea of topics.  The users will have relationships to topics, and books will have relationships to topics.  This is the beginnings of recommender systems that we will be exploring this week.</p>
+<div class="highlight"><pre>df  = pd.read_csv(&#39;data/book_reviews.csv&#39;)
+df.head()
+</pre></div>
+
+
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Unnamed: 0</th>
+      <th>User-ID</th>
+      <th>ISBN</th>
+      <th>Book-Rating</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1083</td>
+      <td>277195</td>
+      <td>0060391626</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1084</td>
+      <td>277195</td>
+      <td>0060502258</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1089</td>
+      <td>277195</td>
+      <td>0060987561</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>1098</td>
+      <td>277195</td>
+      <td>0316666343</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>1099</td>
+      <td>277195</td>
+      <td>0316734837</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre>df.drop(&#39;Unnamed: 0&#39;,axis=1,inplace=True)
+df = df.set_index([&#39;User-ID&#39;,&#39;ISBN&#39;]).unstack().fillna(-1)
+df.columns = df.columns.droplevel()
+df.head()
+</pre></div>
+
+
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>ISBN</th>
+      <th>0006493580</th>
+      <th>000649840X</th>
+      <th>0006512135</th>
+      <th>0006513204</th>
+      <th>0006514855</th>
+      <th>0006547834</th>
+      <th>0006550576</th>
+      <th>0006550681</th>
+      <th>0006550789</th>
+      <th>0007110928</th>
+      <th>...</th>
+      <th>8495618605</th>
+      <th>8497593588</th>
+      <th>8804342838</th>
+      <th>8806142100</th>
+      <th>8806143042</th>
+      <th>8807813025</th>
+      <th>8817106100</th>
+      <th>8845205118</th>
+      <th>8873122933</th>
+      <th>8885989403</th>
+    </tr>
+    <tr>
+      <th>User-ID</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>243</th>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>...</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+    </tr>
+    <tr>
+      <th>254</th>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>...</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+    </tr>
+    <tr>
+      <th>507</th>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>...</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+    </tr>
+    <tr>
+      <th>638</th>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>...</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+    </tr>
+    <tr>
+      <th>805</th>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>...</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+      <td>-1</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 6092 columns</p>
+</div>
+
+<div class="highlight"><pre>U,S,V = np.linalg.svd(df.values)
+S
+
+
+
+
+array([  3.73197977e+03,   3.28163606e+02,   2.34177766e+02, ...,
+         2.95911201e+00,   2.63616054e+00,   2.25714589e+00])
+</pre></div>
+
+
+<p>Now that we have decomposed the User x Book review matrix, we can look at the singular values S.  The rule of thumb is that the energy, $S^2$, is the analogous to the explained variance of the PCA.  We can make a plot of this verse the number of components we want to inclunde in the reduction, and estimate how much information loss will be experience.</p>
+<div class="highlight"><pre>plt.plot(range(1,len(S)+1),np.cumsum(S**2/np.sum(S**2)),&#39;r--&#39;)
+plt.xlabel(&#39;Number of SVD Components Included&#39;)
+plt.ylabel(&#39;Percent of Total Energy Included&#39;)
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW06D1/output_25_0.png" /></p>
+<p>We see that we can maintain 90% of the energy with 1 first 500 components of the 2500 possible singular values.   We can keep 95% with 1000 components.  Interestingly we include 72% of the energy with only 1 component.  What we are going is try to get a feel for the concepts/topics produced by the SVD algorithm.  We are going to load in some book meta data, and try to find characteristic titles for each topics.</p>
+<div class="highlight"><pre><span class="n">meta</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;data/book_meta.csv&#39;</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s">&quot;;&quot;</span><span class="p">,</span><span class="n">usecols</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;ISBN&#39;</span><span class="p">,</span><span class="s">&#39;Book-Title&#39;</span><span class="p">,</span><span class="s">&#39;Book-Author&#39;</span><span class="p">,</span><span class="s">&#39;Year-Of-Publication&#39;</span><span class="p">,</span><span class="s">&#39;Publisher&#39;</span><span class="p">])</span>
+<span class="n">meta</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+
+<span class="o">/</span><span class="n">Library</span><span class="o">/</span><span class="n">Python</span><span class="o">/</span><span class="mf">2.7</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">pandas</span><span class="o">/</span><span class="n">io</span><span class="o">/</span><span class="n">parsers</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">1164</span><span class="p">:</span> <span class="n">DtypeWarning</span><span class="p">:</span> <span class="n">Columns</span> <span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="n">have</span> <span class="n">mixed</span> <span class="n">types</span><span class="o">.</span> <span class="n">Specify</span> <span class="n">dtype</span> <span class="n">option</span> <span class="n">on</span> <span class="kn">import</span> <span class="nn">or</span> <span class="nn">set</span> <span class="nn">low_memory</span><span class="o">=</span><span class="bp">False</span><span class="o">.</span>
+  <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">nrows</span><span class="p">)</span>
+</pre></div>
+
+
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>ISBN</th>
+      <th>Book-Title</th>
+      <th>Book-Author</th>
+      <th>Year-Of-Publication</th>
+      <th>Publisher</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0195153448</td>
+      <td>Classical Mythology</td>
+      <td>Mark P. O. Morford</td>
+      <td>2002</td>
+      <td>Oxford University Press</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0002005018</td>
+      <td>Clara Callan</td>
+      <td>Richard Bruce Wright</td>
+      <td>2001</td>
+      <td>HarperFlamingo Canada</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0060973129</td>
+      <td>Decision in Normandy</td>
+      <td>Carlo D'Este</td>
+      <td>1991</td>
+      <td>HarperPerennial</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0374157065</td>
+      <td>Flu: The Story of the Great Influenza Pandemic...</td>
+      <td>Gina Bari Kolata</td>
+      <td>1999</td>
+      <td>Farrar Straus Giroux</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0393045218</td>
+      <td>The Mummies of Urumchi</td>
+      <td>E. J. W. Barber</td>
+      <td>1999</td>
+      <td>W. W. Norton &amp;amp; Company</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>The basic idea is our U matrix has rows that represent users and columns that represent latent topcs.  The $\Sigma$ (S) matrix presents the weight of each topic, and the V matrix has rows that represent topics and columns that represent books.   </p>
+<p>We are going to go through the V matrix and find the topic books for the first few topics to see if we can learn what the latent association is.</p>
+<div class="highlight"><pre><span class="s-Atom">top20_book_indexes</span> <span class="o">=</span> <span class="s-Atom">np</span><span class="p">.</span><span class="nf">argsort</span><span class="p">(</span><span class="nv">V</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="s-Atom">:</span><span class="p">])[</span><span class="s-Atom">::-</span><span class="mi">1</span><span class="p">][</span><span class="s-Atom">:</span><span class="mi">20</span><span class="p">]</span>
+<span class="s-Atom">top20_book_isbns</span> <span class="o">=</span> <span class="s-Atom">df</span><span class="p">.</span><span class="s-Atom">columns</span><span class="p">[</span><span class="s-Atom">top20_book_indexes</span><span class="p">]</span>
+<span class="s-Atom">meta</span><span class="p">[</span><span class="s-Atom">meta</span><span class="p">.</span><span class="nv">ISBN</span><span class="p">.</span><span class="nf">isin</span><span class="p">(</span><span class="s-Atom">top20_book_isbns</span><span class="p">)]</span>
+</pre></div>
+
+
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>ISBN</th>
+      <th>Book-Title</th>
+      <th>Book-Author</th>
+      <th>Year-Of-Publication</th>
+      <th>Publisher</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>21</th>
+      <td>1841721522</td>
+      <td>New Vegetarian: Bold and Beautiful Recipes for...</td>
+      <td>Celia Brooks Brown</td>
+      <td>2001</td>
+      <td>Ryland Peters &amp;amp; Small Ltd</td>
+    </tr>
+    <tr>
+      <th>1229</th>
+      <td>3257061269</td>
+      <td>Der Alchimist.</td>
+      <td>Paulo Coelho</td>
+      <td>2003</td>
+      <td>Diogenes Verlag, Z�?¼rich</td>
+    </tr>
+    <tr>
+      <th>2587</th>
+      <td>3423105518</td>
+      <td>Name Der Rose</td>
+      <td>Umberto Eco</td>
+      <td>0</td>
+      <td>Distribooks Int'l+inc</td>
+    </tr>
+    <tr>
+      <th>3028</th>
+      <td>1844262553</td>
+      <td>Free</td>
+      <td>Paul Vincent</td>
+      <td>2003</td>
+      <td>Upfront Publishing</td>
+    </tr>
+    <tr>
+      <th>3217</th>
+      <td>3548603203</td>
+      <td>Artemis Fowl.</td>
+      <td>Eoin Colfer</td>
+      <td>2003</td>
+      <td>Ullstein TB-Vlg</td>
+    </tr>
+    <tr>
+      <th>5042</th>
+      <td>3257229364</td>
+      <td>Endstation Venedig. Commissario Brunettis zwei...</td>
+      <td>Donna Leon</td>
+      <td>1996</td>
+      <td>Diogenes Verlag</td>
+    </tr>
+    <tr>
+      <th>7909</th>
+      <td>8817106100</td>
+      <td>Oceano Mare</td>
+      <td>Alessandro Baricco</td>
+      <td>0</td>
+      <td>Biblioteca Universale Rizzoli</td>
+    </tr>
+    <tr>
+      <th>8839</th>
+      <td>3423202327</td>
+      <td>M�?¶rder ohne Gesicht.</td>
+      <td>Henning Mankell</td>
+      <td>1999</td>
+      <td>Dtv</td>
+    </tr>
+    <tr>
+      <th>10786</th>
+      <td>3423201509</td>
+      <td>Die Weiss Lowin / Contemporary German Lit</td>
+      <td>Henning Mankell</td>
+      <td>2002</td>
+      <td>Distribooks</td>
+    </tr>
+    <tr>
+      <th>11766</th>
+      <td>8807813025</td>
+      <td>Novocento, Un Monologo</td>
+      <td>Alessandro Baricco</td>
+      <td>2003</td>
+      <td>Distribooks Inc</td>
+    </tr>
+    <tr>
+      <th>12842</th>
+      <td>3379015180</td>
+      <td>Schlafes Bruder</td>
+      <td>Robert Schneider</td>
+      <td>1994</td>
+      <td>Reclam, Leipzig</td>
+    </tr>
+    <tr>
+      <th>27672</th>
+      <td>3462032283</td>
+      <td>Zw�?¶lf.</td>
+      <td>Nick McDonell</td>
+      <td>2003</td>
+      <td>Kiepenheuer &amp;amp; Witsch</td>
+    </tr>
+    <tr>
+      <th>37478</th>
+      <td>3492238696</td>
+      <td>Balzac und die kleine chinesische Schneiderin.</td>
+      <td>Dai Sijie</td>
+      <td>2003</td>
+      <td>Piper</td>
+    </tr>
+    <tr>
+      <th>38240</th>
+      <td>3462028189</td>
+      <td>Crazy</td>
+      <td>Benjamin Lebert</td>
+      <td>2000</td>
+      <td>Kiepenheuer &amp;amp; Witsch GmbH &amp;amp; Co. KG, Ve...</td>
+    </tr>
+    <tr>
+      <th>51792</th>
+      <td>3250600555</td>
+      <td>Monsieur Ibrahim und die Blumen des Koran. Erz...</td>
+      <td>Eric-Emmanuel Schmitt</td>
+      <td>2002</td>
+      <td>Ammann</td>
+    </tr>
+    <tr>
+      <th>91342</th>
+      <td>3442414199</td>
+      <td>Generation X. Geschichten f�?¼r eine immer sch...</td>
+      <td>Douglas Coupland</td>
+      <td>1994</td>
+      <td>Goldmann</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>The first topic looks like it has a strong relationship to german titles.  They were all published in the late 90's or early 00's.   I am currious how many reviews these books received.</p>
+<div class="highlight"><pre>print np.sum(df.values[:,top20_book_indexes]&gt;=0,axis=0)
+print np.round(np.average(df.values[:,top20_book_indexes],weights=df.values[:,top20_book_indexes]&gt;=0,axis=0),1)
+
+[2 1 1 1 2 5 1 1 1 1 1 2 2 2 2 2 3 1 1 4]
+[ 5.   9.   9.   9.   4.5  2.   8.   8.   8.   8.   8.   4.   4.   4.   4.
+  4.   2.7  7.   7.   2. ]
+</pre></div>
+
+
+<p>These books have been reviewed between 1 to 5 times, and the average rating is between 2 and 9.  German authors seems to be the biggest association between these books.</p>
+<p>Lets repeat this for a few more topics</p>
+<div class="highlight"><pre><span class="s-Atom">top20_book_indexes</span> <span class="o">=</span> <span class="s-Atom">np</span><span class="p">.</span><span class="nf">argsort</span><span class="p">(</span><span class="nv">V</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="s-Atom">:</span><span class="p">])[</span><span class="s-Atom">::-</span><span class="mi">1</span><span class="p">][</span><span class="s-Atom">:</span><span class="mi">20</span><span class="p">]</span>
+<span class="s-Atom">top20_book_isbns</span> <span class="o">=</span> <span class="s-Atom">df</span><span class="p">.</span><span class="s-Atom">columns</span><span class="p">[</span><span class="s-Atom">top20_book_indexes</span><span class="p">]</span>
+<span class="s-Atom">meta</span><span class="p">[</span><span class="s-Atom">meta</span><span class="p">.</span><span class="nv">ISBN</span><span class="p">.</span><span class="nf">isin</span><span class="p">(</span><span class="s-Atom">top20_book_isbns</span><span class="p">)]</span>
+</pre></div>
+
+
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>ISBN</th>
+      <th>Book-Title</th>
+      <th>Book-Author</th>
+      <th>Year-Of-Publication</th>
+      <th>Publisher</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>107</th>
+      <td>0786868716</td>
+      <td>The Five People You Meet in Heaven</td>
+      <td>Mitch Albom</td>
+      <td>2003</td>
+      <td>Hyperion</td>
+    </tr>
+    <tr>
+      <th>408</th>
+      <td>0316666343</td>
+      <td>The Lovely Bones: A Novel</td>
+      <td>Alice Sebold</td>
+      <td>2002</td>
+      <td>Little, Brown</td>
+    </tr>
+    <tr>
+      <th>522</th>
+      <td>0312195516</td>
+      <td>The Red Tent (Bestselling Backlist)</td>
+      <td>Anita Diamant</td>
+      <td>1998</td>
+      <td>Picador USA</td>
+    </tr>
+    <tr>
+      <th>706</th>
+      <td>0446672211</td>
+      <td>Where the Heart Is (Oprah's Book Club (Paperba...</td>
+      <td>Billie Letts</td>
+      <td>1998</td>
+      <td>Warner Books</td>
+    </tr>
+    <tr>
+      <th>748</th>
+      <td>0385504209</td>
+      <td>The Da Vinci Code</td>
+      <td>Dan Brown</td>
+      <td>2003</td>
+      <td>Doubleday</td>
+    </tr>
+    <tr>
+      <th>1387</th>
+      <td>0345361792</td>
+      <td>A Prayer for Owen Meany</td>
+      <td>John Irving</td>
+      <td>1990</td>
+      <td>Ballantine Books</td>
+    </tr>
+    <tr>
+      <th>1496</th>
+      <td>0743418174</td>
+      <td>Good in Bed</td>
+      <td>Jennifer Weiner</td>
+      <td>2002</td>
+      <td>Washington Square Press</td>
+    </tr>
+    <tr>
+      <th>1863</th>
+      <td>0446610038</td>
+      <td>1st to Die: A Novel</td>
+      <td>James Patterson</td>
+      <td>2002</td>
+      <td>Warner Vision</td>
+    </tr>
+    <tr>
+      <th>1922</th>
+      <td>067976402X</td>
+      <td>Snow Falling on Cedars</td>
+      <td>David Guterson</td>
+      <td>1995</td>
+      <td>Vintage Books USA</td>
+    </tr>
+    <tr>
+      <th>2001</th>
+      <td>0316569321</td>
+      <td>White Oleander : A Novel</td>
+      <td>Janet Fitch</td>
+      <td>1999</td>
+      <td>Little, Brown</td>
+    </tr>
+    <tr>
+      <th>2143</th>
+      <td>059035342X</td>
+      <td>Harry Potter and the Sorcerer's Stone (Harry P...</td>
+      <td>J. K. Rowling</td>
+      <td>1999</td>
+      <td>Arthur A. Levine Books</td>
+    </tr>
+    <tr>
+      <th>2290</th>
+      <td>0385484518</td>
+      <td>Tuesdays with Morrie: An Old Man, a Young Man,...</td>
+      <td>MITCH ALBOM</td>
+      <td>1997</td>
+      <td>Doubleday</td>
+    </tr>
+    <tr>
+      <th>2910</th>
+      <td>0380718340</td>
+      <td>Cruel &amp;amp; Unusual (Kay Scarpetta Mysteries (...</td>
+      <td>Patricia D. Cornwell</td>
+      <td>1994</td>
+      <td>Avon</td>
+    </tr>
+    <tr>
+      <th>3939</th>
+      <td>0316096199</td>
+      <td>Lucky : A Memoir</td>
+      <td>Alice Sebold</td>
+      <td>2002</td>
+      <td>Back Bay Books</td>
+    </tr>
+    <tr>
+      <th>4430</th>
+      <td>0375727345</td>
+      <td>House of Sand and Fog</td>
+      <td>Andre Dubus III</td>
+      <td>2000</td>
+      <td>Vintage Books</td>
+    </tr>
+    <tr>
+      <th>5070</th>
+      <td>014028009X</td>
+      <td>Bridget Jones's Diary</td>
+      <td>Helen Fielding</td>
+      <td>1999</td>
+      <td>Penguin Books</td>
+    </tr>
+    <tr>
+      <th>5873</th>
+      <td>0312966091</td>
+      <td>Three To Get Deadly : A Stephanie Plum Novel (...</td>
+      <td>Janet Evanovich</td>
+      <td>1998</td>
+      <td>St. Martin's Paperbacks</td>
+    </tr>
+    <tr>
+      <th>5887</th>
+      <td>0671001795</td>
+      <td>Two for the Dough</td>
+      <td>Janet Evanovich</td>
+      <td>1996</td>
+      <td>Pocket</td>
+    </tr>
+    <tr>
+      <th>6401</th>
+      <td>0609804138</td>
+      <td>The Sweet Potato Queens' Book of Love</td>
+      <td>JILL CONNER BROWNE</td>
+      <td>1999</td>
+      <td>Three Rivers Press</td>
+    </tr>
+    <tr>
+      <th>7852</th>
+      <td>0553280341</td>
+      <td>B Is for Burglar (Kinsey Millhone Mysteries (P...</td>
+      <td>Sue Grafton</td>
+      <td>1986</td>
+      <td>Bantam</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>These topics seem to be with popular fiction, maybe for teenagers.  One more topics before I move one.</p>
+<div class="highlight"><pre><span class="s-Atom">top20_book_indexes</span> <span class="o">=</span> <span class="s-Atom">np</span><span class="p">.</span><span class="nf">argsort</span><span class="p">(</span><span class="nv">V</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="s-Atom">:</span><span class="p">])[</span><span class="s-Atom">::-</span><span class="mi">1</span><span class="p">][</span><span class="s-Atom">:</span><span class="mi">20</span><span class="p">]</span>
+<span class="s-Atom">top20_book_isbns</span> <span class="o">=</span> <span class="s-Atom">df</span><span class="p">.</span><span class="s-Atom">columns</span><span class="p">[</span><span class="s-Atom">top20_book_indexes</span><span class="p">]</span>
+<span class="s-Atom">meta</span><span class="p">[</span><span class="s-Atom">meta</span><span class="p">.</span><span class="nv">ISBN</span><span class="p">.</span><span class="nf">isin</span><span class="p">(</span><span class="s-Atom">top20_book_isbns</span><span class="p">)]</span>
+</pre></div>
+
+
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>ISBN</th>
+      <th>Book-Title</th>
+      <th>Book-Author</th>
+      <th>Year-Of-Publication</th>
+      <th>Publisher</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>48</th>
+      <td>042518630X</td>
+      <td>Purity in Death</td>
+      <td>J.D. Robb</td>
+      <td>2002</td>
+      <td>Berkley Publishing Group</td>
+    </tr>
+    <tr>
+      <th>368</th>
+      <td>0515128554</td>
+      <td>Heart of the Sea (Irish Trilogy)</td>
+      <td>Nora Roberts</td>
+      <td>2000</td>
+      <td>Jove Books</td>
+    </tr>
+    <tr>
+      <th>1202</th>
+      <td>0373484224</td>
+      <td>Stanislaski Brothers (Silhouette Promo)</td>
+      <td>Nora Roberts</td>
+      <td>2000</td>
+      <td>Silhouette</td>
+    </tr>
+    <tr>
+      <th>2784</th>
+      <td>051513287X</td>
+      <td>Face the Fire (Three Sisters Island Trilogy)</td>
+      <td>Nora Roberts</td>
+      <td>2002</td>
+      <td>Jove Books</td>
+    </tr>
+    <tr>
+      <th>3163</th>
+      <td>0515114693</td>
+      <td>Born in Fire</td>
+      <td>Nora Roberts</td>
+      <td>1994</td>
+      <td>Jove Books</td>
+    </tr>
+    <tr>
+      <th>4544</th>
+      <td>0515132020</td>
+      <td>Heaven and Earth (Three Sisters Island Trilogy)</td>
+      <td>Nora Roberts</td>
+      <td>2003</td>
+      <td>Jove Books</td>
+    </tr>
+    <tr>
+      <th>4546</th>
+      <td>0515131229</td>
+      <td>Dance upon the Air (Three Sisters Island Trilogy)</td>
+      <td>Nora Roberts</td>
+      <td>2003</td>
+      <td>Jove Books</td>
+    </tr>
+    <tr>
+      <th>8977</th>
+      <td>039914840X</td>
+      <td>Three Fates</td>
+      <td>Nora Roberts</td>
+      <td>2002</td>
+      <td>Putnam Publishing Group</td>
+    </tr>
+    <tr>
+      <th>10929</th>
+      <td>0515128546</td>
+      <td>Tears of the Moon (Irish Trilogy)</td>
+      <td>Nora Roberts</td>
+      <td>2000</td>
+      <td>Jove Books</td>
+    </tr>
+    <tr>
+      <th>11633</th>
+      <td>0399148248</td>
+      <td>Midnight Bayou</td>
+      <td>Nora Roberts</td>
+      <td>2001</td>
+      <td>Putnam Publishing Group</td>
+    </tr>
+    <tr>
+      <th>15358</th>
+      <td>0399149848</td>
+      <td>Birthright</td>
+      <td>Nora Roberts</td>
+      <td>2003</td>
+      <td>Putnam Publishing Group</td>
+    </tr>
+    <tr>
+      <th>15513</th>
+      <td>0553265741</td>
+      <td>Sacred Sins</td>
+      <td>Nora Roberts</td>
+      <td>1990</td>
+      <td>Bantam Books</td>
+    </tr>
+    <tr>
+      <th>16198</th>
+      <td>0515136379</td>
+      <td>Key of Knowledge (Key Trilogy (Paperback))</td>
+      <td>Nora Roberts</td>
+      <td>2003</td>
+      <td>Jove Books</td>
+    </tr>
+    <tr>
+      <th>16199</th>
+      <td>0515136530</td>
+      <td>Key of Valor (Roberts, Nora. Key Trilogy, 3.)</td>
+      <td>Nora Roberts</td>
+      <td>2003</td>
+      <td>Jove Pubns</td>
+    </tr>
+    <tr>
+      <th>16203</th>
+      <td>051513628X</td>
+      <td>Key of Light (Key Trilogy (Paperback))</td>
+      <td>Nora Roberts</td>
+      <td>2003</td>
+      <td>Jove Books</td>
+    </tr>
+    <tr>
+      <th>17665</th>
+      <td>0373483503</td>
+      <td>Macgregor Brides (Macgregors)</td>
+      <td>Nora Roberts</td>
+      <td>1997</td>
+      <td>Silhouette</td>
+    </tr>
+    <tr>
+      <th>18414</th>
+      <td>0425183971</td>
+      <td>Reunion in Death</td>
+      <td>J. D. Robb</td>
+      <td>2002</td>
+      <td>Berkley Publishing Group</td>
+    </tr>
+    <tr>
+      <th>18476</th>
+      <td>0425189031</td>
+      <td>Portrait in Death</td>
+      <td>Nora Roberts</td>
+      <td>2003</td>
+      <td>Berkley Publishing Group</td>
+    </tr>
+    <tr>
+      <th>19926</th>
+      <td>0515126772</td>
+      <td>Jewels of the Sun (Irish Trilogy)</td>
+      <td>Nora Roberts</td>
+      <td>2004</td>
+      <td>Jove Books</td>
+    </tr>
+    <tr>
+      <th>26087</th>
+      <td>0515116750</td>
+      <td>Born in Ice</td>
+      <td>Nora Roberts</td>
+      <td>1996</td>
+      <td>Berkley Publishing Group</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>We have an obvious connection here for topic three:  Nora Roberts.   The singular value decomposition of these book and user ratings is interesting, but I am not seeing how it is scalable.</p>
+<p>We can also investigate the user topic preferences by exploring the U matrix.  Remember that each row is a user, and each column a topic.  Lets looka the first user.</p>
+<div class="highlight"><pre><span class="s-Atom">top10</span> <span class="o">=</span> <span class="s-Atom">np</span><span class="p">.</span><span class="nf">argsort</span><span class="p">(</span><span class="nv">U</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="s-Atom">:</span><span class="p">])[</span><span class="s-Atom">::-</span><span class="mi">1</span><span class="p">][</span><span class="s-Atom">:</span><span class="mi">10</span><span class="p">]</span>
+<span class="s-Atom">print</span> <span class="s-Atom">top10</span>
+<span class="s-Atom">print</span> <span class="s-Atom">np</span><span class="p">.</span><span class="nf">round</span><span class="p">((</span><span class="nv">U</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="s-Atom">top10</span><span class="p">]</span><span class="o">-</span><span class="s-Atom">np</span><span class="p">.</span><span class="nf">mean</span><span class="p">(</span><span class="nv">U</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="s-Atom">:</span><span class="p">]))</span><span class="o">/</span><span class="s-Atom">np</span><span class="p">.</span><span class="nf">std</span><span class="p">(</span><span class="nv">U</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="s-Atom">:</span><span class="p">]),</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="p">[</span><span class="mi">2108</span> <span class="mi">2038</span> <span class="mi">2037</span> <span class="mi">2272</span> <span class="mi">2128</span> <span class="mi">2015</span> <span class="mi">1820</span> <span class="mi">2025</span> <span class="mi">2054</span> <span class="mi">2232</span><span class="p">]</span>
+<span class="p">[</span> <span class="mf">4.38</span>  <span class="mf">4.19</span>  <span class="mf">3.62</span>  <span class="mf">3.48</span>  <span class="mf">3.45</span>  <span class="mf">3.36</span>  <span class="mf">3.3</span>   <span class="mf">3.25</span>  <span class="mf">3.</span>    <span class="mf">2.98</span><span class="p">]</span>
+</pre></div>
+
+
+<p>The first user is associated with these topics, and has standard scores associated with them that at or above 3. <br />
+We can look at this user's book reviews.  </p>
+<div class="highlight"><pre>original = pd.read_csv(&#39;data/book_reviews.csv&#39;)
+print original[original[&#39;User-ID&#39;]==df.index[0]].shape
+user1_fav = original[(original[&#39;User-ID&#39;]==df.index[0]) &amp; (original[&#39;Book-Rating&#39;] &gt;= 9)]
+user1_fav
+
+(66, 4)
+</pre></div>
+
+
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Unnamed: 0</th>
+      <th>User-ID</th>
+      <th>ISBN</th>
+      <th>Book-Rating</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1147</th>
+      <td>9955</td>
+      <td>243</td>
+      <td>0060915544</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>1152</th>
+      <td>9962</td>
+      <td>243</td>
+      <td>0316601950</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <th>1156</th>
+      <td>9966</td>
+      <td>243</td>
+      <td>0316776963</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <th>1163</th>
+      <td>9976</td>
+      <td>243</td>
+      <td>0375400117</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>1178</th>
+      <td>9994</td>
+      <td>243</td>
+      <td>0425163407</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <th>1187</th>
+      <td>10005</td>
+      <td>243</td>
+      <td>0446364800</td>
+      <td>9</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>The first user rated 66 books, and 6 of the books were rated at a 9 or a 10.  These are this users favorite books.  We will want to see if these books are associated with topics that user has been grouped into.  </p>
+<div class="highlight"><pre>user1_fav_indexes = np.where(df.columns.isin(user1_fav.ISBN.values))[0]
+np.argmax(V[:,user1_fav_indexes],axis=0)
+
+
+
+
+array([ 155,   77,  112,  291,   35, 2893])
+</pre></div>
+
+
+<p>They are not characteristic of the topics that the first user is associated with.  Lets how deep we need to go before we find the topics overlap between this person's best reviewed books and the topics this person is associated with.</p>
+<div class="highlight"><pre><span class="s-Atom">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="s-Atom">np</span><span class="p">.</span><span class="nf">argsort</span><span class="p">(</span><span class="nv">V</span><span class="p">[</span><span class="s-Atom">:</span><span class="p">,</span><span class="s-Atom">user1_fav_indexes</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span><span class="s-Atom">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="s-Atom">::-</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="s-Atom">top10</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+
+
+
+<span class="p">(</span><span class="nf">array</span><span class="p">([</span><span class="mi">532</span><span class="p">]),)</span>
+</pre></div>
+
+
+<p>This is very interesting for when we get to recommendation systems.  This user's top books are not remotely associated with the top topics the user is associated with.   This user did rate 66 books, and so the average topic could be different than the individual books would be associated with.   But if we are going to recommend a new book to this user, would we do it by topic, or by book similarity, or by user similarity.   To be continued...</p>
+<h2>Senate</h2>
+<p>We were given data for Senate voting records and asked to visualize the polarization for the 101st through 111th congresses.  The hard part of this project was cleaning and formating the data.   I will save you that processes because it was not informative.  </p>
+<p>Once the data was clean, we use distance measurements between the voting records, mapped these differences onto a 2D manifold, then displayed them with a color coding of 'Republican' and 'Democrate'.</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.manifold</span> <span class="kn">import</span> <span class="n">MDS</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="kn">import</span> <span class="n">pdist</span><span class="p">,</span><span class="n">squareform</span>
+<span class="n">mds</span> <span class="o">=</span> <span class="n">MDS</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">101</span><span class="p">,</span><span class="mi">112</span><span class="p">):</span>
+    <span class="n">df1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">&quot;data/senate/s{}.csv&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+    <span class="n">df2</span> <span class="o">=</span> <span class="n">df1</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">],</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">d101</span> <span class="o">=</span> <span class="n">squareform</span><span class="p">(</span><span class="n">pdist</span><span class="p">(</span><span class="n">df2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="mi">10</span><span class="p">:]</span><span class="o">.</span><span class="n">values</span><span class="p">))</span> 
+    <span class="n">mds</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">d101</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">df2</span><span class="o">.</span><span class="n">party</span><span class="o">.</span><span class="n">values</span><span class="o">==</span><span class="mi">100</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="n">i</span><span class="o">-</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mds</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">mds</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s">&#39;ro&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mds</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">mds</span><span class="o">.</span><span class="n">embedding_</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s">&#39;bo&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mi">150</span><span class="p">,</span><span class="mi">150</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mi">150</span><span class="p">,</span><span class="mi">150</span><span class="p">])</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Senate {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">([])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">([])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW06D1/output_45_0.png" /></p>
+<p>In this space, the voting vectors of republicans and democrats are very different.  As the years have move one, we see that it looks like they are drifiting appart.   We can remake this graph using PCA instead distance mapped onto a 2D manifold.  This coordinate system will capture directions of most variation.</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">PCA</span>
+<span class="n">pca</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">101</span><span class="p">,</span><span class="mi">112</span><span class="p">):</span>
+    <span class="n">df1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">&quot;data/senate/s{}.csv&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+    <span class="n">df2</span> <span class="o">=</span> <span class="n">df1</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">],</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="mf">0.000001</span><span class="p">)</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">df2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="mi">10</span><span class="p">:]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">df2</span><span class="o">.</span><span class="n">party</span><span class="o">.</span><span class="n">values</span><span class="o">==</span><span class="mi">100</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="n">i</span><span class="o">-</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">X</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s">&#39;ro&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">X</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s">&#39;bo&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Senate {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">([])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">([])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW06D1/output_47_0.png" /></p>
+<p>This representation does not illustrate the same level of polarization as the previous graphs, but it does have a more sensible interpretation.   </p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'bryansmithphd';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=bryansmithphd">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      Bryan Smith, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="http://www.bryantravissmith.com/theme/js/jquery.min.js"></script>
+  <script src="http://www.bryantravissmith.com/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$$','$$'], ['\\(','\\)']]}
+});
+</script>
+</html>

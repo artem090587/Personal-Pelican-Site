@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-05-04/index.html" />
+
+    <title>  Bryan Travis Smith, Ph.D &mdash; Galvanize - Week 05 - Day 4
+</title>
+
+
+
+
+    <link rel="stylesheet" href="http://www.bryantravissmith.com/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-24340005-3', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+
+    <meta name="author" content="Bryan Smith">
+    <meta name="description" content="Today we covered clustering">
+  <meta name="tags" contents="data-science, galvanize, nlp, clustering, kmeans clustering, hierachrical cluster, , ">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+      <div class="header-image pull-left">
+        <a class="nodec" href="http://www.bryantravissmith.com"><img src=http://www.bryantravissmith.com/img/bryan.jpeg></a>
+      </div>
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="http://www.bryantravissmith.com">Bryan Travis Smith, Ph.D</a>
+      </h1>
+      <h3 class="header-text">Physicist, Data Scientist, Martial Artist, & Life Enthusiast</h3>
+      <ul class="header-menu list-inline">
+              <li class="muted">|</li>
+            <li><a class="nodec" href="http://www.bryantravissmith.com/about/">About</a></li>
+              <li class="muted">|</li>
+          <li><a class="nodec icon-mail-alt" href="mailto:bryantravissmith@gmail.com"></a></li>
+          <li><a class="nodec icon-github" href="https://github.com/bryantravissmith"></a></li>
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+      <a href="/galvanize/galvanize-data-science-05-04/" title="Permalink to Galvanize - Week 05 - Day 4">Galvanize - Week 05 - Day 4</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" href="/galvanize/galvanize-data-science-05-04/" title="2015-07-03T10:20:00-07:00">Fri 03 July 2015</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+        <a href="http://www.bryantravissmith.com/category/galvanize.html">Galvanize</a>
+      </li>
+        <li class="muted">&middot;</li>
+        <li>
+          <address class="post-author">
+            By <a href="http://www.bryantravissmith.com/author/bryan-smith.html">Bryan Smith</a>
+          </address>
+        </li>
+    </ul>
+    <div class="post-content">
+      <h1>Galvanize Immersive Data Science</h1>
+<h2>Week 5 - Day 4</h2>
+<p>Today we covered clutering.  Our morning quiz was a fun one because it involved A/B testing for 3 different pages.  We are told that the landing page was changed, and we have the number of useres that registered based on the page, and of those registered, we have the number who later purchased.   </p>
+<p>The business goal is increasing sales, not registrations.   The page the converts the most people to buy is the ultimate goal of this test.  The data we were given is shown below.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Visitors</th>
+<th>Registrations</th>
+<th>Purchases</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Landing Page 1</td>
+<td>998,832</td>
+<td>331,912</td>
+<td>18,255</td>
+</tr>
+<tr>
+<td>Landing Page 2</td>
+<td>1,012,285</td>
+<td>349,643</td>
+<td>18,531</td>
+</tr>
+<tr>
+<td>Landing Page 3</td>
+<td>995,750</td>
+<td>320,432</td>
+<td>18,585</td>
+</tr>
+</tbody>
+</table>
+<p>What is really cool is that we can perform a series of two sample hypothesis test and determine which page leads to the highest proportion of purchases.   The other method is that we can visualize the beta distribution and see which page leads to the most favoriable pdf.  </p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="kn">as</span> <span class="nn">sp</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="kp">linspace</span><span class="p">(</span><span class="mf">0.0175</span><span class="p">,</span><span class="mf">0.0195</span><span class="p">,</span><span class="mi">10001</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">plot_beta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">success</span><span class="p">,</span><span class="n">total</span><span class="p">,</span><span class="n">label</span><span class="p">):</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="kp">beta</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">success</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">total</span><span class="o">-</span><span class="n">success</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+<span class="n">plot_beta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">18255</span><span class="p">,</span><span class="mi">998832</span><span class="p">,</span><span class="s">&quot;Page 1&quot;</span><span class="p">)</span>
+<span class="n">plot_beta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">18531</span><span class="p">,</span><span class="mi">1012285</span><span class="p">,</span><span class="s">&quot;Page 2&quot;</span><span class="p">)</span>
+<span class="n">plot_beta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">18585</span><span class="p">,</span><span class="mi">995750</span><span class="p">,</span><span class="s">&quot;Page 3&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW05D4/output_1_0.png" /></p>
+<p>We can visually see that page 3 is better than page 1 and page 2, but this level of visualization does not capture how much better page 3 is than page 2 and page 1.   To do that we need to pick randomly from the distributions, and see how often page 3 is better than page 1 and page 2.</p>
+<div class="highlight"><pre>page3betterthan2 = 0.
+page3betterthan1 = 0.
+sim_size = 100000
+for i in range(sim_size):
+    if sp.beta.rvs(18585,995750) &gt; sp.beta.rvs(18531,1012285):
+        page3betterthan2 += 1.
+    if sp.beta.rvs(18585,995750) &gt; sp.beta.rvs(18255,998832):
+        page3betterthan1 += 1.
+
+print page3betterthan1/sim_size, page3betterthan2/sim_size
+
+0.97701 0.96717
+</pre></div>
+
+
+<p>In our simulation, page 3 is statisically better than page 1 or page 2 are converting people who purchase products at the 5% level.   Our company should go with page 3.</p>
+<p>If registrations was the metric, however, we might want to go with page two, as shown in the following plot.  </p>
+<div class="highlight"><pre>x = np.linspace(0.31,0.35,1001)
+plot_beta(x,331912,998832,&quot;Page 1&quot;)
+plot_beta(x,349643,1012285,&quot;Page 2&quot;)
+plot_beta(x,320432,995750,&quot;Page 3&quot;)
+plt.legend()
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW05D4/output_5_0.png" /></p>
+<h2>K-means</h2>
+<p>Our task for today is to create a k-means algorithm that has a random initialization of k centroids, then we recluster the data tot he closest centroids, move the centroid to the mean of the cluster, and repeat until there is convergence.</p>
+<p>The random initalization will lead to different results from trial to trial.  To help mitigate this we will run the algorithm a fixed and setable number of times, and return the cluster with the lowest mean squared error.</p>
+<p>We are going to try this data on the iris data set from sklearn.</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">load_iris</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">load_iris</span><span class="p">()</span><span class="o">.</span><span class="n">data</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">load_iris</span><span class="p">()</span><span class="o">.</span><span class="n">target</span>
+</pre></div>
+
+
+<p>I am calling my class kNice, cause i'm in a silly mood today!</p>
+<div class="highlight"><pre><span class="k">class</span> <span class="n">kNice:</span>
+
+    <span class="n">def</span> <span class="n">__init__</span>(<span class="k">self</span>,<span class="n">k</span>,<span class="n">max_iter</span>=<span class="mi">100</span>,<span class="n">n_runs</span>=<span class="mi">10</span>):
+        <span class="k">self</span>.<span class="n">k</span> = <span class="n">k</span>
+        <span class="k">self</span>.<span class="n">max_iter</span> = <span class="n">max_iter</span>
+        <span class="k">self</span>.<span class="n">n_runs</span> = <span class="n">n_runs</span>
+        <span class="k">self</span>.<span class="n">best_clusters</span> = <span class="n">None</span>
+        <span class="k">self</span>.<span class="n">best_centroids</span> = <span class="n">None</span>
+        <span class="k">self</span>.<span class="n">best_sse</span> = <span class="mf">1e17</span>
+
+
+    <span class="n">def</span> <span class="n">fit</span>(<span class="k">self</span>,<span class="o">X</span>):
+        <span class="k">self</span>.<span class="n">sse</span> = <span class="mi">0</span>
+        <span class="k">self</span>.<span class="o">X</span> = <span class="o">X</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="n">in</span> <span class="n">range</span>(<span class="k">self</span>.<span class="n">n_runs</span>):
+            <span class="k">self</span>.<span class="n">clusters</span> = <span class="n">np</span>.<span class="n">random</span>.<span class="n">randint</span>(<span class="mi">0</span>,<span class="k">self</span>.<span class="n">k</span>,<span class="n">size</span>=<span class="o">X</span>.<span class="nb">shape</span>[<span class="mi">0</span>])
+            <span class="k">for</span> <span class="n">i</span> <span class="n">in</span> <span class="n">range</span>(<span class="k">self</span>.<span class="n">k</span>):
+                <span class="k">self</span>.<span class="n">clusters</span>[<span class="n">i</span>] = <span class="n">i</span>
+            <span class="k">self</span>.<span class="n">centroids</span> = <span class="n">np</span>.<span class="n">zeros</span>((<span class="k">self</span>.<span class="n">k</span>,<span class="o">X</span>.<span class="nb">shape</span>[<span class="mi">1</span>]))
+            <span class="k">self</span>.<span class="n">_calculate_centroids</span>()
+            <span class="n">local_centroids</span> = <span class="n">np</span>.<span class="n">zeros</span>((<span class="k">self</span>.<span class="n">k</span>,<span class="o">X</span>.<span class="nb">shape</span>[<span class="mi">1</span>]))
+            <span class="n">iters</span> = <span class="mi">0</span>
+
+            <span class="k">while</span> <span class="n">np</span>.<span class="nb">all</span>(<span class="n">local_centroids</span><span class="o">!=</span><span class="k">self</span>.<span class="n">centroids</span>) <span class="o">and</span> (<span class="n">iters</span> &lt;= <span class="k">self</span>.<span class="n">max_iter</span>):
+                <span class="n">local_centroids</span> = <span class="k">self</span>.<span class="n">centroids</span>.<span class="k">copy</span>()
+                <span class="k">self</span>.<span class="n">_update_centroids</span>()
+                <span class="n">iters</span> += <span class="mi">1</span>
+            <span class="n">sse</span> = <span class="k">self</span>.<span class="n">_sse</span>()
+            <span class="k">if</span> <span class="n">sse</span> &lt; <span class="k">self</span>.<span class="n">best_sse:</span>
+                <span class="k">self</span>.<span class="n">best_sse</span> = <span class="n">sse</span>
+                <span class="k">self</span>.<span class="n">best_clusters</span> = <span class="k">self</span>.<span class="n">clusters</span>
+                <span class="k">self</span>.<span class="n">best_centroids</span> = <span class="k">self</span>.<span class="n">centroids</span>
+
+        <span class="k">self</span>.<span class="n">centroids</span> = <span class="k">self</span>.<span class="n">best_centroids</span>
+        <span class="k">self</span>.<span class="n">clusters</span> = <span class="k">self</span>.<span class="n">best_clusters</span>
+        <span class="k">self</span>.<span class="n">sse</span> = <span class="k">self</span>.<span class="n">best_sse</span>
+
+    <span class="n">def</span> <span class="n">_sse</span>(<span class="k">self</span>):
+        <span class="n">sse</span> = <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="n">in</span> <span class="n">range</span>(<span class="k">self</span>.<span class="n">k</span>):
+            <span class="k">if</span> <span class="n">np</span>.<span class="nb">any</span>(<span class="n">np</span>.<span class="n">isnan</span>(<span class="k">self</span>.<span class="n">centroids</span>[<span class="n">i</span>])):
+                <span class="n">sse</span> = <span class="mf">1e16</span>
+                <span class="k">break</span>
+            <span class="n">else:</span>
+                <span class="n">sse</span> += <span class="n">np</span>.<span class="nb">sum</span>(<span class="n">np</span>.<span class="n">power</span>(<span class="k">self</span>.<span class="o">X</span>[<span class="k">self</span>.<span class="n">clusters</span><span class="o">==</span><span class="n">i</span>]-<span class="n">self</span>.<span class="n">centroids</span>[<span class="n">i</span>] ,<span class="mi">2</span>))
+        <span class="k">return</span> <span class="n">sse</span>
+
+
+
+    <span class="n">def</span> <span class="n">_calculate_centroids</span>(<span class="k">self</span>):
+        <span class="k">for</span> <span class="n">i</span> <span class="n">in</span> <span class="n">range</span>(<span class="k">self</span>.<span class="n">k</span>):
+            <span class="k">self</span>.<span class="n">centroids</span>[<span class="n">i</span>] = <span class="n">np</span>.<span class="n">mean</span>(<span class="k">self</span>.<span class="o">X</span>[<span class="k">self</span>.<span class="n">clusters</span><span class="o">==</span><span class="n">i</span>,:],<span class="n">axis</span>=<span class="mi">0</span>)
+            <span class="k">if</span> <span class="n">np</span>.<span class="nb">any</span>(<span class="n">np</span>.<span class="n">isnan</span>(<span class="k">self</span>.<span class="n">centroids</span>[<span class="n">i</span>])):
+                <span class="k">self</span>.<span class="n">centroids</span>[<span class="n">i</span>] = <span class="k">self</span>.<span class="o">X</span>[<span class="n">np</span>.<span class="n">random</span>.<span class="n">randint</span>(<span class="mi">0</span>,<span class="k">self</span>.<span class="o">X</span>.<span class="nb">shape</span>[<span class="mi">0</span>])]
+
+
+    <span class="n">def</span> <span class="n">_update_centroids</span>(<span class="k">self</span>):
+        <span class="k">if</span> <span class="k">self</span>.<span class="n">k</span> &gt; <span class="mi">1</span>:
+            <span class="n">results</span> = <span class="n">np</span>.<span class="n">linalg</span>.<span class="n">norm</span>(<span class="k">self</span>.<span class="o">X-</span><span class="n">self</span>.<span class="n">centroids</span>[<span class="mi">0</span>],<span class="n">axis</span>=<span class="mi">1</span>)
+            <span class="k">for</span> <span class="n">i</span> <span class="n">in</span> <span class="n">range</span>(<span class="mi">1</span>,<span class="k">self</span>.<span class="n">k</span>):
+                <span class="n">results</span> = <span class="n">np</span>.<span class="n">vstack</span>((<span class="n">results</span>,<span class="n">np</span>.<span class="n">linalg</span>.<span class="n">norm</span>(<span class="k">self</span>.<span class="o">X-</span><span class="n">self</span>.<span class="n">centroids</span>[<span class="n">i</span>],<span class="n">axis</span>=<span class="mi">1</span>)))
+            <span class="k">self</span>.<span class="n">clusters</span> = <span class="n">np</span>.<span class="n">argmin</span>(<span class="n">results</span>,<span class="n">axis</span>=<span class="mi">0</span>)
+            <span class="k">self</span>.<span class="n">_calculate_centroids</span>()
+
+<span class="n">clus</span> = <span class="n">kNice</span>(<span class="n">k</span>=<span class="mi">3</span>,<span class="n">n_runs</span>=<span class="mi">10</span>)
+
+<span class="n">clus</span>.<span class="n">fit</span>(<span class="n">data</span>)
+
+<span class="k">for</span> <span class="n">target</span> <span class="n">in</span> <span class="n">np</span>.<span class="n">unique</span>(<span class="n">y</span>):
+    <span class="n">mask</span> = <span class="n">y</span><span class="o">==</span><span class="n">target</span>
+    <span class="n">plt</span>.<span class="n">plot</span>(<span class="n">data</span>[<span class="n">mask</span>,<span class="mi">0</span>],<span class="n">data</span>[<span class="n">mask</span>,<span class="mi">1</span>],<span class="n">marker</span>=<span class="s">&#39;o&#39;</span>,<span class="n">lw</span>=<span class="mi">0</span>)
+<span class="k">for</span> <span class="o">x</span> <span class="n">in</span> <span class="n">clus</span>.<span class="n">centroids:</span>
+    <span class="n">plt</span>.<span class="n">plot</span>(<span class="o">x</span>[<span class="mi">0</span>],<span class="o">x</span>[<span class="mi">1</span>],<span class="s">&#39;ys&#39;</span>,<span class="n">markersize</span>=<span class="mi">25</span>)
+<span class="nb">print</span> <span class="s">&quot;SSE: &quot;</span>, <span class="n">clus</span>.<span class="n">sse</span>
+
+<span class="n">SSE:</span>  <span class="mf">78.9408414261</span>
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW05D4/output_9_1.png" /></p>
+<p>We can see in this case that 3 clusters seems to match the different types of iris flowers.   If we did not already know this, we can use the elbow method of the sum of square errors (SSE), and pick the number of clusters where the elbow is.</p>
+<div class="highlight"><pre>for i in range(1,20):
+    clus = kNice(i)
+    clus.fit(data)
+    plt.plot(i,clus.sse,&#39;ro&#39;)
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW05D4/output_11_0.png" /></p>
+<p>We see that this happens to be n=3, which is also the number of clusters that are in the data set.   There is also the silhouette score from sklearn that finds the mean intercluster distance.  The best value is 1, and the worst values is -1.  </p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">silhouette_score</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">20</span><span class="p">):</span>
+    <span class="n">clus</span> <span class="o">=</span> <span class="n">kNice</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">clus</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">silhouette_score</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">clus</span><span class="o">.</span><span class="n">clusters</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s">&#39;euclidean&#39;</span><span class="p">),</span><span class="s">&#39;ro&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW05D4/output_13_0.png" /></p>
+<p>We see that in this case, the best cluster size is 2, followed by 3 and so forth.   With the overlap of the two of the iris data, it makes sense that two clusters would be better by this metric.</p>
+<h2>Random 3D Plot.</h2>
+<p>Its the day before we leave for the 4th of July.   I feel like plotting 3D!</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d</span> <span class="kn">import</span> <span class="n">Axes3D</span>
+
+
+<span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
+
+
+<span class="n">iris</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_iris</span><span class="p">()</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">iris</span><span class="o">.</span><span class="n">data</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">iris</span><span class="o">.</span><span class="n">target</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">13</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">Axes3D</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">rect</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">.</span><span class="mi">95</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">elev</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">azim</span><span class="o">=</span><span class="mi">134</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
+<span class="n">nice</span> <span class="o">=</span> <span class="n">kNice</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">nice</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">nice</span><span class="o">.</span><span class="n">clusters</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">labels</span><span class="o">.</span><span class="kp">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">))</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">w_xaxis</span><span class="o">.</span><span class="n">set_ticklabels</span><span class="p">([])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">w_yaxis</span><span class="o">.</span><span class="n">set_ticklabels</span><span class="p">([])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">w_zaxis</span><span class="o">.</span><span class="n">set_ticklabels</span><span class="p">([])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;Petal width&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;Sepal length&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s">&#39;Petal length&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW05D4/output_15_0.png" /></p>
+<h2>NY Times - Clustering</h2>
+<p>In the afternoon spirt, we are trying to identify topics in the New York Times by clustering.   We have 1400+ articles saved in a pickle file.   We will read them in, TFIDF them, and cluster.  </p>
+<div class="highlight"><pre><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="s">&quot;data/articles.pkl&quot;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">shape</span>
+
+
+
+
+<span class="p">(</span><span class="mi">1405</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+
+
+
+
+<span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">TfidfVectorizer</span>
+<span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">nltk</span> <span class="kn">import</span> <span class="n">RegexpTokenizer</span>
+<span class="kn">from</span> <span class="nn">nltk.corpus</span> <span class="kn">import</span> <span class="n">stopwords</span>
+<span class="kn">from</span> <span class="nn">nltk.stem.porter</span> <span class="kn">import</span> <span class="n">PorterStemmer</span>
+<span class="kn">from</span> <span class="nn">nltk.stem.snowball</span> <span class="kn">import</span> <span class="n">SnowballStemmer</span>
+
+<span class="k">def</span> <span class="nf">tokenize</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    INPUT: string</span>
+<span class="sd">    OUTPUT: list of strings</span>
+
+<span class="sd">    Tokenize and stem/lemmatize the document.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">sw</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">stopwords</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="s">&#39;english&#39;</span><span class="p">))</span>
+    <span class="n">snowball</span> <span class="o">=</span> <span class="n">SnowballStemmer</span><span class="p">(</span><span class="s">&#39;english&#39;</span><span class="p">)</span>
+    <span class="n">reg</span> <span class="o">=</span> <span class="n">RegexpTokenizer</span><span class="p">(</span><span class="s">r&#39;\w+&#39;</span><span class="p">,</span><span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">UNICODE</span><span class="p">)</span>
+    <span class="n">doc_tokens</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">reg</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">t</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sw</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">snowball</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+            <span class="n">doc_tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>    
+    <span class="k">return</span> <span class="n">doc_tokens</span>
+
+
+
+<span class="n">vectorizer</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenize</span><span class="p">,</span><span class="n">stop_words</span><span class="o">=</span><span class="s">&#39;english&#39;</span><span class="p">,</span><span class="n">strip_accents</span><span class="o">=</span><span class="s">&#39;unicode&#39;</span><span class="p">,</span><span class="n">max_features</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<span class="n">tfidf</span> <span class="o">=</span> <span class="n">vectorizer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+
+<span class="n">num_clust</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">clus</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">num_clust</span><span class="p">)</span>
+<span class="n">clus</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">tfidf</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_clust</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&quot;&quot;</span>
+    <span class="k">print</span> <span class="s">&quot;Cluster: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">clus</span><span class="o">.</span><span class="n">cluster_centers_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">temp</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">clus</span><span class="o">.</span><span class="n">cluster_centers_</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="o">-</span><span class="mi">15</span><span class="p">:]]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&quot;top 10 words&quot;</span>
+    <span class="k">print</span> <span class="n">vectorizer</span><span class="o">.</span><span class="n">inverse_transform</span><span class="p">(</span><span class="n">temp</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">print</span> <span class="s">&quot;top 5 headlines&quot;</span>
+    <span class="k">print</span> <span class="n">df</span><span class="o">.</span><span class="n">headline</span><span class="p">[</span><span class="n">clus</span><span class="o">.</span><span class="n">labels_</span><span class="o">==</span><span class="n">i</span><span class="p">][:</span><span class="mi">5</span><span class="p">]</span>
+
+
+
+<span class="n">Cluster</span><span class="p">:</span> <span class="mi">0</span>
+<span class="n">top</span> <span class="mi">10</span> <span class="n">words</span>
+<span class="p">[</span><span class="s">u&#39;care&#39;</span> <span class="s">u&#39;cruz&#39;</span> <span class="s">u&#39;debt&#39;</span> <span class="s">u&#39;democrat&#39;</span> <span class="s">u&#39;govern&#39;</span> <span class="s">u&#39;health&#39;</span> <span class="s">u&#39;hous&#39;</span> <span class="s">u&#39;law&#39;</span>
+ <span class="s">u&#39;mr&#39;</span> <span class="s">u&#39;obama&#39;</span> <span class="s">u&#39;parti&#39;</span> <span class="s">u&#39;republican&#39;</span> <span class="s">u&#39;senat&#39;</span> <span class="s">u&#39;shutdown&#39;</span> <span class="s">u&#39;vote&#39;</span><span class="p">]</span>
+<span class="n">top</span> <span class="mi">5</span> <span class="n">headlines</span>
+<span class="mi">1</span>                      <span class="n">New</span> <span class="n">Immigration</span> <span class="n">Bill</span> <span class="n">Put</span> <span class="n">Forward</span>
+<span class="mi">17</span>                                  <span class="n">Congress</span> <span class="n">Breaks</span> <span class="n">Bad</span>
+<span class="mi">18</span>                            <span class="n">Excuses</span><span class="p">,</span> <span class="n">Excuses</span><span class="p">,</span> <span class="n">Excuses</span>
+<span class="mi">48</span>    <span class="n">Obama</span> <span class="n">Sets</span> <span class="n">Conditions</span> <span class="k">for</span> <span class="n">Talks</span><span class="p">:</span> <span class="n">Pass</span> <span class="n">Funding</span> <span class="o">...</span>
+<span class="mi">78</span>                            <span class="n">Our</span> <span class="n">Democracy</span> <span class="n">Is</span> <span class="n">at</span> <span class="n">Stake</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">headline</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">object</span>
+
+<span class="n">Cluster</span><span class="p">:</span> <span class="mi">1</span>
+<span class="n">top</span> <span class="mi">10</span> <span class="n">words</span>
+<span class="p">[</span><span class="s">u&#39;buffalo&#39;</span> <span class="s">u&#39;defens&#39;</span> <span class="s">u&#39;game&#39;</span> <span class="s">u&#39;holm&#39;</span> <span class="s">u&#39;jet&#39;</span> <span class="s">u&#39;lankster&#39;</span> <span class="s">u&#39;quarterback&#39;</span>
+ <span class="s">u&#39;ryan&#39;</span> <span class="s">u&#39;said&#39;</span> <span class="s">u&#39;season&#39;</span> <span class="s">u&#39;smith&#39;</span> <span class="s">u&#39;titan&#39;</span> <span class="s">u&#39;turnov&#39;</span> <span class="s">u&#39;week&#39;</span> <span class="s">u&#39;yard&#39;</span><span class="p">]</span>
+<span class="n">top</span> <span class="mi">5</span> <span class="n">headlines</span>
+<span class="mi">55</span>                  <span class="n">Titans</span> <span class="n">Quarterback</span> <span class="n">Out</span> <span class="n">a</span> <span class="err">‘</span><span class="n">Few</span> <span class="n">Weeks</span><span class="err">’</span>
+<span class="mi">129</span>                     <span class="n">Time</span> <span class="k">for</span> <span class="n">Smith</span> <span class="n">to</span> <span class="n">Learn</span><span class="p">,</span> <span class="n">Quickly</span>
+<span class="mi">231</span>                                        <span class="n">Jets</span> <span class="n">Close</span><span class="o">-</span><span class="n">Up</span>
+<span class="mi">253</span>    <span class="n">Tennessee</span> <span class="n">Turns</span> <span class="n">Smith</span><span class="err">’</span><span class="n">s</span> <span class="n">Giveaways</span> <span class="n">Into</span> <span class="n">Touchdowns</span>
+<span class="mi">329</span>                           <span class="n">Jets</span> <span class="p">(</span><span class="mi">2</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="n">at</span> <span class="n">Titans</span> <span class="p">(</span><span class="mi">2</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">headline</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">object</span>
+
+<span class="n">Cluster</span><span class="p">:</span> <span class="mi">2</span>
+<span class="n">top</span> <span class="mi">10</span> <span class="n">words</span>
+<span class="p">[</span><span class="s">u&#39;attack&#39;</span> <span class="s">u&#39;chemic&#39;</span> <span class="s">u&#39;govern&#39;</span> <span class="s">u&#39;kill&#39;</span> <span class="s">u&#39;mr&#39;</span> <span class="s">u&#39;offici&#39;</span> <span class="s">u&#39;peopl&#39;</span> <span class="s">u&#39;polic&#39;</span>
+ <span class="s">u&#39;rebel&#39;</span> <span class="s">u&#39;said&#39;</span> <span class="s">u&#39;secur&#39;</span> <span class="s">u&#39;syria&#39;</span> <span class="s">u&#39;syrian&#39;</span> <span class="s">u&#39;unit&#39;</span> <span class="s">u&#39;weapon&#39;</span><span class="p">]</span>
+<span class="n">top</span> <span class="mi">5</span> <span class="n">headlines</span>
+<span class="mi">22</span>                   <span class="n">Libya</span><span class="p">:</span> <span class="n">Mob</span> <span class="n">Attacks</span> <span class="n">Russian</span> <span class="n">Embassy</span>
+<span class="mi">38</span>    <span class="n">Man</span> <span class="n">Charged</span> <span class="n">With</span> <span class="bp">False</span> <span class="n">Report</span> <span class="n">After</span> <span class="n">Airport</span> <span class="n">Cl</span><span class="o">...</span>
+<span class="mi">42</span>     <span class="n">Missed</span> <span class="n">Opportunity</span> <span class="ow">in</span> <span class="n">Syria</span> <span class="n">Haunts</span> <span class="n">U</span><span class="o">.</span><span class="n">N</span><span class="o">.</span> <span class="n">Official</span>
+<span class="mi">62</span>                      <span class="n">Airport</span> <span class="ow">in</span> <span class="n">Florida</span> <span class="n">Is</span> <span class="n">Evacuated</span>
+<span class="mi">82</span>    <span class="n">Libya</span><span class="p">:</span> <span class="mi">27</span> <span class="n">Tortured</span> <span class="n">to</span> <span class="n">Death</span> <span class="ow">in</span> <span class="n">Jails</span> <span class="n">Run</span> <span class="n">by</span> <span class="n">Mi</span><span class="o">...</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">headline</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">object</span>
+
+<span class="n">Cluster</span><span class="p">:</span> <span class="mi">3</span>
+<span class="n">top</span> <span class="mi">10</span> <span class="n">words</span>
+<span class="p">[</span><span class="s">u&#39;coach&#39;</span> <span class="s">u&#39;game&#39;</span> <span class="s">u&#39;hit&#39;</span> <span class="s">u&#39;inning&#39;</span> <span class="s">u&#39;l&#39;</span> <span class="s">u&#39;leagu&#39;</span> <span class="s">u&#39;n&#39;</span> <span class="s">u&#39;play&#39;</span> <span class="s">u&#39;player&#39;</span>
+ <span class="s">u&#39;run&#39;</span> <span class="s">u&#39;said&#39;</span> <span class="s">u&#39;score&#39;</span> <span class="s">u&#39;season&#39;</span> <span class="s">u&#39;team&#39;</span> <span class="s">u&#39;win&#39;</span><span class="p">]</span>
+<span class="n">top</span> <span class="mi">5</span> <span class="n">headlines</span>
+<span class="mi">6</span>               <span class="n">Bayern</span> <span class="n">Munich</span> <span class="n">Dominates</span> <span class="n">Manchester</span> <span class="n">City</span>
+<span class="mi">8</span>                      <span class="n">Brodeur</span><span class="err">’</span><span class="n">s</span> <span class="n">Starting</span> <span class="n">Streak</span> <span class="n">to</span> <span class="n">End</span>
+<span class="mi">21</span>    <span class="n">Finally</span> <span class="n">Secure</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">Desert</span><span class="p">,</span> <span class="n">the</span> <span class="n">Coyotes</span> <span class="n">Devo</span><span class="o">...</span>
+<span class="mi">26</span>    <span class="n">Braves</span><span class="err">’</span> <span class="n">Free</span> <span class="n">Swingers</span> <span class="n">Face</span> <span class="n">Dodgers</span><span class="err">’</span> <span class="n">Staff</span> <span class="n">of</span> <span class="n">Aces</span>
+<span class="mi">35</span>       <span class="n">A</span><span class="err">’</span><span class="n">s</span> <span class="n">Follow</span> <span class="n">Crisp</span><span class="err">’</span><span class="n">s</span> <span class="n">Lead</span> <span class="n">Back</span> <span class="n">Into</span> <span class="n">the</span> <span class="n">Playoffs</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">headline</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">object</span>
+
+<span class="n">Cluster</span><span class="p">:</span> <span class="mi">4</span>
+<span class="n">top</span> <span class="mi">10</span> <span class="n">words</span>
+<span class="p">[</span><span class="s">u&#39;coalit&#39;</span> <span class="s">u&#39;dawn&#39;</span> <span class="s">u&#39;democrat&#39;</span> <span class="s">u&#39;elect&#39;</span> <span class="s">u&#39;europ&#39;</span> <span class="s">u&#39;german&#39;</span> <span class="s">u&#39;germani&#39;</span>
+ <span class="s">u&#39;golden&#39;</span> <span class="s">u&#39;govern&#39;</span> <span class="s">u&#39;merkel&#39;</span> <span class="s">u&#39;mr&#39;</span> <span class="s">u&#39;parliament&#39;</span> <span class="s">u&#39;parti&#39;</span> <span class="s">u&#39;polit&#39;</span>
+ <span class="s">u&#39;said&#39;</span><span class="p">]</span>
+<span class="n">top</span> <span class="mi">5</span> <span class="n">headlines</span>
+<span class="mi">34</span>     <span class="n">Risk</span><span class="o">-</span><span class="n">Averse</span> <span class="n">Gandhi</span><span class="err">’</span><span class="n">s</span> <span class="n">Move</span> <span class="n">Rattles</span> <span class="n">Indian</span> <span class="n">Election</span>
+<span class="mi">44</span>      <span class="n">Case</span> <span class="n">Against</span> <span class="n">Greek</span> <span class="n">Far</span><span class="o">-</span><span class="n">Right</span> <span class="n">Party</span> <span class="n">Draws</span> <span class="n">Critics</span>
+<span class="mi">49</span>             <span class="n">Mutiny</span> <span class="n">Halts</span> <span class="n">Italian</span> <span class="n">Gambit</span> <span class="n">by</span> <span class="n">Berlusconi</span>
+<span class="mi">95</span>     <span class="n">Internal</span> <span class="n">Dissent</span> <span class="n">Imperils</span> <span class="n">Berlusconi</span><span class="err">’</span><span class="n">s</span> <span class="n">Long</span> <span class="n">Re</span><span class="o">...</span>
+<span class="mi">154</span>                    <span class="n">Norway</span><span class="p">:</span> <span class="n">New</span> <span class="n">Coalition</span> <span class="n">Tilts</span> <span class="n">Right</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">headline</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">object</span>
+
+<span class="n">Cluster</span><span class="p">:</span> <span class="mi">5</span>
+<span class="n">top</span> <span class="mi">10</span> <span class="n">words</span>
+<span class="p">[</span><span class="s">u&#39;0&#39;</span> <span class="s">u&#39;1&#39;</span> <span class="s">u&#39;2&#39;</span> <span class="s">u&#39;3&#39;</span> <span class="s">u&#39;coughlin&#39;</span> <span class="s">u&#39;defens&#39;</span> <span class="s">u&#39;game&#39;</span> <span class="s">u&#39;giant&#39;</span> <span class="s">u&#39;offens&#39;</span>
+ <span class="s">u&#39;play&#39;</span> <span class="s">u&#39;quarterback&#39;</span> <span class="s">u&#39;season&#39;</span> <span class="s">u&#39;team&#39;</span> <span class="s">u&#39;touchdown&#39;</span> <span class="s">u&#39;yard&#39;</span><span class="p">]</span>
+<span class="n">top</span> <span class="mi">5</span> <span class="n">headlines</span>
+<span class="mi">0</span>      <span class="n">Week</span> <span class="mi">5</span> <span class="n">Probabilities</span><span class="p">:</span> <span class="n">Why</span> <span class="n">Offense</span> <span class="n">Is</span> <span class="n">More</span> <span class="n">Impo</span><span class="o">...</span>
+<span class="mi">73</span>     <span class="n">Woes</span> <span class="n">Continue</span> <span class="k">for</span> <span class="n">Giants</span> <span class="k">as</span> <span class="n">Snee</span> <span class="n">Considers</span> <span class="n">Sur</span><span class="o">...</span>
+<span class="mi">131</span>         <span class="n">Nowhere</span> <span class="n">to</span> <span class="n">Look</span> <span class="n">but</span> <span class="n">Ahead</span> <span class="k">for</span> <span class="n">Winless</span> <span class="n">Giants</span>
+<span class="mi">134</span>              <span class="n">Saints</span> <span class="n">Hand</span> <span class="n">Dolphins</span> <span class="n">Their</span> <span class="n">First</span> <span class="n">Defeat</span>
+<span class="mi">225</span>    <span class="n">Week</span> <span class="mi">4</span> <span class="n">Quick</span> <span class="n">Hits</span><span class="p">:</span> <span class="n">Corners</span> <span class="n">Cover</span> <span class="k">for</span> <span class="n">Patriots</span><span class="err">’</span><span class="o">...</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">headline</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">object</span>
+
+<span class="n">Cluster</span><span class="p">:</span> <span class="mi">6</span>
+<span class="n">top</span> <span class="mi">10</span> <span class="n">words</span>
+<span class="p">[</span><span class="s">u&#39;citi&#39;</span> <span class="s">u&#39;court&#39;</span> <span class="s">u&#39;like&#39;</span> <span class="s">u&#39;mr&#39;</span> <span class="s">u&#39;ms&#39;</span> <span class="s">u&#39;new&#39;</span> <span class="s">u&#39;peopl&#39;</span> <span class="s">u&#39;race&#39;</span> <span class="s">u&#39;said&#39;</span>
+ <span class="s">u&#39;school&#39;</span> <span class="s">u&#39;sept&#39;</span> <span class="s">u&#39;state&#39;</span> <span class="s">u&#39;time&#39;</span> <span class="s">u&#39;world&#39;</span> <span class="s">u&#39;year&#39;</span><span class="p">]</span>
+<span class="n">top</span> <span class="mi">5</span> <span class="n">headlines</span>
+<span class="mi">2</span>    <span class="n">Arizona</span><span class="p">:</span> <span class="n">Judge</span> <span class="n">Orders</span> <span class="n">Monitor</span> <span class="n">to</span> <span class="n">Oversee</span> <span class="n">Maric</span><span class="o">...</span>
+<span class="mi">3</span>    <span class="n">Texas</span><span class="p">:</span> <span class="n">State</span> <span class="n">Bought</span> <span class="n">Execution</span> <span class="n">Drugs</span> <span class="n">From</span> <span class="n">a</span> <span class="n">Com</span><span class="o">...</span>
+<span class="mi">4</span>                        <span class="n">Nadal</span> <span class="n">on</span> <span class="n">Track</span> <span class="k">for</span> <span class="n">No</span><span class="o">.</span> <span class="mi">1</span> <span class="n">Spot</span>
+<span class="mi">7</span>        <span class="n">American</span> <span class="n">Leads</span> <span class="ow">in</span> <span class="n">World</span> <span class="n">Gymnastics</span> <span class="n">All</span><span class="o">-</span><span class="n">Around</span>
+<span class="mi">9</span>                           <span class="n">Vonn</span> <span class="n">Is</span> <span class="n">Close</span> <span class="n">to</span> <span class="n">Returning</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">headline</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">object</span>
+
+<span class="n">Cluster</span><span class="p">:</span> <span class="mi">7</span>
+<span class="n">top</span> <span class="mi">10</span> <span class="n">words</span>
+<span class="p">[</span><span class="s">u&#39;basebal&#39;</span> <span class="s">u&#39;cano&#39;</span> <span class="s">u&#39;game&#39;</span> <span class="s">u&#39;girardi&#39;</span> <span class="s">u&#39;inning&#39;</span> <span class="s">u&#39;jeter&#39;</span> <span class="s">u&#39;mariano&#39;</span>
+ <span class="s">u&#39;pettitt&#39;</span> <span class="s">u&#39;pitch&#39;</span> <span class="s">u&#39;rivera&#39;</span> <span class="s">u&#39;rodriguez&#39;</span> <span class="s">u&#39;said&#39;</span> <span class="s">u&#39;season&#39;</span> <span class="s">u&#39;stadium&#39;</span>
+ <span class="s">u&#39;yanke&#39;</span><span class="p">]</span>
+<span class="n">top</span> <span class="mi">5</span> <span class="n">headlines</span>
+<span class="mi">87</span>                        <span class="n">YES</span> <span class="n">Viewers</span> <span class="n">Say</span> <span class="n">Their</span> <span class="n">Goodbyes</span>
+<span class="mi">243</span>    <span class="n">For</span> <span class="n">Girardi</span><span class="p">,</span> <span class="n">Yanks</span><span class="err">’</span> <span class="n">Goodbyes</span> <span class="n">Won</span><span class="err">’</span><span class="n">t</span> <span class="n">Get</span> <span class="n">Any</span> <span class="n">Easier</span>
+<span class="mi">263</span>    <span class="n">Memorable</span> <span class="n">End</span> <span class="k">for</span> <span class="n">Two</span><span class="p">;</span> <span class="n">Forgettable</span> <span class="n">Year</span> <span class="k">for</span> <span class="n">Yanks</span>
+<span class="mi">326</span>      <span class="n">Rivera</span> <span class="n">Says</span> <span class="n">There</span> <span class="n">Will</span> <span class="n">Be</span> <span class="n">No</span> <span class="n">Encore</span> <span class="n">Performance</span>
+<span class="mi">331</span>    <span class="n">With</span> <span class="n">a</span> <span class="n">Win</span><span class="p">,</span> <span class="n">the</span> <span class="n">Ending</span> <span class="n">to</span> <span class="n">Pettitte</span><span class="err">’</span><span class="n">s</span> <span class="n">Illustrio</span><span class="o">...</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">headline</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">object</span>
+
+<span class="n">Cluster</span><span class="p">:</span> <span class="mi">8</span>
+<span class="n">top</span> <span class="mi">10</span> <span class="n">words</span>
+<span class="p">[</span><span class="s">u&#39;212&#39;</span> <span class="s">u&#39;art&#39;</span> <span class="s">u&#39;artist&#39;</span> <span class="s">u&#39;citi&#39;</span> <span class="s">u&#39;design&#39;</span> <span class="s">u&#39;exhibit&#39;</span> <span class="s">u&#39;galleri&#39;</span> <span class="s">u&#39;like&#39;</span>
+ <span class="s">u&#39;m&#39;</span> <span class="s">u&#39;mr&#39;</span> <span class="s">u&#39;museum&#39;</span> <span class="s">u&#39;paint&#39;</span> <span class="s">u&#39;said&#39;</span> <span class="s">u&#39;street&#39;</span> <span class="s">u&#39;work&#39;</span><span class="p">]</span>
+<span class="n">top</span> <span class="mi">5</span> <span class="n">headlines</span>
+<span class="mi">13</span>     <span class="n">On</span> <span class="n">Fashion</span> <span class="n">Runway</span><span class="p">,</span> <span class="n">South</span> <span class="n">Sudan</span> <span class="n">Takes</span> <span class="n">Steps</span> <span class="n">Tow</span><span class="o">...</span>
+<span class="mi">31</span>                 <span class="n">Surrounding</span> <span class="n">Art</span> <span class="n">With</span> <span class="n">the</span> <span class="n">Sounds</span> <span class="n">of</span> <span class="mi">60</span>
+<span class="mi">41</span>      <span class="n">Midnight</span> <span class="n">at</span> <span class="n">the</span> <span class="n">Museum</span><span class="p">,</span> <span class="n">Breakfast</span> <span class="n">at</span> <span class="n">the</span> <span class="n">Vatican</span>
+<span class="mi">130</span>             <span class="n">A</span> <span class="n">Monument</span> <span class="n">to</span> <span class="n">the</span> <span class="n">West</span> <span class="n">That</span> <span class="n">Many</span> <span class="n">Pass</span> <span class="n">By</span>
+<span class="mi">175</span>           <span class="n">Storytelling</span> <span class="n">Coming</span> <span class="n">to</span> <span class="n">Life</span> <span class="n">at</span> <span class="n">the</span> <span class="n">Library</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">headline</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">object</span>
+
+<span class="n">Cluster</span><span class="p">:</span> <span class="mi">9</span>
+<span class="n">top</span> <span class="mi">10</span> <span class="n">words</span>
+<span class="p">[</span><span class="s">u&#39;america&#39;</span> <span class="s">u&#39;boat&#39;</span> <span class="s">u&#39;club&#39;</span> <span class="s">u&#39;cup&#39;</span> <span class="s">u&#39;francisco&#39;</span> <span class="s">u&#39;golf&#39;</span> <span class="s">u&#39;oracl&#39;</span> <span class="s">u&#39;race&#39;</span>
+ <span class="s">u&#39;regatta&#39;</span> <span class="s">u&#39;said&#39;</span> <span class="s">u&#39;san&#39;</span> <span class="s">u&#39;spithil&#39;</span> <span class="s">u&#39;team&#39;</span> <span class="s">u&#39;yacht&#39;</span> <span class="s">u&#39;zealand&#39;</span><span class="p">]</span>
+<span class="n">top</span> <span class="mi">5</span> <span class="n">headlines</span>
+<span class="mi">5</span>                  <span class="n">Judge</span> <span class="n">Halts</span> <span class="n">Work</span> <span class="n">on</span> <span class="n">World</span> <span class="n">Cup</span> <span class="n">Stadium</span>
+<span class="mi">10</span>           <span class="n">Whitney</span> <span class="n">Winner</span> <span class="n">Out</span> <span class="n">of</span> <span class="n">Breeders</span><span class="err">’</span> <span class="n">Cup</span> <span class="n">Classic</span>
+<span class="mi">125</span>    <span class="n">Australia</span> <span class="n">Primed</span> <span class="k">for</span> <span class="n">First</span> <span class="n">Cup</span> <span class="n">Challenge</span> <span class="n">Since</span><span class="o">...</span>
+<span class="mi">311</span>        <span class="n">Presidents</span> <span class="n">Cup</span> <span class="n">Is</span> <span class="n">Custom</span><span class="o">-</span><span class="n">Made</span> <span class="k">for</span> <span class="n">Tiger</span> <span class="n">Woods</span>
+<span class="mi">312</span>    <span class="n">Nick</span> <span class="n">Price</span> <span class="n">Has</span> <span class="n">a</span> <span class="n">Mission</span> <span class="n">to</span> <span class="n">Motivate</span> <span class="n">at</span> <span class="n">Presid</span><span class="o">...</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">headline</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">object</span>
+
+<span class="n">Cluster</span><span class="p">:</span> <span class="mi">10</span>
+<span class="n">top</span> <span class="mi">10</span> <span class="n">words</span>
+<span class="p">[</span><span class="s">u&#39;carbon&#39;</span> <span class="s">u&#39;china&#39;</span> <span class="s">u&#39;coal&#39;</span> <span class="s">u&#39;emiss&#39;</span> <span class="s">u&#39;gas&#39;</span> <span class="s">u&#39;japan&#39;</span> <span class="s">u&#39;korea&#39;</span> <span class="s">u&#39;korean&#39;</span>
+ <span class="s">u&#39;mr&#39;</span> <span class="s">u&#39;north&#39;</span> <span class="s">u&#39;nuclear&#39;</span> <span class="s">u&#39;oil&#39;</span> <span class="s">u&#39;plant&#39;</span> <span class="s">u&#39;said&#39;</span> <span class="s">u&#39;south&#39;</span><span class="p">]</span>
+<span class="n">top</span> <span class="mi">5</span> <span class="n">headlines</span>
+<span class="mi">12</span>              <span class="n">Fuel</span> <span class="n">From</span> <span class="n">Landfill</span> <span class="n">Methane</span> <span class="n">Goes</span> <span class="n">on</span> <span class="n">Sale</span>
+<span class="mi">23</span>               <span class="n">Evidence</span> <span class="n">North</span> <span class="n">Korea</span> <span class="n">Restarted</span> <span class="n">Reactor</span>
+<span class="mi">28</span>    <span class="n">Another</span> <span class="n">Shutdown</span> <span class="n">Victim</span><span class="p">:</span> <span class="n">U</span><span class="o">.</span><span class="n">S</span><span class="o">.</span> <span class="n">Efforts</span> <span class="n">to</span> <span class="n">Offse</span><span class="o">...</span>
+<span class="mi">45</span>    <span class="n">Back</span> <span class="ow">in</span> <span class="n">Asia</span><span class="p">,</span> <span class="n">Hagel</span> <span class="n">Pursues</span> <span class="n">Shift</span> <span class="n">to</span> <span class="n">Counter</span> <span class="n">C</span><span class="o">...</span>
+<span class="mi">50</span>    <span class="n">U</span><span class="o">.</span><span class="n">S</span><span class="o">.</span> <span class="ow">and</span> <span class="n">South</span> <span class="n">Korea</span> <span class="n">Set</span> <span class="n">Defense</span> <span class="n">Strategy</span> <span class="k">for</span> <span class="o">...</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">headline</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">object</span>
+
+<span class="n">Cluster</span><span class="p">:</span> <span class="mi">11</span>
+<span class="n">top</span> <span class="mi">10</span> <span class="n">words</span>
+<span class="p">[</span><span class="s">u&#39;iran&#39;</span> <span class="s">u&#39;iranian&#39;</span> <span class="s">u&#39;israel&#39;</span> <span class="s">u&#39;mr&#39;</span> <span class="s">u&#39;nation&#39;</span> <span class="s">u&#39;negoti&#39;</span> <span class="s">u&#39;netanyahu&#39;</span>
+ <span class="s">u&#39;nuclear&#39;</span> <span class="s">u&#39;obama&#39;</span> <span class="s">u&#39;presid&#39;</span> <span class="s">u&#39;rouhani&#39;</span> <span class="s">u&#39;said&#39;</span> <span class="s">u&#39;sanction&#39;</span> <span class="s">u&#39;state&#39;</span>
+ <span class="s">u&#39;unit&#39;</span><span class="p">]</span>
+<span class="n">top</span> <span class="mi">5</span> <span class="n">headlines</span>
+<span class="mi">20</span>                <span class="n">Iran</span><span class="err">’</span><span class="n">s</span> <span class="n">President</span> <span class="n">Responds</span> <span class="n">to</span> <span class="n">Netanyahu</span>
+<span class="mi">149</span>               <span class="n">Iran</span> <span class="n">Staggers</span> <span class="k">as</span> <span class="n">Sanctions</span> <span class="n">Hit</span> <span class="n">Economy</span>
+<span class="mi">261</span>    <span class="n">Amid</span> <span class="n">Nuclear</span> <span class="n">Issue</span><span class="p">,</span> <span class="n">Israel</span> <span class="n">Said</span> <span class="n">to</span> <span class="n">Arrest</span> <span class="n">Iran</span><span class="o">...</span>
+<span class="mi">310</span>       <span class="n">Dueling</span> <span class="n">Narratives</span> <span class="ow">in</span> <span class="n">Iran</span> <span class="n">Over</span> <span class="n">U</span><span class="o">.</span><span class="n">S</span><span class="o">.</span> <span class="n">Relations</span>
+<span class="mi">323</span>    <span class="n">Israel</span> <span class="ow">and</span> <span class="n">Others</span> <span class="ow">in</span> <span class="n">Mideast</span> <span class="n">View</span> <span class="n">Overtures</span> <span class="n">of</span><span class="o">...</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">headline</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">object</span>
+
+<span class="n">Cluster</span><span class="p">:</span> <span class="mi">12</span>
+<span class="n">top</span> <span class="mi">10</span> <span class="n">words</span>
+<span class="p">[</span><span class="s">u&#39;afford&#39;</span> <span class="s">u&#39;care&#39;</span> <span class="s">u&#39;employe&#39;</span> <span class="s">u&#39;exchang&#39;</span> <span class="s">u&#39;feder&#39;</span> <span class="s">u&#39;govern&#39;</span> <span class="s">u&#39;health&#39;</span>
+ <span class="s">u&#39;hous&#39;</span> <span class="s">u&#39;insur&#39;</span> <span class="s">u&#39;law&#39;</span> <span class="s">u&#39;new&#39;</span> <span class="s">u&#39;republican&#39;</span> <span class="s">u&#39;said&#39;</span> <span class="s">u&#39;state&#39;</span> <span class="s">u&#39;worker&#39;</span><span class="p">]</span>
+<span class="n">top</span> <span class="mi">5</span> <span class="n">headlines</span>
+<span class="mi">15</span>                                 <span class="n">New</span> <span class="n">York</span><span class="p">:</span> <span class="n">Two</span> <span class="n">Cities</span><span class="err">?</span>
+<span class="mi">16</span>                      <span class="n">A</span> <span class="n">Blind</span> <span class="n">Spot</span> <span class="n">on</span> <span class="n">Rearview</span> <span class="n">Cameras</span>
+<span class="mi">37</span>     <span class="n">As</span> <span class="n">Demand</span> <span class="n">Stays</span> <span class="n">High</span><span class="p">,</span> <span class="n">Officials</span> <span class="n">Try</span> <span class="n">to</span> <span class="n">Address</span><span class="o">...</span>
+<span class="mi">98</span>       <span class="n">Justices</span> <span class="n">to</span> <span class="n">Hear</span> <span class="err">‘</span><span class="n">Raging</span> <span class="n">Bull</span><span class="err">’</span> <span class="n">Copyright</span> <span class="n">Appeal</span>
+<span class="mi">105</span>     <span class="n">Invitation</span> <span class="n">to</span> <span class="n">a</span> <span class="n">Dialogue</span><span class="p">:</span> <span class="n">Distrust</span> <span class="n">of</span> <span class="n">Government</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">headline</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">object</span>
+
+<span class="n">Cluster</span><span class="p">:</span> <span class="mi">13</span>
+<span class="n">top</span> <span class="mi">10</span> <span class="n">words</span>
+<span class="p">[</span><span class="s">u&#39;album&#39;</span> <span class="s">u&#39;band&#39;</span> <span class="s">u&#39;drake&#39;</span> <span class="s">u&#39;dylan&#39;</span> <span class="s">u&#39;festiv&#39;</span> <span class="s">u&#39;guitar&#39;</span> <span class="s">u&#39;like&#39;</span> <span class="s">u&#39;lyric&#39;</span>
+ <span class="s">u&#39;mr&#39;</span> <span class="s">u&#39;music&#39;</span> <span class="s">u&#39;play&#39;</span> <span class="s">u&#39;pop&#39;</span> <span class="s">u&#39;record&#39;</span> <span class="s">u&#39;song&#39;</span> <span class="s">u&#39;sound&#39;</span><span class="p">]</span>
+<span class="n">top</span> <span class="mi">5</span> <span class="n">headlines</span>
+<span class="mi">89</span>                           <span class="n">Movement</span> <span class="n">Made</span> <span class="k">for</span> <span class="n">Listening</span>
+<span class="mi">174</span>        <span class="n">At</span> <span class="n">a</span> <span class="n">Festival</span><span class="p">,</span> <span class="n">Molly</span> <span class="n">Danced</span> <span class="n">but</span> <span class="n">Didn</span><span class="err">’</span><span class="n">t</span> <span class="n">Cut</span> <span class="n">In</span>
+<span class="mi">177</span>    <span class="n">Congressman</span> <span class="n">Proposes</span> <span class="n">New</span> <span class="n">Rules</span> <span class="k">for</span> <span class="n">Music</span> <span class="n">Royal</span><span class="o">...</span>
+<span class="mi">191</span>    <span class="n">Traditional</span> <span class="n">Folk</span> <span class="n">Frolic</span><span class="p">,</span> <span class="n">With</span> <span class="n">Old</span><span class="o">-</span><span class="n">Time</span> <span class="n">Fervor</span> <span class="o">...</span>
+<span class="mi">193</span>                 <span class="n">The</span> <span class="n">Blow</span> <span class="ow">and</span> <span class="n">Haim</span> <span class="n">Release</span> <span class="n">New</span> <span class="n">Albums</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">headline</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">object</span>
+
+<span class="n">Cluster</span><span class="p">:</span> <span class="mi">14</span>
+<span class="n">top</span> <span class="mi">10</span> <span class="n">words</span>
+<span class="p">[</span><span class="s">u&#39;compani&#39;</span> <span class="s">u&#39;concert&#39;</span> <span class="s">u&#39;levin&#39;</span> <span class="s">u&#39;met&#39;</span> <span class="s">u&#39;mr&#39;</span> <span class="s">u&#39;ms&#39;</span> <span class="s">u&#39;music&#39;</span> <span class="s">u&#39;new&#39;</span> <span class="s">u&#39;night&#39;</span>
+ <span class="s">u&#39;opera&#39;</span> <span class="s">u&#39;orchestra&#39;</span> <span class="s">u&#39;perform&#39;</span> <span class="s">u&#39;said&#39;</span> <span class="s">u&#39;season&#39;</span> <span class="s">u&#39;work&#39;</span><span class="p">]</span>
+<span class="n">top</span> <span class="mi">5</span> <span class="n">headlines</span>
+<span class="mi">33</span>       <span class="n">Praying</span> <span class="n">to</span> <span class="n">the</span> <span class="n">Moon</span><span class="p">,</span> <span class="n">While</span> <span class="n">Lashing</span> <span class="n">Out</span> <span class="n">at</span> <span class="n">Fate</span>
+<span class="mi">39</span>       <span class="n">Minnesota</span><span class="p">:</span> <span class="n">Orchestra</span> <span class="n">Cancels</span> <span class="n">New</span> <span class="n">York</span> <span class="n">Concerts</span>
+<span class="mi">52</span>    <span class="n">Fact</span> <span class="n">Slides</span> <span class="n">Into</span> <span class="n">Fiction</span> <span class="k">as</span> <span class="n">National</span> <span class="n">Theater</span> <span class="n">V</span><span class="o">...</span>
+<span class="mi">90</span>    <span class="n">It</span><span class="err">’</span><span class="n">s</span> <span class="n">No</span> <span class="n">Longer</span> <span class="n">on</span> <span class="n">His</span> <span class="n">Face</span><span class="p">,</span> <span class="ow">and</span> <span class="n">It</span><span class="err">’</span><span class="n">s</span> <span class="n">Got</span> <span class="n">Ambit</span><span class="o">...</span>
+<span class="mi">93</span>               <span class="n">A</span> <span class="n">Plucky</span> <span class="n">Opera</span><span class="err">’</span><span class="n">s</span> <span class="n">Poignant</span> <span class="n">Death</span> <span class="n">Rattle</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">headline</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">object</span>
+
+<span class="n">Cluster</span><span class="p">:</span> <span class="mi">15</span>
+<span class="n">top</span> <span class="mi">10</span> <span class="n">words</span>
+<span class="p">[</span><span class="s">u&#39;abc&#39;</span> <span class="s">u&#39;cbs&#39;</span> <span class="s">u&#39;drama&#39;</span> <span class="s">u&#39;emmi&#39;</span> <span class="s">u&#39;fox&#39;</span> <span class="s">u&#39;hbo&#39;</span> <span class="s">u&#39;m&#39;</span> <span class="s">u&#39;nbc&#39;</span> <span class="s">u&#39;network&#39;</span> <span class="s">u&#39;p&#39;</span>
+ <span class="s">u&#39;rate&#39;</span> <span class="s">u&#39;season&#39;</span> <span class="s">u&#39;seri&#39;</span> <span class="s">u&#39;televis&#39;</span> <span class="s">u&#39;viewer&#39;</span><span class="p">]</span>
+<span class="n">top</span> <span class="mi">5</span> <span class="n">headlines</span>
+<span class="mi">29</span>                       <span class="n">Family</span> <span class="n">Trees</span> <span class="n">of</span> <span class="n">Familiar</span> <span class="n">Scions</span>
+<span class="mi">203</span>    <span class="n">More</span> <span class="n">Than</span> <span class="mi">10</span> <span class="n">Million</span> <span class="n">Watch</span> <span class="n">Finale</span> <span class="n">of</span> <span class="err">‘</span><span class="n">Breaking</span><span class="o">...</span>
+<span class="mi">226</span>                                     <span class="n">What</span><span class="err">’</span><span class="n">s</span> <span class="n">on</span> <span class="n">Monday</span>
+<span class="mi">257</span>                                     <span class="n">What</span><span class="err">’</span><span class="n">s</span> <span class="n">On</span> <span class="n">Sunday</span>
+<span class="mi">427</span>                                   <span class="n">What</span><span class="err">’</span><span class="n">s</span> <span class="n">On</span> <span class="n">Saturday</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">headline</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">object</span>
+
+<span class="n">Cluster</span><span class="p">:</span> <span class="mi">16</span>
+<span class="n">top</span> <span class="mi">10</span> <span class="n">words</span>
+<span class="p">[</span><span class="s">u&#39;arctic&#39;</span> <span class="s">u&#39;attack&#39;</span> <span class="s">u&#39;greenpeac&#39;</span> <span class="s">u&#39;kenya&#39;</span> <span class="s">u&#39;kenyan&#39;</span> <span class="s">u&#39;mall&#39;</span> <span class="s">u&#39;milit&#39;</span>
+ <span class="s">u&#39;nairobi&#39;</span> <span class="s">u&#39;offici&#39;</span> <span class="s">u&#39;said&#39;</span> <span class="s">u&#39;shabab&#39;</span> <span class="s">u&#39;ship&#39;</span> <span class="s">u&#39;somali&#39;</span> <span class="s">u&#39;somalia&#39;</span>
+ <span class="s">u&#39;westgat&#39;</span><span class="p">]</span>
+<span class="n">top</span> <span class="mi">5</span> <span class="n">headlines</span>
+<span class="mi">63</span>     <span class="n">During</span> <span class="n">Siege</span> <span class="n">at</span> <span class="n">Kenyan</span> <span class="n">Mall</span><span class="p">,</span> <span class="n">Government</span> <span class="n">Forces</span><span class="o">...</span>
+<span class="mi">207</span>          <span class="n">Somali</span> <span class="n">Militants</span> <span class="n">Mixing</span> <span class="n">Business</span> <span class="ow">and</span> <span class="n">Terror</span>
+<span class="mi">394</span>    <span class="n">Somali</span> <span class="n">Community</span> <span class="ow">in</span> <span class="n">U</span><span class="o">.</span><span class="n">S</span><span class="o">.</span> <span class="n">Fears</span> <span class="n">New</span> <span class="n">Wave</span> <span class="n">of</span> <span class="n">Sti</span><span class="o">...</span>
+<span class="mi">442</span>            <span class="n">Tale</span> <span class="n">of</span> <span class="err">‘</span><span class="n">White</span> <span class="n">Widow</span><span class="err">’</span> <span class="n">Fills</span> <span class="n">British</span> <span class="n">Press</span>
+<span class="mi">444</span>    <span class="n">Narrow</span> <span class="n">Escapes</span> <span class="ow">and</span> <span class="n">Questions</span> <span class="n">on</span> <span class="n">Emergency</span> <span class="n">Resp</span><span class="o">...</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">headline</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">object</span>
+
+<span class="n">Cluster</span><span class="p">:</span> <span class="mi">17</span>
+<span class="n">top</span> <span class="mi">10</span> <span class="n">words</span>
+<span class="p">[</span><span class="s">u&#39;0&#39;</span> <span class="s">u&#39;bank&#39;</span> <span class="s">u&#39;econom&#39;</span> <span class="s">u&#39;economi&#39;</span> <span class="s">u&#39;euro&#39;</span> <span class="s">u&#39;govern&#39;</span> <span class="s">u&#39;growth&#39;</span> <span class="s">u&#39;index&#39;</span>
+ <span class="s">u&#39;investor&#39;</span> <span class="s">u&#39;market&#39;</span> <span class="s">u&#39;percent&#39;</span> <span class="s">u&#39;price&#39;</span> <span class="s">u&#39;rate&#39;</span> <span class="s">u&#39;said&#39;</span> <span class="s">u&#39;zone&#39;</span><span class="p">]</span>
+<span class="n">top</span> <span class="mi">5</span> <span class="n">headlines</span>
+<span class="mi">46</span>     <span class="n">With</span> <span class="n">Inflation</span> <span class="n">Low</span><span class="p">,</span> <span class="n">the</span> <span class="n">European</span> <span class="n">Central</span> <span class="n">Bank</span> <span class="o">...</span>
+<span class="mi">72</span>     <span class="n">Growth</span> <span class="n">Forecast</span> <span class="n">Is</span> <span class="n">Trimmed</span> <span class="k">for</span> <span class="n">Developing</span> <span class="n">Nati</span><span class="o">...</span>
+<span class="mi">106</span>       <span class="n">Vatican</span> <span class="n">Bank</span> <span class="n">Publishes</span> <span class="n">Its</span> <span class="n">First</span> <span class="n">Annual</span> <span class="n">Report</span>
+<span class="mi">112</span>    <span class="n">European</span> <span class="n">Unemployment</span> <span class="n">Steady</span><span class="p">,</span> <span class="n">Hinting</span> <span class="n">at</span> <span class="n">Progr</span><span class="o">...</span>
+<span class="mi">118</span>      <span class="n">Japan</span> <span class="n">Sales</span> <span class="n">Tax</span> <span class="n">to</span> <span class="n">Increase</span> <span class="n">Next</span> <span class="n">Year</span><span class="p">,</span> <span class="n">Abe</span> <span class="n">Says</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">headline</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">object</span>
+
+<span class="n">Cluster</span><span class="p">:</span> <span class="mi">18</span>
+<span class="n">top</span> <span class="mi">10</span> <span class="n">words</span>
+<span class="p">[</span><span class="s">u&#39;advertis&#39;</span> <span class="s">u&#39;agenc&#39;</span> <span class="s">u&#39;brand&#39;</span> <span class="s">u&#39;c&#39;</span> <span class="s">u&#39;chief&#39;</span> <span class="s">u&#39;compani&#39;</span> <span class="s">u&#39;e&#39;</span> <span class="s">u&#39;execut&#39;</span>
+ <span class="s">u&#39;jpmorgan&#39;</span> <span class="s">u&#39;market&#39;</span> <span class="s">u&#39;mr&#39;</span> <span class="s">u&#39;new&#39;</span> <span class="s">u&#39;pay&#39;</span> <span class="s">u&#39;said&#39;</span> <span class="s">u&#39;vice&#39;</span><span class="p">]</span>
+<span class="n">top</span> <span class="mi">5</span> <span class="n">headlines</span>
+<span class="mi">30</span>     <span class="n">Peter</span> <span class="n">Schlessel</span> <span class="n">to</span> <span class="n">Lead</span> <span class="n">Universal</span><span class="err">’</span><span class="n">s</span> <span class="n">Focus</span> <span class="n">Feat</span><span class="o">...</span>
+<span class="mi">81</span>       <span class="n">Groceries</span> <span class="n">Are</span> <span class="n">Cleaning</span> <span class="n">Up</span> <span class="ow">in</span> <span class="n">Store</span><span class="o">-</span><span class="n">Brand</span> <span class="n">Aisles</span>
+<span class="mi">86</span>     <span class="n">Worried</span> <span class="n">About</span> <span class="n">Land</span> <span class="n">Grabs</span><span class="p">,</span> <span class="n">Group</span> <span class="n">Presses</span> <span class="mi">3</span> <span class="n">Corp</span><span class="o">...</span>
+<span class="mi">108</span>         <span class="n">Merck</span> <span class="n">Plans</span> <span class="n">to</span> <span class="n">Lay</span> <span class="n">Off</span> <span class="n">Another</span> <span class="mi">8</span><span class="p">,</span><span class="mi">500</span> <span class="n">Workers</span>
+<span class="mi">110</span>    <span class="n">HarperCollins</span> <span class="n">Joins</span> <span class="n">Scribd</span> <span class="ow">in</span> <span class="n">E</span><span class="o">-</span><span class="n">Book</span> <span class="n">Subscript</span><span class="o">...</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">headline</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">object</span>
+
+<span class="n">Cluster</span><span class="p">:</span> <span class="mi">19</span>
+<span class="n">top</span> <span class="mi">10</span> <span class="n">words</span>
+<span class="p">[</span><span class="s">u&#39;artist&#39;</span> <span class="s">u&#39;ballet&#39;</span> <span class="s">u&#39;choreograph&#39;</span> <span class="s">u&#39;danc&#39;</span> <span class="s">u&#39;dancer&#39;</span> <span class="s">u&#39;mr&#39;</span> <span class="s">u&#39;ms&#39;</span> <span class="s">u&#39;music&#39;</span>
+ <span class="s">u&#39;new&#39;</span> <span class="s">u&#39;perform&#39;</span> <span class="s">u&#39;piec&#39;</span> <span class="s">u&#39;program&#39;</span> <span class="s">u&#39;stage&#39;</span> <span class="s">u&#39;theater&#39;</span> <span class="s">u&#39;work&#39;</span><span class="p">]</span>
+<span class="n">top</span> <span class="mi">5</span> <span class="n">headlines</span>
+<span class="mi">279</span>             <span class="n">A</span> <span class="n">Swing</span> <span class="ow">and</span> <span class="n">a</span> <span class="n">Jaunt</span> <span class="n">Around</span> <span class="n">the</span> <span class="n">Globe</span>
+<span class="mi">282</span>    <span class="n">An</span> <span class="n">Impish</span> <span class="n">Faun</span><span class="p">,</span> <span class="n">Swans</span><span class="p">,</span> <span class="ow">and</span> <span class="n">a</span> <span class="n">Lively</span> <span class="n">Card</span> <span class="n">Deck</span>
+<span class="mi">335</span>                <span class="n">Another</span> <span class="n">Title</span> <span class="k">for</span> <span class="n">Japanese</span> <span class="n">Skater</span>
+<span class="mi">415</span>    <span class="n">After</span> <span class="mi">45</span> <span class="n">Years</span><span class="p">,</span> <span class="n">Freedom</span> <span class="n">Salted</span> <span class="n">With</span> <span class="n">Hindsight</span>
+<span class="mi">421</span>                   <span class="n">Interpreting</span> <span class="err">‘</span><span class="n">Rite</span><span class="err">’</span> <span class="ow">in</span> <span class="mi">2</span> <span class="n">Parts</span>
+<span class="n">Name</span><span class="p">:</span> <span class="n">headline</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="nb">object</span>
+</pre></div>
+
+
+<p>This clustering method works pretty well for establishing topics, but we need to label them by hand.  Also the number of times we run it we get different results.</p>
+<p>We also do not know the correct number of clusters.  Above we have 20 clusters that seem well defined.  Below we have 3 clusters that also seem well defined.   This is where we get into art and not science.</p>
+<div class="highlight"><pre>num_clust = 3
+clus = KMeans(num_clust)
+clus.fit(tfidf)
+for i in range(num_clust):
+    print &quot;&quot;
+    print &quot;Cluster: &quot; + str(i)
+    temp = np.zeros(clus.cluster_centers_[i].shape)
+    temp[np.argsort(clus.cluster_centers_[i])[-15:]] = 1
+    temp = temp/np.linalg.norm(temp)
+    print &quot;top 10 words&quot;
+    print vectorizer.inverse_transform(temp)[0]
+    print &quot;top 5 headlines&quot;
+    print df.headline[clus.labels_==i][:5]
+
+
+Cluster: 0
+top 10 words
+[u&#39;chemic&#39; u&#39;iran&#39; u&#39;iranian&#39; u&#39;israel&#39; u&#39;mr&#39; u&#39;nation&#39; u&#39;nuclear&#39; u&#39;obama&#39;
+ u&#39;presid&#39; u&#39;rouhani&#39; u&#39;said&#39; u&#39;syria&#39; u&#39;syrian&#39; u&#39;unit&#39; u&#39;weapon&#39;]
+top 5 headlines
+20                Iran’s President Responds to Netanyahu
+42      Missed Opportunity in Syria Haunts U.N. Official
+96     Citing Efforts to Prevent Attack on Syria, Gro...
+149               Iran Staggers as Sanctions Hit Economy
+209    Invoking Sept. 11, Syrian Accuses U.S. of Hypo...
+Name: headline, dtype: object
+
+Cluster: 1
+top 10 words
+[u&#39;0&#39; u&#39;1&#39; u&#39;game&#39; u&#39;leagu&#39; u&#39;n&#39; u&#39;play&#39; u&#39;player&#39; u&#39;rivera&#39; u&#39;run&#39; u&#39;said&#39;
+ u&#39;season&#39; u&#39;team&#39; u&#39;win&#39; u&#39;yanke&#39; u&#39;yard&#39;]
+top 5 headlines
+0     Week 5 Probabilities: Why Offense Is More Impo...
+6               Bayern Munich Dominates Manchester City
+8                      Brodeur’s Starting Streak to End
+10          Whitney Winner Out of Breeders’ Cup Classic
+21    Finally Secure in the Desert, the Coyotes Devo...
+Name: headline, dtype: object
+
+Cluster: 2
+top 10 words
+[u&#39;compani&#39; u&#39;govern&#39; u&#39;hous&#39; u&#39;like&#39; u&#39;mr&#39; u&#39;ms&#39; u&#39;new&#39; u&#39;parti&#39; u&#39;peopl&#39;
+ u&#39;percent&#39; u&#39;republican&#39; u&#39;said&#39; u&#39;state&#39; u&#39;work&#39; u&#39;year&#39;]
+top 5 headlines
+1                     New Immigration Bill Put Forward
+2    Arizona: Judge Orders Monitor to Oversee Maric...
+3    Texas: State Bought Execution Drugs From a Com...
+4                        Nadal on Track for No. 1 Spot
+5                Judge Halts Work on World Cup Stadium
+Name: headline, dtype: object
+</pre></div>
+
+
+<h2>Hierarchical Clustering</h2>
+<p>We have been working with kmean's clustering, that relies heavily on a distance metric.  This is a general problem in machine linearing.   We have seen the importance of picking the right metric for the right problem.   The number of clusters, however, has been a variable that we do not need to pick.  Hierarchical Clustering is a method of clustering that breaks the data into subgroups, then subgroups into smaller subgroups, once a metric is determined.   In there no apriori reason to pick a cluster size. </p>
+<p>We are going to do this on the Time's data.</p>
+<div class="highlight"><pre><span class="n">articles</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">section_name</span><span class="o">.</span><span class="n">unique</span><span class="p">()[:</span><span class="mi">5</span><span class="p">]:</span>
+    <span class="k">print</span> <span class="n">section</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">section_name</span><span class="o">==</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+        <span class="n">articles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">section_name</span><span class="o">==</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+<span class="k">print</span> <span class="nb">len</span><span class="p">(</span><span class="n">articles</span><span class="p">)</span>
+
+<span class="n">vectorizer</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenize</span><span class="p">,</span><span class="n">stop_words</span><span class="o">=</span><span class="s">&#39;english&#39;</span><span class="p">,</span><span class="n">strip_accents</span><span class="o">=</span><span class="s">&#39;unicode&#39;</span><span class="p">)</span>
+<span class="n">tfidf</span> <span class="o">=</span> <span class="n">vectorizer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">articles</span><span class="p">)</span>
+<span class="n">tfidf</span>
+
+<span class="n">Sports</span> <span class="mi">340</span>
+<span class="n">U</span><span class="o">.</span><span class="n">S</span><span class="o">.</span> <span class="mi">190</span>
+<span class="n">Business</span> <span class="n">Day</span> <span class="mi">209</span>
+<span class="n">World</span> <span class="mi">260</span>
+<span class="n">Opinion</span> <span class="mi">224</span>
+<span class="mi">100</span>
+
+
+
+
+
+<span class="o">&lt;</span><span class="mi">100</span><span class="n">x5488</span> <span class="n">sparse</span> <span class="n">matrix</span> <span class="n">of</span> <span class="nb">type</span> <span class="s">&#39;&lt;type &#39;</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="s">&#39;&gt;&#39;</span>
+    <span class="k">with</span> <span class="mi">15919</span> <span class="n">stored</span> <span class="n">elements</span> <span class="ow">in</span> <span class="n">Compressed</span> <span class="n">Sparse</span> <span class="n">Row</span> <span class="n">format</span><span class="o">&gt;</span>
+
+
+
+
+<span class="kn">from</span> <span class="nn">scipy.cluster.hierarchy</span> <span class="kn">import</span> <span class="n">dendrogram</span>
+<span class="kn">from</span> <span class="nn">scipy.cluster.hierarchy</span> <span class="kn">import</span> <span class="n">linkage</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="kn">import</span> <span class="n">pdist</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="kn">import</span> <span class="n">squareform</span>
+
+<span class="n">distances</span> <span class="o">=</span> <span class="n">squareform</span><span class="p">(</span><span class="n">pdist</span><span class="p">(</span><span class="n">tfidf</span><span class="o">.</span><span class="n">todense</span><span class="p">()))</span>
+<span class="n">linkage</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">20</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">R</span> <span class="o">=</span> <span class="n">dendrogram</span><span class="p">(</span><span class="n">linkage</span><span class="p">(</span><span class="n">distances</span><span class="p">),</span><span class="n">p</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span><span class="n">truncate_mode</span><span class="o">=</span><span class="s">&#39;level&#39;</span><span class="p">,</span>
+               <span class="n">leaf_label_func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">==</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">headline</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;ascii&#39;</span><span class="p">,</span><span class="s">&#39;ignore&#39;</span><span class="p">)</span> <span class="o">+</span> 
+                   <span class="s">&quot; |||| &quot;</span> <span class="o">+</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">==</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">section_name</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;ascii&#39;</span><span class="p">,</span><span class="s">&#39;ignore&#39;</span><span class="p">),</span>
+               <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+               <span class="n">orientation</span><span class="o">=</span><span class="s">&#39;left&#39;</span><span class="p">,</span>
+               <span class="n">leaf_font_size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+               <span class="n">no_plot</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mf">1.4</span><span class="p">,</span><span class="mf">2.</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW05D4/output_24_0.png" /></p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">scipy.cluster.hierarchy</span> <span class="kn">import</span> <span class="n">dendrogram</span>
+<span class="kn">from</span> <span class="nn">scipy.cluster.hierarchy</span> <span class="kn">import</span> <span class="n">linkage</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="kn">import</span> <span class="n">pdist</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="kn">import</span> <span class="n">squareform</span>
+
+<span class="n">distances</span> <span class="o">=</span> <span class="n">squareform</span><span class="p">(</span><span class="n">pdist</span><span class="p">(</span><span class="n">tfidf</span><span class="o">.</span><span class="n">todense</span><span class="p">()))</span>
+<span class="n">linkage</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">20</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">R</span> <span class="o">=</span> <span class="n">dendrogram</span><span class="p">(</span><span class="n">linkage</span><span class="p">(</span><span class="n">distances</span><span class="p">),</span><span class="n">p</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span><span class="n">truncate_mode</span><span class="o">=</span><span class="s">&#39;level&#39;</span><span class="p">,</span>
+               <span class="n">leaf_label_func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">==</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">section_name</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+               <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+               <span class="n">orientation</span><span class="o">=</span><span class="s">&#39;left&#39;</span><span class="p">,</span>
+               <span class="n">leaf_font_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+               <span class="n">no_plot</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mf">1.2</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW05D4/output_25_0.png" /></p>
+<div class="highlight"><pre>distances = squareform(pdist(tfidf.todense(),metric=&#39;cosine&#39;))
+linkage(distances)
+plt.figure(figsize=(14,20))
+ax = plt.gca()
+R = dendrogram(linkage(distances),p=25,truncate_mode=&#39;level&#39;,
+               leaf_label_func=lambda x: df[df.index==x].section_name.values + &quot; - &quot; + df[df.index==x].headline.values,
+               ax=ax,
+               orientation=&#39;left&#39;,
+               leaf_font_size=20,
+               no_plot=False)
+
+plt.xlim([0.4,1.45])
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW05D4/output_26_0.png" /></p>
+<div class="highlight"><pre>distances = squareform(pdist(tfidf.todense(),metric=&#39;braycurtis&#39;))
+linkage(distances)
+plt.figure(figsize=(14,20))
+ax = plt.gca()
+R = dendrogram(linkage(distances),p=25,truncate_mode=&#39;level&#39;,
+               leaf_label_func=lambda x: df[df.index==x].section_name.values + &quot; - &quot; + df[df.index==x].headline.values,
+               ax=ax,
+               orientation=&#39;left&#39;,
+               leaf_font_size=20,
+               no_plot=False)
+
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW05D4/output_27_0.png" /></p>
+<div class="highlight"><pre>distances = squareform(pdist(tfidf.todense(),metric=&#39;hamming&#39;))
+linkage(distances)
+plt.figure(figsize=(14,20))
+ax = plt.gca()
+R = dendrogram(linkage(distances),p=25,truncate_mode=&#39;level&#39;,
+               leaf_label_func=lambda x: df[df.index==x].section_name.values + &quot; - &quot; + df[df.index==x].headline.values,
+               ax=ax,
+               orientation=&#39;left&#39;,
+               leaf_font_size=20,
+               no_plot=False)
+
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW05D4/output_28_0.png" /></p>
+<p>We can see immediately that the metric changes the results of the clustering.  We can use the linkage to cluster articles together because it lists the index of each cluster, as well as the distance between clusteres.   It is a different, and computationally more expensive, way to do clustering.</p>
+<p>We can also take the transpose of the tfidf matrix to do clustering by words.  To do this we will remake the tfidf matrix and limit the number of words.</p>
+<div class="highlight"><pre>vectorizer = TfidfVectorizer(tokenizer=tokenize,stop_words=&#39;english&#39;,strip_accents=&#39;unicode&#39;,min_df=0.2,max_features=1000)
+tfidf = vectorizer.fit_transform(df.content.values)
+
+
+vocab = dict()
+for k,v in vectorizer.vocabulary_.iteritems():
+    vocab[v]=k
+
+
+distances = squareform(pdist(tfidf.todense().T,metric=&#39;cosine&#39;))
+plt.figure(figsize=(14,20))
+ax = plt.gca()
+R = dendrogram(linkage(distances),p=100,truncate_mode=&#39;level&#39;,
+               leaf_label_func=lambda x: vocab[int(x)] if x in vocab else x,
+               ax=ax,
+               orientation=&#39;left&#39;,
+               #leaf_rotation=90,
+               leaf_font_size=8,
+               no_plot=False)
+
+
+plt.xlim([0.6,1.2])
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW05D4/output_32_0.png" /></p>
+<p>There are some interesting connections.   "State", "nation", and "president" are cluster together.   So is "game" and "season". We limited this to a reasonable number of words, but there are clear word clusters in the corpus.</p>
+<p>Since the day is now over - and tomorrow is the 4th of July Holiday.  I'm off!</p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'bryansmithphd';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=bryansmithphd">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      Bryan Smith, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="http://www.bryantravissmith.com/theme/js/jquery.min.js"></script>
+  <script src="http://www.bryantravissmith.com/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$$','$$'], ['\\(','\\)']]}
+});
+</script>
+</html>

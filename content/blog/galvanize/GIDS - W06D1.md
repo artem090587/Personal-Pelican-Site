@@ -1,3 +1,11 @@
+Title: Galvanize - Week 06 - Day 1
+Date: 2015-07-06 10:20
+Modified: 2015-06-03 10:30
+Category: Galvanize
+Tags: data-science, galvanize, nlp, PCA, SVD
+Slug: galvanize-data-science-06-01
+Authors: Bryan Smith
+Summary: Today we covered clustering PCA and SVD
 
 #Galvanize Immersive Data Science
 
@@ -35,7 +43,7 @@ The digits dataset is 100 hand written images of numeric digits.   The version w
     plt.show()
 
 
-![png](output_1_0.png)
+![png](http://www.bryantravissmith.com/img/GW06D1/output_1_0.png)
 
 
 We can see that most of the digits are clear and distinct for a human to classify.   An algorithm, may have some work cutout for it when it comes to separate some of the 4's, 7's, and 9's.  Despite being 8x8 images, it looks like a large number of them are also cut off.   This likely has to do with the compression that took them from the original 128x128 resolution.
@@ -59,7 +67,7 @@ The PCA algorithm looks for the direction of maximum variation, then projects al
     plt.show()
 
 
-![png](output_3_0.png)
+![png](http://www.bryantravissmith.com/img/GW06D1/output_3_0.png)
 
 
 Each image is 64 features, and we are reduce the number of features, or compress the data, while maintain a fixed amount of variation.   We can keep 80% by compressiong it to 10 features, or 90% if we compress it down to 20 features.  
@@ -82,7 +90,7 @@ Lets look at what these images look like for the 1st, and the 10th compoents.
     plt.show()
 
 
-![png](output_5_0.png)
+![png](http://www.bryantravissmith.com/img/GW06D1/output_5_0.png)
 
 
 We see that the first axis projects the image into how much like a 3 or a 6 does it look like.  The 6 makes sense because it fills the most space that is not used by other numbers.  That is the bottom left quadrant.  The 3 is other side.  I was surprised the 9 was not the other digit shown.  Reguardless, the 3's look a lot like 3's, and the 6's look a lot like 6's.  The problem is that the information about the other digits are lost.  We can look at the first 10 components.
@@ -103,7 +111,7 @@ We see that the first axis projects the image into how much like a 3 or a 6 does
     plt.show()
 
 
-![png](output_7_0.png)
+![png](http://www.bryantravissmith.com/img/GW06D1/output_7_0.png)
 
 
 The images are much clearer than 1 component, but we can see them as being blur.  We have effectively compressed the images.   A human can easily tell which digit most of the images are, but there are some that are still clear.  The first 5 is a good example of that.  Finally, lets look at 20 compoents.
@@ -124,7 +132,7 @@ The images are much clearer than 1 component, but we can see them as being blur.
     plt.show()
 
 
-![png](output_9_0.png)
+![png](http://www.bryantravissmith.com/img/GW06D1/output_9_0.png)
 
 
 At this point all the images are clear enough for a human with fair eyesight to make out.   We have cut the features size by a 1/3 while maintaining human readibility.  This is the idea behind PCA.  We can still maintain the predictive ability or use case while reducing the feature size.
@@ -149,7 +157,7 @@ You can also see how different digits cluster in the space of the PCA compoents.
 
 
 
-![png](output_11_1.png)
+![png](http://www.bryantravissmith.com/img/GW06D1/output_11_1.png)
 
 
 
@@ -163,7 +171,7 @@ You can also see how different digits cluster in the space of the PCA compoents.
     plt.show()
 
 
-![png](output_12_0.png)
+![png](http://www.bryantravissmith.com/img/GW06D1/output_12_0.png)
 
 
 We replaced each point with the label of the digit.  In this plot it is clear that 5's are difficult to distingust with the first 2 compoents, but zeros and ones seem well clusted.   The 3's, 9's and 7's have a lot of overlap.   As we add more features, we saw visually the images become more distinct.
@@ -278,7 +286,7 @@ We can produce a scree plot to where we can estiate the number of components nec
 
 
 
-![png](output_16_1.png)
+![png](http://www.bryantravissmith.com/img/GW06D1/output_16_1.png)
 
 
 From this plt we see most fo the variance can be explained with 3 to 4 components depending on if we want 90% or 95% of the variation explained.   I will expect that our adjusted R-square will get better for the first 3 or 4 PCA components, then level off to the adjusted R-square of the full fit.
@@ -603,7 +611,7 @@ Now that we have decomposed the User x Book review matrix, we can look at the si
     plt.show()
 
 
-![png](output_25_0.png)
+![png](http://www.bryantravissmith.com/img/GW06D1/output_25_0.png)
 
 
 We see that we can maintain 90% of the energy with 1 first 500 components of the 2500 possible singular values.   We can keep 95% with 1000 components.  Interestingly we include 72% of the energy with only 1 component.  What we are going is try to get a feel for the concepts/topics produced by the SVD algorithm.  We are going to load in some book meta data, and try to find characteristic titles for each topics.
@@ -1374,7 +1382,7 @@ Once the data was clean, we use distance measurements between the voting records
     plt.show()
 
 
-![png](output_45_0.png)
+![png](http://www.bryantravissmith.com/img/GW06D1/output_45_0.png)
 
 
 In this space, the voting vectors of republicans and democrats are very different.  As the years have move one, we see that it looks like they are drifiting appart.   We can remake this graph using PCA instead distance mapped onto a 2D manifold.  This coordinate system will capture directions of most variation.
@@ -1398,7 +1406,7 @@ In this space, the voting vectors of republicans and democrats are very differen
     plt.show()
 
 
-![png](output_47_0.png)
+![png](http://www.bryantravissmith.com/img/GW06D1/output_47_0.png)
 
 
 This representation does not illustrate the same level of polarization as the previous graphs, but it does have a more sensible interpretation.   

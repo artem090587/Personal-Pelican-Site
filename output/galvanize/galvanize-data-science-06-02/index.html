@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-06-02/index.html" />
+
+    <title>  Bryan Travis Smith, Ph.D &mdash; Galvanize - Week 06 - Day 2
+</title>
+
+
+
+
+    <link rel="stylesheet" href="http://www.bryantravissmith.com/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-24340005-3', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+
+    <meta name="author" content="Bryan Smith">
+    <meta name="description" content="Today we covered non-negative matrix factorations.">
+  <meta name="tags" contents="data-science, galvanize, nlp, NMF, ">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+      <div class="header-image pull-left">
+        <a class="nodec" href="http://www.bryantravissmith.com"><img src=http://www.bryantravissmith.com/img/bryan.jpeg></a>
+      </div>
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="http://www.bryantravissmith.com">Bryan Travis Smith, Ph.D</a>
+      </h1>
+      <h3 class="header-text">Physicist, Data Scientist, Martial Artist, & Life Enthusiast</h3>
+      <ul class="header-menu list-inline">
+              <li class="muted">|</li>
+            <li><a class="nodec" href="http://www.bryantravissmith.com/about/">About</a></li>
+              <li class="muted">|</li>
+          <li><a class="nodec icon-mail-alt" href="mailto:bryantravissmith@gmail.com"></a></li>
+          <li><a class="nodec icon-github" href="https://github.com/bryantravissmith"></a></li>
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+      <a href="/galvanize/galvanize-data-science-06-02/" title="Permalink to Galvanize - Week 06 - Day 2">Galvanize - Week 06 - Day 2</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" href="/galvanize/galvanize-data-science-06-02/" title="2015-07-07T10:20:00-07:00">Tue 07 July 2015</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+        <a href="http://www.bryantravissmith.com/category/galvanize.html">Galvanize</a>
+      </li>
+        <li class="muted">&middot;</li>
+        <li>
+          <address class="post-author">
+            By <a href="http://www.bryantravissmith.com/author/bryan-smith.html">Bryan Smith</a>
+          </address>
+        </li>
+    </ul>
+    <div class="post-content">
+      <h1>Galvanize Immersive Data Science</h1>
+<h2>Week 6 - Day 2</h2>
+<p>Today we had a weekly assessment.  It was on natural language processing, profit curves, dimentional reduction, and clustering.   We were given an hour, but it was more like a 40 minute assessment.   After that we broke out into groups to discuss capstone project ideas.  We each gave 5 rough ideas, and made suggesting for refining and improving them.  Right now I working with 3 personal projects, and 2 prospective projects for companies I have talked with.   </p>
+<h2>Non-Negative Matrix Facorization</h2>
+<p>Today we covered NMF methods for topic modeling.  I was shocked witht the results we found when we used this method on the NY Times dataset we have been playing with for the last week.   </p>
+<p>The ideas is that we break a matrix, like the TfIdf vectors relating articles to words for the New York Times.  This matrix can be decomposed into two matrixes.   One that relates Articles to Topics, and another non-negative matrix that relates Topics to words.  The first task we had was writing our own NMF algorithm class.  We use the method proposed by <a href="http://papers.nips.cc/paper/1861-algorithms-for-non-negative-matrix-factorization.pdf">Daniel D. Lee and H. Sebastian Seung</a>.  </p>
+<p>We are going to first load in our NY Times data, show our class, then analysis the topics</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+<span class="n">ny</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="s">&#39;data/articles.pkl&#39;</span><span class="p">)</span>
+<span class="n">ny</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>document_type</th>
+      <th>web_url</th>
+      <th>lead_paragraph</th>
+      <th>abstract</th>
+      <th>snippet</th>
+      <th>news_desk</th>
+      <th>word_count</th>
+      <th>source</th>
+      <th>section_name</th>
+      <th>subsection_name</th>
+      <th>_id</th>
+      <th>pub_date</th>
+      <th>print_page</th>
+      <th>headline</th>
+      <th>content</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>article</td>
+      <td>http://www.nytimes.com/2013/10/03/sports/footb...</td>
+      <td>You would think that in a symmetric zero-sum s...</td>
+      <td>None</td>
+      <td>You would think that in a symmetric zero-sum s...</td>
+      <td>Sports</td>
+      <td>347</td>
+      <td>The New York Times</td>
+      <td>Sports</td>
+      <td>Pro Football</td>
+      <td>524d4e3a38f0d8198974001f</td>
+      <td>2013-10-03T00:00:00Z</td>
+      <td>None</td>
+      <td>Week 5 Probabilities: Why Offense Is More Impo...</td>
+      <td>the original goal building model football fore...</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>article</td>
+      <td>http://www.nytimes.com/2013/10/03/us/new-immig...</td>
+      <td>House Democrats on Wednesday unveiled an immig...</td>
+      <td>House Democrats unveil immigration bill that p...</td>
+      <td>House Democrats on Wednesday unveiled an immig...</td>
+      <td>National</td>
+      <td>83</td>
+      <td>The New York Times</td>
+      <td>U.S.</td>
+      <td>None</td>
+      <td>524cf71338f0d8198973ff7b</td>
+      <td>2013-10-03T00:00:00Z</td>
+      <td>21</td>
+      <td>New Immigration Bill Put Forward</td>
+      <td>house unveiled immigration bill provides path ...</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>article</td>
+      <td>http://www.nytimes.com/2013/10/03/us/arizona-j...</td>
+      <td>A federal judge on Wednesday ordered the appoi...</td>
+      <td>Federal Judge Murray Snow orders the appointme...</td>
+      <td>A federal judge on Wednesday ordered the appoi...</td>
+      <td>National</td>
+      <td>160</td>
+      <td>The New York Times</td>
+      <td>U.S.</td>
+      <td>None</td>
+      <td>524cf50e38f0d8198973ff79</td>
+      <td>2013-10-03T00:00:00Z</td>
+      <td>21</td>
+      <td>Arizona: Judge Orders Monitor to Oversee Maric...</td>
+      <td>federal judge wednesday ordered appointment in...</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>article</td>
+      <td>http://www.nytimes.com/2013/10/03/us/texas-sta...</td>
+      <td>Texas has turned to a compounding pharmacy to ...</td>
+      <td>Documents show that Texas, nation's most activ...</td>
+      <td>Texas has turned to a compounding pharmacy to ...</td>
+      <td>National</td>
+      <td>112</td>
+      <td>The New York Times</td>
+      <td>U.S.</td>
+      <td>None</td>
+      <td>524cf39a38f0d8198973ff78</td>
+      <td>2013-10-03T00:00:00Z</td>
+      <td>21</td>
+      <td>Texas: State Bought Execution Drugs From a Com...</td>
+      <td>texas nation’s active death-penalty state turn...</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>article</td>
+      <td>http://www.nytimes.com/2013/10/03/sports/tenni...</td>
+      <td>Rafael Nadal, aiming to end Novak Djokovic’s r...</td>
+      <td>None</td>
+      <td>Rafael Nadal, aiming to end Novak Djokovic’s r...</td>
+      <td>Sports</td>
+      <td>49</td>
+      <td>The New York Times</td>
+      <td>Sports</td>
+      <td>Tennis</td>
+      <td>524cf28b38f0d8198973ff73</td>
+      <td>2013-10-03T00:00:00Z</td>
+      <td>14</td>
+      <td>Nadal on Track for No. 1 Spot</td>
+      <td>rafael nadal aiming end novak djokovic’s run 1...</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">CountVectorizer</span><span class="p">,</span> <span class="n">TfidfVectorizer</span>
+
+<span class="n">tfidf</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">max_features</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span><span class="n">stop_words</span><span class="o">=</span><span class="s">&#39;english&#39;</span><span class="p">)</span>
+<span class="n">tfidf_articles</span> <span class="o">=</span> <span class="n">tfidf</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">ny</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+<span class="n">tfidf_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">tfidf_articles</span><span class="o">.</span><span class="n">todense</span><span class="p">(),</span><span class="n">columns</span><span class="o">=</span><span class="n">tfidf</span><span class="o">.</span><span class="n">get_feature_names</span><span class="p">())</span>
+<span class="k">print</span> <span class="n">tfidf_df</span><span class="o">.</span><span class="n">shape</span>
+<span class="n">tfidf_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+
+<span class="p">(</span><span class="mi">1405</span><span class="p">,</span> <span class="mi">5000</span><span class="p">)</span>
+</pre></div>
+
+
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>000</th>
+      <th>10</th>
+      <th>100</th>
+      <th>10th</th>
+      <th>11</th>
+      <th>11th</th>
+      <th>12</th>
+      <th>120</th>
+      <th>13</th>
+      <th>130</th>
+      <th>...</th>
+      <th>youtube</th>
+      <th>zarif</th>
+      <th>zealand</th>
+      <th>zen</th>
+      <th>zero</th>
+      <th>zhang</th>
+      <th>zhou</th>
+      <th>zone</th>
+      <th>zoo</th>
+      <th>zorn</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0.000000</td>
+      <td>0</td>
+      <td>0.000000</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.063525</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0.000000</td>
+      <td>0</td>
+      <td>0.103347</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.000000</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0.000000</td>
+      <td>0</td>
+      <td>0.000000</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.000000</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0.000000</td>
+      <td>0</td>
+      <td>0.000000</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.000000</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0.243745</td>
+      <td>0</td>
+      <td>0.000000</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.000000</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 5000 columns</p>
+</div>
+
+<p>We have a matrix V, and our goal is to factor it into the product of two matrixes.</p>
+<p>$$V = W \ H$$</p>
+<p>The algorithm we implemented randomly initates W and H with positive, non-zero values.   It then solves for new W's an d H's using the least squared minimization.   We then continue this updateing until we have reached the desired tolerance or reached the max number of iterations.  For illustration purposed I have printed the iteration, cost, and change in cost as we fit.</p>
+<div class="highlight"><pre><span class="s-Atom">class</span> <span class="nv">NMF</span><span class="s-Atom">:</span>
+
+    <span class="s-Atom">def</span> <span class="k">__</span><span class="nf">init__</span><span class="p">(</span><span class="s-Atom">self</span><span class="p">,</span><span class="nv">V</span><span class="p">,</span><span class="s-Atom">k</span><span class="p">,</span><span class="s-Atom">max_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="s-Atom">tol</span><span class="o">=</span><span class="mi">1</span><span class="s-Atom">e</span><span class="o">-</span><span class="mi">4</span><span class="p">)</span><span class="s-Atom">:</span>
+        <span class="s-Atom">self</span><span class="p">.</span><span class="s-Atom">data_frame</span> <span class="o">=</span> <span class="nv">V</span>
+        <span class="s-Atom">self</span><span class="p">.</span><span class="nv">V</span> <span class="o">=</span> <span class="nv">V</span><span class="p">.</span><span class="s-Atom">values</span>
+        <span class="s-Atom">self</span><span class="p">.</span><span class="s-Atom">latent_topics</span> <span class="o">=</span> <span class="nf">int</span><span class="p">(</span><span class="s-Atom">k</span><span class="p">)</span>
+        <span class="s-Atom">self</span><span class="p">.</span><span class="s-Atom">max_iter</span> <span class="o">=</span> <span class="s-Atom">max_iter</span>
+        <span class="s-Atom">self</span><span class="p">.</span><span class="nv">W</span> <span class="o">=</span> <span class="s-Atom">np</span><span class="p">.</span><span class="s-Atom">random</span><span class="p">.</span><span class="nf">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="s-Atom">size=</span><span class="p">(</span><span class="nv">V</span><span class="p">.</span><span class="s-Atom">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="s-Atom">k</span><span class="p">))</span><span class="o">/</span><span class="mf">100.</span>
+        <span class="s-Atom">self</span><span class="p">.</span><span class="nv">H</span> <span class="o">=</span> <span class="s-Atom">np</span><span class="p">.</span><span class="s-Atom">random</span><span class="p">.</span><span class="nf">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="s-Atom">size=</span><span class="p">(</span><span class="s-Atom">k</span><span class="p">,</span><span class="nv">V</span><span class="p">.</span><span class="s-Atom">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span><span class="o">/</span><span class="mf">100.</span>
+        <span class="s-Atom">self</span><span class="p">.</span><span class="s-Atom">tol</span> <span class="o">=</span> <span class="s-Atom">tol</span>
+
+    <span class="s-Atom">def</span> <span class="nf">fit</span><span class="p">(</span><span class="s-Atom">self</span><span class="p">)</span><span class="s-Atom">:</span>
+        <span class="s-Atom">dcost</span> <span class="o">=</span> <span class="s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="nf">cost</span><span class="p">()</span>
+        <span class="s-Atom">cost</span> <span class="o">=</span> <span class="s-Atom">dcost</span><span class="p">.</span><span class="nf">copy</span><span class="p">()</span>
+        <span class="s-Atom">iter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="nf">while</span><span class="p">(</span> <span class="p">(</span><span class="s-Atom">dcost</span> <span class="o">&gt;</span> <span class="s-Atom">self</span><span class="p">.</span><span class="s-Atom">tol</span><span class="p">)</span> <span class="nf">and</span> <span class="p">(</span><span class="s-Atom">iter</span> <span class="o">&lt;</span> <span class="s-Atom">self</span><span class="p">.</span><span class="s-Atom">max_iter</span><span class="p">)</span> <span class="p">)</span><span class="s-Atom">:</span>
+            <span class="s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="nf">update</span><span class="p">()</span>
+            <span class="s-Atom">temp</span> <span class="o">=</span> <span class="s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="nf">cost</span><span class="p">()</span>
+            <span class="s-Atom">dcost</span> <span class="o">=</span> <span class="s-Atom">np</span><span class="p">.</span><span class="nf">abs</span><span class="p">(</span><span class="s-Atom">temp</span><span class="o">-</span><span class="s-Atom">cost</span><span class="p">)</span>
+            <span class="s-Atom">cost</span> <span class="o">=</span> <span class="s-Atom">temp</span>
+
+            <span class="s-Atom">iter</span> <span class="s-Atom">+=</span> <span class="mi">1</span>
+            <span class="s-Atom">print</span> <span class="s-Atom">iter</span><span class="p">,</span><span class="s-Atom">cost</span><span class="p">,</span><span class="s-Atom">dcost</span>
+        <span class="s-Atom">return</span> <span class="s-Atom">self</span><span class="p">.</span><span class="nv">W</span><span class="p">,</span> <span class="s-Atom">self</span><span class="p">.</span><span class="nv">H</span>
+
+
+    <span class="s-Atom">def</span> <span class="k">_</span><span class="nf">cost</span><span class="p">(</span><span class="s-Atom">self</span><span class="p">)</span><span class="s-Atom">:</span>
+        <span class="s-Atom">return</span> <span class="s-Atom">np</span><span class="p">.</span><span class="nf">sum</span><span class="p">(</span><span class="s-Atom">np</span><span class="p">.</span><span class="nf">power</span><span class="p">(</span><span class="s-Atom">self</span><span class="p">.</span><span class="nv">V</span><span class="o">-</span><span class="s-Atom">self</span><span class="p">.</span><span class="nv">W</span><span class="p">.</span><span class="nf">dot</span><span class="p">(</span><span class="s-Atom">self</span><span class="p">.</span><span class="nv">H</span><span class="p">),</span><span class="mi">2</span><span class="p">))</span>
+
+    <span class="s-Atom">def</span> <span class="nf">mse</span><span class="p">(</span><span class="s-Atom">self</span><span class="p">)</span><span class="s-Atom">:</span>
+        <span class="s-Atom">return</span> <span class="s-Atom">self</span><span class="p">.</span><span class="k">_</span><span class="nf">cost</span><span class="p">()</span><span class="s-Atom">/</span><span class="p">(</span><span class="s-Atom">self</span><span class="p">.</span><span class="nv">V</span><span class="p">.</span><span class="s-Atom">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="s-Atom">self</span><span class="p">.</span><span class="nv">V</span><span class="p">.</span><span class="s-Atom">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="s-Atom">def</span> <span class="k">_</span><span class="nf">update</span><span class="p">(</span><span class="s-Atom">self</span><span class="p">)</span><span class="s-Atom">:</span>
+        <span class="nv">H</span><span class="p">,</span><span class="s-Atom">resid</span><span class="p">,</span><span class="s-Atom">rank</span><span class="p">,</span><span class="nv">S</span> <span class="o">=</span> <span class="s-Atom">np</span><span class="p">.</span><span class="s-Atom">linalg</span><span class="p">.</span><span class="nf">lstsq</span><span class="p">(</span><span class="s-Atom">self</span><span class="p">.</span><span class="nv">W</span><span class="p">,</span><span class="s-Atom">self</span><span class="p">.</span><span class="nv">V</span><span class="p">)</span>
+        <span class="s-Atom">a</span><span class="p">,</span><span class="s-Atom">b</span> <span class="o">=</span> <span class="s-Atom">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="nv">H</span><span class="s-Atom">&lt;=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="nv">H</span><span class="p">[</span><span class="s-Atom">a</span><span class="p">,</span><span class="s-Atom">b</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span><span class="s-Atom">e</span><span class="o">-</span><span class="mi">6</span>
+        <span class="s-Atom">self</span><span class="p">.</span><span class="nv">H</span> <span class="o">=</span> <span class="nv">H</span>
+
+        <span class="nv">WT</span><span class="p">,</span><span class="s-Atom">resid</span><span class="p">,</span><span class="s-Atom">rank</span><span class="p">,</span><span class="nv">S</span> <span class="o">=</span> <span class="s-Atom">np</span><span class="p">.</span><span class="s-Atom">linalg</span><span class="p">.</span><span class="nf">lstsq</span><span class="p">(</span><span class="s-Atom">self</span><span class="p">.</span><span class="nv">H</span><span class="p">.</span><span class="nv">T</span><span class="p">,</span><span class="s-Atom">self</span><span class="p">.</span><span class="nv">V</span><span class="p">.</span><span class="nv">T</span><span class="p">)</span>
+        <span class="nv">W</span> <span class="o">=</span> <span class="nv">WT</span><span class="p">.</span><span class="nv">T</span>
+        <span class="s-Atom">a</span><span class="p">,</span><span class="s-Atom">b</span> <span class="o">=</span> <span class="s-Atom">np</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="nv">W</span><span class="s-Atom">&lt;=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="nv">W</span><span class="p">[</span><span class="s-Atom">a</span><span class="p">,</span><span class="s-Atom">b</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span><span class="s-Atom">e</span><span class="o">-</span><span class="mi">6</span>
+        <span class="s-Atom">self</span><span class="p">.</span><span class="nv">W</span> <span class="o">=</span> <span class="nv">W</span>
+
+    <span class="s-Atom">def</span> <span class="nf">top10headlines</span><span class="p">(</span><span class="s-Atom">self</span><span class="p">)</span><span class="s-Atom">:</span>
+        <span class="s-Atom">top10_indexes</span> <span class="o">=</span> <span class="s-Atom">np</span><span class="p">.</span><span class="nf">argsort</span><span class="p">(</span><span class="s-Atom">self</span><span class="p">.</span><span class="nv">W</span><span class="p">,</span><span class="s-Atom">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="o">-</span><span class="mi">11</span><span class="p">:-</span><span class="mi">1</span><span class="p">,</span><span class="s-Atom">:</span><span class="p">]</span>
+        <span class="s-Atom">for</span> <span class="s-Atom">i</span><span class="p">,</span><span class="s-Atom">indexes</span> <span class="s-Atom">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="s-Atom">top10_indexes</span><span class="p">.</span><span class="nv">T</span><span class="p">)</span><span class="s-Atom">:</span>
+            <span class="s-Atom">print</span> <span class="s2">&quot;New Topic: {}&quot;</span><span class="p">.</span><span class="nf">format</span><span class="p">(</span><span class="s-Atom">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="s-Atom">for</span> <span class="s-Atom">index</span> <span class="s-Atom">in</span> <span class="nn">indexes</span><span class="p">:</span>
+                <span class="s-Atom">print</span> <span class="s-Atom">ny</span><span class="p">.</span><span class="s-Atom">loc</span><span class="p">[</span><span class="s-Atom">index</span><span class="p">,</span><span class="s-Atom">&#39;headline&#39;</span><span class="p">]</span>
+            <span class="s-Atom">print</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="s-Atom">def</span> <span class="nf">top3topics</span><span class="p">(</span><span class="s-Atom">self</span><span class="p">,</span><span class="s-Atom">doc</span><span class="p">)</span><span class="s-Atom">:</span>
+        <span class="s-Atom">return</span> <span class="s-Atom">np</span><span class="p">.</span><span class="nf">argsort</span><span class="p">(</span><span class="s-Atom">doc</span><span class="p">.</span><span class="nf">dot</span><span class="p">(</span><span class="s-Atom">self</span><span class="p">.</span><span class="nv">H</span><span class="p">.</span><span class="nv">T</span><span class="p">))[</span><span class="s-Atom">::-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="s-Atom">:</span><span class="mi">3</span><span class="p">].</span><span class="nf">tolist</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+
+<span class="s-Atom">nmf</span> <span class="o">=</span> <span class="nv">NMF</span><span class="p">(</span><span class="s-Atom">tfidf_df</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="s-Atom">max_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="s-Atom">nmf</span><span class="p">.</span><span class="nf">fit</span><span class="p">()</span>
+
+<span class="mi">1</span> <span class="mf">1358.53775257</span> <span class="mf">183045559.295</span>
+<span class="mi">2</span> <span class="mf">1300.48172616</span> <span class="mf">58.0560264073</span>
+<span class="mi">3</span> <span class="mf">1268.32077125</span> <span class="mf">32.1609549088</span>
+<span class="mi">4</span> <span class="mf">1248.0232425</span> <span class="mf">20.2975287559</span>
+<span class="mi">5</span> <span class="mf">1229.45407174</span> <span class="mf">18.5691707553</span>
+<span class="mi">6</span> <span class="mf">1215.00022839</span> <span class="mf">14.4538433585</span>
+<span class="mi">7</span> <span class="mf">1204.01153417</span> <span class="mf">10.9886942162</span>
+<span class="mi">8</span> <span class="mf">1196.65905672</span> <span class="mf">7.35247744427</span>
+<span class="mi">9</span> <span class="mf">1192.26204639</span> <span class="mf">4.39701033659</span>
+<span class="mi">10</span> <span class="mf">1189.20603662</span> <span class="mf">3.05600976726</span>
+<span class="mi">11</span> <span class="mf">1186.97772507</span> <span class="mf">2.22831154859</span>
+<span class="mi">12</span> <span class="mf">1185.18812772</span> <span class="mf">1.7895973489</span>
+<span class="mi">13</span> <span class="mf">1183.65092545</span> <span class="mf">1.53720227374</span>
+<span class="mi">14</span> <span class="mf">1182.66629927</span> <span class="mf">0.984626175047</span>
+<span class="mi">15</span> <span class="mf">1182.18979125</span> <span class="mf">0.47650802397</span>
+<span class="mi">16</span> <span class="mf">1181.95567812</span> <span class="mf">0.234113130044</span>
+<span class="mi">17</span> <span class="mf">1181.81545439</span> <span class="mf">0.140223734529</span>
+<span class="mi">18</span> <span class="mf">1181.71161609</span> <span class="mf">0.103838298331</span>
+<span class="mi">19</span> <span class="mf">1181.62183591</span> <span class="mf">0.0897801769704</span>
+<span class="mi">20</span> <span class="mf">1181.53770034</span> <span class="mf">0.0841355706787</span>
+<span class="mi">21</span> <span class="mf">1181.4564612</span> <span class="mf">0.0812391435775</span>
+<span class="mi">22</span> <span class="mf">1181.38118262</span> <span class="mf">0.0752785771172</span>
+<span class="mi">23</span> <span class="mf">1181.31682066</span> <span class="mf">0.0643619614168</span>
+<span class="mi">24</span> <span class="mf">1181.2649946</span> <span class="mf">0.0518260621986</span>
+<span class="mi">25</span> <span class="mf">1181.22347343</span> <span class="mf">0.0415211619361</span>
+<span class="mi">26</span> <span class="mf">1181.19324932</span> <span class="mf">0.0302241145484</span>
+<span class="mi">27</span> <span class="mf">1181.17174525</span> <span class="mf">0.0215040704031</span>
+<span class="mi">28</span> <span class="mf">1181.15728225</span> <span class="mf">0.0144629971055</span>
+<span class="mi">29</span> <span class="mf">1181.14809469</span> <span class="mf">0.00918756042415</span>
+<span class="mi">30</span> <span class="mf">1181.14236544</span> <span class="mf">0.00572925622464</span>
+<span class="mi">31</span> <span class="mf">1181.13921747</span> <span class="mf">0.0031479679767</span>
+<span class="mi">32</span> <span class="mf">1181.13736328</span> <span class="mf">0.00185418691763</span>
+<span class="mi">33</span> <span class="mf">1181.13635232</span> <span class="mf">0.00101096086269</span>
+<span class="mi">34</span> <span class="mf">1181.1358406</span> <span class="mf">0.000511715468292</span>
+<span class="mi">35</span> <span class="mf">1181.13573402</span> <span class="mf">0.000106588699282</span>
+<span class="mi">36</span> <span class="mf">1181.13608484</span> <span class="mf">0.000350827998545</span>
+<span class="mi">37</span> <span class="mf">1181.13675405</span> <span class="mf">0.00066920801919</span>
+<span class="mi">38</span> <span class="mf">1181.13754313</span> <span class="mf">0.000789074088061</span>
+<span class="mi">39</span> <span class="mf">1181.1385491</span> <span class="mf">0.0010059775077</span>
+<span class="mi">40</span> <span class="mf">1181.13956705</span> <span class="mf">0.00101795043247</span>
+<span class="mi">41</span> <span class="mf">1181.14056188</span> <span class="mf">0.000994825212956</span>
+<span class="mi">42</span> <span class="mf">1181.14148084</span> <span class="mf">0.000918961011848</span>
+<span class="mi">43</span> <span class="mf">1181.14239117</span> <span class="mf">0.000910335122171</span>
+<span class="mi">44</span> <span class="mf">1181.14328144</span> <span class="mf">0.000890265901035</span>
+<span class="mi">45</span> <span class="mf">1181.14410508</span> <span class="mf">0.000823640306407</span>
+<span class="mi">46</span> <span class="mf">1181.14485309</span> <span class="mf">0.000748005865034</span>
+<span class="mi">47</span> <span class="mf">1181.14551725</span> <span class="mf">0.00066415951801</span>
+<span class="mi">48</span> <span class="mf">1181.14612006</span> <span class="mf">0.000602811966701</span>
+<span class="mi">49</span> <span class="mf">1181.14665547</span> <span class="mf">0.000535414914339</span>
+<span class="mi">50</span> <span class="mf">1181.14714023</span> <span class="mf">0.000484758575794</span>
+<span class="mi">51</span> <span class="mf">1181.14758135</span> <span class="mf">0.000441115262447</span>
+<span class="mi">52</span> <span class="mf">1181.14797781</span> <span class="mf">0.000396463954758</span>
+<span class="mi">53</span> <span class="mf">1181.14832584</span> <span class="mf">0.000348033931004</span>
+<span class="mi">54</span> <span class="mf">1181.14864366</span> <span class="mf">0.000317815084145</span>
+<span class="mi">55</span> <span class="mf">1181.14892223</span> <span class="mf">0.000278567937812</span>
+<span class="mi">56</span> <span class="mf">1181.14917425</span> <span class="mf">0.000252021858387</span>
+<span class="mi">57</span> <span class="mf">1181.14941041</span> <span class="mf">0.000236161348994</span>
+<span class="mi">58</span> <span class="mf">1181.14962429</span> <span class="mf">0.000213882947492</span>
+<span class="mi">59</span> <span class="mf">1181.14981494</span> <span class="mf">0.000190645713246</span>
+<span class="mi">60</span> <span class="mf">1181.14999555</span> <span class="mf">0.000180610762527</span>
+<span class="mi">61</span> <span class="mf">1181.15015622</span> <span class="mf">0.000160667058935</span>
+<span class="mi">62</span> <span class="mf">1181.15029924</span> <span class="mf">0.000143026843944</span>
+<span class="mi">63</span> <span class="mf">1181.15043527</span> <span class="mf">0.000136026186738</span>
+<span class="mi">64</span> <span class="mf">1181.15055687</span> <span class="mf">0.000121601296541</span>
+<span class="mi">65</span> <span class="mf">1181.15066677</span> <span class="mf">0.000109900271582</span>
+<span class="mi">66</span> <span class="mf">1181.15076618</span> <span class="mf">9.94073752736e-05</span>
+
+
+
+
+
+<span class="p">(</span><span class="nf">array</span><span class="p">([[</span>  <span class="mf">1.00119406e-01</span><span class="p">,</span>   <span class="mf">5.68400697e-01</span><span class="p">,</span>   <span class="mf">1.00000000e-06</span><span class="p">,</span> <span class="p">...,</span>
+           <span class="mf">1.64106596e+00</span><span class="p">,</span>   <span class="mf">5.05033775e-02</span><span class="p">,</span>   <span class="mf">7.65333772e-04</span><span class="p">],</span>
+        <span class="p">[</span>  <span class="mf">1.53327329e-01</span><span class="p">,</span>   <span class="mf">1.00000000e-06</span><span class="p">,</span>   <span class="mf">6.22590411e-02</span><span class="p">,</span> <span class="p">...,</span>
+           <span class="mf">1.00000000e-06</span><span class="p">,</span>   <span class="mf">1.00000000e-06</span><span class="p">,</span>   <span class="mf">1.00000000e-06</span><span class="p">],</span>
+        <span class="p">[</span>  <span class="mf">1.00000000e-06</span><span class="p">,</span>   <span class="mf">1.00000000e-06</span><span class="p">,</span>   <span class="mf">1.00000000e-06</span><span class="p">,</span> <span class="p">...,</span>
+           <span class="mf">3.75267776e-02</span><span class="p">,</span>   <span class="mf">1.00000000e-06</span><span class="p">,</span>   <span class="mf">1.00000000e-06</span><span class="p">],</span>
+        <span class="p">...,</span> 
+        <span class="p">[</span>  <span class="mf">1.00000000e-06</span><span class="p">,</span>   <span class="mf">1.00000000e-06</span><span class="p">,</span>   <span class="mf">1.00000000e-06</span><span class="p">,</span> <span class="p">...,</span>
+           <span class="mf">1.00000000e-06</span><span class="p">,</span>   <span class="mf">1.09754697e-01</span><span class="p">,</span>   <span class="mf">1.00000000e-06</span><span class="p">],</span>
+        <span class="p">[</span>  <span class="mf">3.89527959e+00</span><span class="p">,</span>   <span class="mf">1.43767310e+00</span><span class="p">,</span>   <span class="mf">5.01533481e-01</span><span class="p">,</span> <span class="p">...,</span>
+           <span class="mf">1.00000000e-06</span><span class="p">,</span>   <span class="mf">1.21685726e+00</span><span class="p">,</span>   <span class="mf">1.00000000e-06</span><span class="p">],</span>
+        <span class="p">[</span>  <span class="mf">3.68718629e+00</span><span class="p">,</span>   <span class="mf">1.00000000e-06</span><span class="p">,</span>   <span class="mf">2.72451285e-01</span><span class="p">,</span> <span class="p">...,</span>
+           <span class="mf">1.43511299e-01</span><span class="p">,</span>   <span class="mf">4.36065874e-01</span><span class="p">,</span>   <span class="mf">1.00000000e-06</span><span class="p">]]),</span>
+ <span class="nf">array</span><span class="p">([[</span>  <span class="mf">5.40116149e-04</span><span class="p">,</span>   <span class="mf">8.76588753e-04</span><span class="p">,</span>   <span class="mf">1.63700931e-04</span><span class="p">,</span> <span class="p">...,</span>
+           <span class="mf">1.00000000e-06</span><span class="p">,</span>   <span class="mf">1.00000000e-06</span><span class="p">,</span>   <span class="mf">1.00000000e-06</span><span class="p">],</span>
+        <span class="p">[</span>  <span class="mf">2.03678399e-03</span><span class="p">,</span>   <span class="mf">2.11042158e-03</span><span class="p">,</span>   <span class="mf">2.47977461e-04</span><span class="p">,</span> <span class="p">...,</span>
+           <span class="mf">2.68599462e-03</span><span class="p">,</span>   <span class="mf">4.31713278e-05</span><span class="p">,</span>   <span class="mf">1.00000000e-06</span><span class="p">],</span>
+        <span class="p">[</span>  <span class="mf">3.06087950e-03</span><span class="p">,</span>   <span class="mf">2.04330832e-03</span><span class="p">,</span>   <span class="mf">7.32513575e-04</span><span class="p">,</span> <span class="p">...,</span>
+           <span class="mf">1.00000000e-06</span><span class="p">,</span>   <span class="mf">7.69852261e-04</span><span class="p">,</span>   <span class="mf">2.37192788e-03</span><span class="p">],</span>
+        <span class="p">...,</span> 
+        <span class="p">[</span>  <span class="mf">1.00000000e-06</span><span class="p">,</span>   <span class="mf">4.41264815e-03</span><span class="p">,</span>   <span class="mf">4.46157256e-04</span><span class="p">,</span> <span class="p">...,</span>
+           <span class="mf">1.77517615e-03</span><span class="p">,</span>   <span class="mf">1.00000000e-06</span><span class="p">,</span>   <span class="mf">1.00000000e-06</span><span class="p">],</span>
+        <span class="p">[</span>  <span class="mf">1.00000000e-06</span><span class="p">,</span>   <span class="mf">1.36233670e-03</span><span class="p">,</span>   <span class="mf">1.00000000e-06</span><span class="p">,</span> <span class="p">...,</span>
+           <span class="mf">1.00000000e-06</span><span class="p">,</span>   <span class="mf">2.48418509e-04</span><span class="p">,</span>   <span class="mf">2.45724743e-03</span><span class="p">],</span>
+        <span class="p">[</span>  <span class="mf">1.00000000e-06</span><span class="p">,</span>   <span class="mf">1.00000000e-06</span><span class="p">,</span>   <span class="mf">1.00000000e-06</span><span class="p">,</span> <span class="p">...,</span>
+           <span class="mf">1.00000000e-06</span><span class="p">,</span>   <span class="mf">1.00000000e-06</span><span class="p">,</span>   <span class="mf">6.87259348e-05</span><span class="p">]]))</span>
+</pre></div>
+
+
+<p>For our NY Times example with 1405 articles, we see the fit took 66 iterations and a few seconds to complete.  We can estimate the mean squared error of our results from the matrix we were trying to fit.   </p>
+<div class="highlight"><pre>nmf.mse()
+
+
+
+
+0.00016813534038140441
+</pre></div>
+
+
+<p>Which is close to the tolerance we were shooting for.  Our results do a solid approximation of the Tfidf matrix we were trying to approximate as a product of two matrixes.   Now that we have these matrixes, lets look at the results.</p>
+<h2>Words for Topics</h2>
+<p>We did an initial fit of 20 topics in our NY Times corpus.   For each topic, we can go through and find the top words associted with the topic.</p>
+<div class="highlight"><pre><span class="s-Atom">for</span> <span class="s-Atom">i</span><span class="p">,</span><span class="s-Atom">row</span> <span class="s-Atom">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="s-Atom">tfidf_df</span><span class="p">.</span><span class="s-Atom">columns</span><span class="p">[</span><span class="s-Atom">np</span><span class="p">.</span><span class="nf">argsort</span><span class="p">(</span><span class="s-Atom">nmf</span><span class="p">.</span><span class="nv">H</span><span class="p">,</span><span class="s-Atom">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="s-Atom">:</span><span class="p">,</span><span class="o">-</span><span class="mi">15</span><span class="p">:-</span><span class="mi">1</span><span class="p">]])</span><span class="s-Atom">:</span>
+    <span class="s-Atom">print</span> <span class="s2">&quot;Topic {}:&quot;</span><span class="p">.</span><span class="nf">format</span><span class="p">(</span><span class="s-Atom">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="s-Atom">print</span> <span class="s2">&quot; &quot;</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="s-Atom">row</span><span class="p">.</span><span class="nf">tolist</span><span class="p">())</span>
+    <span class="s-Atom">print</span> <span class="s2">&quot;&quot;</span>
+
+<span class="nv">Topic</span> <span class="mi">1</span><span class="s-Atom">:</span>
+<span class="s-Atom">college</span> <span class="s-Atom">life</span> <span class="s-Atom">poverty</span> <span class="s-Atom">people</span> <span class="s-Atom">writer</span> <span class="s-Atom">student</span> <span class="s-Atom">gun</span> <span class="s-Atom">york</span> <span class="s-Atom">teacher</span> <span class="s-Atom">new</span> <span class="s-Atom">child</span> <span class="s-Atom">school</span> <span class="mi">2013</span> <span class="s-Atom">editor</span>
+
+<span class="nv">Topic</span> <span class="mi">2</span><span class="s-Atom">:</span>
+<span class="s-Atom">shutdown</span> <span class="s-Atom">economist</span> <span class="s-Atom">growth</span> <span class="s-Atom">price</span> <span class="s-Atom">stock</span> <span class="s-Atom">index</span> <span class="s-Atom">bond</span> <span class="s-Atom">investor</span> <span class="s-Atom">government</span> <span class="s-Atom">economy</span> <span class="s-Atom">debt</span> <span class="s-Atom">rate</span> <span class="s-Atom">market</span> <span class="s-Atom">bank</span>
+
+<span class="nv">Topic</span> <span class="mi">3</span><span class="s-Atom">:</span>
+<span class="s-Atom">org</span> <span class="s-Atom">photograph</span> <span class="s-Atom">city</span> <span class="s-Atom">drawing</span> <span class="s-Atom">like</span> <span class="s-Atom">curator</span> <span class="s-Atom">street</span> <span class="s-Atom">collection</span> <span class="s-Atom">work</span> <span class="s-Atom">exhibition</span> <span class="s-Atom">artist</span> <span class="s-Atom">painting</span> <span class="s-Atom">gallery</span> <span class="s-Atom">museum</span>
+
+<span class="nv">Topic</span> <span class="mi">4</span><span class="s-Atom">:</span>
+<span class="s-Atom">fan</span> <span class="s-Atom">stadium</span> <span class="s-Atom">baseball</span> <span class="s-Atom">cano</span> <span class="s-Atom">yankees</span> <span class="s-Atom">mariano</span> <span class="s-Atom">season</span> <span class="s-Atom">inning</span> <span class="s-Atom">rodriguez</span> <span class="s-Atom">game</span> <span class="s-Atom">jeter</span> <span class="s-Atom">girardi</span> <span class="s-Atom">pettitte</span> <span class="s-Atom">rivera</span>
+
+<span class="nv">Topic</span> <span class="mi">5</span><span class="s-Atom">:</span>
+<span class="s-Atom">crime</span> <span class="s-Atom">sentence</span> <span class="s-Atom">prosecutor</span> <span class="s-Atom">trial</span> <span class="s-Atom">prison</span> <span class="s-Atom">law</span> <span class="s-Atom">federal</span> <span class="s-Atom">lawyer</span> <span class="s-Atom">justice</span> <span class="s-Atom">state</span> <span class="s-Atom">case</span> <span class="s-Atom">said</span> <span class="s-Atom">judge</span> <span class="s-Atom">court</span>
+
+<span class="nv">Topic</span> <span class="mi">6</span><span class="s-Atom">:</span>
+<span class="s-Atom">berlin</span> <span class="s-Atom">vote</span> <span class="s-Atom">chancellor</span> <span class="s-Atom">coalition</span> <span class="s-Atom">election</span> <span class="s-Atom">social</span> <span class="s-Atom">democrat</span> <span class="s-Atom">euro</span> <span class="s-Atom">european</span> <span class="s-Atom">europe</span> <span class="s-Atom">german</span> <span class="s-Atom">party</span> <span class="s-Atom">ms</span> <span class="s-Atom">germany</span>
+
+<span class="nv">Topic</span> <span class="mi">7</span><span class="s-Atom">:</span>
+<span class="s-Atom">medical</span> <span class="s-Atom">cost</span> <span class="s-Atom">pay</span> <span class="s-Atom">people</span> <span class="s-Atom">affordable</span> <span class="s-Atom">employee</span> <span class="s-Atom">coverage</span> <span class="s-Atom">plan</span> <span class="s-Atom">federal</span> <span class="s-Atom">law</span> <span class="s-Atom">company</span> <span class="s-Atom">exchange</span> <span class="s-Atom">care</span> <span class="s-Atom">insurance</span>
+
+<span class="nv">Topic</span> <span class="mi">8</span><span class="s-Atom">:</span>
+<span class="s-Atom">red</span> <span class="s-Atom">indian</span> <span class="s-Atom">wright</span> <span class="s-Atom">league</span> <span class="s-Atom">homer</span> <span class="s-Atom">season</span> <span class="s-Atom">win</span> <span class="s-Atom">host</span> <span class="s-Atom">mets</span> <span class="s-Atom">card</span> <span class="s-Atom">wild</span> <span class="s-Atom">hit</span> <span class="s-Atom">game</span> <span class="s-Atom">run</span>
+
+<span class="nv">Topic</span> <span class="mi">9</span><span class="s-Atom">:</span>
+<span class="s-Atom">care</span> <span class="s-Atom">debt</span> <span class="s-Atom">law</span> <span class="s-Atom">cruz</span> <span class="s-Atom">senator</span> <span class="s-Atom">vote</span> <span class="s-Atom">democrat</span> <span class="s-Atom">party</span> <span class="s-Atom">mr</span> <span class="s-Atom">obama</span> <span class="s-Atom">shutdown</span> <span class="s-Atom">government</span> <span class="s-Atom">senate</span> <span class="s-Atom">house</span>
+
+<span class="nv">Topic</span> <span class="mi">10</span><span class="s-Atom">:</span>
+<span class="s-Atom">fan</span> <span class="s-Atom">played</span> <span class="s-Atom">sport</span> <span class="s-Atom">year</span> <span class="s-Atom">goal</span> <span class="s-Atom">football</span> <span class="s-Atom">giant</span> <span class="s-Atom">play</span> <span class="s-Atom">coach</span> <span class="s-Atom">league</span> <span class="s-Atom">said</span> <span class="s-Atom">player</span> <span class="s-Atom">season</span> <span class="s-Atom">game</span>
+
+<span class="nv">Topic</span> <span class="mi">11</span><span class="s-Atom">:</span>
+<span class="s-Atom">comedy</span> <span class="s-Atom">breaking</span> <span class="s-Atom">hbo</span> <span class="s-Atom">million</span> <span class="s-Atom">television</span> <span class="s-Atom">fox</span> <span class="s-Atom">emmy</span> <span class="s-Atom">drama</span> <span class="s-Atom">series</span> <span class="s-Atom">network</span> <span class="s-Atom">abc</span> <span class="s-Atom">rating</span> <span class="s-Atom">cbs</span> <span class="s-Atom">nbc</span>
+
+<span class="nv">Topic</span> <span class="mi">12</span><span class="s-Atom">:</span>
+<span class="s-Atom">war</span> <span class="s-Atom">al</span> <span class="s-Atom">international</span> <span class="s-Atom">rebel</span> <span class="s-Atom">security</span> <span class="s-Atom">russia</span> <span class="s-Atom">council</span> <span class="s-Atom">nation</span> <span class="s-Atom">assad</span> <span class="s-Atom">resolution</span> <span class="s-Atom">united</span> <span class="s-Atom">syrian</span> <span class="s-Atom">weapon</span> <span class="s-Atom">chemical</span>
+
+<span class="nv">Topic</span> <span class="mi">13</span><span class="s-Atom">:</span>
+<span class="s-Atom">state</span> <span class="s-Atom">beijing</span> <span class="s-Atom">kong</span> <span class="s-Atom">hong</span> <span class="s-Atom">nuclear</span> <span class="s-Atom">energy</span> <span class="s-Atom">gas</span> <span class="s-Atom">said</span> <span class="s-Atom">korea</span> <span class="s-Atom">north</span> <span class="s-Atom">company</span> <span class="s-Atom">plant</span> <span class="s-Atom">chinese</span> <span class="s-Atom">oil</span>
+
+<span class="nv">Topic</span> <span class="mi">14</span><span class="s-Atom">:</span>
+<span class="s-Atom">wind</span> <span class="s-Atom">yacht</span> <span class="s-Atom">club</span> <span class="s-Atom">regatta</span> <span class="s-Atom">francisco</span> <span class="s-Atom">san</span> <span class="s-Atom">racing</span> <span class="s-Atom">spithill</span> <span class="s-Atom">america</span> <span class="s-Atom">boat</span> <span class="s-Atom">zealand</span> <span class="s-Atom">team</span> <span class="s-Atom">oracle</span> <span class="s-Atom">race</span>
+
+<span class="nv">Topic</span> <span class="mi">15</span><span class="s-Atom">:</span>
+<span class="s-Atom">killing</span> <span class="s-Atom">soldier</span> <span class="s-Atom">iraq</span> <span class="s-Atom">city</span> <span class="s-Atom">taliban</span> <span class="s-Atom">official</span> <span class="s-Atom">baghdad</span> <span class="s-Atom">bomb</span> <span class="s-Atom">afghan</span> <span class="s-Atom">pakistan</span> <span class="s-Atom">people</span> <span class="s-Atom">killed</span> <span class="s-Atom">police</span> <span class="s-Atom">attack</span>
+
+<span class="nv">Topic</span> <span class="mi">16</span><span class="s-Atom">:</span>
+<span class="s-Atom">arrested</span> <span class="s-Atom">right</span> <span class="s-Atom">immigrant</span> <span class="s-Atom">athens</span> <span class="s-Atom">member</span> <span class="s-Atom">political</span> <span class="s-Atom">murder</span> <span class="s-Atom">parliament</span> <span class="s-Atom">greece</span> <span class="s-Atom">government</span> <span class="s-Atom">greek</span> <span class="s-Atom">police</span> <span class="s-Atom">golden</span> <span class="s-Atom">dawn</span>
+
+<span class="nv">Topic</span> <span class="mi">17</span><span class="s-Atom">:</span>
+<span class="s-Atom">terrorist</span> <span class="s-Atom">group</span> <span class="s-Atom">attacker</span> <span class="s-Atom">westgate</span> <span class="s-Atom">american</span> <span class="s-Atom">official</span> <span class="s-Atom">militant</span> <span class="s-Atom">somali</span> <span class="s-Atom">attack</span> <span class="s-Atom">nairobi</span> <span class="s-Atom">somalia</span> <span class="s-Atom">kenyan</span> <span class="s-Atom">mall</span> <span class="s-Atom">shabab</span>
+
+<span class="nv">Topic</span> <span class="mi">18</span><span class="s-Atom">:</span>
+<span class="s-Atom">pas</span> <span class="s-Atom">manning</span> <span class="s-Atom">tennessee</span> <span class="s-Atom">turnover</span> <span class="s-Atom">jet</span> <span class="s-Atom">giant</span> <span class="s-Atom">quarter</span> <span class="s-Atom">game</span> <span class="s-Atom">interception</span> <span class="s-Atom">smith</span> <span class="s-Atom">pass</span> <span class="s-Atom">threw</span> <span class="s-Atom">quarterback</span> <span class="s-Atom">touchdown</span>
+
+<span class="nv">Topic</span> <span class="mi">19</span><span class="s-Atom">:</span>
+<span class="s-Atom">piece</span> <span class="s-Atom">concert</span> <span class="s-Atom">album</span> <span class="s-Atom">dancer</span> <span class="s-Atom">performance</span> <span class="s-Atom">work</span> <span class="s-Atom">band</span> <span class="s-Atom">orchestra</span> <span class="s-Atom">ms</span> <span class="s-Atom">song</span> <span class="s-Atom">ballet</span> <span class="s-Atom">opera</span> <span class="s-Atom">dance</span> <span class="s-Atom">mr</span>
+
+<span class="nv">Topic</span> <span class="mi">20</span><span class="s-Atom">:</span>
+<span class="s-Atom">meeting</span> <span class="s-Atom">speech</span> <span class="s-Atom">nation</span> <span class="s-Atom">israeli</span> <span class="s-Atom">sanction</span> <span class="s-Atom">president</span> <span class="s-Atom">united</span> <span class="s-Atom">netanyahu</span> <span class="s-Atom">obama</span> <span class="s-Atom">israel</span> <span class="s-Atom">mr</span> <span class="s-Atom">iranian</span> <span class="s-Atom">nuclear</span> <span class="s-Atom">rouhani</span>
+</pre></div>
+
+
+<p>These words for each topic are very distinctive.  The first has to do with schools, the second with the economy, and the third with life style.   The forth is baseball, and the firth is legal.   If we had a huge corpus and did not know how to make subsections, thes topics would do.  Infact they line up pretty well with the 19 sections in the NY Times website. </p>
+<p>Instead of looking at the words for each topic, we can look at the headlines assoicated with the articles that are characterist of the topics.  </p>
+<div class="highlight"><pre>nmf.top10headlines()
+
+New Topic: 1
+A New (Harder?) Admissions Option at Bard College
+Children Killed by Guns: Stopping the Scourge
+Measuring Poverty and the Income Gap
+Preparing Teachers for the Urban Classroom
+Private School Admission
+Trophies for All, or Just the Deserving?
+G.O.P. vs. Health Law and Food Stamps
+Two Approaches to Homelessness
+Investing in Early Childhood Now, for a Payoff Later
+When Evangelicals Adopt Children Abroad
+
+New Topic: 2
+Orders for Durable Goods Increased Slightly in August
+Consumer Spending Rose Slightly in August
+European Unemployment Steady, Hinting at Progress in Crisis
+Jobs Data Helps Wall St. Halt a 5-Day Slide
+Markets Fall as Investors Rehash the Fed&amp;#8217;s Decision
+Housing Recovery Seems Still on Track 
+Shadow of Shutdown Looms Over Markets
+Wall Street Closes Higher Despite U.S. Shutdown
+Fight Over U.S. Budget Weighs on Shares
+S.&amp;P. Falls for a 5th Day As Federal Shutdown Looms
+
+New Topic: 3
+Spare Times for Sept. 27-Oct. 3
+A Monet for Show and Tell
+Midnight at the Museum, Breakfast at the Vatican
+A New Survey Finds a Drop in Arts Attendance
+Passion, Principle or Both? Deciphering Art Vandalism
+Newcomb Pottery Will Go on View at Tulane
+The Agony of Suspense in Detroit
+From Beirut to Bogotá: Art Cities to Watch?
+Museum and Gallery Listings for Sept. 27-Oct. 3
+Hey ‘Starry Night,’ Say ‘Cheese!’
+
+New Topic: 4
+For Yankees, Emotional Conclusion Isn’t End
+The Yankees’ Farewell Sundays of 2008 and 2013
+Memorable End for Two; Forgettable Year for Yanks
+Young Catcher Can Help Tell Ending to Rivera’s Story
+Mariano Rivera: A Zen Master With a Mean Cutter
+A Final Bow for Rivera
+When Rivera Started, and Pettitte Relieved
+Mariano Rivera’s Saving Grace
+Yankees’ Costly Loss Puts a Damper on Rivera’s Party
+Closing Scene: Hugs and Tears in Rivera’s Last Home Game
+
+New Topic: 5
+In Supreme Court Opinions, Web Links to Nowhere
+Former F.B.I. Agent to Plead Guilty in Press Leak
+The Hague: Warrant Issued for Kenyan
+Intriguing Tip From a Source Who’s Suspect
+Louisiana: New Trial for Man Convicted of Murder in &#39;74
+Why Judges Are Scowling at Banks
+A Rare Plea to the Court
+Citing New Evidence, Urging a Posthumous Pardon in 1992 Case
+Rubio Withdraws Support for Gay Black Judge’s Nomination to the Federal Bench
+50-Year Sentence Upheld for Ex-President of Liberia
+
+New Topic: 6
+German Politician Faces Plagiarism Accusations
+A Challenge to European Political Elite
+Anti-Euro Party Gaining Steam in Germany
+Merkel the Great
+After Rout in German Elections, Social Democrats Consider Coalition With Merkel
+German Campaign, Amid Fiery Debate Abroad, Shuffles Toward Consensus
+Angela Merkel’s Next Challenge
+Vote for Merkel Seen as Victory for Austerity
+Merkel Re-elected in Show of Strong Support for Party
+After Rewarding Merkel, Germans Seek Focus at Home
+
+New Topic: 7
+Health Insurance Exchanges Scramble to Be Ready as Opening Day Nears
+Opening Rush to Insurance Markets Runs Into Snags
+Health Care Choices in the New Era
+Lacking Rules, Insurers Balk at Paying for Intensive Psychiatric Care
+U.S. Plans to Unveil New Insurance Options
+As Some Companies Turn to Health Exchanges, G.E. Seeks a New Path
+Day 1: The New World of Health Care
+Dawn of a Revolution in Health Care
+On the Threshold of Obamacare, Warily
+The Landscape of Small-Business Health Insurance
+
+New Topic: 8
+Wright Homers Again to Help Mets Past Phillies
+Indians Get Wild-Card Slot as Rays and Rangers Go to a Tiebreaker
+Scherzer Wins 21st as Tigers Clinch
+Cardinals Prevail Behind a One-Hitter
+Rays and Rangers Tied as A.L. Race Nears End
+Game Ends on Wild Pitch, Giving Marlin a No-Hitter
+Wild-Card Race Tightens as Rays Lose to Blue Jays
+Red Sox Clinch East; Indians Win, As Do Royals
+21-Year Wait Is Over for Playoff-Bound Pirates 
+Rays, Royals and Indians Win in A.L. Playoff Race
+
+New Topic: 9
+House Bill Links Health Care Law and Budget Plan
+Government Shuts Down in Budget Impasse
+Senator Persists Battling Health Law, Irking Even Many in His Own Party
+Staunch Group of Republicans Outflanks House Leaders
+Those Banana Republicans
+U.S. Shutdown
+Nears as House
+Votes to Delay
+Health Law
+Senate Action on Health Law Moves to Brink of Shutdown
+Obama Sets Conditions for Talks: Pass Funding and Raise Debt Ceiling
+Conservatives With a Cause: ‘We’re Right’
+Shutdown Looms as Senate Passes Budget Bill
+
+New Topic: 10
+Coughlin Leads Calls for Giants to Show More Character
+Giants’ Battered Line Faces a Tough Test
+Favorites? Broncos, by a Wide Margin 
+Knicks and Nets, Growing Rivals, Will Work Together to Host All-Star Events
+Petke Sobered by Club’s Checkered Past
+No Quick-Fix Recipe for the Giants
+Hype Machine in Overdrive, N.F.L. Pops Back to London
+Cosmos-Rowdies: That ’70s Rivalry, Updated
+Where Mets Go Deep
+Goalkeeper Makes a Case for Team M.V.P.
+
+New Topic: 11
+Race to End for ‘Breaking Bad’ Fans Who Got Behind
+In Ratings War, ‘G.M.A.’ Beats ‘Today’ for Full Season
+Head of NBC Entertainment Extends Contract to 2017
+Networks Go to Extremes to Promote New Shows for the Fall Season
+2013 Emmy Award Winners and Nominees
+Emmys Highlight a Changing TV Industry
+Emmys Draw 17 Million Viewers, Up From Recent Shows
+‘Big Bang’ Reinforces Its Status as Biggest Hit on Network TV
+‘Agents of S.H.I.E.L.D.’ Gains a Big Audience While ‘The Voice’ Keeps Rolling
+‘The Voice’ Propels NBC to a Big Ratings Win on Monday Night
+
+New Topic: 12
+Stance on Peace Talks Suggests Syria and West Differ on Tactics
+Missed Opportunity in Syria Haunts U.N. Official
+For the U.N., Syria Is Both Promise and Peril
+Text of Draft United Nations Resolution on Syrian Chemical Weapons
+Invoking Sept. 11, Syrian Accuses U.S. of Hypocrisy
+Some Progress on Syria
+Syria Meets First Test of Accord on Weapons
+U.N. Investigates More Alleged Chemical Attacks in Syria
+Swift Movement Is Seen on Syria After U.N. Action
+U.N. Deal on Syrian Arms Is Milestone After Years of Inertia
+
+New Topic: 13
+Japan’s Leader Gives No Ground in Islands Dispute
+U.S. Gears Up to Be a Prime Gas Exporter
+As Stability Eludes Region, Western Oil Giants Hesitate
+Chinese Titan Takes Aim at Hollywood
+Hacking U.S. Secrets, China Pushes for Drones
+China Is Said to Be Holding a Professor Based in Japan
+Volkswagen Expanding Production in China
+Volkswagen Expanding Production in China
+China Bans Items for Export to North Korea, Fearing Their Use in Weapons
+China Ban on Items for Nuclear Use to North Korea May Stall Arms Bid
+
+New Topic: 14
+Australia Primed for First Cup Challenge Since 2000
+In New Zealand, Jitters Yield to Cheers, Then Sighs
+Extended America’s Cup Leaves Some High, Dry and Homeless
+New Zealand Is Kept Waiting Again
+Oracle Team USA Now Has the Wind at Its Back
+Oracle Completes Voyage to History, Winning America’s Cup
+Saved by Light Breeze, Oracle Will Race Again
+The Cup May Stay, but There’s No Going Back on Speed
+Oracle Sweeps Two Races to Tie America’s Cup
+After Comeback for the Ages, a Last Dash for America’s Cup
+
+New Topic: 15
+Once-Calm Area of Iraq Is Shaken by Bombings
+Pakistan Christians Issue Call for Protection
+Iraq: Multiple Bomb Attacks at Markets
+11 Officers Killed as Taliban Strike Afghan Border Post
+Bus Bombing in Pakistan Kills at Least 17 Government Employees
+Scores Are Killed by Suicide Bomb Attack at Historic Church in Pakistan
+Iraq: Bombings Kill at Least 55
+A Deadly Week in Northwestern Pakistan Ends With a Car Bomb Blast
+Attacks Kill Scores in Iraq as Violence Surges
+Bomber Hits Sunni Funeral as Attacks Mount in Iraq
+
+New Topic: 16
+A Challenge to European Political Elite
+Norway: New Coalition Tilts Right
+Smaller Parties Gain in Austrian National Elections
+British Party Leader Suspended After Crude Remark and Swipe at Reporter
+Greek Civil Servants Start 2-Day Strike
+Greece: A Vow to Erase a ‘Shame’
+Greece: Police Under Scrutiny
+Greece, in Anti-Fascist Crackdown, Investigates Police
+Case Against Greek Far-Right Party Draws Critics
+Greece Arrests Senior Members of Far-Right Party
+
+New Topic: 17
+Why Nairobi
+A Shaken Kenya Is Hit Again in 2 Deadly Attacks by Militants
+Kenya Forces Said to Be Securing Mall After Long Standoff
+Gunmen Kill Dozens in Terror Attack at Kenyan Mall
+Somali Militants Mixing Business and Terror
+U.S. Sees Direct Threat in Attack at Kenya Mall
+Kenya Presses Assault Against Militants in Mall Siege
+Attention Switches to Investigation of Kenyan Mall Siege
+Before Kenya Attack, Rehearsals and Planting of Machine Guns
+Kenya’s Brutal Coming of Age
+
+New Topic: 18
+Fantasy Football: Week 4 Matchup Breakdown
+Niners Rebound With a Rout Against St. Louis
+College Football Around the Country
+Saints Hand Dolphins Their First Defeat
+College Football Around the Country
+ Ohio State Streak Is at 17 With Win Over Wisconsin
+Rare Rushing Feat by a Princeton Quarterback Helps the Tigers Crush Georgetown
+Nova Throws for 3 Touchdowns as Rutgers Rallies Past Arkansas
+Michigan Hangs On After Scare, Again
+In Game of Turnovers, Bengals Get Last One, and a Win
+
+New Topic: 19
+Dance Listings for Sept. 27-Oct. 3
+Experimenting Begins as the Music Starts to Play
+The Dawn of a World, Dreamlike Yet Chaotic
+A Sampling of Old and New, Side by Side
+It’s Not What You Wear, It’s How You Dance in It
+Giddy Freedom (a Little Mambo!), as Well as Pianistic Elegance and Wit
+A Swing and a Jaunt Around the Globe
+An Impish Faun, Swans, and a Lively Card Deck
+Movers and Shapers
+A Giant of Dance, Seizing on Musicality to Weave His Spell
+
+New Topic: 20
+President Rouhani Comes to Town
+Israel and Others in Mideast View Overtures of U.S. and Iran With Suspicion
+Israel and Others in Mideast View Overtures of U.S. and Iran With Suspicion
+Hassan Does Manhattan
+Now, the Hard Part
+Iran’s President Responds to Netanyahu
+Netanyahu Pushes Back on Iran
+Discussing Iran, Obama and Netanyahu Display Unity
+Iran’s New President Preaches Tolerance in First U.N. Appearance
+Israeli Leader Excoriates New President of Iran
+</pre></div>
+
+
+<p>These headline reinforce the words results we saw above.  The NMF techniques are finding topics in this corpus.   The question, I am wondering, is how do you know when you have enough topics.  We know from yesterday that 90% of the energy is in the first 500 topics (if SVD can carry over).   But we only have 1400 articles.  This does not see useful.    I will think on this topic.</p>
+<h2>Sklearn NMF</h2>
+<p>As usual, we want to compare our results with the results of Sklearn's implementation.   In this case, eventhough we are using the same algorithm, sklearn is much smarter about the setup.  Looking at thier code, I see that they use the SVD decomposition to make a smart first guess as to the matrixes W and H.  I am sure this leads to quicker convergence.   They are also taking advantage of thier c optimization libraries.  </p>
+<div class="highlight"><pre><span class="s-Atom">from</span> <span class="s-Atom">sklearn</span><span class="p">.</span><span class="s-Atom">decomposition</span> <span class="s-Atom">import</span> <span class="nv">NMF</span>
+<span class="s-Atom">nmf2</span> <span class="o">=</span> <span class="nv">NMF</span><span class="p">(</span><span class="s-Atom">n_components</span><span class="o">=</span><span class="mi">20</span><span class="p">).</span><span class="nf">fit</span><span class="p">(</span><span class="s-Atom">tfidf_df</span><span class="p">.</span><span class="s-Atom">values</span><span class="p">)</span>
+
+
+<span class="s-Atom">for</span> <span class="s-Atom">i</span><span class="p">,</span><span class="s-Atom">row</span> <span class="s-Atom">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="s-Atom">tfidf_df</span><span class="p">.</span><span class="s-Atom">columns</span><span class="p">[</span><span class="s-Atom">np</span><span class="p">.</span><span class="nf">argsort</span><span class="p">(</span><span class="s-Atom">nmf2</span><span class="p">.</span><span class="s-Atom">components_</span><span class="p">,</span><span class="s-Atom">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="s-Atom">:</span><span class="p">,</span><span class="o">-</span><span class="mi">15</span><span class="p">:-</span><span class="mi">1</span><span class="p">]])</span><span class="s-Atom">:</span>
+    <span class="s-Atom">print</span> <span class="s2">&quot;Topic {}:&quot;</span><span class="p">.</span><span class="nf">format</span><span class="p">(</span><span class="s-Atom">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="s-Atom">print</span> <span class="s2">&quot; &quot;</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="s-Atom">row</span><span class="p">.</span><span class="nf">tolist</span><span class="p">())</span>
+    <span class="s-Atom">print</span> <span class="s2">&quot;&quot;</span>
+
+<span class="nv">Topic</span> <span class="mi">1</span><span class="s-Atom">:</span>
+<span class="s-Atom">obama</span> <span class="s-Atom">president</span> <span class="s-Atom">people</span> <span class="s-Atom">navy</span> <span class="s-Atom">prime</span> <span class="s-Atom">john</span> <span class="s-Atom">mayor</span> <span class="s-Atom">alexis</span> <span class="s-Atom">political</span> <span class="s-Atom">maduro</span> <span class="s-Atom">year</span> <span class="s-Atom">minister</span> <span class="s-Atom">official</span> <span class="s-Atom">said</span>
+
+<span class="nv">Topic</span> <span class="mi">2</span><span class="s-Atom">:</span>
+<span class="s-Atom">rodriguez</span> <span class="s-Atom">jeter</span> <span class="s-Atom">pitch</span> <span class="s-Atom">league</span> <span class="s-Atom">baseball</span> <span class="s-Atom">girardi</span> <span class="s-Atom">said</span> <span class="s-Atom">hit</span> <span class="s-Atom">run</span> <span class="s-Atom">season</span> <span class="s-Atom">pettitte</span> <span class="s-Atom">inning</span> <span class="s-Atom">game</span> <span class="s-Atom">rivera</span>
+
+<span class="nv">Topic</span> <span class="mi">3</span><span class="s-Atom">:</span>
+<span class="s-Atom">care</span> <span class="s-Atom">shutdown</span> <span class="s-Atom">obamacare</span> <span class="s-Atom">conservative</span> <span class="s-Atom">government</span> <span class="s-Atom">obama</span> <span class="s-Atom">law</span> <span class="s-Atom">vote</span> <span class="s-Atom">party</span> <span class="s-Atom">cruz</span> <span class="s-Atom">senator</span> <span class="s-Atom">democrat</span> <span class="s-Atom">senate</span> <span class="s-Atom">house</span>
+
+<span class="nv">Topic</span> <span class="mi">4</span><span class="s-Atom">:</span>
+<span class="s-Atom">hassan</span> <span class="s-Atom">speech</span> <span class="s-Atom">nation</span> <span class="s-Atom">israeli</span> <span class="s-Atom">sanction</span> <span class="s-Atom">mr</span> <span class="s-Atom">president</span> <span class="s-Atom">united</span> <span class="s-Atom">netanyahu</span> <span class="s-Atom">obama</span> <span class="s-Atom">israel</span> <span class="s-Atom">iranian</span> <span class="s-Atom">nuclear</span> <span class="s-Atom">rouhani</span>
+
+<span class="nv">Topic</span> <span class="mi">5</span><span class="s-Atom">:</span>
+<span class="s-Atom">group</span> <span class="s-Atom">somali</span> <span class="s-Atom">people</span> <span class="s-Atom">somalia</span> <span class="s-Atom">nairobi</span> <span class="s-Atom">official</span> <span class="s-Atom">police</span> <span class="s-Atom">killed</span> <span class="s-Atom">militant</span> <span class="s-Atom">said</span> <span class="s-Atom">kenyan</span> <span class="s-Atom">shabab</span> <span class="s-Atom">kenya</span> <span class="s-Atom">mall</span>
+
+<span class="nv">Topic</span> <span class="mi">6</span><span class="s-Atom">:</span>
+<span class="s-Atom">war</span> <span class="s-Atom">international</span> <span class="s-Atom">al</span> <span class="s-Atom">security</span> <span class="s-Atom">rebel</span> <span class="s-Atom">russia</span> <span class="s-Atom">assad</span> <span class="s-Atom">council</span> <span class="s-Atom">nation</span> <span class="s-Atom">resolution</span> <span class="s-Atom">united</span> <span class="s-Atom">syrian</span> <span class="s-Atom">weapon</span> <span class="s-Atom">chemical</span>
+
+<span class="nv">Topic</span> <span class="mi">7</span><span class="s-Atom">:</span>
+<span class="s-Atom">government</span> <span class="s-Atom">political</span> <span class="s-Atom">social</span> <span class="s-Atom">coalition</span> <span class="s-Atom">democrat</span> <span class="s-Atom">parliament</span> <span class="s-Atom">election</span> <span class="s-Atom">euro</span> <span class="s-Atom">european</span> <span class="s-Atom">ms</span> <span class="s-Atom">europe</span> <span class="s-Atom">german</span> <span class="s-Atom">germany</span> <span class="s-Atom">merkel</span>
+
+<span class="nv">Topic</span> <span class="mi">8</span><span class="s-Atom">:</span>
+<span class="s-Atom">said</span> <span class="s-Atom">regatta</span> <span class="s-Atom">match</span> <span class="s-Atom">francisco</span> <span class="s-Atom">san</span> <span class="s-Atom">racing</span> <span class="s-Atom">spithill</span> <span class="s-Atom">america</span> <span class="s-Atom">club</span> <span class="s-Atom">boat</span> <span class="s-Atom">zealand</span> <span class="s-Atom">oracle</span> <span class="s-Atom">team</span> <span class="s-Atom">race</span>
+
+<span class="nv">Topic</span> <span class="mi">9</span><span class="s-Atom">:</span>
+<span class="s-Atom">people</span> <span class="s-Atom">act</span> <span class="s-Atom">cost</span> <span class="s-Atom">insurer</span> <span class="s-Atom">medical</span> <span class="s-Atom">state</span> <span class="s-Atom">federal</span> <span class="s-Atom">affordable</span> <span class="s-Atom">plan</span> <span class="s-Atom">coverage</span> <span class="s-Atom">law</span> <span class="s-Atom">exchange</span> <span class="s-Atom">care</span> <span class="s-Atom">insurance</span>
+
+<span class="nv">Topic</span> <span class="mi">10</span><span class="s-Atom">:</span>
+<span class="s-Atom">woman</span> <span class="s-Atom">york</span> <span class="s-Atom">writer</span> <span class="s-Atom">college</span> <span class="s-Atom">life</span> <span class="s-Atom">gun</span> <span class="s-Atom">new</span> <span class="s-Atom">people</span> <span class="s-Atom">student</span> <span class="s-Atom">teacher</span> <span class="s-Atom">child</span> <span class="mi">2013</span> <span class="s-Atom">school</span> <span class="s-Atom">editor</span>
+
+<span class="nv">Topic</span> <span class="mi">11</span><span class="s-Atom">:</span>
+<span class="s-Atom">investor</span> <span class="s-Atom">house</span> <span class="s-Atom">washington</span> <span class="s-Atom">limit</span> <span class="s-Atom">economy</span> <span class="s-Atom">obama</span> <span class="s-Atom">federal</span> <span class="s-Atom">bond</span> <span class="s-Atom">congress</span> <span class="s-Atom">treasury</span> <span class="s-Atom">default</span> <span class="s-Atom">ceiling</span> <span class="s-Atom">shutdown</span> <span class="s-Atom">government</span>
+
+<span class="nv">Topic</span> <span class="mi">12</span><span class="s-Atom">:</span>
+<span class="s-Atom">korean</span> <span class="s-Atom">japanese</span> <span class="s-Atom">said</span> <span class="s-Atom">state</span> <span class="s-Atom">asia</span> <span class="s-Atom">south</span> <span class="s-Atom">japan</span> <span class="s-Atom">nuclear</span> <span class="s-Atom">kong</span> <span class="s-Atom">beijing</span> <span class="s-Atom">hong</span> <span class="s-Atom">north</span> <span class="s-Atom">korea</span> <span class="s-Atom">chinese</span>
+
+<span class="nv">Topic</span> <span class="mi">13</span><span class="s-Atom">:</span>
+<span class="s-Atom">company</span> <span class="s-Atom">drilling</span> <span class="s-Atom">putin</span> <span class="s-Atom">said</span> <span class="s-Atom">carbon</span> <span class="s-Atom">coal</span> <span class="s-Atom">russia</span> <span class="s-Atom">russian</span> <span class="s-Atom">plant</span> <span class="s-Atom">energy</span> <span class="s-Atom">gas</span> <span class="s-Atom">greenpeace</span> <span class="s-Atom">ship</span> <span class="s-Atom">arctic</span>
+
+<span class="nv">Topic</span> <span class="mi">14</span><span class="s-Atom">:</span>
+<span class="s-Atom">photograph</span> <span class="s-Atom">magritte</span> <span class="s-Atom">like</span> <span class="s-Atom">city</span> <span class="s-Atom">drawing</span> <span class="s-Atom">curator</span> <span class="s-Atom">street</span> <span class="s-Atom">collection</span> <span class="s-Atom">work</span> <span class="s-Atom">exhibition</span> <span class="s-Atom">artist</span> <span class="s-Atom">painting</span> <span class="s-Atom">gallery</span> <span class="s-Atom">museum</span>
+
+<span class="nv">Topic</span> <span class="mi">15</span><span class="s-Atom">:</span>
+<span class="s-Atom">rose</span> <span class="s-Atom">year</span> <span class="s-Atom">said</span> <span class="s-Atom">august</span> <span class="s-Atom">stock</span> <span class="s-Atom">economist</span> <span class="s-Atom">month</span> <span class="s-Atom">economy</span> <span class="s-Atom">index</span> <span class="s-Atom">growth</span> <span class="s-Atom">price</span> <span class="s-Atom">market</span> <span class="s-Atom">rate</span> <span class="s-Atom">bank</span>
+
+<span class="nv">Topic</span> <span class="mi">16</span><span class="s-Atom">:</span>
+<span class="s-Atom">like</span> <span class="s-Atom">employee</span> <span class="s-Atom">creative</span> <span class="s-Atom">vice</span> <span class="s-Atom">group</span> <span class="s-Atom">advertising</span> <span class="s-Atom">brand</span> <span class="s-Atom">york</span> <span class="s-Atom">chief</span> <span class="s-Atom">business</span> <span class="s-Atom">new</span> <span class="s-Atom">agency</span> <span class="s-Atom">said</span> <span class="s-Atom">executive</span>
+
+<span class="nv">Topic</span> <span class="mi">17</span><span class="s-Atom">:</span>
+<span class="s-Atom">league</span> <span class="s-Atom">sunday</span> <span class="s-Atom">smith</span> <span class="s-Atom">manning</span> <span class="s-Atom">said</span> <span class="s-Atom">player</span> <span class="s-Atom">play</span> <span class="s-Atom">coach</span> <span class="s-Atom">giant</span> <span class="s-Atom">quarterback</span> <span class="s-Atom">team</span> <span class="s-Atom">season</span> <span class="s-Atom">touchdown</span> <span class="s-Atom">yard</span>
+
+<span class="nv">Topic</span> <span class="mi">18</span><span class="s-Atom">:</span>
+<span class="s-Atom">season</span> <span class="s-Atom">breaking</span> <span class="s-Atom">million</span> <span class="s-Atom">hbo</span> <span class="s-Atom">fox</span> <span class="s-Atom">television</span> <span class="s-Atom">emmy</span> <span class="s-Atom">drama</span> <span class="s-Atom">network</span> <span class="s-Atom">series</span> <span class="s-Atom">abc</span> <span class="s-Atom">rating</span> <span class="s-Atom">cbs</span> <span class="s-Atom">nbc</span>
+
+<span class="nv">Topic</span> <span class="mi">19</span><span class="s-Atom">:</span>
+<span class="s-Atom">criminal</span> <span class="s-Atom">ruling</span> <span class="s-Atom">trial</span> <span class="s-Atom">supreme</span> <span class="s-Atom">department</span> <span class="s-Atom">prison</span> <span class="s-Atom">sex</span> <span class="s-Atom">lawyer</span> <span class="s-Atom">federal</span> <span class="s-Atom">justice</span> <span class="s-Atom">law</span> <span class="s-Atom">state</span> <span class="s-Atom">case</span> <span class="s-Atom">judge</span>
+
+<span class="nv">Topic</span> <span class="mi">20</span><span class="s-Atom">:</span>
+<span class="s-Atom">piece</span> <span class="s-Atom">festival</span> <span class="s-Atom">concert</span> <span class="s-Atom">album</span> <span class="s-Atom">performance</span> <span class="s-Atom">dancer</span> <span class="s-Atom">work</span> <span class="s-Atom">orchestra</span> <span class="s-Atom">band</span> <span class="s-Atom">song</span> <span class="s-Atom">ms</span> <span class="s-Atom">opera</span> <span class="s-Atom">ballet</span> <span class="s-Atom">dance</span>
+</pre></div>
+
+
+<p>The sklearn implmentation was faster, but the results are similar.  They are not identical.   Because we are hill climbing, I am sure that we can get stuck in different local minima than sklearn, and we are not ordering topics.  It seems sklearn is.   </p>
+<p>The topics classifications, however, are almost identical.  That is really cool that there are letent features that help or organize and thinking about these articles.  It is also cool that they match our intuition about what they are.   </p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'bryansmithphd';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=bryansmithphd">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      Bryan Smith, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="http://www.bryantravissmith.com/theme/js/jquery.min.js"></script>
+  <script src="http://www.bryantravissmith.com/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$$','$$'], ['\\(','\\)']]}
+});
+</script>
+</html>

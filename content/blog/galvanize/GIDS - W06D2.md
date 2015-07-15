@@ -1,3 +1,11 @@
+Title: Galvanize - Week 06 - Day 2
+Date: 2015-07-07 10:20
+Modified: 2015-07-07 10:30
+Category: Galvanize
+Tags: data-science, galvanize, nlp, NMF
+Slug: galvanize-data-science-06-02
+Authors: Bryan Smith
+Summary: Today we covered non-negative matrix factorations.
 
 #Galvanize Immersive Data Science
 

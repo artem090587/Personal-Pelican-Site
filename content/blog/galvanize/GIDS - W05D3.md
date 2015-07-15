@@ -1,3 +1,11 @@
+Title: Galvanize - Week 05 - Day 3
+Date: 2015-07-01 10:20
+Modified: 2015-07-01 10:30
+Category: Galvanize
+Tags: data-science, galvanize, natural language processing, nlp, yelp, new york times,
+Slug: galvanize-data-science-05-03
+Authors: Bryan Smith
+Summary: Today we were introduced to natural language processing (nlp)
 
 #Galvanize Immersive Data Science
 

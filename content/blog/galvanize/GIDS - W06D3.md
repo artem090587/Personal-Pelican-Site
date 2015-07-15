@@ -1,3 +1,11 @@
+Title: Galvanize - Week 06 - Day 3
+Date: 2015-07-08 10:20
+Modified: 2015-08-03 10:30
+Category: Galvanize
+Tags: data-science, galvanize, nlp, collaboritive filtering, recommendation engines
+Slug: galvanize-data-science-06-03
+Authors: Bryan Smith
+Summary: Today we covered clustering recommendation engines, focusing on collaboritive filtering.  
 
 #Galvanize Immersive Data Science
 
