@@ -1,3 +1,11 @@
+Title: Galvanize - Week 07 - Day 3
+Date: 2015-07-15 10:20
+Modified: 2015-07-15 10:30
+Category: Galvanize
+Tags: data-science, galvanize, map-reduce, mrjobs,generators
+Slug: galvanize-data-science-07-03
+Authors: Bryan Smith
+Summary: Today we covered map reduce
 
 #Galvanize Immersive Data Science
 

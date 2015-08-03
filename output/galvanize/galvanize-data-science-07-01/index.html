@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-07-01/index.html" />
+
+    <title>  Bryan Travis Smith, Ph.D &mdash; Galvanize - Week 07 - Day 1
+</title>
+
+
+
+
+    <link rel="stylesheet" href="http://www.bryantravissmith.com/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-24340005-3', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+
+    <meta name="author" content="Bryan Smith">
+    <meta name="description" content="Today we covered graphs">
+  <meta name="tags" contents="data-science, galvanize, graphs, networks, ">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+      <div class="header-image pull-left">
+        <a class="nodec" href="http://www.bryantravissmith.com"><img src=http://www.bryantravissmith.com/img/bryan.jpeg></a>
+      </div>
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="http://www.bryantravissmith.com">Bryan Travis Smith, Ph.D</a>
+      </h1>
+      <h3 class="header-text">Physicist, Data Scientist, Martial Artist, & Life Enthusiast</h3>
+      <ul class="header-menu list-inline">
+              <li class="muted">|</li>
+            <li><a class="nodec" href="http://www.bryantravissmith.com/about/">About</a></li>
+              <li class="muted">|</li>
+          <li><a class="nodec icon-mail-alt" href="mailto:bryantravissmith@gmail.com"></a></li>
+          <li><a class="nodec icon-github" href="https://github.com/bryantravissmith"></a></li>
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+      <a href="/galvanize/galvanize-data-science-07-01/" title="Permalink to Galvanize - Week 07 - Day 1">Galvanize - Week 07 - Day 1</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" href="/galvanize/galvanize-data-science-07-01/" title="2015-07-13T10:20:00-07:00">Mon 13 July 2015</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+        <a href="http://www.bryantravissmith.com/category/galvanize.html">Galvanize</a>
+      </li>
+        <li class="muted">&middot;</li>
+        <li>
+          <address class="post-author">
+            By <a href="http://www.bryantravissmith.com/author/bryan-smith.html">Bryan Smith</a>
+          </address>
+        </li>
+    </ul>
+    <div class="post-content">
+      <h1>Galvanize Immersive Data Science</h1>
+<h2>Week 7 - Day 1</h2>
+<p>I missed this day because was I was at the <a href="http://conf.dato.com/">Data Science Summit</a>.   The quiz was on SQL statements, per usual, but I have not done them.</p>
+<p>The lesson covered this day were network graphs, which I have now completed on my own.  This topic is interested to me because it gives sense of connectedness.   Unfortunately, these problems are computational intensive, assuming they are not NP Hard.</p>
+<h2>Movie Graphs</h2>
+<p>We are going to investigate movies treating actors as nodes and movies as edges that connect actors.   We then are going to use a breath first search algorithm and return the shortest connection between two actors.</p>
+<p>First we must read in the imbb data.</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+
+
+<span class="k">def</span> <span class="nf">load_imdb_data</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    filename: name of imdb edge data file</span>
+
+<span class="sd">    Read in the data and create two dictionaries of adjacency lists, one for</span>
+<span class="sd">    the actors and one for the movies.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">actors</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+    <span class="n">movies</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">actor</span><span class="p">,</span> <span class="n">movie</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>
+        <span class="n">actors</span><span class="p">[</span><span class="n">actor</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">movie</span><span class="p">)</span>
+        <span class="n">movies</span><span class="p">[</span><span class="n">movie</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">actor</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">actors</span><span class="p">,</span> <span class="n">movies</span>
+
+<span class="n">actors</span><span class="p">,</span> <span class="n">movies</span> <span class="o">=</span> <span class="n">load_imdb_data</span><span class="p">(</span><span class="s">&quot;data/imdb_edges.tsv&quot;</span><span class="p">)</span>
+<span class="k">print</span> <span class="nb">len</span><span class="p">(</span><span class="n">actors</span><span class="p">),</span> <span class="s">&quot;Actors&quot;</span>
+<span class="k">print</span> <span class="nb">len</span><span class="p">(</span><span class="n">movies</span><span class="p">),</span> <span class="s">&quot;Movies&quot;</span>
+
+<span class="mi">81290</span> <span class="n">Actors</span>
+<span class="mi">16753</span> <span class="n">Movies</span>
+</pre></div>
+
+
+<p>To perform the breath-first search we need to make a queue to read from.  We will continue to added actors to the queue until we find a path between the two actors.   </p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">Queue</span> <span class="kn">import</span> <span class="n">Queue</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">def</span> <span class="nf">shortest_path</span><span class="p">(</span><span class="n">actors</span><span class="p">,</span><span class="n">movies</span><span class="p">,</span> <span class="n">actor1</span><span class="p">,</span> <span class="n">actor2</span><span class="p">):</span>
+
+    <span class="n">q</span><span class="o">=</span><span class="n">Queue</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">actor1</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">actors</span> <span class="ow">and</span> <span class="n">actor2</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">actors</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">actor1</span><span class="p">,(</span><span class="n">actor1</span><span class="p">,)))</span>
+
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">q</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+        <span class="n">actor</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">actor</span> <span class="o">==</span> <span class="n">actor2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">path</span>
+        <span class="k">for</span> <span class="n">movie</span> <span class="ow">in</span> <span class="n">actors</span><span class="p">[</span><span class="n">actor</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">next_actor</span> <span class="ow">in</span> <span class="n">movies</span><span class="p">[</span><span class="n">movie</span><span class="p">]:</span>
+                <span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">next_actor</span><span class="p">,</span><span class="n">path</span><span class="o">+</span><span class="p">(</span><span class="n">movie</span><span class="p">,</span><span class="n">next_actor</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="bp">None</span>
+
+<span class="n">path</span> <span class="o">=</span> <span class="n">shortest_path</span><span class="p">(</span><span class="n">actors</span><span class="p">,</span> <span class="n">movies</span><span class="p">,</span> <span class="n">actors</span><span class="o">.</span><span class="n">keys</span><span class="p">()[</span><span class="mi">3</span><span class="p">],</span><span class="s">&quot;Kevin Bacon&quot;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">path</span>
+
+<span class="p">(</span><span class="s">&#39;David Kagen&#39;</span><span class="p">,</span> <span class="s">&#39;Shackles&#39;</span><span class="p">,</span> <span class="s">&#39;Mandy June Turpin&#39;</span><span class="p">,</span> <span class="s">&#39;Powder Blue&#39;</span><span class="p">,</span> <span class="s">&#39;Forest Whitaker&#39;</span><span class="p">,</span> <span class="s">&#39;The Air I Breathe&#39;</span><span class="p">,</span> <span class="s">&#39;Kevin Bacon&#39;</span><span class="p">)</span>
+
+
+
+<span class="k">def</span> <span class="nf">print_path</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&quot;Number of Actors Between &quot;</span> <span class="o">+</span> <span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&quot; and &quot;</span> <span class="o">+</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s">&quot; : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">i</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">print</span> <span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;</span><span class="se">\t</span><span class="s">&quot;</span><span class="o">+</span><span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="n">print_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+<span class="n">Number</span> <span class="n">of</span> <span class="n">Actors</span> <span class="n">Between</span> <span class="n">David</span> <span class="n">Kagen</span> <span class="ow">and</span> <span class="n">Kevin</span> <span class="n">Bacon</span> <span class="p">:</span> <span class="mi">2</span>
+<span class="n">David</span> <span class="n">Kagen</span>
+    <span class="n">Shackles</span>
+<span class="n">Mandy</span> <span class="n">June</span> <span class="n">Turpin</span>
+    <span class="n">Powder</span> <span class="n">Blue</span>
+<span class="n">Forest</span> <span class="n">Whitaker</span>
+    <span class="n">The</span> <span class="n">Air</span> <span class="n">I</span> <span class="n">Breathe</span>
+<span class="n">Kevin</span> <span class="n">Bacon</span>
+</pre></div>
+
+
+<p>It is possible that there are multiple paths between David Kagen and Kevin Bacon.  We can alter the code slightly to get each path.</p>
+<div class="highlight"><pre>def all_shortest_path(actors,movies, actor1, actor2):
+
+    q=Queue()
+    found_match = False
+    len_match = 0
+    paths = []
+
+    if actor1 not in actors and actor2 not in actors:
+        return None
+
+    q.put((actor1,(actor1,)))
+
+    while not q.empty():
+        actor, path = q.get()
+        if actor == actor2:
+
+            if len(paths) == 0:
+                len_match = len(path)
+                found_match = True
+                paths.append(path)   
+            else:
+                if len(path) == len_match:
+                    paths.append(path)     
+        if not found_match:
+            for movie in actors[actor]:
+                for next_actor in movies[movie]:
+                    q.put((next_actor,path+(movie,next_actor)))
+
+    if found_match:
+        return paths
+
+    return None
+
+
+paths = all_shortest_path(actors, movies, actors.keys()[3],&quot;Kevin Bacon&quot;)
+print &quot;Number of Paths: &quot;, len(paths)
+
+Number of Paths:  40
+</pre></div>
+
+
+<h2>Dijkstra's shortest path algorithm</h2>
+<p>There are also weighted graphs that can be used to considering the cost of traveling between two nodes.   This is solved by Dijkstra's algorithm.  This can be implemented with the use of Priority Queues in our previous function</p>
+<div class="highlight"><pre><span class="k">class</span> <span class="n">Vertex</span>(<span class="n">object</span>):
+    <span class="n">def</span> <span class="n">__init__</span>(<span class="k">self</span>, <span class="nb">name</span>):
+        <span class="k">self</span>.<span class="nb">name</span> = <span class="nb">name</span>
+        <span class="k">self</span>.<span class="n">neighbors</span> = {}
+
+    <span class="n">def</span> <span class="n">add_neighbor</span>(<span class="k">self</span>, <span class="n">neighbor</span>, <span class="n">weight</span>):
+        <span class="k">self</span>.<span class="n">neighbors</span>[<span class="n">neighbor</span>] = <span class="n">weight</span>
+
+
+<span class="k">class</span> <span class="n">Graph</span>(<span class="n">object</span>):
+    <span class="n">def</span> <span class="n">__init__</span>(<span class="k">self</span>):
+        <span class="k">self</span>.<span class="n">vertices</span> = {}
+
+    <span class="n">def</span> <span class="n">add_node</span>(<span class="k">self</span>, <span class="nb">name</span>):
+        <span class="k">if</span> <span class="nb">name</span> <span class="nb">not</span> <span class="n">in</span> <span class="k">self</span>.<span class="n">vertices:</span>
+            <span class="k">self</span>.<span class="n">vertices</span>[<span class="nb">name</span>] = <span class="n">Vertex</span>(<span class="nb">name</span>)
+
+    <span class="n">def</span> <span class="n">add_edge</span>(<span class="k">self</span>, <span class="n">a</span>, <span class="n">b</span>, <span class="n">weight</span>):
+        <span class="k">self</span>.<span class="n">add_node</span>(<span class="n">a</span>)
+        <span class="k">self</span>.<span class="n">add_node</span>(<span class="n">b</span>)
+        <span class="k">self</span>.<span class="n">vertices</span>[<span class="n">a</span>].<span class="n">add_neighbor</span>(<span class="n">b</span>, <span class="n">weight</span>)
+        <span class="k">self</span>.<span class="n">vertices</span>[<span class="n">b</span>].<span class="n">add_neighbor</span>(<span class="n">a</span>, <span class="n">weight</span>)
+
+    <span class="n">def</span> <span class="n">get_neighbors</span>(<span class="k">self</span>, <span class="n">node</span>):
+        <span class="k">if</span> <span class="n">node</span> <span class="n">in</span> <span class="k">self</span>.<span class="n">vertices:</span>
+            <span class="k">return</span> <span class="k">self</span>.<span class="n">vertices</span>[<span class="n">node</span>].<span class="n">neighbors</span>
+        <span class="k">return</span> []
+
+
+<span class="n">def</span> <span class="n">create_graph</span>():
+    <span class="n">g</span> = <span class="n">Graph</span>()
+    <span class="n">g</span>.<span class="n">add_edge</span>(<span class="s">&#39;sunset&#39;</span>, <span class="s">&#39;richmond&#39;</span>, <span class="mi">4</span>)
+    <span class="n">g</span>.<span class="n">add_edge</span>(<span class="s">&#39;presidio&#39;</span>, <span class="s">&#39;richmond&#39;</span>, <span class="mi">1</span>)
+    <span class="n">g</span>.<span class="n">add_edge</span>(<span class="s">&#39;pac heights&#39;</span>, <span class="s">&#39;richmond&#39;</span>, <span class="mi">8</span>)
+    <span class="n">g</span>.<span class="n">add_edge</span>(<span class="s">&#39;western addition&#39;</span>, <span class="s">&#39;richmond&#39;</span>, <span class="mi">7</span>)
+    <span class="n">g</span>.<span class="n">add_edge</span>(<span class="s">&#39;western addition&#39;</span>, <span class="s">&#39;pac heights&#39;</span>, <span class="mi">2</span>)
+    <span class="n">g</span>.<span class="n">add_edge</span>(<span class="s">&#39;western addition&#39;</span>, <span class="s">&#39;downtown&#39;</span>, <span class="mi">3</span>)
+    <span class="n">g</span>.<span class="n">add_edge</span>(<span class="s">&#39;western addition&#39;</span>, <span class="s">&#39;haight&#39;</span>, <span class="mi">4</span>)
+    <span class="n">g</span>.<span class="n">add_edge</span>(<span class="s">&#39;mission&#39;</span>, <span class="s">&#39;haight&#39;</span>, <span class="mi">1</span>)
+    <span class="n">g</span>.<span class="n">add_edge</span>(<span class="s">&#39;mission&#39;</span>, <span class="s">&#39;soma&#39;</span>, <span class="mi">5</span>)
+    <span class="n">g</span>.<span class="n">add_edge</span>(<span class="s">&#39;downtown&#39;</span>, <span class="s">&#39;soma&#39;</span>, <span class="mi">5</span>)
+    <span class="n">g</span>.<span class="n">add_edge</span>(<span class="s">&#39;downtown&#39;</span>, <span class="s">&#39;nob hill&#39;</span>, <span class="mi">2</span>)
+    <span class="n">g</span>.<span class="n">add_edge</span>(<span class="s">&#39;marina&#39;</span>, <span class="s">&#39;pac heights&#39;</span>, <span class="mi">2</span>)
+    <span class="n">g</span>.<span class="n">add_edge</span>(<span class="s">&#39;marina&#39;</span>, <span class="s">&#39;presidio&#39;</span>, <span class="mi">4</span>)
+    <span class="n">g</span>.<span class="n">add_edge</span>(<span class="s">&#39;marina&#39;</span>, <span class="s">&#39;russian hill&#39;</span>, <span class="mi">3</span>)
+    <span class="n">g</span>.<span class="n">add_edge</span>(<span class="s">&#39;nob hill&#39;</span>, <span class="s">&#39;russian hill&#39;</span>, <span class="mi">1</span>)
+    <span class="n">g</span>.<span class="n">add_edge</span>(<span class="s">&#39;north beach&#39;</span>, <span class="s">&#39;russian hill&#39;</span>, <span class="mi">1</span>)
+    <span class="k">return</span> <span class="n">g</span>
+
+<span class="n">graph</span> = <span class="n">create_graph</span>()
+
+
+<span class="nb">from</span> <span class="n">Queue</span> <span class="n">import</span> <span class="n">PriorityQueue</span>
+<span class="n">import</span> <span class="nb">time</span>
+
+<span class="n">def</span> <span class="n">weighted_shortest_path</span>(<span class="n">start</span>,<span class="nb">end</span>, <span class="n">graph</span>):
+
+    <span class="s">q=PriorityQueue()</span>
+
+<span class="s">    if start not in graph.vertices and end not in graph.vertices:</span>
+<span class="s">        return None</span>
+
+<span class="s">    q.put((start,(start,)),1)</span>
+
+
+<span class="s">    while not q.empty():</span>
+<span class="s">        node, path =</span> <span class="s">q.get()</span>
+<span class="s">        if node == end:</span>
+<span class="s">            return path</span>
+<span class="s">        for next_node, next_weight in graph.</span><span class="n">get_neighbors</span>(<span class="n">node</span>).<span class="n">iteritems</span>():
+            <span class="s">q.put((next_node,path+(next_node,)),next_weight)</span>
+<span class="s">    return None</span>
+
+<span class="s">weighted_shortest_path(&#39;presidio&#39;,&#39;pac heights&#39;,graph)</span>
+
+
+
+
+<span class="s">(&#39;presidio&#39;, &#39;marina&#39;, &#39;pac heights&#39;)</span>
+</pre></div>
+
+
+<h2>Graphs &amp; networkX</h2>
+<p>We are going to use the networkx package and redo the actor,movie analysis in networkx.</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">networkx</span> <span class="kn">as</span> <span class="nn">nx</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">read_edgelist</span><span class="p">(</span><span class="s">&#39;data/imdb_edges.tsv&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>The package as a shortest path algorithm that is better implemented that what we wrote.  </p>
+<div class="highlight"><pre>nx.shortest_path(G,&#39;David Kagen&#39;,&#39;Kevin Bacon&#39;)
+
+
+
+
+[&#39;David Kagen&#39;,
+ u&#39;Shackles&#39;,
+ u&#39;Mandy June Turpin&#39;,
+ u&#39;Powder Blue&#39;,
+ u&#39;Forest Whitaker&#39;,
+ u&#39;The Air I Breathe&#39;,
+ &#39;Kevin Bacon&#39;]
+</pre></div>
+
+
+<p>It also produces the same result as we got before, but the time is significantly faster.  </p>
+<h2>Measures of Centrality and Connected Components</h2>
+<p>There are a few different ways to measure the most important nodes.  We are going to use a diffently formatter version of the data set and explore which actors are the most important.</p>
+<div class="highlight"><pre>A = nx.read_edgelist(&#39;data/actor_edges.tsv&#39;, delimiter=&#39;\t&#39;)
+</pre></div>
+
+
+<p>One method of important is the degree of centrality in the network, and networkx has a method of calculating this.</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span class="n">Counter</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">degree_centrality</span><span class="p">(</span><span class="n">A</span><span class="p">))</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+
+
+
+<span class="p">[(</span><span class="s">u&#39;Danny Trejo&#39;</span><span class="p">,</span> <span class="mf">0.013296281527265476</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Richard Riehle&#39;</span><span class="p">,</span> <span class="mf">0.010330475525869803</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Keith David&#39;</span><span class="p">,</span> <span class="mf">0.010131093609809589</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Tom Arnold&#39;</span><span class="p">,</span> <span class="mf">0.009956634433256903</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Eric Roberts&#39;</span><span class="p">,</span> <span class="mf">0.00968248429867411</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Michael Madsen&#39;</span><span class="p">,</span> <span class="mf">0.00930864320606121</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;David Koechner&#39;</span><span class="p">,</span> <span class="mf">0.008286810886252617</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Christopher McDonald&#39;</span><span class="p">,</span> <span class="mf">0.00814973581896122</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;James Franco&#39;</span><span class="p">,</span> <span class="mf">0.008025122121423587</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Paul Rudd&#39;</span><span class="p">,</span> <span class="mf">0.007975276642408533</span><span class="p">)]</span>
+</pre></div>
+
+
+<p>Thse are the most important actors according to this metric.  But we can see that all the actors are not networked together.  There are subgraphs in this network.</p>
+<div class="highlight"><pre>nx.is_connected(A)
+
+
+
+
+False
+
+
+
+
+components = [len(component) for component in nx.connected_components(A)]
+print len(components)
+
+1390
+</pre></div>
+
+
+<p>In fact there are 1390 subgraphs in this dataset.  There is one large graph of 70k+ nodes. Lets look at the scale of these graphs</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">components</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span><span class="n">bins</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW07D1/output_23_0.png" /></p>
+<p>Most of these results are a small group of actors, probably in a single movie.</p>
+<p>There are other measure of centrality, but they are computationally intensive.  In order to explore them in networkx we were advise to use a smaller dataset.  </p>
+<div class="highlight"><pre><span class="n">SA</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">read_edgelist</span><span class="p">(</span><span class="s">&#39;data/small_actor_edges.tsv&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>
+
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span class="n">Counter</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">degree_centrality</span><span class="p">(</span><span class="n">SA</span><span class="p">))</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+
+
+
+<span class="p">[(</span><span class="s">u&#39;David Koechner&#39;</span><span class="p">,</span> <span class="mf">0.2556179775280899</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Justin Long&#39;</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Danny Trejo&#39;</span><span class="p">,</span> <span class="mf">0.2247191011235955</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Paul Rudd&#39;</span><span class="p">,</span> <span class="mf">0.21629213483146068</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Jason Bateman&#39;</span><span class="p">,</span> <span class="mf">0.20786516853932585</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Will Ferrell&#39;</span><span class="p">,</span> <span class="mf">0.20786516853932585</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Stanley Tucci&#39;</span><span class="p">,</span> <span class="mf">0.2050561797752809</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Samuel L. Jackson&#39;</span><span class="p">,</span> <span class="mf">0.20224719101123595</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Elizabeth Banks&#39;</span><span class="p">,</span> <span class="mf">0.199438202247191</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Woody Harrelson&#39;</span><span class="p">,</span> <span class="mf">0.19662921348314605</span><span class="p">)]</span>
+
+
+
+
+<span class="n">Counter</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">betweenness_centrality</span><span class="p">(</span><span class="n">SA</span><span class="p">))</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+
+
+
+<span class="p">[(</span><span class="s">u&#39;Danny Trejo&#39;</span><span class="p">,</span> <span class="mf">0.017405842219758747</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Justin Long&#39;</span><span class="p">,</span> <span class="mf">0.012435514894496458</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;David Koechner&#39;</span><span class="p">,</span> <span class="mf">0.011794132340103443</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;John Goodman&#39;</span><span class="p">,</span> <span class="mf">0.01165458626013287</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Samuel L. Jackson&#39;</span><span class="p">,</span> <span class="mf">0.010876961690659508</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Robert De Niro&#39;</span><span class="p">,</span> <span class="mf">0.00999681773729788</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Keith David&#39;</span><span class="p">,</span> <span class="mf">0.009642697665367045</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Stanley Tucci&#39;</span><span class="p">,</span> <span class="mf">0.009086485838244202</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Vinnie Jones&#39;</span><span class="p">,</span> <span class="mf">0.009057085115156209</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Kris Kristofferson&#39;</span><span class="p">,</span> <span class="mf">0.008697516162559957</span><span class="p">)]</span>
+
+
+
+
+<span class="n">Counter</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">eigenvector_centrality</span><span class="p">(</span><span class="n">SA</span><span class="p">))</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+
+
+
+<span class="p">[(</span><span class="s">u&#39;David Koechner&#39;</span><span class="p">,</span> <span class="mf">0.140462834180465</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Justin Long&#39;</span><span class="p">,</span> <span class="mf">0.131152841463775</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Paul Rudd&#39;</span><span class="p">,</span> <span class="mf">0.1284052374257351</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Will Ferrell&#39;</span><span class="p">,</span> <span class="mf">0.12554389126285</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Seth Rogen&#39;</span><span class="p">,</span> <span class="mf">0.11651549249985162</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Kristen Wiig&#39;</span><span class="p">,</span> <span class="mf">0.11275491086152521</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Jason Bateman&#39;</span><span class="p">,</span> <span class="mf">0.11125735405067895</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Ben Stiller&#39;</span><span class="p">,</span> <span class="mf">0.10928205137571208</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Elizabeth Banks&#39;</span><span class="p">,</span> <span class="mf">0.10659729338832805</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">u&#39;Jonah Hill&#39;</span><span class="p">,</span> <span class="mf">0.10600648265284611</span><span class="p">)]</span>
+</pre></div>
+
+
+<h2>Discovering Communities - Girvan Newman</h2>
+<p>We are going to implement the Girvan-Newman algorithm for discovering communities. Again, use the smaller graph so that are computations can be done quickly.</p>
+<p>Here is the pseudocode for the Girvan-Newman algorithm:</p>
+<div class="highlight"><pre><span class="kd">function</span> <span class="nx">GirvanNewman</span><span class="o">:</span>
+    <span class="nx">repeat</span><span class="o">:</span>
+        <span class="nx">repeat</span> <span class="nx">until</span> <span class="nx">a</span> <span class="k">new</span> <span class="nx">connected</span> <span class="nx">component</span> <span class="nx">is</span> <span class="nx">created</span><span class="o">:</span>
+            <span class="nx">calculate</span> <span class="nx">the</span> <span class="nx">edge</span> <span class="nx">betweenness</span> <span class="nx">centralities</span> <span class="k">for</span> <span class="nx">all</span> <span class="nx">the</span> <span class="nx">edges</span>
+            <span class="nx">remove</span> <span class="nx">the</span> <span class="nx">edge</span> <span class="kd">with</span> <span class="nx">the</span> <span class="nx">highest</span> <span class="nx">betweenness</span>
+</pre></div>
+
+
+<p>We are going to do this to find the 'optimal number' of communities in the data set.</p>
+<div class="highlight"><pre>karateG = nx.karate_club_graph()
+nx.draw(karateG)
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW07D1/output_30_0.png" /></p>
+<p>Below is the functions used to find the optimal number of communities in this network.</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">networkx</span> <span class="kn">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+
+
+<span class="k">def</span> <span class="nf">girvan_newman_step</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    INPUT: Graph G</span>
+<span class="sd">    OUTPUT: None</span>
+
+<span class="sd">    Run one step of the Girvan-Newman community detection algorithm.</span>
+<span class="sd">    Afterwards, the graph will have one more connected component.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">num_connected_graphs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">G</span><span class="p">)])</span>
+    <span class="k">while</span> <span class="nb">len</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">G</span><span class="p">)])</span> <span class="o">==</span> <span class="n">num_connected_graphs</span><span class="p">:</span>
+        <span class="n">eb</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">edge_betweenness</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="n">edge_to_remove</span> <span class="o">=</span> <span class="n">eb</span><span class="o">.</span><span class="n">keys</span><span class="p">()[</span><span class="n">values</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">values</span><span class="p">))]</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">edge_to_remove</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">edge_to_remove</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">find_communities_n</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    INPUT: Graph G, int n</span>
+<span class="sd">    OUTPUT: list of lists</span>
+
+<span class="sd">    Run the Girvan-Newman algorithm on G for n steps. Return the resulting</span>
+<span class="sd">    communities.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">G1</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">girvan_newman_step</span><span class="p">(</span><span class="n">G1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">G1</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">find_communities_modularity</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    INPUT:</span>
+<span class="sd">        G: networkx Graph</span>
+<span class="sd">        max_iter: (optional) if given, maximum number of iterations</span>
+<span class="sd">    OUTPUT: list of lists of strings (node names)</span>
+
+<span class="sd">    Run the Girvan-Newman algorithm on G and find the communities with the</span>
+<span class="sd">    maximum modularity.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">degrees</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
+    <span class="n">num_edges</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span>
+    <span class="n">G1</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">best_modularity</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+    <span class="n">best_comps</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">G1</span><span class="p">)</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">G1</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">subgraphs</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">connected_component_subgraphs</span><span class="p">(</span><span class="n">G1</span><span class="p">)</span>
+        <span class="n">modularity</span> <span class="o">=</span> <span class="n">get_modularity</span><span class="p">(</span><span class="n">subgraphs</span><span class="p">,</span> <span class="n">degrees</span><span class="p">,</span> <span class="n">num_edges</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">modularity</span> <span class="o">&gt;</span> <span class="n">best_modularity</span><span class="p">:</span>
+            <span class="n">best_modularity</span> <span class="o">=</span> <span class="n">modularity</span>
+            <span class="n">best_comps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">connected_component_subgraphs</span><span class="p">(</span><span class="n">G1</span><span class="p">))</span>
+        <span class="n">girvan_newman_step</span><span class="p">(</span><span class="n">G1</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">max_iter</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">max_iter</span><span class="p">:</span>
+            <span class="k">break</span>
+    <span class="k">return</span> <span class="n">best_comps</span>
+
+
+<span class="k">def</span> <span class="nf">get_modularity</span><span class="p">(</span><span class="n">subgraphs</span><span class="p">,</span> <span class="n">degrees</span><span class="p">,</span> <span class="n">num_edges</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    INPUT:</span>
+<span class="sd">        subgraphs: graph broken in subgraphs</span>
+<span class="sd">        degrees: dictionary of degree values of original graph</span>
+<span class="sd">        num_edges: float, number of edges in original graph</span>
+<span class="sd">    OUTPUT: Float (modularity value, between -0.5 and 1)</span>
+
+<span class="sd">    Return the value of the modularity for the graph G.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="mf">0.</span>
+    <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">subgraphs</span><span class="p">:</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+        <span class="n">n_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+        <span class="n">n_edges</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+        <span class="n">sub_q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_nodes</span><span class="p">,</span><span class="n">n_nodes</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">j</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">nodes</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+                        <span class="n">sub_q</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1.</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">j</span><span class="p">],</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+                        <span class="n">sub_q</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1.</span>
+                    <span class="n">sub_q</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">-=</span> <span class="nb">float</span><span class="p">(</span><span class="n">degrees</span><span class="p">[</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">*</span><span class="n">degrees</span><span class="p">[</span><span class="n">nodes</span><span class="p">[</span><span class="n">j</span><span class="p">]])</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">num_edges</span><span class="p">)</span>
+        <span class="n">sub_q</span> <span class="o">=</span> <span class="n">sub_q</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">num_edges</span><span class="p">)</span>
+        <span class="n">q</span> <span class="o">+=</span> <span class="n">sub_q</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">q</span>
+
+
+<span class="n">communities</span> <span class="o">=</span> <span class="n">find_communities_modularity</span><span class="p">(</span><span class="n">karateG</span><span class="p">)</span>
+<span class="n">communities</span>
+
+
+
+
+<span class="p">[</span><span class="o">&lt;</span><span class="n">networkx</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">Graph</span> <span class="n">at</span> <span class="mh">0x25cbeb0d0</span><span class="o">&gt;</span><span class="p">,</span>
+ <span class="o">&lt;</span><span class="n">networkx</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">Graph</span> <span class="n">at</span> <span class="mh">0x25cc46e90</span><span class="o">&gt;</span><span class="p">,</span>
+ <span class="o">&lt;</span><span class="n">networkx</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">Graph</span> <span class="n">at</span> <span class="mh">0x25cc46d90</span><span class="o">&gt;</span><span class="p">,</span>
+ <span class="o">&lt;</span><span class="n">networkx</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">Graph</span> <span class="n">at</span> <span class="mh">0x25cc46e10</span><span class="o">&gt;</span><span class="p">,</span>
+ <span class="o">&lt;</span><span class="n">networkx</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">Graph</span> <span class="n">at</span> <span class="mh">0x25cc46c10</span><span class="o">&gt;</span><span class="p">]</span>
+</pre></div>
+
+
+<p>Girvan Newman algorithm finds there are 5 communities.</p>
+<div class="highlight"><pre>plt.figure(figsize=(14,8))
+for i,x in enumerate(communities):
+    plt.subplot(2,3,i+1)
+    nx.draw(communities[i])
+plt.show()
+</pre></div>
+
+
+<p><img alt="png" src="http://www.bryantravissmith.com/img/GW07D1/output_35_0.png" /></p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'bryansmithphd';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=bryansmithphd">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      Bryan Smith, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="http://www.bryantravissmith.com/theme/js/jquery.min.js"></script>
+  <script src="http://www.bryantravissmith.com/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$$','$$'], ['\\(','\\)']]}
+});
+</script>
+</html>

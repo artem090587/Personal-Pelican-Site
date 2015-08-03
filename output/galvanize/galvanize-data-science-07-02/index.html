@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-07-02/index.html" />
+
+    <title>  Bryan Travis Smith, Ph.D &mdash; Galvanize - Week 07 - Day 2
+</title>
+
+
+
+
+    <link rel="stylesheet" href="http://www.bryantravissmith.com/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-24340005-3', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+
+    <meta name="author" content="Bryan Smith">
+    <meta name="description" content="Today we covered high performance programing and aws">
+  <meta name="tags" contents="data-science, galvanize, aws, parallel programing, s3, ec2, ">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+      <div class="header-image pull-left">
+        <a class="nodec" href="http://www.bryantravissmith.com"><img src=http://www.bryantravissmith.com/img/bryan.jpeg></a>
+      </div>
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="http://www.bryantravissmith.com">Bryan Travis Smith, Ph.D</a>
+      </h1>
+      <h3 class="header-text">Physicist, Data Scientist, Martial Artist, & Life Enthusiast</h3>
+      <ul class="header-menu list-inline">
+              <li class="muted">|</li>
+            <li><a class="nodec" href="http://www.bryantravissmith.com/about/">About</a></li>
+              <li class="muted">|</li>
+          <li><a class="nodec icon-mail-alt" href="mailto:bryantravissmith@gmail.com"></a></li>
+          <li><a class="nodec icon-github" href="https://github.com/bryantravissmith"></a></li>
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+      <a href="/galvanize/galvanize-data-science-07-02/" title="Permalink to Galvanize - Week 07 - Day 2">Galvanize - Week 07 - Day 2</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" href="/galvanize/galvanize-data-science-07-02/" title="2015-07-14T10:20:00-07:00">Tue 14 July 2015</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+        <a href="http://www.bryantravissmith.com/category/galvanize.html">Galvanize</a>
+      </li>
+        <li class="muted">&middot;</li>
+        <li>
+          <address class="post-author">
+            By <a href="http://www.bryantravissmith.com/author/bryan-smith.html">Bryan Smith</a>
+          </address>
+        </li>
+    </ul>
+    <div class="post-content">
+      <h1>Galvanize Immersive Data Science</h1>
+<h2>Week 7 - Day 2</h2>
+<p>Today we started our process of large scale and cloud based data science.  Our 'quiz' was to set up an AWS account and link it to Galvanize.  </p>
+<p>Our morning lecture was on AWS, boto package for python, and details of S3, EBS, and EC2.</p>
+<h2>S3 on AWS</h2>
+<p>Our first task was to use the web interface and set up an S3 bucket, and I named my 'galvanizeweek7'.   To make the data web accessible, we needed to change the permissions of either the file or the bucket.  </p>
+<p>We were given this permission to use on our bucket:</p>
+<div class="highlight"><pre>    {
+      &quot;Version&quot;: &quot;2008-10-17&quot;,
+      &quot;Statement&quot;: [
+        {
+           &quot;Sid&quot;: &quot;AllowPublicRead&quot;,
+           &quot;Effect&quot;: &quot;Allow&quot;,
+           &quot;Principal&quot;: {
+              &quot;AWS&quot;: &quot;*&quot;
+           },
+           &quot;Action&quot;: &quot;s3:GetObject&quot;,
+           &quot;Resource&quot;: &quot;arn:aws:s3:::galvanizeweek7/*&quot;
+           }
+      ]
+     }
+</pre></div>
+
+
+<p>We then uploaded a cancer data set into our bucket.</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="n">cancer</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;https://s3.amazonaws.com/galvanizeweek7/cancer.csv&#39;</span><span class="p">)</span>
+<span class="n">cancer</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>cancer</th>
+      <th>population</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>445</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0</td>
+      <td>559</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3</td>
+      <td>677</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>4</td>
+      <td>681</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>3</td>
+      <td>746</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>Now that we can load data from our S3 bucket, we are going to use boto upload an analysis to the bucket we downloaded the data.</p>
+<div class="highlight"><pre><span class="n">cancer</span><span class="p">[</span><span class="s">&#39;rate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cancer</span><span class="o">.</span><span class="n">cancer</span><span class="o">/</span><span class="n">cancer</span><span class="o">.</span><span class="n">population</span>
+<span class="n">cancer</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s">&quot;cancer_with_rate.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">cancer</span><span class="o">.</span><span class="n">rate</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;Cancer Rate&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;Count&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;cancer_rate.jpg&#39;</span><span class="p">)</span>
+
+
+<span class="kn">import</span> <span class="nn">boto</span>
+<span class="n">conn</span> <span class="o">=</span> <span class="n">boto</span><span class="o">.</span><span class="n">connect_s3</span><span class="p">(</span><span class="n">aws_access_key_id</span><span class="p">,</span><span class="n">aws_secret_access_key</span><span class="p">)</span>
+<span class="n">bucket</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">get_bucket</span><span class="p">(</span><span class="s">&#39;galvanizeweek7&#39;</span><span class="p">)</span>
+<span class="n">csvfile</span> <span class="o">=</span> <span class="n">bucket</span><span class="o">.</span><span class="n">new_key</span><span class="p">(</span><span class="s">&#39;cancer_with_rate.csv&#39;</span><span class="p">)</span>
+<span class="n">csvfile</span><span class="o">.</span><span class="n">set_contents_from_filename</span><span class="p">(</span><span class="s">&#39;cancer_with_rate.csv&#39;</span><span class="p">)</span>
+<span class="n">imgfile</span> <span class="o">=</span> <span class="n">bucket</span><span class="o">.</span><span class="n">new_key</span><span class="p">(</span><span class="s">&#39;cancer_rate_hist.jpg&#39;</span><span class="p">)</span>
+<span class="n">imgfile</span><span class="o">.</span><span class="n">set_contents_from_filename</span><span class="p">(</span><span class="s">&#39;cancer_rate.jpg&#39;</span><span class="p">)</span>
+
+
+
+
+<span class="mi">54458</span>
+
+
+
+
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="n">Image</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s">&#39;https://s3.amazonaws.com/galvanizeweek7/cancer_rate_hist.jpg&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img src="https://s3.amazonaws.com/galvanizeweek7/cancer_rate_hist.jpg"/></p>
+<p>That is pretty cool in my book.  Our next challenge is to run this analysis on an AWS EC2 instance.</p>
+<h2>EC2 on AWS</h2>
+<p>First we need to launch an EC2 instance.  There is a community data science image that we were instructed to use.  Just for the record it is:</p>
+<p>$$\mbox{AMI: ami-d1737bb8}$$</p>
+<p>After we lauched the image we downloaded our key-pair pem file locally so that we can ssh into the instance.  We also need to upload our file for analysis using scp.</p>
+<p>$$\mbox{ssh -X -i keypair.pem User@Domain}$$</p>
+<p>$$\mbox{scp -i keypair.pem /path/to/myfile.txt User@Domain:}$$</p>
+<p>Notice the ":" in the last line.  I waisted 5 minutes by not including it. </p>
+<p>Using these steps I uploaded the followling contents to 'analysis.py' onto my EC2 instance and ran 'python analysis.py'.   </p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">do_analysis</span><span class="p">():</span>
+    <span class="kn">import</span> <span class="nn">boto</span>
+    <span class="n">aws_access_key_id</span> <span class="o">=</span> <span class="s">&quot;KEY&quot;</span>
+    <span class="n">aws_secret_access_key</span> <span class="o">=</span> <span class="s">&quot;SECRET&quot;</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="n">boto</span><span class="o">.</span><span class="n">connect_s3</span><span class="p">(</span><span class="n">aws_access_key_id</span><span class="p">,</span><span class="n">aws_secret_access_key</span><span class="p">)</span>
+    <span class="n">galvanzieweek7copy</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">create_bucket</span><span class="p">(</span><span class="s">&#39;galvanzieweek7copy&#39;</span><span class="p">)</span>
+
+    <span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+    <span class="kn">import</span> <span class="nn">matplotlib</span>
+    <span class="n">matplotlib</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s">&#39;Agg&#39;</span><span class="p">)</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+
+    <span class="n">cancer</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;https://s3.amazonaws.com/galvanizeweek7/cancer.csv&#39;</span><span class="p">)</span>
+    <span class="n">cancer</span><span class="p">[</span><span class="s">&#39;rate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cancer</span><span class="o">.</span><span class="n">cancer</span><span class="o">/</span><span class="n">cancer</span><span class="o">.</span><span class="n">population</span>
+    <span class="n">cancer</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s">&quot;cancer_with_rate.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">cancer</span><span class="o">.</span><span class="n">rate</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;Cancer Rate&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;Count&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;cancer_rate.jpg&#39;</span><span class="p">)</span>
+
+    <span class="n">csvfile</span> <span class="o">=</span> <span class="n">galvanzieweek7copy</span><span class="o">.</span><span class="n">new_key</span><span class="p">(</span><span class="s">&#39;cancer_with_rate.csv&#39;</span><span class="p">)</span>
+    <span class="n">csvfile</span><span class="o">.</span><span class="n">set_contents_from_filename</span><span class="p">(</span><span class="s">&#39;cancer_with_rate.csv&#39;</span><span class="p">)</span>
+    <span class="n">imgfile</span> <span class="o">=</span> <span class="n">galvanzieweek7copy</span><span class="o">.</span><span class="n">new_key</span><span class="p">(</span><span class="s">&#39;cancer_rate_hist.jpg&#39;</span><span class="p">)</span>
+    <span class="n">imgfile</span><span class="o">.</span><span class="n">set_contents_from_filename</span><span class="p">(</span><span class="s">&#39;cancer_rate.jpg&#39;</span><span class="p">)</span>
+
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s">&#39;cancer_with_rate.csv&#39;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s">&#39;cancer_rate.jpg&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">do_analysis</span><span class="p">()</span>
+
+
+<span class="n">Image</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s">&#39;https://s3.amazonaws.com/galvanzieweek7copy/cancer_rate_hist.jpg&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img src="https://s3.amazonaws.com/galvanzieweek7copy/cancer_rate_hist.jpg"/></p>
+<p>We see two things:</p>
+<ol>
+<li>I forgot to set the number of bins</li>
+<li>I misspelled galvanize.   </li>
+</ol>
+<p>Other then those two mistakes, I ran an entire 'job' on the cloud.   I'm sure there is a joke about getting high..... I just can't think of it.</p>
+<h2>Parallelism</h2>
+<p>Our afternoon lectures were on multicore and threaded processes in python.   We did not deal with communcation through queues between seperate threads.  That would have been more interesting for me, but most of my cohort has not had graduate level System architecture classes.   C'est la vie.  I still learned a lot, and sometimes its about getting neurons to fire after being dormant for a while.  </p>
+<p>Lets jump in...</p>
+<p>We are going perfor a computational intensive task, checking if a number is prime by trying to divide it by every number between 2 and its square root.   We will do this for a range of numbers, getting a list of primes.   </p>
+<p>Since each number's check is independant of another number's check, we can break this up and run them separately.  We are timing two processes:</p>
+<ol>
+<li>Finding every prime between 100000000 and 101000000 in squence</li>
+<li>
+<p>Breaking the job into for pieces, and running each job separately.   </p>
+<ol>
+<li>I only have two cores on this machine, so the 4 is really a 2 as far as performance increase.  There are 4 jobs, but they are not getting 4x improvmment (minus overhead of setup)</li>
+</ol>
+<p>import math
+import multiprocessing
+import itertools
+from timeit import Timer</p>
+<p>def check_prime(n):
+    if n % 2 == 0:
+        return False
+    for i in xrange(3, int(math.sqrt(n)) + 1, 2):
+        if n % i == 0:
+            return False
+    return True</p>
+<p>def primes_sequential():
+    primes = []
+    number_range = xrange(100000000, 101000000) 
+    for possible_prime in number_range:
+        if check_prime(possible_prime):
+            primes.append(possible_prime)
+    print "Number of Primes Found: ", len(primes) # primes[:10], primes[-10:]</p>
+<p>def primes_in_range(range):
+    primes = []
+    for possible_prime in range:
+        if check_prime(possible_prime):
+            primes.append(possible_prime)
+    return primes</p>
+<p>def primes_parallel():
+    num_processes = 4
+    start = 100000000
+    end = 101000000
+    diff = end-start
+    range_list = [xrange(100000000+i<em>diff/num_processes,start+(i+1)</em>diff/num_processes) for i in range(num_processes)]</p>
+<div class="highlight"><pre>pool = multiprocessing.Pool(processes=num_processes)
+outputs = pool.map(primes_in_range, range_list)
+primes = []
+for result in outputs:
+    primes.extend(result)
+print &quot;Number of Primes Found: &quot;, len(primes) #, primes[:10], primes[-10:]
+</pre></div>
+
+
+<h1>if <strong>name</strong> == "<strong>main</strong>":</h1>
+<p>t = Timer(lambda: primes_sequential())
+print "Completed sequential in %s seconds." % t.timeit(1)</p>
+<p>t = Timer(lambda: primes_parallel())
+print "Completed parallel in %s seconds." % t.timeit(1)</p>
+<p>Number of Primes Found:  54208
+Completed sequential in 22.6053831577 seconds.
+Number of Primes Found:  54208
+Completed parallel in 10.060131073 seconds.</p>
+</li>
+</ol>
+<p>Running thee following line in command line after running this code shows that there are 4 jobs.  When I set it for 20, there were 20 jobs.   The performance increase, however, was not there because we are limited by my computer power.</p>
+<blockquote>
+<p>ps aux | grep primes.py</p>
+</blockquote>
+<h2>Concurrency</h2>
+<p>Concurrency is about different threads on the same core, but switching between those threads when there is downtime.   The previous problem is not a good example because the computation does not have much down time.   A request for a website, however, has downtime between making the response and recieving the request.   That is prime time to be doing other computations.</p>
+<p>For this part of our afternoon sprint we are using <a href="https://docs.python.org/2/library/threading.html"><code>threading</code></a>.</p>
+<p>We are going to make request of hacker news in a sequence and threaded way.   My intution is to see a great improvement. </p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">from</span> <span class="nn">timeit</span> <span class="kn">import</span> <span class="n">Timer</span>
+
+
+<span class="k">def</span> <span class="nf">request_item</span><span class="p">(</span><span class="n">item_id</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;http://hn.algolia.com/api/v1/items/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">item_id</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&quot;Thread: &quot;</span><span class="p">,</span> <span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span><span class="o">.</span><span class="n">getName</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">RequestException</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+
+<span class="k">def</span> <span class="nf">request_sequential</span><span class="p">():</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;Requesting sequentially...</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">21</span><span class="p">):</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">request_item</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;done.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">results</span>
+
+<span class="k">def</span> <span class="nf">request_concurrent</span><span class="p">():</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;Requesting in parallel...</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="n">threads</span> <span class="o">=</span> <span class="p">[</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">target_function</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">,))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">21</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">threads</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">threads</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;done.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">result</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">threads</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">target_function</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+    <span class="bp">self</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">current_thread</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">request_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+
+
+<span class="c">#if __name__ == &#39;__main__&#39;:</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">Timer</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">request_sequential</span><span class="p">())</span>
+<span class="k">print</span> <span class="s">&quot;Completed sequential in </span><span class="si">%s</span><span class="s"> seconds.&quot;</span> <span class="o">%</span> <span class="n">t</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;--------------------------------------&quot;</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">Timer</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">request_concurrent</span><span class="p">())</span>
+<span class="k">print</span> <span class="s">&quot;Completed using threads in </span><span class="si">%s</span><span class="s"> seconds.&quot;</span> <span class="o">%</span> <span class="n">t</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">Requesting</span> <span class="n">sequentially</span><span class="o">...</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">MainThread</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">MainThread</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">MainThread</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">MainThread</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">MainThread</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">MainThread</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">MainThread</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">MainThread</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">MainThread</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">MainThread</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">MainThread</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">MainThread</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">MainThread</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">MainThread</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">MainThread</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">MainThread</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">MainThread</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">MainThread</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">MainThread</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">MainThread</span>
+<span class="n">done</span><span class="o">.</span>
+<span class="n">Completed</span> <span class="n">sequential</span> <span class="ow">in</span> <span class="mf">7.00593900681</span> <span class="n">seconds</span><span class="o">.</span>
+<span class="o">--------------------------------------</span>
+<span class="n">Requesting</span> <span class="ow">in</span> <span class="n">parallel</span><span class="o">...</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">Thread</span><span class="o">-</span><span class="mi">10</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">Thread</span><span class="o">-</span><span class="mi">12</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">Thread</span><span class="o">-</span><span class="mi">11</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">Thread</span><span class="o">-</span><span class="mi">13</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">Thread</span><span class="o">-</span><span class="mi">14</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">Thread</span><span class="o">-</span><span class="mi">9</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">Thread</span><span class="o">-</span><span class="mi">25</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">Thread</span><span class="o">-</span><span class="mi">18</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">Thread</span><span class="o">-</span><span class="mi">24</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">Thread</span><span class="o">-</span><span class="mi">16</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">Thread</span><span class="o">-</span><span class="mi">27</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">Thread</span><span class="p">:</span> <span class="n">Thread</span><span class="o">-</span><span class="mi">15</span> 
+<span class="n">Thread</span><span class="o">-</span><span class="mi">17</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">Thread</span><span class="o">-</span><span class="mi">23</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">Thread</span><span class="o">-</span><span class="mi">22</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">Thread</span><span class="o">-</span><span class="mi">26</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">Thread</span><span class="o">-</span><span class="mi">28</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">Thread</span><span class="o">-</span><span class="mi">21</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">Thread</span><span class="o">-</span><span class="mi">19</span>
+<span class="n">Thread</span><span class="p">:</span>  <span class="n">Thread</span><span class="o">-</span><span class="mi">20</span>
+<span class="n">done</span><span class="o">.</span>
+<span class="n">Completed</span> <span class="n">using</span> <span class="n">threads</span> <span class="ow">in</span> <span class="mf">0.275010824203</span> <span class="n">seconds</span><span class="o">.</span>
+</pre></div>
+
+
+<p>In the sequential model, we have a first in first out process.  We get the requests in the order they are programmed.</p>
+<p>In the threaded model, we see that they run in a 'random' order.  We see that thread 15 and thread 17 ran at nearly the same time by how it is displayed in the print stream.  We also see that we go from 7 seconds to almost a quarter of a second to make and receive all the processes.   This is a much more efficent of my computer's resources.  The gain, again, is due to the fact that there is a long wait time in making internet requests.</p>
+<ol>
+<li>Run <code>request_sequential</code> and <code>request_concurrent</code> and compare the run time.</li>
+</ol>
+<h2>Parallelism and Concurrency</h2>
+<p>In web scraping we may have different categories we want to scrape, but those scrapings can be threaded.  This is an opportunity to combine parallelism and concurrency. </p>
+<p>We are going to scrape the Yelp API for 4 cities, one on each core, and thread the pull of 20 businesses from each city.  Instead of print or returning the data, we are going to write it dirrectly to a local MongoDB database.  </p>
+<div class="highlight"><pre><span class="n">KEY</span> <span class="o">=</span> <span class="s">&quot;OoJlpKgaVfdWK97h4RI4fA&quot;</span>
+<span class="n">SECRET_KEY</span> <span class="o">=</span> <span class="s">&quot;ZuOdCWb-rUAjOcHpw9r6Hz6wDKc&quot;</span>
+<span class="n">TOKEN</span> <span class="o">=</span> <span class="s">&quot;oARQTS19fvi6R4uFWvNsVrjCB0cjduqR&quot;</span>
+<span class="n">SECRET_TOKEN</span> <span class="o">=</span> <span class="s">&quot;2IZtIHSG1RgCuNDmO17zicYC3ac&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">oauth2</span>
+<span class="kn">import</span> <span class="nn">urllib</span>
+<span class="kn">import</span> <span class="nn">urllib2</span>
+
+
+<span class="k">def</span> <span class="nf">request</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">url_params</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Prepares OAuth authentication and sends the request to the API.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        host (str): The domain host of the API.</span>
+<span class="sd">        path (str): The path of the API after the domain.</span>
+<span class="sd">        url_params (dict): An optional set of query parameters in the request.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: The JSON response from the request.</span>
+<span class="sd">    Raises:</span>
+<span class="sd">        urllib2.HTTPError: An error occurs from the HTTP request.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">url_params</span> <span class="o">=</span> <span class="n">url_params</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s">&#39;http://{0}{1}?&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">urllib</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf8&#39;</span><span class="p">)))</span>
+
+    <span class="n">consumer</span> <span class="o">=</span> <span class="n">oauth2</span><span class="o">.</span><span class="n">Consumer</span><span class="p">(</span><span class="n">KEY</span><span class="p">,</span> <span class="n">SECRET_KEY</span><span class="p">)</span>
+    <span class="n">oauth_request</span> <span class="o">=</span> <span class="n">oauth2</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">url_params</span><span class="p">)</span>
+
+    <span class="n">oauth_request</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s">&#39;oauth_nonce&#39;</span><span class="p">:</span> <span class="n">oauth2</span><span class="o">.</span><span class="n">generate_nonce</span><span class="p">(),</span>
+            <span class="s">&#39;oauth_timestamp&#39;</span><span class="p">:</span> <span class="n">oauth2</span><span class="o">.</span><span class="n">generate_timestamp</span><span class="p">(),</span>
+            <span class="s">&#39;oauth_token&#39;</span><span class="p">:</span> <span class="n">TOKEN</span><span class="p">,</span>
+            <span class="s">&#39;oauth_consumer_key&#39;</span><span class="p">:</span> <span class="n">KEY</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">token</span> <span class="o">=</span> <span class="n">oauth2</span><span class="o">.</span><span class="n">Token</span><span class="p">(</span><span class="n">TOKEN</span><span class="p">,</span> <span class="n">SECRET_TOKEN</span><span class="p">)</span>
+    <span class="n">oauth_request</span><span class="o">.</span><span class="n">sign_request</span><span class="p">(</span><span class="n">oauth2</span><span class="o">.</span><span class="n">SignatureMethod_HMAC_SHA1</span><span class="p">(),</span> <span class="n">consumer</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
+    <span class="n">signed_url</span> <span class="o">=</span> <span class="n">oauth_request</span><span class="o">.</span><span class="n">to_url</span><span class="p">()</span>
+
+    <span class="c">#print u&#39;Querying {0} ...&#39;.format(signed_url)</span>
+
+    <span class="n">conn</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">signed_url</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">conn</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">response</span>
+
+
+<span class="kn">from</span> <span class="nn">timeit</span> <span class="kn">import</span> <span class="n">Timer</span>
+<span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+
+<span class="n">POOL_SIZE</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">API_HOST</span> <span class="o">=</span> <span class="s">&quot;api.yelp.com&quot;</span>
+<span class="n">SEARCH_PATH</span> <span class="o">=</span> <span class="s">&#39;/v2/search&#39;</span>
+<span class="n">BUSINESS_PATH</span> <span class="o">=</span> <span class="s">&#39;/v2/business/&#39;</span>
+
+<span class="n">DB_NAME</span> <span class="o">=</span> <span class="s">&quot;yelp&quot;</span>
+<span class="n">COLLECTION_NAME</span> <span class="o">=</span> <span class="s">&quot;business&quot;</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">yelp</span>
+<span class="n">coll</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">scrape</span>
+
+
+<span class="k">def</span> <span class="nf">city_search_parallel</span><span class="p">(</span><span class="n">city</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves the JSON response that contains the top 20 business meta data for city.</span>
+<span class="sd">    :param city: city name</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">city_search</span><span class="p">(</span><span class="n">city</span><span class="p">)</span>
+    <span class="n">business_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s">&#39;businesses&#39;</span><span class="p">]]</span>
+    <span class="n">business_info_concurrent</span><span class="p">(</span><span class="n">business_ids</span><span class="p">)</span>
+
+
+
+
+<span class="k">def</span> <span class="nf">business_info_concurrent</span><span class="p">(</span><span class="n">ids</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extracts the business ids from the JSON object and</span>
+<span class="sd">    retrieves the business data for each id concurrently.</span>
+<span class="sd">    :param json_response: JSON response from the search API.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">threads</span> <span class="o">=</span> <span class="p">[</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">business_info</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="nb">id</span><span class="p">,))</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">threads</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">threads</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">scrape_parallel_concurrent</span><span class="p">(</span><span class="n">pool_size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Uses multiple processes to make requests to the search API.</span>
+<span class="sd">    :param pool_size: number of worker processes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">coll</span><span class="o">.</span><span class="n">remove</span><span class="p">({})</span>  <span class="c"># Remove previous entries from collection in Mongodb.</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;data/cities&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">cities</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+        <span class="n">pool</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">pool_size</span><span class="p">)</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">city_search_parallel</span><span class="p">,</span> <span class="n">cities</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">business_info</span><span class="p">(</span><span class="n">business_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Makes a request to Yelp&#39;s business API and retrieves the business data in JSON format.</span>
+<span class="sd">    Dumps the JSON response into mongodb.</span>
+<span class="sd">    :param business_id:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">business_path</span> <span class="o">=</span> <span class="n">BUSINESS_PATH</span> <span class="o">+</span> <span class="n">business_id</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">request</span><span class="p">(</span><span class="n">API_HOST</span><span class="p">,</span> <span class="n">business_path</span><span class="p">)</span>
+    <span class="n">coll</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">city_search</span><span class="p">(</span><span class="n">city</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Makes a request to Yelp&#39;s search API given the city name.</span>
+<span class="sd">    :param city:</span>
+<span class="sd">    :return: JSON meta data for top 20 businesses.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;location&#39;</span><span class="p">:</span> <span class="n">city</span><span class="p">,</span> <span class="s">&#39;limit&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">}</span>
+    <span class="n">json_response</span> <span class="o">=</span> <span class="n">request</span><span class="p">(</span><span class="n">API_HOST</span><span class="p">,</span> <span class="n">SEARCH_PATH</span><span class="p">,</span> <span class="n">url_params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json_response</span>
+
+
+<span class="k">def</span> <span class="nf">scrape_sequential</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scrapes the business&#39;s meta data for a list of cities</span>
+<span class="sd">    and for each business scrapes the content.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">coll</span><span class="o">.</span><span class="n">remove</span><span class="p">({})</span>  <span class="c"># Remove previous entries from collection in Mongodb.</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;data/cities&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">cities</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">city</span> <span class="ow">in</span> <span class="n">cities</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">city_search</span><span class="p">(</span><span class="n">city</span><span class="p">)</span>
+            <span class="n">business_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s">&#39;businesses&#39;</span><span class="p">]]</span>
+            <span class="k">for</span> <span class="n">business_id</span> <span class="ow">in</span> <span class="n">business_ids</span><span class="p">:</span>
+                <span class="n">business_info</span><span class="p">(</span><span class="n">business_id</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">Timer</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">scrape_sequential</span><span class="p">())</span>
+    <span class="k">print</span> <span class="s">&quot;Completed sequential in </span><span class="si">%s</span><span class="s"> seconds.&quot;</span> <span class="o">%</span> <span class="n">t</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">t2</span> <span class="o">=</span> <span class="n">Timer</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">scrape_parallel_concurrent</span><span class="p">(</span><span class="n">POOL_SIZE</span><span class="p">))</span>
+    <span class="k">print</span> <span class="s">&quot;Completed parallel in </span><span class="si">%s</span><span class="s"> seconds.&quot;</span> <span class="o">%</span> <span class="n">t2</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">Completed</span> <span class="n">sequential</span> <span class="ow">in</span> <span class="mf">34.240404129</span> <span class="n">seconds</span><span class="o">.</span>
+<span class="n">Completed</span> <span class="n">parallel</span> <span class="ow">in</span> <span class="mf">3.13069486618</span> <span class="n">seconds</span><span class="o">.</span>
+</pre></div>
+
+
+<p>Instead of taking 30 seconds to scrape 80 businesses from 4 cities sequentially, we can get the same information in our database by running on multiple cores, and each core threading highly latent requests, in 3 seconds.  </p>
+<p>And fianlly, lets just make sure we have all 80 businesses in our database:</p>
+<div class="highlight"><pre>coll.find().count()
+
+
+
+
+80
+</pre></div>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'bryansmithphd';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=bryansmithphd">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      Bryan Smith, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="http://www.bryantravissmith.com/theme/js/jquery.min.js"></script>
+  <script src="http://www.bryantravissmith.com/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$$','$$'], ['\\(','\\)']]}
+});
+</script>
+</html>

@@ -1,3 +1,11 @@
+Title: Galvanize - Week 07 - Day 2
+Date: 2015-07-14 10:20
+Modified: 2015-07-14 10:30
+Category: Galvanize
+Tags: data-science, galvanize, aws, parallel programing, s3, ec2
+Slug: galvanize-data-science-07-02
+Authors: Bryan Smith
+Summary: Today we covered high performance programing and aws
 
 #Galvanize Immersive Data Science
 

@@ -18,7 +18,7 @@ META_IMAGE_TYPE = "image/jpeg"
 ARTICLE_PATHS = ['blog']
 PAGE_PATHS = ['pages']
 PATH = 'content'
-STATIC_PATHS = ['img', 'files','udacity']
+STATIC_PATHS = ['img', 'files','udacity','data-vis']
 TIMEZONE = 'America/Los_Angeles'
 
 ARTICLE_URL = '{category}/{slug}/'

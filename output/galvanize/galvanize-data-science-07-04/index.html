@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-07-04/index.html" />
+
+    <title>  Bryan Travis Smith, Ph.D &mdash; Galvanize - Week 07 - Day 4
+</title>
+
+
+
+
+    <link rel="stylesheet" href="http://www.bryantravissmith.com/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-24340005-3', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+
+    <meta name="author" content="Bryan Smith">
+    <meta name="description" content="Today we covered spark">
+  <meta name="tags" contents="data-science, galvanize, spark, ">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+      <div class="header-image pull-left">
+        <a class="nodec" href="http://www.bryantravissmith.com"><img src=http://www.bryantravissmith.com/img/bryan.jpeg></a>
+      </div>
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="http://www.bryantravissmith.com">Bryan Travis Smith, Ph.D</a>
+      </h1>
+      <h3 class="header-text">Physicist, Data Scientist, Martial Artist, & Life Enthusiast</h3>
+      <ul class="header-menu list-inline">
+              <li class="muted">|</li>
+            <li><a class="nodec" href="http://www.bryantravissmith.com/about/">About</a></li>
+              <li class="muted">|</li>
+          <li><a class="nodec icon-mail-alt" href="mailto:bryantravissmith@gmail.com"></a></li>
+          <li><a class="nodec icon-github" href="https://github.com/bryantravissmith"></a></li>
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+      <a href="/galvanize/galvanize-data-science-07-04/" title="Permalink to Galvanize - Week 07 - Day 4">Galvanize - Week 07 - Day 4</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" href="/galvanize/galvanize-data-science-07-04/" title="2015-07-16T10:20:00-07:00">Thu 16 July 2015</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+        <a href="http://www.bryantravissmith.com/category/galvanize.html">Galvanize</a>
+      </li>
+        <li class="muted">&middot;</li>
+        <li>
+          <address class="post-author">
+            By <a href="http://www.bryantravissmith.com/author/bryan-smith.html">Bryan Smith</a>
+          </address>
+        </li>
+    </ul>
+    <div class="post-content">
+      <h1>Galvanize Immersive Data Science</h1>
+<h2>Week 7 - Day 4</h2>
+<p>Today we stared our two day Spark tutorials, so our mini quiz was downloading and running a stand alone version of spark.  We went to the <a href="http://spark.apache.org/downloads.html">Spark download page</a> and downloaded the "Prebuilt for Hadoop X.X" gzip file.   After it was downloaded and uncompressed, we altered our .bash_profile point $SPARK_HOME to the new directory, and extend the python path to include the python directory in this spark folder.   I am on the mac, so I addded these two lines into my .bash_profile.</p>
+<blockquote>
+<p>export SPARK_HOME=/Users/bryantravissmith/spark-1.4.1-bin-hadoop1<br />
+export PYTHONPATH=/Users/bryantravissmith/spark-1.4.1-bin-hadoop1/python/:$PYTHONPATH</p>
+</blockquote>
+<h2>Starting a Local Cluster</h2>
+<p>Spark has a master node and worker nodes.  The following commands will start the system on the mac.</p>
+<h3>Master</h3>
+<blockquote>
+<p>${SPARK_HOME}/bin/spark-class org.apache.spark.deploy.master.Master -h 127.0.0.1 -p 7077 --webui-port 8080</p>
+</blockquote>
+<h3>Worker</h3>
+<p>Use this once for each worker you wish to added to the master.</p>
+<blockquote>
+<p>${SPARK_HOME}/bin/spark-class org.apache.spark.deploy.worker.Worker -c 1 -m 1G spark://127.0.0.1:7077</p>
+</blockquote>
+<p>We used <a href="http://tmux.sourceforge.net/"><code>tmux</code></a> to run these commends in a connected terminal, then opened an ipython notebook.  The commands looked like this.</p>
+<blockquote>
+<p>tmux new -s master  <br />
+\${SPARK_HOME}/bin/spark-class org.apache.spark.deploy.master.Master -h 127.0.0.1 -p 7077 --webui-port 8080 <br />
+ctrl+b, d<br />
+tmux new -s worker1 <br />
+\${SPARK_HOME}/bin/spark-class org.apache.spark.deploy.worker.Worker -c 1 -m 1G spark://127.0.0.1:7077 <br />
+ctrl+b, d<br />
+tmux new -s worker2  <br />
+\${SPARK_HOME}/bin/spark-class org.apache.spark.deploy.worker.Worker -c 1 -m 1G spark://127.0.0.1:7077<br />
+ctrl+b, d<br />
+ IPYTHON_OPTS="notebook"  \${SPARK_HOME}/bin/pyspark --master spark://127.0.0.1:7077 --executor-memory 1G --driver-memory 1G</p>
+</blockquote>
+<p>All my postes are initially writen in an iPython notebook, and is how I am currently running this session.</p>
+<h2>Airline Delays</h2>
+<p>We are going to download airline flight information and explore an analysis using spark.   This is going to be different than previous work we have done because all the work is structured in the map-reduce framework.  We are also getting in the habit of loading data from hosted services, instead of working with local data files.  </p>
+<p>This data had arrival delays at the destination coded as 'ARR_DELAY', and the departire delay heading to the destination coded as 'DEP_DELAY'.  These values are in minutes.   If the flight is cancled, we will say the delay is 300 minutes (5 hours).</p>
+<div class="highlight"><pre>link = &#39;s3n://AKIAJRH3ZAWFYUFN5WIA:xSztE4PvK7GQ3zHuohSoOgrOdV9OosfP+4WXod0R@mortar-example-data/airline-data&#39;
+airline = sc.textFile(link)
+
+
+airline.count()
+
+
+
+
+5113194
+</pre></div>
+
+
+<p>The airline is an RDD structure.  It is not data, but instructions to go through the data.  Each time we do this it will cycle through 5 million rows in the data.  To make analysis faster, we will build it out on a subset of the data, and run the final analysis on the full dataset.</p>
+<div class="highlight"><pre>mini_airline = sc.parallelize(airline.take(1000))
+
+
+mini_airline.take(10)
+
+
+
+
+[u&#39;&quot;YEAR&quot;,&quot;MONTH&quot;,&quot;UNIQUE_CARRIER&quot;,&quot;ORIGIN_AIRPORT_ID&quot;,&quot;DEST_AIRPORT_ID&quot;,&quot;DEP_DELAY&quot;,&quot;DEP_DELAY_NEW&quot;,&quot;ARR_DELAY&quot;,&quot;ARR_DELAY_NEW&quot;,&quot;CANCELLED&quot;,&#39;,
+ u&#39;2012,4,&quot;AA&quot;,12478,12892,-4.00,0.00,-21.00,0.00,0.00,&#39;,
+ u&#39;2012,4,&quot;AA&quot;,12478,12892,-7.00,0.00,-65.00,0.00,0.00,&#39;,
+ u&#39;2012,4,&quot;AA&quot;,12478,12892,-6.00,0.00,-63.00,0.00,0.00,&#39;,
+ u&#39;2012,4,&quot;AA&quot;,12478,12892,-6.00,0.00,5.00,5.00,0.00,&#39;,
+ u&#39;2012,4,&quot;AA&quot;,12478,12892,-2.00,0.00,-39.00,0.00,0.00,&#39;,
+ u&#39;2012,4,&quot;AA&quot;,12478,12892,-6.00,0.00,-34.00,0.00,0.00,&#39;,
+ u&#39;2012,4,&quot;AA&quot;,12478,12892,-8.00,0.00,-16.00,0.00,0.00,&#39;,
+ u&#39;2012,4,&quot;AA&quot;,12478,12892,-7.00,0.00,-19.00,0.00,0.00,&#39;,
+ u&#39;2012,4,&quot;AA&quot;,12478,12892,-9.00,0.00,-2.00,0.00,0.00,&#39;]
+</pre></div>
+
+
+<p>We see that data structure is year, month, airline, 2x airport ideas, then the time information in minutes.   The first 9 data points do not look like they have the 'cancelled' variables listed.  The goal is to group this data to find the top 10 worst and best airports in terms of arrival and departure delays.  </p>
+<p>First we will get the data we want, id's and delays, then we will combind them by airport in terms of arrival and departures.   After that we will sort the data, determine the best airports.</p>
+<div class="highlight"><pre><span class="s-Atom">def</span> <span class="nf">make_row</span><span class="p">(</span><span class="s-Atom">x</span><span class="p">)</span><span class="s-Atom">:</span>
+    <span class="s-Atom">values</span> <span class="o">=</span> <span class="s-Atom">x</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+    <span class="s-Atom">dictionary</span> <span class="o">=</span> <span class="p">{</span><span class="s-Atom">&#39;DEST_AIRPORT_ID&#39;:values</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="s-Atom">&#39;ORIGIN_AIRPORT_ID&#39;:values</span><span class="p">[</span><span class="mi">3</span><span class="p">]}</span>
+
+    <span class="s-Atom">if</span> <span class="s-Atom">values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">!</span><span class="o">=</span> <span class="s-Atom">&#39;0.00&#39;:</span>
+        <span class="s-Atom">dictionary</span><span class="p">[</span><span class="s-Atom">&#39;DEP_DELAY&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="nf">float</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+    <span class="s-Atom">elif</span> <span class="s-Atom">values</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">==</span> <span class="s-Atom">&#39;&#39;:</span> 
+        <span class="s-Atom">dictionary</span><span class="p">[</span><span class="s-Atom">&#39;DEP_DELAY&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nf">float</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="nn">else</span><span class="p">:</span>
+        <span class="s-Atom">dictionary</span><span class="p">[</span><span class="s-Atom">&#39;DEP_DELAY&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nf">float</span><span class="p">(</span><span class="s-Atom">values</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span>
+
+    <span class="s-Atom">if</span> <span class="s-Atom">values</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">==</span> <span class="s-Atom">&#39;&#39;:</span> 
+        <span class="s-Atom">dictionary</span><span class="p">[</span><span class="s-Atom">&#39;ARR_DELAY&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="s-Atom">dictionary</span><span class="p">[</span><span class="s-Atom">&#39;DEP_DELAY&#39;</span><span class="p">]</span>
+    <span class="nn">else</span><span class="p">:</span>
+        <span class="s-Atom">dictionary</span><span class="p">[</span><span class="s-Atom">&#39;ARR_DELAY&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nf">float</span><span class="p">(</span><span class="s-Atom">values</span><span class="p">[</span><span class="mi">7</span><span class="p">])</span><span class="o">-</span><span class="s-Atom">dictionary</span><span class="p">[</span><span class="s-Atom">&#39;DEP_DELAY&#39;</span><span class="p">])</span>
+
+    <span class="s-Atom">return</span> <span class="s-Atom">dictionary</span>
+
+<span class="s-Atom">mini_airline</span><span class="p">.</span><span class="nf">map</span><span class="p">(</span><span class="s-Atom">lambda</span> <span class="nn">x</span><span class="p">:</span> <span class="s-Atom">x</span><span class="p">[:-</span><span class="mi">1</span><span class="p">])</span> <span class="s-Atom">\</span>
+            <span class="p">.</span><span class="nf">filter</span><span class="p">(</span><span class="s-Atom">lambda</span> <span class="nn">x</span><span class="p">:</span> <span class="o">not</span> <span class="s-Atom">x</span><span class="p">.</span><span class="nf">startswith</span><span class="p">(</span><span class="s-Atom">&#39;&quot;YEAR&quot;&#39;</span><span class="p">))</span> <span class="s-Atom">\</span>
+            <span class="p">.</span><span class="nf">map</span><span class="p">(</span><span class="s-Atom">make_row</span><span class="p">)</span> <span class="s-Atom">\</span>
+            <span class="p">.</span><span class="nf">take</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+
+
+
+<span class="p">[{</span><span class="s-Atom">&#39;ARR_DELAY&#39;:</span> <span class="o">-</span><span class="mf">21.0</span><span class="p">,</span>
+  <span class="s-Atom">&#39;DEP_DELAY&#39;:</span> <span class="mf">0.0</span><span class="p">,</span>
+  <span class="s-Atom">&#39;DEST_AIRPORT_ID&#39;:</span> <span class="s-Atom">u&#39;12892&#39;</span><span class="p">,</span>
+  <span class="s-Atom">&#39;ORIGIN_AIRPORT_ID&#39;:</span> <span class="s-Atom">u&#39;12478&#39;</span><span class="p">},</span>
+ <span class="p">{</span><span class="s-Atom">&#39;ARR_DELAY&#39;:</span> <span class="o">-</span><span class="mf">65.0</span><span class="p">,</span>
+  <span class="s-Atom">&#39;DEP_DELAY&#39;:</span> <span class="mf">0.0</span><span class="p">,</span>
+  <span class="s-Atom">&#39;DEST_AIRPORT_ID&#39;:</span> <span class="s-Atom">u&#39;12892&#39;</span><span class="p">,</span>
+  <span class="s-Atom">&#39;ORIGIN_AIRPORT_ID&#39;:</span> <span class="s-Atom">u&#39;12478&#39;</span><span class="p">},</span>
+ <span class="p">{</span><span class="s-Atom">&#39;ARR_DELAY&#39;:</span> <span class="o">-</span><span class="mf">63.0</span><span class="p">,</span>
+  <span class="s-Atom">&#39;DEP_DELAY&#39;:</span> <span class="mf">0.0</span><span class="p">,</span>
+  <span class="s-Atom">&#39;DEST_AIRPORT_ID&#39;:</span> <span class="s-Atom">u&#39;12892&#39;</span><span class="p">,</span>
+  <span class="s-Atom">&#39;ORIGIN_AIRPORT_ID&#39;:</span> <span class="s-Atom">u&#39;12478&#39;</span><span class="p">},</span>
+ <span class="p">{</span><span class="s-Atom">&#39;ARR_DELAY&#39;:</span> <span class="mf">5.0</span><span class="p">,</span>
+  <span class="s-Atom">&#39;DEP_DELAY&#39;:</span> <span class="mf">0.0</span><span class="p">,</span>
+  <span class="s-Atom">&#39;DEST_AIRPORT_ID&#39;:</span> <span class="s-Atom">u&#39;12892&#39;</span><span class="p">,</span>
+  <span class="s-Atom">&#39;ORIGIN_AIRPORT_ID&#39;:</span> <span class="s-Atom">u&#39;12478&#39;</span><span class="p">},</span>
+ <span class="p">{</span><span class="s-Atom">&#39;ARR_DELAY&#39;:</span> <span class="o">-</span><span class="mf">39.0</span><span class="p">,</span>
+  <span class="s-Atom">&#39;DEP_DELAY&#39;:</span> <span class="mf">0.0</span><span class="p">,</span>
+  <span class="s-Atom">&#39;DEST_AIRPORT_ID&#39;:</span> <span class="s-Atom">u&#39;12892&#39;</span><span class="p">,</span>
+  <span class="s-Atom">&#39;ORIGIN_AIRPORT_ID&#39;:</span> <span class="s-Atom">u&#39;12478&#39;</span><span class="p">},</span>
+ <span class="p">{</span><span class="s-Atom">&#39;ARR_DELAY&#39;:</span> <span class="o">-</span><span class="mf">34.0</span><span class="p">,</span>
+  <span class="s-Atom">&#39;DEP_DELAY&#39;:</span> <span class="mf">0.0</span><span class="p">,</span>
+  <span class="s-Atom">&#39;DEST_AIRPORT_ID&#39;:</span> <span class="s-Atom">u&#39;12892&#39;</span><span class="p">,</span>
+  <span class="s-Atom">&#39;ORIGIN_AIRPORT_ID&#39;:</span> <span class="s-Atom">u&#39;12478&#39;</span><span class="p">},</span>
+ <span class="p">{</span><span class="s-Atom">&#39;ARR_DELAY&#39;:</span> <span class="o">-</span><span class="mf">16.0</span><span class="p">,</span>
+  <span class="s-Atom">&#39;DEP_DELAY&#39;:</span> <span class="mf">0.0</span><span class="p">,</span>
+  <span class="s-Atom">&#39;DEST_AIRPORT_ID&#39;:</span> <span class="s-Atom">u&#39;12892&#39;</span><span class="p">,</span>
+  <span class="s-Atom">&#39;ORIGIN_AIRPORT_ID&#39;:</span> <span class="s-Atom">u&#39;12478&#39;</span><span class="p">},</span>
+ <span class="p">{</span><span class="s-Atom">&#39;ARR_DELAY&#39;:</span> <span class="o">-</span><span class="mf">19.0</span><span class="p">,</span>
+  <span class="s-Atom">&#39;DEP_DELAY&#39;:</span> <span class="mf">0.0</span><span class="p">,</span>
+  <span class="s-Atom">&#39;DEST_AIRPORT_ID&#39;:</span> <span class="s-Atom">u&#39;12892&#39;</span><span class="p">,</span>
+  <span class="s-Atom">&#39;ORIGIN_AIRPORT_ID&#39;:</span> <span class="s-Atom">u&#39;12478&#39;</span><span class="p">},</span>
+ <span class="p">{</span><span class="s-Atom">&#39;ARR_DELAY&#39;:</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">,</span>
+  <span class="s-Atom">&#39;DEP_DELAY&#39;:</span> <span class="mf">0.0</span><span class="p">,</span>
+  <span class="s-Atom">&#39;DEST_AIRPORT_ID&#39;:</span> <span class="s-Atom">u&#39;12892&#39;</span><span class="p">,</span>
+  <span class="s-Atom">&#39;ORIGIN_AIRPORT_ID&#39;:</span> <span class="s-Atom">u&#39;12478&#39;</span><span class="p">},</span>
+ <span class="p">{</span><span class="s-Atom">&#39;ARR_DELAY&#39;:</span> <span class="o">-</span><span class="mf">17.0</span><span class="p">,</span>
+  <span class="s-Atom">&#39;DEP_DELAY&#39;:</span> <span class="mf">0.0</span><span class="p">,</span>
+  <span class="s-Atom">&#39;DEST_AIRPORT_ID&#39;:</span> <span class="s-Atom">u&#39;12892&#39;</span><span class="p">,</span>
+  <span class="s-Atom">&#39;ORIGIN_AIRPORT_ID&#39;:</span> <span class="s-Atom">u&#39;12478&#39;</span><span class="p">}]</span>
+</pre></div>
+
+
+<p>I will continue to test with the mini-dataset.   Since RDDs are instructions, and not actually loaded, I am going to construct the total/final RDD as I move along this process.</p>
+<div class="highlight"><pre><span class="s-Atom">all_airline</span> <span class="o">=</span> <span class="s-Atom">airline</span><span class="p">.</span><span class="nf">map</span><span class="p">(</span><span class="s-Atom">lambda</span> <span class="nn">x</span><span class="p">:</span> <span class="s-Atom">x</span><span class="p">[:-</span><span class="mi">1</span><span class="p">])</span> <span class="s-Atom">\</span>
+            <span class="p">.</span><span class="nf">filter</span><span class="p">(</span><span class="s-Atom">lambda</span> <span class="nn">x</span><span class="p">:</span> <span class="o">not</span> <span class="s-Atom">x</span><span class="p">.</span><span class="nf">startswith</span><span class="p">(</span><span class="s-Atom">&#39;&quot;YEAR&quot;&#39;</span><span class="p">))</span> <span class="s-Atom">\</span>
+            <span class="p">.</span><span class="nf">map</span><span class="p">(</span><span class="s-Atom">make_row</span><span class="p">)</span>
+</pre></div>
+
+
+<ol>
+<li>
+<p>Instead of dictionaries, make 2 RDDs where the items are tuples.
+   The first RDD will contain tuples <code>(DEST_AIRPORT_ID, ARR_DELAY)</code>. 
+   The other RDD will contain <code>(ORIGIN_AIRPORT_ID, DEP_DELAY)</code>.
+   Run a <code>.first()</code> or <code>.take()</code> to confirm your results.</p>
+<p>arr_rdd = mini_airline.map(lambda x: x[:-1]) \
+            .filter(lambda x: not x.startswith('"YEAR"')) \
+            .map(make_row) \
+            .map(lambda x: (x['DEST_AIRPORT_ID'], x['ARR_DELAY']))
+print arr_rdd.take(5)</p>
+<p>dep_rdd = mini_airline.map(lambda x: x[:-1]) \
+            .filter(lambda x: not x.startswith('"YEAR"')) \
+            .map(make_row) \
+            .map(lambda x: (x['ORIGIN_AIRPORT_ID'], x['DEP_DELAY']))
+print dep_rdd.take(5)</p>
+<p>[(u'12892', -21.0), (u'12892', -65.0), (u'12892', -63.0), (u'12892', 5.0), (u'12892', -39.0)]
+[(u'12478', 0.0), (u'12478', 0.0), (u'12478', 0.0), (u'12478', 0.0), (u'12478', 0.0)]</p>
+<p>arr_all = all_airline.map(lambda x: (x['DEST_AIRPORT_ID'], x['ARR_DELAY']))</p>
+<p>dep_all = all_airline.map(lambda x: (x['ORIGIN_AIRPORT_ID'], x['DEP_DELAY']))</p>
+</li>
+</ol>
+<p>We have to RDD's, one for departures and one for arrivals.   In order to do the map reduce average, we need to add a new value of 1 to the values.  We can then reduce by each airport id (key), and add the delays to the 1, and get the total minutes delayed and the total number of flights.   In the last step we can divide these numbers to get the average delay.</p>
+<div class="highlight"><pre>arr_rdd.map(lambda x: (x[0],(x[1],1))) \
+    .reduceByKey(lambda (t1,c1),(t2,c2): (t1+t2,c1+c2)) \
+    .map(lambda (k,(t,c)): (k,float(t)/c)) \
+    .collect()
+
+
+
+
+[(u&#39;11298&#39;, -3.7),
+ (u&#39;13830&#39;, -7.8),
+ (u&#39;12264&#39;, -4.266666666666667),
+ (u&#39;11618&#39;, -5.066666666666666),
+ (u&#39;12478&#39;, -14.086842105263157),
+ (u&#39;12892&#39;, -17.50574712643678),
+ (u&#39;12173&#39;, -5.883333333333334),
+ (u&#39;14771&#39;, -6.011363636363637)]
+
+
+
+
+dep_rdd.map(lambda x: (x[0],(x[1],1))) \
+    .reduceByKey(lambda (t1,c1),(t2,c2): (t1+t2,c1+c2)) \
+    .map(lambda (k,(t,c)): (k,float(t)/c)) \
+    .collect()
+
+
+
+
+[(u&#39;10721&#39;, 2.7333333333333334),
+ (u&#39;11298&#39;, 15.616666666666667),
+ (u&#39;13830&#39;, 10.183333333333334),
+ (u&#39;12264&#39;, 7.633333333333334),
+ (u&#39;12478&#39;, 6.042471042471043),
+ (u&#39;12892&#39;, 6.471590909090909),
+ (u&#39;12173&#39;, 2.716666666666667),
+ (u&#39;14771&#39;, 6.263513513513513)]
+
+
+
+
+full_arr_all = arr_all.map(lambda x: (x[0],(x[1],1))) \
+    .reduceByKey(lambda (t1,c1),(t2,c2): (t1+t2,c1+c2)) \
+    .map(lambda (k,(t,c)): (k,float(t)/c))
+
+full_dep_all = dep_all.map(lambda x: (x[0],(x[1],1))) \
+    .reduceByKey(lambda (t1,c1),(t2,c2): (t1+t2,c1+c2)) \
+    .map(lambda (k,(t,c)): (k,float(t)/c))
+</pre></div>
+
+
+<p>We are going to use these RDD's a couple of times for computations.   There is a persist function that allows us to store the data in memory to make repeated calculations quicker.   </p>
+<div class="highlight"><pre>full_arr_all.setName(&quot;full_arr_all&quot;).persist()
+full_dep_all.setName(&quot;full_dep_all&quot;).persist()
+
+
+
+
+full_dep_all PythonRDD[88] at RDD at PythonRDD.scala:43
+
+
+
+
+#Least Arrival Delays
+full_arr_all.sortBy(lambda (k,v):v, ascending=False).take(10)
+
+
+
+
+[(u&#39;13388&#39;, 38.46979865771812),
+ (u&#39;13424&#39;, 29.59053685168335),
+ (u&#39;10170&#39;, 26.305357142857144),
+ (u&#39;10930&#39;, 15.864705882352942),
+ (u&#39;14487&#39;, 15.296669248644461),
+ (u&#39;10551&#39;, 15.04993909866017),
+ (u&#39;10157&#39;, 13.659121621621622),
+ (u&#39;11002&#39;, 12.230910763569458),
+ (u&#39;10165&#39;, 10.727272727272727),
+ (u&#39;12177&#39;, 10.399602385685885)]
+
+
+
+
+#Longest Arrival Delays
+full_arr_all.sortBy(lambda (k,v):v, ascending=True).take(10)
+
+
+
+
+[(u&#39;12343&#39;, -12.16822429906542),
+ (u&#39;13541&#39;, -11.927272727272728),
+ (u&#39;11415&#39;, -10.93968253968254),
+ (u&#39;10158&#39;, -10.602739726027398),
+ (u&#39;11537&#39;, -10.430456852791878),
+ (u&#39;11252&#39;, -10.345300261096606),
+ (u&#39;11111&#39;, -10.33978494623656),
+ (u&#39;10466&#39;, -9.875),
+ (u&#39;10154&#39;, -8.968454258675079),
+ (u&#39;12007&#39;, -8.896758703481392)]
+
+
+
+
+#Smallest Departure Delays
+full_dep_all.sortBy(lambda (k,v):v, ascending=False).take(10)
+
+
+
+
+[(u&#39;13541&#39;, 35.91818181818182),
+ (u&#39;10154&#39;, 21.757097791798106),
+ (u&#39;15356&#39;, 20.4),
+ (u&#39;12016&#39;, 17.964401294498384),
+ (u&#39;15295&#39;, 17.759493670886076),
+ (u&#39;14512&#39;, 16.536585365853657),
+ (u&#39;10728&#39;, 15.7),
+ (u&#39;15048&#39;, 14.919597989949748),
+ (u&#39;10208&#39;, 10.619544945915703),
+ (u&#39;11641&#39;, 10.550997365449755)]
+
+
+
+
+#Longest Departure Delays
+full_dep_all.sortBy(lambda (k,v):v, ascending=True).take(10)
+
+
+
+
+[(u&#39;13388&#39;, -31.391304347826086),
+ (u&#39;10170&#39;, -23.6875),
+ (u&#39;15041&#39;, -17.313357400722023),
+ (u&#39;12888&#39;, -16.22641509433962),
+ (u&#39;14905&#39;, -11.808695652173913),
+ (u&#39;12335&#39;, -11.481132075471699),
+ (u&#39;10551&#39;, -10.350791717417783),
+ (u&#39;11274&#39;, -10.25),
+ (u&#39;13424&#39;, -8.808007279344858),
+ (u&#39;10779&#39;, -8.094915254237288)]
+</pre></div>
+
+
+<h2>MLlib</h2>
+<p>The afternoon assignment has to do with doing machine learning in spark.   We are given some news data, and our goal is to build a NaiveBayes model that predicts which news group an given post belongs in.   </p>
+<div class="highlight"><pre><span class="s-Atom">import</span> <span class="s-Atom">string</span>
+<span class="s-Atom">import</span> <span class="s-Atom">json</span> 
+<span class="s-Atom">import</span> <span class="s-Atom">pickle</span> <span class="s-Atom">as</span> <span class="s-Atom">pkl</span>
+<span class="s-Atom">from</span> <span class="s-Atom">pyspark</span><span class="p">.</span><span class="s-Atom">mllib</span><span class="p">.</span><span class="s-Atom">feature</span> <span class="s-Atom">import</span> <span class="nv">HashingTF</span>
+<span class="s-Atom">from</span> <span class="s-Atom">pyspark</span><span class="p">.</span><span class="s-Atom">mllib</span><span class="p">.</span><span class="s-Atom">regression</span> <span class="s-Atom">import</span> <span class="nv">LabeledPoint</span>
+<span class="s-Atom">from</span> <span class="s-Atom">pyspark</span><span class="p">.</span><span class="s-Atom">mllib</span><span class="p">.</span><span class="s-Atom">classification</span> <span class="s-Atom">import</span> <span class="nv">NaiveBayes</span>
+<span class="s-Atom">from</span> <span class="s-Atom">collections</span> <span class="s-Atom">import</span> <span class="nv">Counter</span>
+
+<span class="s-Atom">data_raw</span> <span class="o">=</span> <span class="s-Atom">sc</span><span class="p">.</span><span class="nf">textFile</span><span class="p">(</span><span class="s-Atom">&#39;s3n://AKIAJRH3ZAWFYUFN5WIA:xSztE4PvK7GQ3zHuohSoOgrOdV9OosfP+4WXod0R@sparkdatasets/news.txt&#39;</span><span class="p">)</span>
+<span class="s-Atom">data_raw</span><span class="p">.</span><span class="nf">count</span><span class="p">()</span>
+
+
+
+
+<span class="mi">13087</span>
+
+
+
+
+
+
+
+<span class="s-Atom">data_raw</span><span class="p">.</span><span class="nf">repartition</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+
+
+
+<span class="nv">MapPartitionsRDD</span><span class="p">[</span><span class="mi">123</span><span class="p">]</span> <span class="s-Atom">at</span> <span class="s-Atom">repartition</span> <span class="s-Atom">at</span> <span class="nv">NativeMethodAccessorImpl</span><span class="p">.</span><span class="nn">java</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span>
+
+
+
+
+<span class="s-Atom">data_raw</span><span class="p">.</span><span class="nf">take</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+
+
+
+<span class="p">[</span><span class="s-Atom">u&#39;{&quot;text&quot;: &quot;From: twillis@ec.ecn.purdue.edu (Thomas E Willis)\\nSubject: PB questions...\\nOrganization: Purdue University Engineering Computer Network\\nDistribution: usa\\nLines: 36\\n\\nwell folks, my mac plus finally gave up the ghost this weekend after\\nstarting life as a 512k way back in 1985.  sooo, i\&#39;m</span> <span class="s-Atom">in</span> <span class="s-Atom">the</span> <span class="s-Atom">market</span> <span class="s-Atom">for</span> <span class="s-Atom">a\\nnew</span> <span class="s-Atom">machine</span> <span class="s-Atom">a</span> <span class="s-Atom">bit</span> <span class="s-Atom">sooner</span> <span class="s-Atom">than</span> <span class="s-Atom">i</span> <span class="s-Atom">intended</span> <span class="s-Atom">to</span> <span class="s-Atom">be</span><span class="p">...</span><span class="s-Atom">\\n\\ni\&#39;m looking into picking up a powerbook 160 or maybe 180 and have a bunch\\nof questions that (hopefully) somebody can answer:\\n\\n* does anybody know any dirt on when the next round of powerbook\\nintroductions are expected?  i\&#39;d</span> <span class="s-Atom">heard</span> <span class="s-Atom">the</span> <span class="mi">185</span><span class="s-Atom">c</span> <span class="s-Atom">was</span> <span class="s-Atom">supposed</span> <span class="s-Atom">to</span> <span class="s-Atom">make</span> <span class="s-Atom">an\\nappearence</span> <span class="s-Atom">\\</span><span class="err">&quot;</span><span class="s-Atom">this</span> <span class="s-Atom">summer\\</span><span class="err">&quot;</span> <span class="s-Atom">but</span> <span class="s-Atom">haven\&#39;t heard anymore on it - and since i\\ndon\&#39;t</span> <span class="s-Atom">have</span> <span class="s-Atom">access</span> <span class="s-Atom">to</span> <span class="s-Atom">macleak</span><span class="p">,</span> <span class="s-Atom">i</span> <span class="s-Atom">was</span> <span class="s-Atom">wondering</span> <span class="s-Atom">if</span> <span class="s-Atom">anybody</span> <span class="s-Atom">out</span> <span class="s-Atom">there</span> <span class="s-Atom">had\\nmore</span> <span class="s-Atom">info</span><span class="p">...</span><span class="s-Atom">\\n\\n</span><span class="o">*</span> <span class="s-Atom">has</span> <span class="s-Atom">anybody</span> <span class="s-Atom">heard</span> <span class="s-Atom">rumors</span> <span class="s-Atom">about</span> <span class="s-Atom">price</span> <span class="s-Atom">drops</span> <span class="s-Atom">to</span> <span class="s-Atom">the</span> <span class="s-Atom">powerbook</span> <span class="s-Atom">line</span> <span class="s-Atom">like</span> <span class="s-Atom">the\\nones</span> <span class="s-Atom">the</span> <span class="s-Atom">duo\&#39;s just went through recently?\\n\\n* what\&#39;s</span> <span class="s-Atom">the</span> <span class="s-Atom">impression</span> <span class="s-Atom">of</span> <span class="s-Atom">the</span> <span class="s-Atom">display</span> <span class="s-Atom">on</span> <span class="s-Atom">the</span> <span class="mi">180</span><span class="s-Atom">?</span>  <span class="s-Atom">i</span> <span class="s-Atom">could</span> <span class="s-Atom">probably</span> <span class="s-Atom">swing\\na</span> <span class="mi">180</span> <span class="s-Atom">if</span> <span class="s-Atom">i</span> <span class="s-Atom">got</span> <span class="s-Atom">the</span> <span class="mi">80</span><span class="nv">Mb</span> <span class="s-Atom">disk</span> <span class="s-Atom">rather</span> <span class="s-Atom">than</span> <span class="s-Atom">the</span> <span class="mi">120</span><span class="p">,</span> <span class="s-Atom">but</span> <span class="s-Atom">i</span> <span class="s-Atom">don\&#39;t really have\\na feel for how much \\&quot;better\\&quot; the display is (yea, it looks great in the\\nstore, but is that all \\&quot;wow\\&quot; or is it really that good?).  could i solicit\\nsome opinions of people who use the 160 and 180 day-to-day on if its worth\\ntaking the disk size and money hit to get the active display?  (i realize\\nthis is a real subjective question, but i\&#39;ve</span> <span class="s-Atom">only</span> <span class="s-Atom">played</span> <span class="s-Atom">around</span> <span class="s-Atom">with</span> <span class="s-Atom">the\\nmachines</span> <span class="s-Atom">in</span> <span class="s-Atom">a</span> <span class="s-Atom">computer</span> <span class="s-Atom">store</span> <span class="s-Atom">breifly</span> <span class="s-Atom">and</span> <span class="s-Atom">figured</span> <span class="s-Atom">the</span> <span class="s-Atom">opinions</span> <span class="s-Atom">of</span> <span class="s-Atom">somebody\\nwho</span> <span class="s-Atom">actually</span> <span class="s-Atom">uses</span> <span class="s-Atom">the</span> <span class="s-Atom">machine</span> <span class="s-Atom">daily</span> <span class="s-Atom">might</span> <span class="s-Atom">prove</span> <span class="s-Atom">helpful</span><span class="p">).</span><span class="s-Atom">\\n\\n</span><span class="o">*</span> <span class="s-Atom">how</span> <span class="s-Atom">well</span> <span class="s-Atom">does</span> <span class="s-Atom">hellcats</span> <span class="s-Atom">perform?</span>  <span class="p">;)</span><span class="s-Atom">\\n\\nthanks</span> <span class="s-Atom">a</span> <span class="s-Atom">bunch</span> <span class="s-Atom">in</span> <span class="s-Atom">advance</span> <span class="s-Atom">for</span> <span class="s-Atom">any</span> <span class="s-Atom">info</span> <span class="o">-</span> <span class="s-Atom">if</span> <span class="s-Atom">you</span> <span class="s-Atom">could</span> <span class="s-Atom">email</span><span class="p">,</span> <span class="s-Atom">i\&#39;ll post a\\nsummary (news reading time is at a premium with finals just around the\\ncorner... :( )\\n--\\nTom Willis  \\\\  twillis@ecn.purdue.edu    \\\\    Purdue Electrical Engineering\\n---------------------------------------------------------------------------\\n\\&quot;Convictions are more dangerous enemies of truth than lies.\\&quot;  - F. W.\\nNietzsche\\n&quot;, &quot;label_name&quot;: &quot;comp.sys.mac.hardware&quot;, &quot;label&quot;: 4}&#39;</span><span class="p">,</span>
+ <span class="s-Atom">u&#39;{&quot;text&quot;: &quot;From: jgreen@amber (Joe Green)\\nSubject: Re: Weitek P9000 ?\\nOrganization: Harris Computer Systems Division\\nLines: 14\\nDistribution: world\\nNNTP-Posting-Host: amber.ssd.csd.harris.com\\nX-Newsreader: TIN [version 1.1 PL9]\\n\\nRobert J.C. Kyanko (rob@rjck.UUCP) wrote:\\n&gt; abraxis@iastate.edu writes in article &lt;abraxis.734340159@class1.iastate.edu&gt;:\\n&gt; &gt; Anyone know about the Weitek P9000 graphics chip?\\n&gt; As far as the low-level stuff goes, it looks pretty nice.  It\&#39;s</span> <span class="s-Atom">got</span> <span class="s-Atom">this\\n</span><span class="o">&gt;</span> <span class="s-Atom">quadrilateral</span> <span class="s-Atom">fill</span> <span class="s-Atom">command</span> <span class="s-Atom">that</span> <span class="s-Atom">requires</span> <span class="s-Atom">just</span> <span class="s-Atom">the</span> <span class="s-Atom">four</span> <span class="s-Atom">points</span><span class="p">.</span><span class="s-Atom">\\n\\nDo</span> <span class="s-Atom">you</span> <span class="s-Atom">have</span> <span class="nv">Weitek</span><span class="s-Atom">\&#39;s address/phone number?  I\&#39;d</span> <span class="s-Atom">like</span> <span class="s-Atom">to</span> <span class="s-Atom">get</span> <span class="s-Atom">some</span> <span class="s-Atom">information\\nabout</span> <span class="s-Atom">this</span> <span class="s-Atom">chip</span><span class="p">.</span><span class="s-Atom">\\n\\n--\\nJoe</span> <span class="nv">Green</span><span class="s-Atom">\\t\\t\\t\\tHarris</span> <span class="nv">Corporation</span><span class="s-Atom">\\njgreen@csd</span><span class="p">.</span><span class="s-Atom">harris</span><span class="p">.</span><span class="s-Atom">com\\t\\t\\tComputer</span> <span class="nv">Systems</span> <span class="nv">Division</span><span class="s-Atom">\\n\\</span><span class="err">&quot;</span><span class="nv">The</span> <span class="s-Atom">only</span> <span class="s-Atom">thing</span> <span class="s-Atom">that</span> <span class="s-Atom">really</span> <span class="s-Atom">scares</span> <span class="s-Atom">me</span> <span class="o">is</span> <span class="s-Atom">a</span> <span class="s-Atom">person</span> <span class="s-Atom">with</span> <span class="s-Atom">no</span> <span class="s-Atom">sense</span> <span class="s-Atom">of</span> <span class="s-Atom">humor</span><span class="p">.</span><span class="s-Atom">\\</span><span class="err">&quot;</span><span class="s-Atom">\\n\\t\\t\\t\\t\\t\\t--</span> <span class="nv">Jonathan</span> <span class="nv">Winters</span><span class="s-Atom">\\n</span><span class="s2">&quot;, &quot;</span><span class="s-Atom">label_name</span><span class="s2">&quot;: &quot;</span><span class="s-Atom">comp</span><span class="p">.</span><span class="s-Atom">graphics</span><span class="s2">&quot;, &quot;</span><span class="s-Atom">label</span><span class="err">&quot;</span><span class="s-Atom">:</span> <span class="mi">1</span><span class="p">}</span><span class="err">&#39;</span><span class="p">]</span>
+</pre></div>
+
+
+<p><strong>We can see that each line is a json object, so we will need to use need to map each line to a dictionary.</strong></p>
+<div class="highlight"><pre><span class="nt">data_json</span> <span class="o">=</span> <span class="nt">data_raw</span><span class="nc">.map</span><span class="o">(</span><span class="nt">lambda</span> <span class="nt">x</span><span class="o">:</span> <span class="nt">json</span><span class="nc">.loads</span><span class="o">(</span><span class="nt">x</span><span class="o">))</span>
+<span class="nt">data_json</span><span class="nc">.cache</span><span class="o">()</span>
+<span class="nt">data_json</span><span class="nc">.take</span><span class="o">(</span><span class="nt">2</span><span class="o">)</span>
+
+
+
+
+<span class="cp">[</span><span class="p">{</span><span class="nx">u</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+  <span class="nx">u</span><span class="s1">&#39;label_name&#39;</span><span class="p">:</span> <span class="nx">u</span><span class="s1">&#39;comp.sys.mac.hardware&#39;</span><span class="p">,</span>
+  <span class="nx">u</span><span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="nx">u</span><span class="s1">&#39;From: twillis@ec.ecn.purdue.edu (Thomas E Willis)</span><span class="se">\n</span><span class="s1">Subject: PB questions...</span><span class="se">\n</span><span class="s1">Organization: Purdue University Engineering Computer Network</span><span class="se">\n</span><span class="s1">Distribution: usa</span><span class="se">\n</span><span class="s1">Lines: 36</span><span class="se">\n\n</span><span class="s1">well folks, my mac plus finally gave up the ghost this weekend after</span><span class="se">\n</span><span class="s1">starting life as a 512k way back in 1985.  sooo, i</span><span class="se">\&#39;</span><span class="s1">m in the market for a</span><span class="se">\n</span><span class="s1">new machine a bit sooner than i intended to be...</span><span class="se">\n\n</span><span class="s1">i</span><span class="se">\&#39;</span><span class="s1">m looking into picking up a powerbook 160 or maybe 180 and have a bunch</span><span class="se">\n</span><span class="s1">of questions that (hopefully) somebody can answer:</span><span class="se">\n\n</span><span class="s1">* does anybody know any dirt on when the next round of powerbook</span><span class="se">\n</span><span class="s1">introductions are expected?  i</span><span class="se">\&#39;</span><span class="s1">d heard the 185c was supposed to make an</span><span class="se">\n</span><span class="s1">appearence &quot;this summer&quot; but haven</span><span class="se">\&#39;</span><span class="s1">t heard anymore on it - and since i</span><span class="se">\n</span><span class="s1">don</span><span class="se">\&#39;</span><span class="s1">t have access to macleak, i was wondering if anybody out there had</span><span class="se">\n</span><span class="s1">more info...</span><span class="se">\n\n</span><span class="s1">* has anybody heard rumors about price drops to the powerbook line like the</span><span class="se">\n</span><span class="s1">ones the duo</span><span class="se">\&#39;</span><span class="s1">s just went through recently?</span><span class="se">\n\n</span><span class="s1">* what</span><span class="se">\&#39;</span><span class="s1">s the impression of the display on the 180?  i could probably swing</span><span class="se">\n</span><span class="s1">a 180 if i got the 80Mb disk rather than the 120, but i don</span><span class="se">\&#39;</span><span class="s1">t really have</span><span class="se">\n</span><span class="s1">a feel for how much &quot;better&quot; the display is (yea, it looks great in the</span><span class="se">\n</span><span class="s1">store, but is that all &quot;wow&quot; or is it really that good?).  could i solicit</span><span class="se">\n</span><span class="s1">some opinions of people who use the 160 and 180 day-to-day on if its worth</span><span class="se">\n</span><span class="s1">taking the disk size and money hit to get the active display?  (i realize</span><span class="se">\n</span><span class="s1">this is a real subjective question, but i</span><span class="se">\&#39;</span><span class="s1">ve only played around with the</span><span class="se">\n</span><span class="s1">machines in a computer store breifly and figured the opinions of somebody</span><span class="se">\n</span><span class="s1">who actually uses the machine daily might prove helpful).</span><span class="se">\n\n</span><span class="s1">* how well does hellcats perform?  ;)</span><span class="se">\n\n</span><span class="s1">thanks a bunch in advance for any info - if you could email, i</span><span class="se">\&#39;</span><span class="s1">ll post a</span><span class="se">\n</span><span class="s1">summary (news reading time is at a premium with finals just around the</span><span class="se">\n</span><span class="s1">corner... :( )</span><span class="se">\n</span><span class="s1">--</span><span class="se">\n</span><span class="s1">Tom Willis  </span><span class="se">\\</span><span class="s1">  twillis@ecn.purdue.edu    </span><span class="se">\\</span><span class="s1">    Purdue Electrical Engineering</span><span class="se">\n</span><span class="s1">---------------------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&quot;Convictions are more dangerous enemies of truth than lies.&quot;  - F. W.</span><span class="se">\n</span><span class="s1">Nietzsche</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">},</span>
+ <span class="p">{</span><span class="nx">u</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="nx">u</span><span class="s1">&#39;label_name&#39;</span><span class="p">:</span> <span class="nx">u</span><span class="s1">&#39;comp.graphics&#39;</span><span class="p">,</span>
+  <span class="nx">u</span><span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="nx">u</span><span class="s1">&#39;From: jgreen@amber (Joe Green)</span><span class="se">\n</span><span class="s1">Subject: Re: Weitek P9000 ?</span><span class="se">\n</span><span class="s1">Organization: Harris Computer Systems Division</span><span class="se">\n</span><span class="s1">Lines: 14</span><span class="se">\n</span><span class="s1">Distribution: world</span><span class="se">\n</span><span class="s1">NNTP-Posting-Host: amber.ssd.csd.harris.com</span><span class="se">\n</span><span class="s1">X-Newsreader: TIN [version 1.1 PL9]</span><span class="se">\n\n</span><span class="s1">Robert J.C. Kyanko (rob@rjck.UUCP) wrote:</span><span class="se">\n</span><span class="s1">&gt; abraxis@iastate.edu writes in article &lt;abraxis.734340159@class1.iastate.edu&gt;:</span><span class="se">\n</span><span class="s1">&gt; &gt; Anyone know about the Weitek P9000 graphics chip?</span><span class="se">\n</span><span class="s1">&gt; As far as the low-level stuff goes, it looks pretty nice.  It</span><span class="se">\&#39;</span><span class="s1">s got this</span><span class="se">\n</span><span class="s1">&gt; quadrilateral fill command that requires just the four points.</span><span class="se">\n\n</span><span class="s1">Do you have Weitek</span><span class="se">\&#39;</span><span class="s1">s address/phone number?  I</span><span class="se">\&#39;</span><span class="s1">d like to get some information</span><span class="se">\n</span><span class="s1">about this chip.</span><span class="se">\n\n</span><span class="s1">--</span><span class="se">\n</span><span class="s1">Joe Green</span><span class="se">\t\t\t\t</span><span class="s1">Harris Corporation</span><span class="se">\n</span><span class="s1">jgreen@csd.harris.com</span><span class="se">\t\t\t</span><span class="s1">Computer Systems Division</span><span class="se">\n</span><span class="s1">&quot;The only thing that really scares me is a person with no sense of humor.&quot;</span><span class="se">\n\t\t\t\t\t\t</span><span class="s1">-- Jonathan Winters</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">}</span><span class="cp">]</span>
+</pre></div>
+
+
+<p>Great - we have the data in the correct format to easily manipulate.   We are going to quickly make a dictionary between the label_name and the label for the dataset.   Then we are going to start the text processing.</p>
+<div class="highlight"><pre><span class="n">labels</span> <span class="o">=</span> <span class="n">data_json</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s">&#39;label&#39;</span><span class="p">],</span><span class="n">x</span><span class="p">[</span><span class="s">&#39;label_name&#39;</span><span class="p">]))</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">}</span>
+<span class="k">print</span> <span class="n">labels</span>
+
+<span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s">u&#39;alt.atheism&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s">u&#39;comp.graphics&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s">u&#39;comp.os.ms-windows.misc&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="s">u&#39;comp.sys.ibm.pc.hardware&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="s">u&#39;comp.sys.mac.hardware&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span> <span class="s">u&#39;comp.windows.x&#39;</span><span class="p">,</span> <span class="mi">6</span><span class="p">:</span> <span class="s">u&#39;misc.forsale&#39;</span><span class="p">,</span> <span class="mi">7</span><span class="p">:</span> <span class="s">u&#39;rec.autos&#39;</span><span class="p">,</span> <span class="mi">8</span><span class="p">:</span> <span class="s">u&#39;rec.motorcycles&#39;</span><span class="p">,</span> <span class="mi">9</span><span class="p">:</span> <span class="s">u&#39;rec.sport.baseball&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">:</span> <span class="s">u&#39;rec.sport.hockey&#39;</span><span class="p">,</span> <span class="mi">11</span><span class="p">:</span> <span class="s">u&#39;sci.crypt&#39;</span><span class="p">,</span> <span class="mi">12</span><span class="p">:</span> <span class="s">u&#39;sci.electronics&#39;</span><span class="p">,</span> <span class="mi">13</span><span class="p">:</span> <span class="s">u&#39;sci.med&#39;</span><span class="p">,</span> <span class="mi">14</span><span class="p">:</span> <span class="s">u&#39;sci.space&#39;</span><span class="p">,</span> <span class="mi">15</span><span class="p">:</span> <span class="s">u&#39;soc.religion.christian&#39;</span><span class="p">,</span> <span class="mi">16</span><span class="p">:</span> <span class="s">u&#39;talk.politics.guns&#39;</span><span class="p">,</span> <span class="mi">17</span><span class="p">:</span> <span class="s">u&#39;talk.politics.mideast&#39;</span><span class="p">,</span> <span class="mi">18</span><span class="p">:</span> <span class="s">u&#39;talk.politics.misc&#39;</span><span class="p">,</span> <span class="mi">19</span><span class="p">:</span> <span class="s">u&#39;talk.religion.misc&#39;</span><span class="p">}</span>
+
+
+
+<span class="kn">from</span> <span class="nn">nltk.tokenize</span> <span class="kn">import</span> <span class="n">RegexpTokenizer</span>
+<span class="kn">from</span> <span class="nn">nltk.stem.porter</span> <span class="kn">import</span> <span class="n">PorterStemmer</span>
+<span class="kn">from</span> <span class="nn">nltk.corpus</span> <span class="kn">import</span> <span class="n">stopwords</span>
+
+<span class="n">stop</span> <span class="o">=</span> <span class="n">stopwords</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="s">&#39;english&#39;</span><span class="p">)</span>
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">RegexpTokenizer</span><span class="p">(</span><span class="s">&#39;\w+&#39;</span><span class="p">)</span>
+<span class="n">stemmer</span> <span class="o">=</span> <span class="n">PorterStemmer</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">token_text</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="n">tokens</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;ascii&#39;</span><span class="p">,</span><span class="s">&#39;ignore&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
+        <span class="n">word</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stop</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stemmer</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">word</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;ascii&#39;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">tokens</span>
+
+<span class="k">print</span> <span class="n">data_json</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s">&#39;label&#39;</span><span class="p">],</span><span class="n">token_text</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s">&#39;text&#39;</span><span class="p">])))</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="p">[(</span><span class="mi">4</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;twilli&#39;</span><span class="p">,</span> <span class="s">&#39;ecn&#39;</span><span class="p">,</span> <span class="s">&#39;purdu&#39;</span><span class="p">,</span> <span class="s">&#39;edu&#39;</span><span class="p">,</span> <span class="s">&#39;thoma&#39;</span><span class="p">,</span> <span class="s">&#39;willi&#39;</span><span class="p">,</span> <span class="s">&#39;subject&#39;</span><span class="p">,</span> <span class="s">&#39;question&#39;</span><span class="p">,</span> <span class="s">&#39;organ&#39;</span><span class="p">,</span> <span class="s">&#39;purdu&#39;</span><span class="p">,</span> <span class="s">&#39;univers&#39;</span><span class="p">,</span> <span class="s">&#39;engin&#39;</span><span class="p">,</span> <span class="s">&#39;comput&#39;</span><span class="p">,</span> <span class="s">&#39;network&#39;</span><span class="p">,</span> <span class="s">&#39;distribut&#39;</span><span class="p">,</span> <span class="s">&#39;usa&#39;</span><span class="p">,</span> <span class="s">&#39;line&#39;</span><span class="p">,</span> <span class="s">&#39;well&#39;</span><span class="p">,</span> <span class="s">&#39;folk&#39;</span><span class="p">,</span> <span class="s">&#39;mac&#39;</span><span class="p">,</span> <span class="s">&#39;plu&#39;</span><span class="p">,</span> <span class="s">&#39;final&#39;</span><span class="p">,</span> <span class="s">&#39;gave&#39;</span><span class="p">,</span> <span class="s">&#39;ghost&#39;</span><span class="p">,</span> <span class="s">&#39;weekend&#39;</span><span class="p">,</span> <span class="s">&#39;start&#39;</span><span class="p">,</span> <span class="s">&#39;life&#39;</span><span class="p">,</span> <span class="s">&#39;512k&#39;</span><span class="p">,</span> <span class="s">&#39;way&#39;</span><span class="p">,</span> <span class="s">&#39;back&#39;</span><span class="p">,</span> <span class="s">&#39;1985&#39;</span><span class="p">,</span> <span class="s">&#39;sooo&#39;</span><span class="p">,</span> <span class="s">&#39;market&#39;</span><span class="p">,</span> <span class="s">&#39;new&#39;</span><span class="p">,</span> <span class="s">&#39;machin&#39;</span><span class="p">,</span> <span class="s">&#39;bit&#39;</span><span class="p">,</span> <span class="s">&#39;sooner&#39;</span><span class="p">,</span> <span class="s">&#39;intend&#39;</span><span class="p">,</span> <span class="s">&#39;look&#39;</span><span class="p">,</span> <span class="s">&#39;pick&#39;</span><span class="p">,</span> <span class="s">&#39;powerbook&#39;</span><span class="p">,</span> <span class="s">&#39;160&#39;</span><span class="p">,</span> <span class="s">&#39;mayb&#39;</span><span class="p">,</span> <span class="s">&#39;180&#39;</span><span class="p">,</span> <span class="s">&#39;bunch&#39;</span><span class="p">,</span> <span class="s">&#39;question&#39;</span><span class="p">,</span> <span class="s">&#39;hope&#39;</span><span class="p">,</span> <span class="s">&#39;somebodi&#39;</span><span class="p">,</span> <span class="s">&#39;answer&#39;</span><span class="p">,</span> <span class="s">&#39;anybodi&#39;</span><span class="p">,</span> <span class="s">&#39;know&#39;</span><span class="p">,</span> <span class="s">&#39;dirt&#39;</span><span class="p">,</span> <span class="s">&#39;next&#39;</span><span class="p">,</span> <span class="s">&#39;round&#39;</span><span class="p">,</span> <span class="s">&#39;powerbook&#39;</span><span class="p">,</span> <span class="s">&#39;introduct&#39;</span><span class="p">,</span> <span class="s">&#39;expect&#39;</span><span class="p">,</span> <span class="s">&#39;heard&#39;</span><span class="p">,</span> <span class="s">&#39;185c&#39;</span><span class="p">,</span> <span class="s">&#39;suppos&#39;</span><span class="p">,</span> <span class="s">&#39;make&#39;</span><span class="p">,</span> <span class="s">&#39;appear&#39;</span><span class="p">,</span> <span class="s">&#39;summer&#39;</span><span class="p">,</span> <span class="s">&#39;haven&#39;</span><span class="p">,</span> <span class="s">&#39;heard&#39;</span><span class="p">,</span> <span class="s">&#39;anymor&#39;</span><span class="p">,</span> <span class="s">&#39;sinc&#39;</span><span class="p">,</span> <span class="s">&#39;access&#39;</span><span class="p">,</span> <span class="s">&#39;macleak&#39;</span><span class="p">,</span> <span class="s">&#39;wonder&#39;</span><span class="p">,</span> <span class="s">&#39;anybodi&#39;</span><span class="p">,</span> <span class="s">&#39;info&#39;</span><span class="p">,</span> <span class="s">&#39;anybodi&#39;</span><span class="p">,</span> <span class="s">&#39;heard&#39;</span><span class="p">,</span> <span class="s">&#39;rumor&#39;</span><span class="p">,</span> <span class="s">&#39;price&#39;</span><span class="p">,</span> <span class="s">&#39;drop&#39;</span><span class="p">,</span> <span class="s">&#39;powerbook&#39;</span><span class="p">,</span> <span class="s">&#39;line&#39;</span><span class="p">,</span> <span class="s">&#39;like&#39;</span><span class="p">,</span> <span class="s">&#39;one&#39;</span><span class="p">,</span> <span class="s">&#39;duo&#39;</span><span class="p">,</span> <span class="s">&#39;went&#39;</span><span class="p">,</span> <span class="s">&#39;recent&#39;</span><span class="p">,</span> <span class="s">&#39;impress&#39;</span><span class="p">,</span> <span class="s">&#39;display&#39;</span><span class="p">,</span> <span class="s">&#39;180&#39;</span><span class="p">,</span> <span class="s">&#39;could&#39;</span><span class="p">,</span> <span class="s">&#39;probabl&#39;</span><span class="p">,</span> <span class="s">&#39;swing&#39;</span><span class="p">,</span> <span class="s">&#39;180&#39;</span><span class="p">,</span> <span class="s">&#39;got&#39;</span><span class="p">,</span> <span class="s">&#39;80mb&#39;</span><span class="p">,</span> <span class="s">&#39;disk&#39;</span><span class="p">,</span> <span class="s">&#39;rather&#39;</span><span class="p">,</span> <span class="s">&#39;120&#39;</span><span class="p">,</span> <span class="s">&#39;realli&#39;</span><span class="p">,</span> <span class="s">&#39;feel&#39;</span><span class="p">,</span> <span class="s">&#39;much&#39;</span><span class="p">,</span> <span class="s">&#39;better&#39;</span><span class="p">,</span> <span class="s">&#39;display&#39;</span><span class="p">,</span> <span class="s">&#39;yea&#39;</span><span class="p">,</span> <span class="s">&#39;look&#39;</span><span class="p">,</span> <span class="s">&#39;great&#39;</span><span class="p">,</span> <span class="s">&#39;store&#39;</span><span class="p">,</span> <span class="s">&#39;wow&#39;</span><span class="p">,</span> <span class="s">&#39;realli&#39;</span><span class="p">,</span> <span class="s">&#39;good&#39;</span><span class="p">,</span> <span class="s">&#39;could&#39;</span><span class="p">,</span> <span class="s">&#39;solicit&#39;</span><span class="p">,</span> <span class="s">&#39;opinion&#39;</span><span class="p">,</span> <span class="s">&#39;peopl&#39;</span><span class="p">,</span> <span class="s">&#39;use&#39;</span><span class="p">,</span> <span class="s">&#39;160&#39;</span><span class="p">,</span> <span class="s">&#39;180&#39;</span><span class="p">,</span> <span class="s">&#39;day&#39;</span><span class="p">,</span> <span class="s">&#39;day&#39;</span><span class="p">,</span> <span class="s">&#39;worth&#39;</span><span class="p">,</span> <span class="s">&#39;take&#39;</span><span class="p">,</span> <span class="s">&#39;disk&#39;</span><span class="p">,</span> <span class="s">&#39;size&#39;</span><span class="p">,</span> <span class="s">&#39;money&#39;</span><span class="p">,</span> <span class="s">&#39;hit&#39;</span><span class="p">,</span> <span class="s">&#39;get&#39;</span><span class="p">,</span> <span class="s">&#39;activ&#39;</span><span class="p">,</span> <span class="s">&#39;display&#39;</span><span class="p">,</span> <span class="s">&#39;realiz&#39;</span><span class="p">,</span> <span class="s">&#39;real&#39;</span><span class="p">,</span> <span class="s">&#39;subject&#39;</span><span class="p">,</span> <span class="s">&#39;question&#39;</span><span class="p">,</span> <span class="s">&#39;play&#39;</span><span class="p">,</span> <span class="s">&#39;around&#39;</span><span class="p">,</span> <span class="s">&#39;machin&#39;</span><span class="p">,</span> <span class="s">&#39;comput&#39;</span><span class="p">,</span> <span class="s">&#39;store&#39;</span><span class="p">,</span> <span class="s">&#39;breifli&#39;</span><span class="p">,</span> <span class="s">&#39;figur&#39;</span><span class="p">,</span> <span class="s">&#39;opinion&#39;</span><span class="p">,</span> <span class="s">&#39;somebodi&#39;</span><span class="p">,</span> <span class="s">&#39;actual&#39;</span><span class="p">,</span> <span class="s">&#39;use&#39;</span><span class="p">,</span> <span class="s">&#39;machin&#39;</span><span class="p">,</span> <span class="s">&#39;daili&#39;</span><span class="p">,</span> <span class="s">&#39;might&#39;</span><span class="p">,</span> <span class="s">&#39;prove&#39;</span><span class="p">,</span> <span class="s">&#39;help&#39;</span><span class="p">,</span> <span class="s">&#39;well&#39;</span><span class="p">,</span> <span class="s">&#39;hellcat&#39;</span><span class="p">,</span> <span class="s">&#39;perform&#39;</span><span class="p">,</span> <span class="s">&#39;thank&#39;</span><span class="p">,</span> <span class="s">&#39;bunch&#39;</span><span class="p">,</span> <span class="s">&#39;advanc&#39;</span><span class="p">,</span> <span class="s">&#39;info&#39;</span><span class="p">,</span> <span class="s">&#39;could&#39;</span><span class="p">,</span> <span class="s">&#39;email&#39;</span><span class="p">,</span> <span class="s">&#39;post&#39;</span><span class="p">,</span> <span class="s">&#39;summari&#39;</span><span class="p">,</span> <span class="s">&#39;news&#39;</span><span class="p">,</span> <span class="s">&#39;read&#39;</span><span class="p">,</span> <span class="s">&#39;time&#39;</span><span class="p">,</span> <span class="s">&#39;premium&#39;</span><span class="p">,</span> <span class="s">&#39;final&#39;</span><span class="p">,</span> <span class="s">&#39;around&#39;</span><span class="p">,</span> <span class="s">&#39;corner&#39;</span><span class="p">,</span> <span class="s">&#39;tom&#39;</span><span class="p">,</span> <span class="s">&#39;willi&#39;</span><span class="p">,</span> <span class="s">&#39;twilli&#39;</span><span class="p">,</span> <span class="s">&#39;ecn&#39;</span><span class="p">,</span> <span class="s">&#39;purdu&#39;</span><span class="p">,</span> <span class="s">&#39;edu&#39;</span><span class="p">,</span> <span class="s">&#39;purdu&#39;</span><span class="p">,</span> <span class="s">&#39;electr&#39;</span><span class="p">,</span> <span class="s">&#39;engin&#39;</span><span class="p">,</span> <span class="s">&#39;convict&#39;</span><span class="p">,</span> <span class="s">&#39;danger&#39;</span><span class="p">,</span> <span class="s">&#39;enemi&#39;</span><span class="p">,</span> <span class="s">&#39;truth&#39;</span><span class="p">,</span> <span class="s">&#39;lie&#39;</span><span class="p">,</span> <span class="s">&#39;nietzsch&#39;</span><span class="p">])]</span>
+
+
+
+<span class="n">data_token</span> <span class="o">=</span> <span class="n">data_json</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s">&#39;label&#39;</span><span class="p">],</span><span class="n">token_text</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s">&#39;text&#39;</span><span class="p">])))</span>
+
+
+<span class="n">vocab</span> <span class="o">=</span> <span class="n">data_json</span><span class="o">.</span><span class="n">flatMap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">token_text</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s">&#39;text&#39;</span><span class="p">]))</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">vocab</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
+
+<span class="p">[</span><span class="s">&#39;fawn&#39;</span><span class="p">,</span> <span class="s">&#39;k2b&#39;</span><span class="p">,</span> <span class="s">&#39;00011100b&#39;</span><span class="p">,</span> <span class="s">&#39;darrylo&#39;</span><span class="p">,</span> <span class="s">&#39;mbhi8bea&#39;</span><span class="p">,</span> <span class="s">&#39;sonja&#39;</span><span class="p">,</span> <span class="s">&#39;tilton&#39;</span><span class="p">,</span> <span class="s">&#39;gag&#39;</span><span class="p">,</span> <span class="s">&#39;11546&#39;</span><span class="p">,</span> <span class="s">&#39;phenomenologist&#39;</span><span class="p">]</span>
+
+
+
+<span class="nb">len</span><span class="p">(</span><span class="n">vocab</span><span class="p">)</span>
+
+
+
+
+<span class="mi">118149</span>
+</pre></div>
+
+
+<p>We have a vocabulary of 118k+ words in our corpus, and we want to make a term frequency vector for each article.</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="n">tf</span> <span class="o">=</span> <span class="n">data_token</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">tokens</span><span class="p">):(</span><span class="n">label</span><span class="p">,</span><span class="n">Counter</span><span class="p">(</span><span class="n">tokens</span><span class="p">)))</span> \
+               <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">counter</span><span class="p">):</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="kp">array</span><span class="p">([</span><span class="n">counter</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">counter</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">vocab</span><span class="p">])))</span>
+
+<span class="n">tf</span><span class="o">.</span><span class="n">cache</span><span class="p">()</span>
+
+
+
+
+<span class="n">PythonRDD</span><span class="p">[</span><span class="mi">192</span><span class="p">]</span> <span class="n">at</span> <span class="n">RDD</span> <span class="n">at</span> <span class="n">PythonRDD</span><span class="o">.</span><span class="n">scala</span><span class="p">:</span><span class="mi">43</span>
+</pre></div>
+
+
+<h2>TF-IDF</h2>
+<p>At this point I am going on a side question from what we were assigned.  We were told to fit a model using the Term Frequency, but I want to perform it with the normalized TF-IDF vectors.  These have historically done better for clustering concepts and ideas.   </p>
+<p>The issue is that the most efficient way to do this in map-reduce/spark, requires that we have document ids.  We can not add them in a strait-forward way because we would have to put unique ides.  Because spark is sending each line to a different process, there isn't a reliable and scalable way to do this.   This is something we would need to do in the preprocessing.</p>
+<p>Instead, we will do this a slower way through summing over columns.</p>
+<div class="highlight"><pre>df = tf.map(lambda (label,tf): tf.astype(bool).astype(int))
+df.cache()
+
+
+
+
+PythonRDD[209] at RDD at PythonRDD.scala:43
+
+
+
+
+temp = df.reduce(lambda x,y:x+y)
+idf = np.log(13087./temp.astype(float))
+idf
+
+
+
+
+array([ 8.78622747,  8.78622747,  9.47937465, ...,  6.53493567,
+        7.39993311,  9.47937465])
+
+
+
+
+idf.shape
+
+
+
+
+(118149,)
+
+
+
+
+tfidf = tf.map(lambda (label,tf): (label,tf*idf)).map(lambda (label,tfidf): (label,tfidf/np.linalg.norm(tfidf)))
+tfidf.cache()
+tfidf.first()
+
+
+
+
+(4, array([ 0.,  0.,  0., ...,  0.,  0.,  0.]))
+
+
+
+
+data = tfidf.map(lambda (label,tfidf):LabeledPoint(label,tfidf))
+trn,tst = data.randomSplit([0.7,.3])
+model = NaiveBayes.train(trn)
+
+
+results_rdd = trn.map(lambda x: (x.label,model.predict(x.features)))
+results_rdd.cache()
+results = results_rdd.map(lambda x: x[0]==x[1]).collect()
+float(sum(results))/len(results)
+
+
+
+
+0.9441328494446277
+</pre></div>
+
+
+<p>We were told to expect accuracies in the range of 80 - 87% using the Term Frequency method.  The TF-IDF method gave a much higher accuracy on the hold out set.   </p>
+<p>Lets try to find the groups the model mis-classifies</p>
+<div class="highlight"><pre>misclass1 = results_rdd.filter(lambda x: x[0] != x[1]).map(lambda x: (labels[x[0]],[labels[x[1]]]))
+misclass2 = results_rdd.filter(lambda x: x[0] != x[1]).map(lambda x: (labels[x[1]],[labels[x[0]]]))
+misclass = misclass1.union(misclass2)
+
+
+misclass_counts = misclass.reduceByKey(lambda x,y: x+y).map(lambda (group,arr): (group,Counter(arr)))
+
+
+for group, others in misclass_counts.collect():
+    print &quot;News Group:&quot;,group
+    print &quot;Total Mistakes:&quot;, sum(others.values())
+    print &quot;Misclassified as: &quot;, others
+    print &quot;&quot;
+
+News Group: sci.med
+Total Mistakes: 11
+Misclassified as:  Counter({u&#39;soc.religion.christian&#39;: 3, u&#39;talk.religion.misc&#39;: 3, u&#39;sci.crypt&#39;: 1, u&#39;comp.sys.mac.hardware&#39;: 1, u&#39;misc.forsale&#39;: 1, u&#39;talk.politics.guns&#39;: 1, u&#39;sci.electronics&#39;: 1})
+
+News Group: comp.os.ms-windows.misc
+Total Mistakes: 40
+Misclassified as:  Counter({u&#39;comp.sys.ibm.pc.hardware&#39;: 18, u&#39;comp.graphics&#39;: 8, u&#39;misc.forsale&#39;: 4, u&#39;comp.sys.mac.hardware&#39;: 3, u&#39;comp.windows.x&#39;: 2, u&#39;sci.electronics&#39;: 2, u&#39;sci.space&#39;: 2, u&#39;rec.sport.hockey&#39;: 1})
+
+News Group: comp.windows.x
+Total Mistakes: 19
+Misclassified as:  Counter({u&#39;comp.graphics&#39;: 8, u&#39;comp.sys.ibm.pc.hardware&#39;: 2, u&#39;comp.os.ms-windows.misc&#39;: 2, u&#39;sci.space&#39;: 2, u&#39;soc.religion.christian&#39;: 1, u&#39;comp.sys.mac.hardware&#39;: 1, u&#39;talk.religion.misc&#39;: 1, u&#39;rec.sport.hockey&#39;: 1, u&#39;rec.autos&#39;: 1})
+
+News Group: sci.crypt
+Total Mistakes: 31
+Misclassified as:  Counter({u&#39;comp.graphics&#39;: 7, u&#39;sci.electronics&#39;: 7, u&#39;talk.politics.guns&#39;: 4, u&#39;misc.forsale&#39;: 4, u&#39;talk.politics.misc&#39;: 3, u&#39;talk.religion.misc&#39;: 2, u&#39;rec.motorcycles&#39;: 1, u&#39;comp.sys.mac.hardware&#39;: 1, u&#39;sci.med&#39;: 1, u&#39;alt.atheism&#39;: 1})
+
+News Group: soc.religion.christian
+Total Mistakes: 191
+Misclassified as:  Counter({u&#39;talk.religion.misc&#39;: 126, u&#39;alt.atheism&#39;: 40, u&#39;talk.politics.misc&#39;: 12, u&#39;misc.forsale&#39;: 3, u&#39;sci.med&#39;: 3, u&#39;talk.politics.mideast&#39;: 3, u&#39;rec.motorcycles&#39;: 1, u&#39;comp.graphics&#39;: 1, u&#39;comp.windows.x&#39;: 1, u&#39;rec.sport.baseball&#39;: 1})
+
+News Group: comp.sys.ibm.pc.hardware
+Total Mistakes: 60
+Misclassified as:  Counter({u&#39;comp.os.ms-windows.misc&#39;: 18, u&#39;misc.forsale&#39;: 18, u&#39;comp.graphics&#39;: 8, u&#39;sci.electronics&#39;: 8, u&#39;comp.sys.mac.hardware&#39;: 5, u&#39;comp.windows.x&#39;: 2, u&#39;talk.religion.misc&#39;: 1})
+
+News Group: rec.motorcycles
+Total Mistakes: 10
+Misclassified as:  Counter({u&#39;rec.autos&#39;: 3, u&#39;sci.electronics&#39;: 2, u&#39;sci.crypt&#39;: 1, u&#39;soc.religion.christian&#39;: 1, u&#39;misc.forsale&#39;: 1, u&#39;talk.religion.misc&#39;: 1, u&#39;sci.space&#39;: 1})
+
+News Group: rec.autos
+Total Mistakes: 15
+Misclassified as:  Counter({u&#39;misc.forsale&#39;: 7, u&#39;rec.motorcycles&#39;: 3, u&#39;sci.electronics&#39;: 2, u&#39;comp.graphics&#39;: 1, u&#39;comp.windows.x&#39;: 1, u&#39;talk.politics.guns&#39;: 1})
+
+News Group: sci.space
+Total Mistakes: 21
+Misclassified as:  Counter({u&#39;talk.religion.misc&#39;: 5, u&#39;comp.graphics&#39;: 3, u&#39;sci.electronics&#39;: 3, u&#39;talk.politics.misc&#39;: 2, u&#39;comp.windows.x&#39;: 2, u&#39;comp.os.ms-windows.misc&#39;: 2, u&#39;rec.motorcycles&#39;: 1, u&#39;talk.politics.guns&#39;: 1, u&#39;misc.forsale&#39;: 1, u&#39;comp.sys.mac.hardware&#39;: 1})
+
+News Group: talk.politics.guns
+Total Mistakes: 75
+Misclassified as:  Counter({u&#39;talk.politics.misc&#39;: 41, u&#39;talk.religion.misc&#39;: 22, u&#39;sci.crypt&#39;: 4, u&#39;alt.atheism&#39;: 2, u&#39;comp.sys.mac.hardware&#39;: 1, u&#39;comp.graphics&#39;: 1, u&#39;misc.forsale&#39;: 1, u&#39;sci.med&#39;: 1, u&#39;sci.space&#39;: 1, u&#39;rec.autos&#39;: 1})
+
+News Group: comp.sys.mac.hardware
+Total Mistakes: 24
+Misclassified as:  Counter({u&#39;comp.sys.ibm.pc.hardware&#39;: 5, u&#39;sci.electronics&#39;: 4, u&#39;misc.forsale&#39;: 4, u&#39;comp.os.ms-windows.misc&#39;: 3, u&#39;comp.graphics&#39;: 2, u&#39;sci.med&#39;: 1, u&#39;talk.politics.guns&#39;: 1, u&#39;comp.windows.x&#39;: 1, u&#39;sci.crypt&#39;: 1, u&#39;sci.space&#39;: 1, u&#39;rec.sport.baseball&#39;: 1})
+
+News Group: misc.forsale
+Total Mistakes: 52
+Misclassified as:  Counter({u&#39;comp.sys.ibm.pc.hardware&#39;: 18, u&#39;rec.autos&#39;: 7, u&#39;comp.sys.mac.hardware&#39;: 4, u&#39;sci.crypt&#39;: 4, u&#39;rec.sport.hockey&#39;: 4, u&#39;comp.os.ms-windows.misc&#39;: 4, u&#39;soc.religion.christian&#39;: 3, u&#39;sci.electronics&#39;: 3, u&#39;talk.politics.guns&#39;: 1, u&#39;comp.graphics&#39;: 1, u&#39;sci.med&#39;: 1, u&#39;sci.space&#39;: 1, u&#39;rec.motorcycles&#39;: 1})
+
+News Group: rec.sport.baseball
+Total Mistakes: 8
+Misclassified as:  Counter({u&#39;rec.sport.hockey&#39;: 4, u&#39;soc.religion.christian&#39;: 1, u&#39;comp.sys.mac.hardware&#39;: 1, u&#39;talk.politics.misc&#39;: 1, u&#39;talk.politics.mideast&#39;: 1})
+
+News Group: talk.politics.misc
+Total Mistakes: 67
+Misclassified as:  Counter({u&#39;talk.politics.guns&#39;: 41, u&#39;soc.religion.christian&#39;: 12, u&#39;talk.politics.mideast&#39;: 6, u&#39;sci.crypt&#39;: 3, u&#39;sci.space&#39;: 2, u&#39;talk.religion.misc&#39;: 1, u&#39;rec.sport.hockey&#39;: 1, u&#39;rec.sport.baseball&#39;: 1})
+
+News Group: comp.graphics
+Total Mistakes: 42
+Misclassified as:  Counter({u&#39;comp.windows.x&#39;: 8, u&#39;comp.sys.ibm.pc.hardware&#39;: 8, u&#39;comp.os.ms-windows.misc&#39;: 8, u&#39;sci.crypt&#39;: 7, u&#39;sci.space&#39;: 3, u&#39;comp.sys.mac.hardware&#39;: 2, u&#39;sci.electronics&#39;: 2, u&#39;soc.religion.christian&#39;: 1, u&#39;misc.forsale&#39;: 1, u&#39;talk.politics.guns&#39;: 1, u&#39;rec.autos&#39;: 1})
+
+News Group: talk.religion.misc
+Total Mistakes: 201
+Misclassified as:  Counter({u&#39;soc.religion.christian&#39;: 126, u&#39;alt.atheism&#39;: 37, u&#39;talk.politics.guns&#39;: 22, u&#39;sci.space&#39;: 5, u&#39;sci.med&#39;: 3, u&#39;sci.crypt&#39;: 2, u&#39;talk.politics.mideast&#39;: 2, u&#39;talk.politics.misc&#39;: 1, u&#39;rec.motorcycles&#39;: 1, u&#39;comp.windows.x&#39;: 1, u&#39;comp.sys.ibm.pc.hardware&#39;: 1})
+
+News Group: talk.politics.mideast
+Total Mistakes: 17
+Misclassified as:  Counter({u&#39;talk.politics.misc&#39;: 6, u&#39;alt.atheism&#39;: 5, u&#39;soc.religion.christian&#39;: 3, u&#39;talk.religion.misc&#39;: 2, u&#39;rec.sport.baseball&#39;: 1})
+
+News Group: rec.sport.hockey
+Total Mistakes: 12
+Misclassified as:  Counter({u&#39;misc.forsale&#39;: 4, u&#39;rec.sport.baseball&#39;: 4, u&#39;comp.os.ms-windows.misc&#39;: 1, u&#39;talk.politics.misc&#39;: 1, u&#39;comp.windows.x&#39;: 1, u&#39;sci.electronics&#39;: 1})
+
+News Group: alt.atheism
+Total Mistakes: 85
+Misclassified as:  Counter({u&#39;soc.religion.christian&#39;: 40, u&#39;talk.religion.misc&#39;: 37, u&#39;talk.politics.mideast&#39;: 5, u&#39;talk.politics.guns&#39;: 2, u&#39;sci.crypt&#39;: 1})
+
+News Group: sci.electronics
+Total Mistakes: 35
+Misclassified as:  Counter({u&#39;comp.sys.ibm.pc.hardware&#39;: 8, u&#39;sci.crypt&#39;: 7, u&#39;comp.sys.mac.hardware&#39;: 4, u&#39;sci.space&#39;: 3, u&#39;misc.forsale&#39;: 3, u&#39;rec.motorcycles&#39;: 2, u&#39;comp.graphics&#39;: 2, u&#39;comp.os.ms-windows.misc&#39;: 2, u&#39;rec.autos&#39;: 2, u&#39;sci.med&#39;: 1, u&#39;rec.sport.hockey&#39;: 1})
+</pre></div>
+
+
+<h3>Conclusion</h3>
+<p>The majority of the misclassification comes from the regiously themeed groups, or the similar tech groups.   These are not surprising results.   To be honest, I am constently impressed with how successful these NLP methods are at categorizing and themeing information in a way that is both predictive and explanitory. </p>
+<h2>Word2Vec</h2>
+<p>This is one of my favorite tools for fun, but not profit (yet!!!).   I will show you what I mean.  </p>
+<div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">textFile</span><span class="p">(</span><span class="s">&#39;s3n://AKIAJRH3ZAWFYUFN5WIA:xSztE4PvK7GQ3zHuohSoOgrOdV9OosfP+4WXod0R@sparkdatasets/text8_lines&#39;</span><span class="p">)</span>
+
+
+<span class="n">data</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+
+
+
+<span class="mi">1062826</span>
+
+
+
+
+<span class="n">data_token</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">token_text</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="n">data_token</span><span class="o">.</span><span class="n">cache</span><span class="p">()</span>
+<span class="n">data_token</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+
+
+
+
+<span class="p">[</span><span class="s">&#39;anarch&#39;</span><span class="p">,</span>
+ <span class="s">&#39;origin&#39;</span><span class="p">,</span>
+ <span class="s">&#39;term&#39;</span><span class="p">,</span>
+ <span class="s">&#39;abus&#39;</span><span class="p">,</span>
+ <span class="s">&#39;first&#39;</span><span class="p">,</span>
+ <span class="s">&#39;use&#39;</span><span class="p">,</span>
+ <span class="s">&#39;earli&#39;</span><span class="p">,</span>
+ <span class="s">&#39;work&#39;</span><span class="p">,</span>
+ <span class="s">&#39;class&#39;</span><span class="p">,</span>
+ <span class="s">&#39;radic&#39;</span><span class="p">,</span>
+ <span class="s">&#39;includ&#39;</span><span class="p">]</span>
+
+
+
+
+<span class="kn">from</span> <span class="nn">pyspark.mllib.feature</span> <span class="kn">import</span> <span class="n">Word2Vec</span>
+<span class="n">word2vec</span> <span class="o">=</span> <span class="n">Word2Vec</span><span class="p">()</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">word2vec</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data_token</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">add_words</span><span class="p">(</span><span class="n">word1</span><span class="p">,</span><span class="n">word2</span><span class="p">):</span>
+    <span class="n">vec1</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">token_text</span><span class="p">(</span><span class="n">word1</span><span class="o">.</span><span class="n">lower</span><span class="p">())[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">vec2</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">token_text</span><span class="p">(</span><span class="n">word2</span><span class="o">.</span><span class="n">lower</span><span class="p">())[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">vec1p2</span> <span class="o">=</span> <span class="n">vec1</span> <span class="o">+</span> <span class="n">vec2</span>
+    <span class="k">print</span> <span class="s">&quot;Word 1 + Word 2&quot;</span>
+    <span class="k">print</span> <span class="n">model</span><span class="o">.</span><span class="n">findSynonyms</span><span class="p">(</span><span class="n">vec1p2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">vec1m2</span> <span class="o">=</span> <span class="n">vec1</span> <span class="o">-</span> <span class="n">vec2</span>
+    <span class="k">print</span> <span class="s">&quot;Word 1 - Word 2&quot;</span>
+    <span class="k">print</span> <span class="n">model</span><span class="o">.</span><span class="n">findSynonyms</span><span class="p">(</span><span class="n">vec1m2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">vec2m1</span> <span class="o">=</span> <span class="n">vec2</span> <span class="o">-</span> <span class="n">vec1</span>
+    <span class="k">print</span> <span class="s">&quot;Word 2 - Word 1&quot;</span>
+    <span class="k">print</span> <span class="n">model</span><span class="o">.</span><span class="n">findSynonyms</span><span class="p">(</span><span class="n">vec2m1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="n">add_words</span><span class="p">(</span><span class="s">&#39;politics&#39;</span><span class="p">,</span><span class="s">&#39;anarchism&#39;</span><span class="p">)</span>
+
+<span class="n">Word</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">Word</span> <span class="mi">2</span>
+<span class="p">[(</span><span class="s">u&#39;libertarian&#39;</span><span class="p">,</span> <span class="mf">3.4323648130450475</span><span class="p">)]</span>
+<span class="n">Word</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">Word</span> <span class="mi">2</span>
+<span class="p">[(</span><span class="s">u&#39;reichskammergericht&#39;</span><span class="p">,</span> <span class="mf">1.0360935689992155</span><span class="p">)]</span>
+<span class="n">Word</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">Word</span> <span class="mi">1</span>
+<span class="p">[(</span><span class="s">u&#39;individualist&#39;</span><span class="p">,</span> <span class="mf">1.5454184699053521</span><span class="p">)]</span>
+</pre></div>
+
+
+<p>Lets unpack what this has done.</p>
+<p>Word2Vec fits a neural network on words next to each other, and produces a feature vecture based on the fit.  We then transform two words into vectors. </p>
+<p>The first vector is "Politics" + "Anarchism" and we get back a vector "Libertarian".   That's a pretty good fit.</p>
+<p>The second vector is "Politics" - "Anarchism" and we get back a vector "Reichskammergericht".   A google search tells us what this is:</p>
+<blockquote>
+<p>The Reichskammergericht (English: Imperial Chamber Court Latin: Iudicium imperii) was one of two highest judicial institutions in the Holy Roman Empire</p>
+</blockquote>
+<p>The final vetors is "Anarchism" - "Politics" and we get back a vector "Individualist".</p>
+<p>Given a corpus, word2vec does a good job of capturing meaning of words relative to other words.   How fun is this!!!!</p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'bryansmithphd';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=bryansmithphd">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      Bryan Smith, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="http://www.bryantravissmith.com/theme/js/jquery.min.js"></script>
+  <script src="http://www.bryantravissmith.com/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$$','$$'], ['\\(','\\)']]}
+});
+</script>
+</html>

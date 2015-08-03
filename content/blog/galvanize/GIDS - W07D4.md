@@ -1,3 +1,11 @@
+Title: Galvanize - Week 07 - Day 4
+Date: 2015-07-16 10:20
+Modified: 2015-07-16 10:30
+Category: Galvanize
+Tags: data-science, galvanize, spark
+Slug: galvanize-data-science-07-04
+Authors: Bryan Smith
+Summary: Today we covered spark
 
 #Galvanize Immersive Data Science
 

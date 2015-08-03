@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-07-03/index.html" />
+
+    <title>  Bryan Travis Smith, Ph.D &mdash; Galvanize - Week 07 - Day 3
+</title>
+
+
+
+
+    <link rel="stylesheet" href="http://www.bryantravissmith.com/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-24340005-3', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+
+    <meta name="author" content="Bryan Smith">
+    <meta name="description" content="Today we covered map reduce">
+  <meta name="tags" contents="data-science, galvanize, map-reduce, mrjobs, generators, ">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+      <div class="header-image pull-left">
+        <a class="nodec" href="http://www.bryantravissmith.com"><img src=http://www.bryantravissmith.com/img/bryan.jpeg></a>
+      </div>
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="http://www.bryantravissmith.com">Bryan Travis Smith, Ph.D</a>
+      </h1>
+      <h3 class="header-text">Physicist, Data Scientist, Martial Artist, & Life Enthusiast</h3>
+      <ul class="header-menu list-inline">
+              <li class="muted">|</li>
+            <li><a class="nodec" href="http://www.bryantravissmith.com/about/">About</a></li>
+              <li class="muted">|</li>
+          <li><a class="nodec icon-mail-alt" href="mailto:bryantravissmith@gmail.com"></a></li>
+          <li><a class="nodec icon-github" href="https://github.com/bryantravissmith"></a></li>
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+      <a href="/galvanize/galvanize-data-science-07-03/" title="Permalink to Galvanize - Week 07 - Day 3">Galvanize - Week 07 - Day 3</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" href="/galvanize/galvanize-data-science-07-03/" title="2015-07-15T10:20:00-07:00">Wed 15 July 2015</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+        <a href="http://www.bryantravissmith.com/category/galvanize.html">Galvanize</a>
+      </li>
+        <li class="muted">&middot;</li>
+        <li>
+          <address class="post-author">
+            By <a href="http://www.bryantravissmith.com/author/bryan-smith.html">Bryan Smith</a>
+          </address>
+        </li>
+    </ul>
+    <div class="post-content">
+      <h1>Galvanize Immersive Data Science</h1>
+<h2>Week 7 - Day 3</h2>
+<p>We continued our week of big data technology, with the goal of today getting use to functional programming for map-reduce jobs.   We are using the python package MRJob to run map-reduce jobs.</p>
+<p>Our morning quiz had two questions/tasks</p>
+<ol>
+<li>Program a prime generator</li>
+<li>Write an acronym function that uses map, then reduce</li>
+</ol>
+<p>For the first task I will use a function that checks if it is prime.   For small primes it is good enough.  Obviously it will take a long tome for very large prime numbers.</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+<span class="k">def</span> <span class="nf">check_prime</span><span class="p">(</span><span class="n">number</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">number</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">True</span>
+    <span class="n">limit</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">number</span><span class="p">))</span><span class="o">+</span><span class="mi">1</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">limit</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">number</span> <span class="o">%</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+    <span class="k">return</span> <span class="bp">True</span>
+
+<span class="k">def</span> <span class="nf">prime_generator</span><span class="p">():</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">check_prime</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">i</span>
+        <span class="n">i</span><span class="o">+=</span> <span class="mi">1</span>
+
+<span class="n">pg</span> <span class="o">=</span> <span class="n">prime_generator</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="s">&quot;First 25 Primes: &quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">pg</span><span class="o">.</span><span class="n">next</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">25</span><span class="p">)]</span>
+
+<span class="n">First</span> <span class="mi">25</span> <span class="n">Primes</span><span class="p">:</span>  <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">37</span><span class="p">,</span> <span class="mi">41</span><span class="p">,</span> <span class="mi">43</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">67</span><span class="p">,</span> <span class="mi">71</span><span class="p">,</span> <span class="mi">73</span><span class="p">,</span> <span class="mi">79</span><span class="p">,</span> <span class="mi">83</span><span class="p">,</span> <span class="mi">89</span><span class="p">]</span>
+
+
+
+<span class="k">def</span> <span class="nf">acronym</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="n">first_letters</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">string</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+    <span class="n">acronym</span> <span class="o">=</span> <span class="nb">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">:</span> <span class="n">x</span><span class="o">+</span><span class="n">y</span><span class="p">,</span> <span class="n">first_letters</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">acronym</span>
+
+<span class="n">acronym</span><span class="p">(</span><span class="s">&quot;Map reduce is awesome!&quot;</span><span class="p">)</span>
+
+
+
+
+<span class="s">&#39;MRIA&#39;</span>
+</pre></div>
+
+
+<h2>MRJob</h2>
+<h3>News Groups</h3>
+<p>MRJob is a python package for map-reduce that can be run local for on ec2 or hdsf instance.  For now we are going to run them locally on a subset of the news group data.   We are going to subset groups to </p>
+<ol>
+<li>comp.windows.x</li>
+<li>rec.motorcycles</li>
+<li>sci.med</li>
+</ol>
+<p>And only have a fraction of the posts from each group.   This selection is arbitrary, as is the subset.   Its is only to make it so our code development can iterate faster becasue we are running it on less data.  </p>
+<p>Our first task we are ask to complete is to get the word count by news group.  Becuase the newsgroup data is in a directory structure, we will use the os variable 'map_reduce_file', and get the second to the last value to label the topic.  </p>
+<p>Our newest instructor is from the Data Engineering program, and he is also teaching us some bash commands, and how to use them in python.</p>
+<div class="highlight"><pre><span class="o">%%</span><span class="n">writefile</span> <span class="n">code</span><span class="o">/</span><span class="n">wordcounts_bytopic</span><span class="o">.</span><span class="n">py</span>
+<span class="kn">from</span> <span class="nn">mrjob.job</span> <span class="kn">import</span> <span class="n">MRJob</span>
+<span class="kn">from</span> <span class="nn">string</span> <span class="kn">import</span> <span class="n">punctuation</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="k">class</span> <span class="nc">MRWordFreqCount</span><span class="p">(</span><span class="n">MRJob</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">mapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="n">topic</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;map_input_file&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">)</span>
+        <span class="n">topic_str</span> <span class="o">=</span> <span class="n">topic</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="n">topic_str</span><span class="o">+</span><span class="s">&quot;_&quot;</span><span class="o">+</span><span class="n">word</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="n">punctuation</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">reducer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">word</span><span class="p">,</span> <span class="n">counts</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">counts</span><span class="p">))</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">from</span> <span class="nn">StringIO</span> <span class="kn">import</span> <span class="n">StringIO</span>
+    <span class="c">#Suppress the error outputs from not setting up a local config file for MRJob</span>
+    <span class="c">#sys.stdout = StringIO();</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">();</span>
+    <span class="n">MRWordFreqCount</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="c">#sys.stdout = sys.__stdout__;</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">__stderr__</span><span class="p">;</span>
+
+<span class="n">Overwriting</span> <span class="n">code</span><span class="o">/</span><span class="n">wordcounts_bytopic</span><span class="o">.</span><span class="n">py</span>
+
+
+
+<span class="err">!</span><span class="n">python</span> <span class="n">code</span><span class="o">/</span><span class="n">wordcounts_bytopic</span><span class="o">.</span><span class="n">py</span> <span class="n">mini_newsgroups</span><span class="o">/</span> <span class="o">&gt;</span> <span class="n">output</span><span class="o">/</span><span class="n">wordcounts_by_topic</span><span class="o">.</span><span class="n">txt</span>
+<span class="err">!</span><span class="n">awk</span> <span class="s">&#39;NR &gt;= 800 &amp;&amp; NR &lt;= 810&#39;</span> <span class="n">output</span><span class="o">/</span><span class="n">wordcounts_by_topic</span><span class="o">.</span><span class="n">txt</span>
+
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">&quot;code/wordcounts_bytopic.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">17</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+    <span class="n">suppress</span><span class="p">(</span><span class="n">MRWordFreqCount</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">())</span>
+<span class="ne">NameError</span><span class="p">:</span> <span class="n">name</span> <span class="s">&#39;suppress&#39;</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">defined</span>
+</pre></div>
+
+
+<p>We can look later in the file and see the other topics</p>
+<div class="highlight"><pre><span class="sx">!awk &#39;NR &gt;= 10800 &amp;&amp; NR &lt;= 10810&#39; output/wordcounts_by_topic.txt</span>
+
+&quot;<span class="n">rec</span><span class="p">.</span><span class="n">motorcycles_threads</span>&quot;   <span class="mi">1</span>
+&quot;<span class="n">rec</span><span class="p">.</span><span class="n">motorcycles_three</span>&quot; <span class="mi">7</span>
+&quot;<span class="n">rec</span><span class="p">.</span><span class="n">motorcycles_three</span><span class="o">-</span><span class="n">notch</span>&quot;   <span class="mi">1</span>
+&quot;<span class="n">rec</span><span class="p">.</span><span class="n">motorcycles_threw</span>&quot; <span class="mi">1</span>
+&quot;<span class="n">rec</span><span class="p">.</span><span class="n">motorcycles_thrive</span>&quot;    <span class="mi">1</span>
+&quot;<span class="n">rec</span><span class="p">.</span><span class="n">motorcycles_throgmorton</span>&quot;   <span class="mi">1</span>
+&quot;<span class="n">rec</span><span class="p">.</span><span class="n">motorcycles_throttle</span>&quot;  <span class="mi">1</span>
+&quot;<span class="n">rec</span><span class="p">.</span><span class="n">motorcycles_through</span>&quot;   <span class="mi">8</span>
+&quot;<span class="n">rec</span><span class="p">.</span><span class="n">motorcycles_through</span><span class="o">-</span><span class="n">studs</span>&quot; <span class="mi">2</span>
+&quot;<span class="n">rec</span><span class="p">.</span><span class="n">motorcycles_throughout</span>&quot;    <span class="mi">1</span>
+&quot;<span class="n">rec</span><span class="p">.</span><span class="n">motorcycles_throwing</span>&quot;  <span class="mi">1</span>
+</pre></div>
+
+
+<h3>New York Times</h3>
+<p>We havea json file with apprximately 1400 new york times articles and their meta data.  We want to construct a map-reduce job by article</p>
+<div class="highlight"><pre><span class="o">%%</span><span class="n">writefile</span> <span class="n">code</span><span class="o">/</span><span class="n">articles_wordcount</span><span class="o">.</span><span class="n">py</span>
+<span class="kn">from</span> <span class="nn">mrjob.job</span> <span class="kn">import</span> <span class="n">MRJob</span>
+<span class="kn">from</span> <span class="nn">mrjob.step</span> <span class="kn">import</span> <span class="n">MRStep</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">string</span>
+<span class="kn">from</span> <span class="nn">nltk.tokenize</span> <span class="kn">import</span> <span class="n">RegexpTokenizer</span>
+<span class="kn">from</span> <span class="nn">nltk.stem.porter</span> <span class="kn">import</span> <span class="n">PorterStemmer</span>
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">RegexpTokenizer</span><span class="p">(</span><span class="s">&#39;\w+&#39;</span><span class="p">)</span>
+<span class="n">WORD_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;^[\D]+$&quot;</span><span class="p">)</span>
+<span class="n">stemmer</span> <span class="o">=</span> <span class="n">PorterStemmer</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">MRMostUsedWord</span><span class="p">(</span><span class="n">MRJob</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">steps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">MRStep</span><span class="p">(</span><span class="n">mapper</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mapper_get_words</span><span class="p">,</span>
+                   <span class="n">combiner</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">combiner_count_words</span><span class="p">,</span>
+                   <span class="n">reducer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reducer_count_words</span><span class="p">)</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">mapper_get_words</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;content&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;ascii&#39;</span><span class="p">,</span><span class="s">&#39;ignore&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="n">stemmer</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">word</span><span class="o">.</span><span class="n">lower</span><span class="p">()),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;_id&#39;</span><span class="p">]))</span>
+
+    <span class="k">def</span> <span class="nf">combiner_count_words</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">word</span><span class="p">,</span> <span class="n">counts</span><span class="p">):</span>
+        <span class="c"># optimization: sum the words we&#39;ve seen so far</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="p">[(</span><span class="n">value</span><span class="p">,</span><span class="nb">id</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span><span class="p">,</span><span class="nb">id</span> <span class="ow">in</span> <span class="n">counts</span><span class="p">]</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">value</span> <span class="k">for</span> <span class="n">value</span><span class="p">,</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">temp</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">value</span><span class="p">,</span><span class="nb">id</span> <span class="ow">in</span> <span class="n">temp</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">((</span><span class="nb">id</span><span class="p">,</span><span class="n">word</span><span class="p">,</span><span class="n">total</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">reducer_count_words</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">(</span><span class="nb">id</span><span class="p">,</span><span class="n">word</span><span class="p">,</span><span class="n">total</span><span class="p">),</span> <span class="n">counts</span><span class="p">):</span>
+        <span class="c"># send all (num_occurrences, word) pairs to the same reducer.</span>
+        <span class="c"># num_occurrences is so we can easily use Python&#39;s max() function.</span>
+        <span class="k">yield</span> <span class="p">((</span><span class="n">word</span><span class="p">,</span><span class="nb">id</span><span class="p">),(</span><span class="nb">sum</span><span class="p">(</span><span class="n">counts</span><span class="p">),</span><span class="n">total</span><span class="p">))</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">from</span> <span class="nn">StringIO</span> <span class="kn">import</span> <span class="n">StringIO</span>
+    <span class="c">#Suppress the error outputs from not setting up a local config file for MRJob</span>
+    <span class="c">#sys.stdout = StringIO();</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">();</span>
+    <span class="n">MRMostUsedWord</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="c">#sys.stdout = sys.__stdout__;</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">__stderr__</span><span class="p">;</span>
+
+<span class="n">Overwriting</span> <span class="n">code</span><span class="o">/</span><span class="n">articles_wordcount</span><span class="o">.</span><span class="n">py</span>
+
+
+
+<span class="err">!</span><span class="n">python</span> <span class="n">code</span><span class="o">/</span><span class="n">articles_wordcount</span><span class="o">.</span><span class="n">py</span> <span class="n">data</span><span class="o">/</span><span class="n">articles</span><span class="o">.</span><span class="n">json</span> <span class="o">&gt;</span> <span class="n">output</span><span class="o">/</span><span class="n">articles_wordcount</span><span class="o">.</span><span class="n">txt</span>
+<span class="err">!</span><span class="n">awk</span> <span class="s">&#39;NR &gt;= 800 &amp;&amp; NR &lt;= 810&#39;</span> <span class="n">output</span><span class="o">/</span><span class="n">articles_wordcount</span><span class="o">.</span><span class="n">txt</span>
+
+<span class="p">[</span><span class="s">&quot;put&quot;</span><span class="p">,</span> <span class="s">&quot;5233249838f0d8062fddf6a0&quot;</span><span class="p">]</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">307</span><span class="p">]</span>
+<span class="p">[</span><span class="s">&quot;rare&quot;</span><span class="p">,</span> <span class="s">&quot;5233249838f0d8062fddf6a0&quot;</span><span class="p">]</span>    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">84</span><span class="p">]</span>
+<span class="p">[</span><span class="s">&quot;ration&quot;</span><span class="p">,</span> <span class="s">&quot;5233249838f0d8062fddf6a0&quot;</span><span class="p">]</span>  <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
+<span class="p">[</span><span class="s">&quot;raymond&quot;</span><span class="p">,</span> <span class="s">&quot;5233249838f0d8062fddf6a0&quot;</span><span class="p">]</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">19</span><span class="p">]</span>
+<span class="p">[</span><span class="s">&quot;read&quot;</span><span class="p">,</span> <span class="s">&quot;5233249838f0d8062fddf6a0&quot;</span><span class="p">]</span>    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">193</span><span class="p">]</span>
+<span class="p">[</span><span class="s">&quot;reason&quot;</span><span class="p">,</span> <span class="s">&quot;5233249838f0d8062fddf6a0&quot;</span><span class="p">]</span>  <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">136</span><span class="p">]</span>
+<span class="p">[</span><span class="s">&quot;recent&quot;</span><span class="p">,</span> <span class="s">&quot;5233249838f0d8062fddf6a0&quot;</span><span class="p">]</span>  <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">414</span><span class="p">]</span>
+<span class="p">[</span><span class="s">&quot;red&quot;</span><span class="p">,</span> <span class="s">&quot;5233249838f0d8062fddf6a0&quot;</span><span class="p">]</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">206</span><span class="p">]</span>
+<span class="p">[</span><span class="s">&quot;region&quot;</span><span class="p">,</span> <span class="s">&quot;5233249838f0d8062fddf6a0&quot;</span><span class="p">]</span>  <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">97</span><span class="p">]</span>
+<span class="p">[</span><span class="s">&quot;relat&quot;</span><span class="p">,</span> <span class="s">&quot;5233249838f0d8062fddf6a0&quot;</span><span class="p">]</span>   <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">103</span><span class="p">]</span>
+<span class="p">[</span><span class="s">&quot;remain&quot;</span><span class="p">,</span> <span class="s">&quot;5233249838f0d8062fddf6a0&quot;</span><span class="p">]</span>  <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">237</span><span class="p">]</span>
+</pre></div>
+
+
+<h2>Triadic Closure</h2>
+<p>We were told that LinkedIn origianlly recommended relationships through the process of triadic closures.  If I have two collegues, Joe and Jill, then if Joe and Jill become collegues, that would close the triad.  We are going to be using the map-reduce jobs to engage in this process using the facebook social graph <a href="http://snap.stanford.edu/data/egonets-Facebook.html">data</a>.</p>
+<p>To ease development we will first a very small subset of the data, then run it on the full dataset.</p>
+<div class="highlight"><pre><span class="sx">!head -10 data/edges.txt</span>
+
+<span class="mi">0</span> <span class="mi">1</span>
+<span class="mi">0</span> <span class="mi">2</span>
+<span class="mi">0</span> <span class="mi">3</span>
+<span class="mi">0</span> <span class="mi">4</span>
+<span class="mi">0</span> <span class="mi">5</span>
+<span class="mi">0</span> <span class="mi">6</span>
+<span class="mi">0</span> <span class="mi">7</span>
+<span class="mi">0</span> <span class="mi">8</span>
+<span class="mi">0</span> <span class="mi">9</span>
+<span class="mi">0</span> <span class="mi">10</span>
+</pre></div>
+
+
+<p>The data is a collection of edges.  Friend 0 is friends with friend 1.  The reverse relationship is not listed, so we need to make sure to keep track of this undirectedness as we do produce the job.  Our first task is to get a list of friends for each user.</p>
+<p>We will do this by making each pair of friendships.  For example, (0,1) becomes (0,1) and (1,0).  We then use the first value as a key, and get all the friends (values) associated with that key.  That will give use a list of all the friends of a user. </p>
+<div class="highlight"><pre><span class="o">%%</span><span class="n">writefile</span> <span class="n">code</span><span class="o">/</span><span class="n">getfriends</span><span class="o">.</span><span class="n">py</span>
+<span class="kn">from</span> <span class="nn">mrjob.job</span> <span class="kn">import</span> <span class="n">MRJob</span>
+<span class="kn">from</span> <span class="nn">string</span> <span class="kn">import</span> <span class="n">punctuation</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="k">class</span> <span class="nc">MRGetFriends</span><span class="p">(</span><span class="n">MRJob</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">mapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">pairs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">f1</span><span class="p">,</span><span class="n">f2</span><span class="p">),(</span><span class="n">f2</span><span class="p">,</span><span class="n">f1</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">pairs</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="nb">int</span><span class="p">(</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="nb">int</span><span class="p">(</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">reducer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">values</span><span class="p">):</span>
+        <span class="n">friends</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span>
+        <span class="k">yield</span> <span class="n">key</span><span class="p">,</span> <span class="n">friends</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">from</span> <span class="nn">StringIO</span> <span class="kn">import</span> <span class="n">StringIO</span>
+    <span class="c">#Suppress the error outputs from not setting up a local config file for MRJob</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+    <span class="n">MRGetFriends</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">__stderr__</span>
+
+
+
+<span class="n">Overwriting</span> <span class="n">code</span><span class="o">/</span><span class="n">getfriends</span><span class="o">.</span><span class="n">py</span>
+
+
+
+<span class="err">!</span><span class="n">python</span> <span class="n">code</span><span class="o">/</span><span class="n">getfriends</span><span class="o">.</span><span class="n">py</span> <span class="n">data</span><span class="o">/</span><span class="n">mini_edges</span><span class="o">.</span><span class="n">txt</span> <span class="o">&gt;</span> <span class="n">output</span><span class="o">/</span><span class="n">get_friends_mini</span><span class="o">.</span><span class="n">txt</span>
+<span class="err">!</span><span class="n">cat</span> <span class="n">output</span><span class="o">/</span><span class="n">get_friends_mini</span><span class="o">.</span><span class="n">txt</span>
+
+<span class="mi">0</span>   <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="mi">1</span>   <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+<span class="mi">2</span>   <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+<span class="mi">3</span>   <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+<span class="mi">4</span>   <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="mi">5</span>   <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+</pre></div>
+
+
+<p>The next step is to get the number of mutual friends each pairs of users have, but we need to remove users that are already friends.  To do this we can take the previous lists and make pairs.</p>
+<p>Using the first row we do the following:</p>
+<p>0 [1,2,5]  =&gt; ((0,1),0),((0,2),0),((0,5),0) plus ((1,2),1),((1,5),1),((2,5),1)</p>
+<p>This has a list of relationships with 1 is for evidence of having a friend in common, and zero for no evidence for having a friend in commom (even though they are friends).</p>
+<p>Collect all the keys together and see if the values add them up.  If the total is less then the number of values, then we know they have to already be friends.   Otherwise, we know they are not friends and know how my friends they have in common.</p>
+<div class="highlight"><pre><span class="o">%%</span><span class="n">writefile</span> <span class="n">code</span><span class="o">/</span><span class="n">getfriends2</span><span class="o">.</span><span class="n">py</span>
+<span class="kn">from</span> <span class="nn">mrjob.job</span> <span class="kn">import</span> <span class="n">MRJob</span>
+<span class="kn">from</span> <span class="nn">mrjob.step</span> <span class="kn">import</span> <span class="n">MRStep</span>
+<span class="kn">from</span> <span class="nn">string</span> <span class="kn">import</span> <span class="n">punctuation</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">combinations</span>
+
+<span class="k">class</span> <span class="nc">MRGetFriends</span><span class="p">(</span><span class="n">MRJob</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">steps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">MRStep</span><span class="p">(</span><span class="n">mapper</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mapper1</span><span class="p">,</span><span class="n">reducer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reducer1</span><span class="p">),</span>
+            <span class="n">MRStep</span><span class="p">(</span><span class="n">mapper</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mapper2</span><span class="p">,</span><span class="n">reducer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reducer2</span><span class="p">)</span>
+        <span class="p">]</span>
+    <span class="k">def</span> <span class="nf">mapper1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">pairs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">f1</span><span class="p">,</span><span class="n">f2</span><span class="p">),(</span><span class="n">f2</span><span class="p">,</span><span class="n">f1</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">pairs</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="nb">int</span><span class="p">(</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="nb">int</span><span class="p">(</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">reducer1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">values</span><span class="p">):</span>
+        <span class="n">friends</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span>
+        <span class="k">yield</span> <span class="n">key</span><span class="p">,</span> <span class="n">friends</span>
+
+    <span class="k">def</span> <span class="nf">mapper2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">:</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">([</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="p">])),</span><span class="mi">0</span><span class="p">))</span>
+
+        <span class="n">combination</span> <span class="o">=</span> <span class="n">combinations</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">combination</span><span class="p">:</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">sorted</span><span class="p">(</span><span class="n">c</span><span class="p">),</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">reducer2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+            <span class="n">total</span> <span class="o">+=</span> <span class="n">val</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">count</span><span class="o">==</span><span class="n">total</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">key</span><span class="p">,</span> <span class="n">total</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">from</span> <span class="nn">StringIO</span> <span class="kn">import</span> <span class="n">StringIO</span>
+    <span class="c">#Suppress the error outputs from not setting up a local config file for MRJob</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+    <span class="n">MRGetFriends</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">__stderr__</span>
+
+<span class="n">Overwriting</span> <span class="n">code</span><span class="o">/</span><span class="n">getfriends2</span><span class="o">.</span><span class="n">py</span>
+
+
+
+<span class="err">!</span><span class="n">python</span> <span class="n">code</span><span class="o">/</span><span class="n">getfriends2</span><span class="o">.</span><span class="n">py</span> <span class="n">data</span><span class="o">/</span><span class="n">mini_edges</span><span class="o">.</span><span class="n">txt</span> <span class="o">&gt;</span> <span class="n">output</span><span class="o">/</span><span class="n">get_friends_mini2</span><span class="o">.</span><span class="n">txt</span>
+<span class="err">!</span><span class="n">cat</span> <span class="n">output</span><span class="o">/</span><span class="n">get_friends_mini2</span><span class="o">.</span><span class="n">txt</span>
+
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>  <span class="mi">2</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>  <span class="mi">3</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>  <span class="mi">3</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>  <span class="mi">2</span>
+<span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>  <span class="mi">2</span>
+<span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>  <span class="mi">1</span>
+</pre></div>
+
+
+<p>Now that we have a list of pairs that are not friends, but have friends in common, we can generate suggestions for each user by finding the other person they have the most friends in common with.  This, however, is an asymetric suggestion.  Just because user 1 is suggested user 5 does not mean that user 5 will be suggested user 1.  </p>
+<p>To generate this list we will take the above output and map them to a pair of relationships and counts.</p>
+<p>$$[ \ 0, \ 3] \ 2 \ \implies ( \ 0, \ ( \ 2, \ 3) \ ), ( \ 3, \ ( \ 2, \ 0) \ )$$</p>
+<p>We then go by key and select the tuple with the highest friend count, and return the corresponding userid. </p>
+<div class="highlight"><pre><span class="o">%%</span><span class="n">writefile</span> <span class="n">code</span><span class="o">/</span><span class="n">getfriends3</span><span class="o">.</span><span class="n">py</span>
+<span class="kn">from</span> <span class="nn">mrjob.job</span> <span class="kn">import</span> <span class="n">MRJob</span>
+<span class="kn">from</span> <span class="nn">mrjob.step</span> <span class="kn">import</span> <span class="n">MRStep</span>
+<span class="kn">from</span> <span class="nn">string</span> <span class="kn">import</span> <span class="n">punctuation</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">combinations</span>
+
+<span class="k">class</span> <span class="nc">MRGetFriends</span><span class="p">(</span><span class="n">MRJob</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">steps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">MRStep</span><span class="p">(</span><span class="n">mapper</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mapper1</span><span class="p">,</span><span class="n">reducer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reducer1</span><span class="p">),</span>
+            <span class="n">MRStep</span><span class="p">(</span><span class="n">mapper</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mapper2</span><span class="p">,</span><span class="n">reducer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reducer2</span><span class="p">),</span>
+            <span class="n">MRStep</span><span class="p">(</span><span class="n">mapper</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mapper3</span><span class="p">,</span><span class="n">reducer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reducer3</span><span class="p">)</span>
+        <span class="p">]</span>
+    <span class="k">def</span> <span class="nf">mapper1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">pairs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">f1</span><span class="p">,</span><span class="n">f2</span><span class="p">),(</span><span class="n">f2</span><span class="p">,</span><span class="n">f1</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">pairs</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="nb">int</span><span class="p">(</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="nb">int</span><span class="p">(</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">reducer1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">values</span><span class="p">):</span>
+        <span class="n">friends</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span>
+        <span class="k">yield</span> <span class="n">key</span><span class="p">,</span> <span class="n">friends</span>
+
+    <span class="k">def</span> <span class="nf">mapper2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">:</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">([</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="p">])),</span><span class="mi">0</span><span class="p">))</span>
+
+        <span class="n">combination</span> <span class="o">=</span> <span class="n">combinations</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">combination</span><span class="p">:</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">sorted</span><span class="p">(</span><span class="n">c</span><span class="p">),</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">reducer2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+            <span class="n">total</span> <span class="o">+=</span> <span class="n">val</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">count</span><span class="o">==</span><span class="n">total</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">key</span><span class="p">,</span> <span class="n">total</span>
+
+    <span class="k">def</span> <span class="nf">mapper3</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="p">[(</span><span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">]),(</span><span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="k">def</span> <span class="nf">reducer3</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">values</span><span class="p">):</span>
+        <span class="n">max_value</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">key</span><span class="p">,</span> <span class="n">max_value</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">from</span> <span class="nn">StringIO</span> <span class="kn">import</span> <span class="n">StringIO</span>
+    <span class="c">#Suppress the error outputs from not setting up a local config file for MRJob</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+    <span class="n">MRGetFriends</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">__stderr__</span>
+
+<span class="n">Overwriting</span> <span class="n">code</span><span class="o">/</span><span class="n">getfriends3</span><span class="o">.</span><span class="n">py</span>
+
+
+
+<span class="err">!</span><span class="n">python</span> <span class="n">code</span><span class="o">/</span><span class="n">getfriends3</span><span class="o">.</span><span class="n">py</span> <span class="n">data</span><span class="o">/</span><span class="n">mini_edges</span><span class="o">.</span><span class="n">txt</span> <span class="o">&gt;</span> <span class="n">output</span><span class="o">/</span><span class="n">get_friends_mini4</span><span class="o">.</span><span class="n">txt</span>
+<span class="err">!</span><span class="n">cat</span> <span class="n">output</span><span class="o">/</span><span class="n">get_friends_mini4</span><span class="o">.</span><span class="n">txt</span>
+
+<span class="mi">0</span>   <span class="mi">4</span>
+<span class="mi">1</span>   <span class="mi">2</span>
+<span class="mi">2</span>   <span class="mi">1</span>
+<span class="mi">3</span>   <span class="mi">0</span>
+<span class="mi">4</span>   <span class="mi">0</span>
+<span class="mi">5</span>   <span class="mi">2</span>
+</pre></div>
+
+
+<h3>Full dataset.</h3>
+<p>Now that we have a full map-reduce job built, we can run it on the full dataset. </p>
+<div class="highlight"><pre><span class="sx">!python code/getfriends3.py data/edges.txt &gt; output/get_friends_full3.txt</span>
+
+
+<span class="sx">!head -20 output/get_friends_full3.txt</span>
+
+<span class="mi">0</span>   <span class="mi">348</span>
+<span class="mi">1</span>   <span class="mi">302</span>
+<span class="mi">10</span>  <span class="mi">271</span>
+<span class="mi">100</span> <span class="mi">171</span>
+<span class="mi">1000</span>    <span class="mi">1366</span>
+<span class="mi">1001</span>    <span class="mi">1320</span>
+<span class="mi">1002</span>    <span class="mi">1627</span>
+<span class="mi">1003</span>    <span class="mi">1584</span>
+<span class="mi">1004</span>    <span class="mi">1126</span>
+<span class="mi">1005</span>    <span class="mi">1472</span>
+<span class="mi">1006</span>    <span class="mi">1589</span>
+<span class="mi">1007</span>    <span class="mi">1893</span>
+<span class="mi">1008</span>    <span class="mi">1863</span>
+<span class="mi">1009</span>    <span class="mi">1479</span>
+<span class="mi">101</span> <span class="mi">196</span>
+<span class="mi">1010</span>    <span class="mi">1236</span>
+<span class="mi">1011</span>    <span class="mi">1428</span>
+<span class="mi">1012</span>    <span class="mi">1645</span>
+<span class="mi">1013</span>    <span class="mi">1778</span>
+<span class="mi">1014</span>    <span class="mi">1591</span>
+</pre></div>
+
+
+<h2>AWS</h2>
+<p>We were also instructed to use the mrjob interaction with AWS.  Amazon has changed their API, and this is not currently working.   I saw on github that they are working on this, but the current changes are wating for code review before being released.  </p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'bryansmithphd';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=bryansmithphd">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      Bryan Smith, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="http://www.bryantravissmith.com/theme/js/jquery.min.js"></script>
+  <script src="http://www.bryantravissmith.com/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$$','$$'], ['\\(','\\)']]}
+});
+</script>
+</html>

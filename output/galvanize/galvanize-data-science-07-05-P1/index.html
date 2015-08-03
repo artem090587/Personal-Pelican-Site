@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="http://www.bryantravissmith.com/galvanize/galvanize-data-science-07-05-P1/index.html" />
+
+    <title>  Bryan Travis Smith, Ph.D &mdash; Galvanize - Week 07 - Day 5 - Part 1
+</title>
+
+
+
+
+    <link rel="stylesheet" href="http://www.bryantravissmith.com/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-24340005-3', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+
+    <meta name="author" content="Bryan Smith">
+    <meta name="description" content="Today we covered spark on aws">
+  <meta name="tags" contents="data-science, galvanize, spark, aws, ">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+      <div class="header-image pull-left">
+        <a class="nodec" href="http://www.bryantravissmith.com"><img src=http://www.bryantravissmith.com/img/bryan.jpeg></a>
+      </div>
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="http://www.bryantravissmith.com">Bryan Travis Smith, Ph.D</a>
+      </h1>
+      <h3 class="header-text">Physicist, Data Scientist, Martial Artist, & Life Enthusiast</h3>
+      <ul class="header-menu list-inline">
+              <li class="muted">|</li>
+            <li><a class="nodec" href="http://www.bryantravissmith.com/about/">About</a></li>
+              <li class="muted">|</li>
+          <li><a class="nodec icon-mail-alt" href="mailto:bryantravissmith@gmail.com"></a></li>
+          <li><a class="nodec icon-github" href="https://github.com/bryantravissmith"></a></li>
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+      <a href="/galvanize/galvanize-data-science-07-05-P1/" title="Permalink to Galvanize - Week 07 - Day 5 - Part 1">Galvanize - Week 07 - Day 5 - Part 1</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" href="/galvanize/galvanize-data-science-07-05-P1/" title="2015-07-17T10:20:00-07:00">Fri 17 July 2015</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+        <a href="http://www.bryantravissmith.com/category/galvanize.html">Galvanize</a>
+      </li>
+        <li class="muted">&middot;</li>
+        <li>
+          <address class="post-author">
+            By <a href="http://www.bryantravissmith.com/author/bryan-smith.html">Bryan Smith</a>
+          </address>
+        </li>
+    </ul>
+    <div class="post-content">
+      <h1>Galvanize Immersive Data Science</h1>
+<h2>Week 7 - Day 5 - Part 1 (Local Spark)</h2>
+<p>Today we explore using sparkSQL and use Spark on AWS with multiple cores.  The analysis we are doing are going to be on two different sources.  The first part will be run on a local spark server.  The second part will be on AWS.</p>
+<p>**Note:  This notebook is using Pysark with a running Spark Server and two </p>
+<p>This morning our quiz was to build a function that would predict the closest bart station for a given IP address.  The site <a href="http://freegeoip.net">http://freegeoip.net</a> will return an object (XML,json, ...) that contains the (lat,lng) of the IP address submitted.</p>
+<p>First we need to download the Bart Data.</p>
+<div class="highlight"><pre>sc
+
+
+
+
+&lt;pyspark.context.SparkContext at 0x104e81fd0&gt;
+</pre></div>
+
+
+<p>We can see we have the pyspark context loaded already. </p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">urllib2</span>
+<span class="n">text</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="s">&#39;https://raw.githubusercontent.com/enjalot/bart/master/data/bart_stations.csv&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+<span class="n">bart</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+<span class="n">bart_loc</span> <span class="o">=</span> <span class="n">bart</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&#39;name&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],(</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">4</span><span class="p">]))))</span>
+<span class="n">bar_loc_data</span> <span class="o">=</span> <span class="n">bart_loc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">bar_loc_data</span><span class="p">[:</span><span class="mi">5</span><span class="p">]:</span>
+    <span class="k">print</span> <span class="n">x</span>
+
+<span class="p">(</span><span class="s">&#39;12th St. Oakland City Center&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">37.803664</span><span class="p">,</span> <span class="o">-</span><span class="mf">122.271604</span><span class="p">))</span>
+<span class="p">(</span><span class="s">&#39;16th St. Mission&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">37.765062</span><span class="p">,</span> <span class="o">-</span><span class="mf">122.419694</span><span class="p">))</span>
+<span class="p">(</span><span class="s">&#39;19th St. Oakland&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">37.80787</span><span class="p">,</span> <span class="o">-</span><span class="mf">122.269029</span><span class="p">))</span>
+<span class="p">(</span><span class="s">&#39;24th St. Mission&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">37.752254</span><span class="p">,</span> <span class="o">-</span><span class="mf">122.418466</span><span class="p">))</span>
+<span class="p">(</span><span class="s">&#39;Ashby&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">37.853024</span><span class="p">,</span> <span class="o">-</span><span class="mf">122.26978</span><span class="p">))</span>
+</pre></div>
+
+
+<p>We have the location of the Bart locations.  Now we need to get the location of an IP address or url.</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">json</span>
+<span class="k">def</span> <span class="nf">get_lat_long</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">urllib2</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="s">&#39;https://freegeoip.net/json/&#39;</span><span class="o">+</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;latitude&#39;</span><span class="p">],</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;longitude&#39;</span><span class="p">])</span>
+<span class="n">twitter_location</span> <span class="o">=</span> <span class="n">get_lat_long</span><span class="p">(</span><span class="s">&quot;twitter.com&quot;</span><span class="p">)</span>
+<span class="n">twitter_location</span>
+
+
+
+
+<span class="p">(</span><span class="mf">37.77</span><span class="p">,</span> <span class="o">-</span><span class="mf">122.394</span><span class="p">)</span>
+</pre></div>
+
+
+<p>We are dealing with (lat,lng) coordinates, which are sphereical coordinates.   Since we are dealing with a small location, the eucidean distance between the locations will be appropriate.  We should attempt another method if we were dealing with air travel.</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+<span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="n">pt1</span><span class="p">,</span><span class="n">pt2</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="p">(</span><span class="n">pt1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">pt2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">pt1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">pt2</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">bart_to_twitter</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">distance</span><span class="p">(</span><span class="n">twitter_location</span><span class="p">,</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])),</span> <span class="n">bar_loc_data</span><span class="p">)</span>
+<span class="nb">sorted</span><span class="p">(</span><span class="n">bart_to_twitter</span><span class="p">,</span><span class="nb">cmp</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">:</span> <span class="nb">cmp</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]))[</span><span class="mi">0</span><span class="p">]</span>
+
+
+
+
+<span class="p">(</span><span class="s">&#39;Powell St.&#39;</span><span class="p">,</span> <span class="mf">0.019749241251242125</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Power St Bart Station is the closest to the twitter head quarters.  It is less than a quarter of a mile from the building.  For the final function, and quiz solution, we can do the following.</p>
+<div class="highlight"><pre>def closest_bart(ip):
+    location = get_lat_long(ip)
+    bart_distances = map(lambda x: (x[0],distance(location,x[1])), bar_loc_data)
+    return sorted(bart_distances,cmp = lambda x,y: cmp(x[1],y[1]))[0][0]
+
+closest_bart(&#39;twitter.com&#39;)
+
+
+
+
+&#39;Powell St.&#39;
+
+
+
+
+closest_bart(&#39;4.15.120.11&#39;)
+
+
+
+
+&#39;Dublin/Pleasanton&#39;
+</pre></div>
+
+
+<p>That is not the closest bart to my true location, despite me putting in my public ip.  The problem with the usuability of this quiz is that IP's can get bounced around.  Still a pretty cool project</p>
+<h2>SparkSQL</h2>
+<p>Spark allows us to interact with geneteric data, but if the data is structures we can use SparkSQL.   The RDD objects we are using cna be converted into a SchemaRDD that lets up use SparkSQL.   We will be using the hivecontext to read in structured json yelp data.</p>
+<div class="highlight"><pre>hive_contxt = HiveContext(sc)
+yelp_business_schema_rdd = hive_contxt.read.json(&#39;s3n://&#39;+awskey+&#39;@sparkdatasets/yelp_academic_dataset_business.json&#39;)
+
+
+yelp_business_schema_rdd.printSchema()
+
+root
+ |-- attributes: struct (nullable = true)
+ |    |-- Accepts Credit Cards: string (nullable = true)
+ |    |-- Accepts Insurance: boolean (nullable = true)
+ |    |-- Ages Allowed: string (nullable = true)
+ |    |-- Alcohol: string (nullable = true)
+ |    |-- Ambience: struct (nullable = true)
+ |    |    |-- casual: boolean (nullable = true)
+ |    |    |-- classy: boolean (nullable = true)
+ |    |    |-- divey: boolean (nullable = true)
+ |    |    |-- hipster: boolean (nullable = true)
+ |    |    |-- intimate: boolean (nullable = true)
+ |    |    |-- romantic: boolean (nullable = true)
+ |    |    |-- touristy: boolean (nullable = true)
+ |    |    |-- trendy: boolean (nullable = true)
+ |    |    |-- upscale: boolean (nullable = true)
+ |    |-- Attire: string (nullable = true)
+ |    |-- BYOB: boolean (nullable = true)
+ |    |-- BYOB/Corkage: string (nullable = true)
+ |    |-- By Appointment Only: boolean (nullable = true)
+ |    |-- Caters: boolean (nullable = true)
+ |    |-- Coat Check: boolean (nullable = true)
+ |    |-- Corkage: boolean (nullable = true)
+ |    |-- Delivery: boolean (nullable = true)
+ |    |-- Dietary Restrictions: struct (nullable = true)
+ |    |    |-- dairy-free: boolean (nullable = true)
+ |    |    |-- gluten-free: boolean (nullable = true)
+ |    |    |-- halal: boolean (nullable = true)
+ |    |    |-- kosher: boolean (nullable = true)
+ |    |    |-- soy-free: boolean (nullable = true)
+ |    |    |-- vegan: boolean (nullable = true)
+ |    |    |-- vegetarian: boolean (nullable = true)
+ |    |-- Dogs Allowed: boolean (nullable = true)
+ |    |-- Drive-Thru: boolean (nullable = true)
+ |    |-- Good For: struct (nullable = true)
+ |    |    |-- breakfast: boolean (nullable = true)
+ |    |    |-- brunch: boolean (nullable = true)
+ |    |    |-- dessert: boolean (nullable = true)
+ |    |    |-- dinner: boolean (nullable = true)
+ |    |    |-- latenight: boolean (nullable = true)
+ |    |    |-- lunch: boolean (nullable = true)
+ |    |-- Good For Dancing: boolean (nullable = true)
+ |    |-- Good For Groups: boolean (nullable = true)
+ |    |-- Good For Kids: boolean (nullable = true)
+ |    |-- Good for Kids: boolean (nullable = true)
+ |    |-- Hair Types Specialized In: struct (nullable = true)
+ |    |    |-- africanamerican: boolean (nullable = true)
+ |    |    |-- asian: boolean (nullable = true)
+ |    |    |-- coloring: boolean (nullable = true)
+ |    |    |-- curly: boolean (nullable = true)
+ |    |    |-- extensions: boolean (nullable = true)
+ |    |    |-- kids: boolean (nullable = true)
+ |    |    |-- perms: boolean (nullable = true)
+ |    |    |-- straightperms: boolean (nullable = true)
+ |    |-- Happy Hour: boolean (nullable = true)
+ |    |-- Has TV: boolean (nullable = true)
+ |    |-- Music: struct (nullable = true)
+ |    |    |-- background_music: boolean (nullable = true)
+ |    |    |-- dj: boolean (nullable = true)
+ |    |    |-- jukebox: boolean (nullable = true)
+ |    |    |-- karaoke: boolean (nullable = true)
+ |    |    |-- live: boolean (nullable = true)
+ |    |    |-- playlist: boolean (nullable = true)
+ |    |    |-- video: boolean (nullable = true)
+ |    |-- Noise Level: string (nullable = true)
+ |    |-- Open 24 Hours: boolean (nullable = true)
+ |    |-- Order at Counter: boolean (nullable = true)
+ |    |-- Outdoor Seating: boolean (nullable = true)
+ |    |-- Parking: struct (nullable = true)
+ |    |    |-- garage: boolean (nullable = true)
+ |    |    |-- lot: boolean (nullable = true)
+ |    |    |-- street: boolean (nullable = true)
+ |    |    |-- valet: boolean (nullable = true)
+ |    |    |-- validated: boolean (nullable = true)
+ |    |-- Payment Types: struct (nullable = true)
+ |    |    |-- amex: boolean (nullable = true)
+ |    |    |-- cash_only: boolean (nullable = true)
+ |    |    |-- discover: boolean (nullable = true)
+ |    |    |-- mastercard: boolean (nullable = true)
+ |    |    |-- visa: boolean (nullable = true)
+ |    |-- Price Range: long (nullable = true)
+ |    |-- Smoking: string (nullable = true)
+ |    |-- Take-out: boolean (nullable = true)
+ |    |-- Takes Reservations: boolean (nullable = true)
+ |    |-- Waiter Service: boolean (nullable = true)
+ |    |-- Wheelchair Accessible: boolean (nullable = true)
+ |    |-- Wi-Fi: string (nullable = true)
+ |-- business_id: string (nullable = true)
+ |-- categories: array (nullable = true)
+ |    |-- element: string (containsNull = true)
+ |-- city: string (nullable = true)
+ |-- full_address: string (nullable = true)
+ |-- hours: struct (nullable = true)
+ |    |-- Friday: struct (nullable = true)
+ |    |    |-- close: string (nullable = true)
+ |    |    |-- open: string (nullable = true)
+ |    |-- Monday: struct (nullable = true)
+ |    |    |-- close: string (nullable = true)
+ |    |    |-- open: string (nullable = true)
+ |    |-- Saturday: struct (nullable = true)
+ |    |    |-- close: string (nullable = true)
+ |    |    |-- open: string (nullable = true)
+ |    |-- Sunday: struct (nullable = true)
+ |    |    |-- close: string (nullable = true)
+ |    |    |-- open: string (nullable = true)
+ |    |-- Thursday: struct (nullable = true)
+ |    |    |-- close: string (nullable = true)
+ |    |    |-- open: string (nullable = true)
+ |    |-- Tuesday: struct (nullable = true)
+ |    |    |-- close: string (nullable = true)
+ |    |    |-- open: string (nullable = true)
+ |    |-- Wednesday: struct (nullable = true)
+ |    |    |-- close: string (nullable = true)
+ |    |    |-- open: string (nullable = true)
+ |-- latitude: double (nullable = true)
+ |-- longitude: double (nullable = true)
+ |-- name: string (nullable = true)
+ |-- neighborhoods: array (nullable = true)
+ |    |-- element: string (containsNull = true)
+ |-- open: boolean (nullable = true)
+ |-- review_count: long (nullable = true)
+ |-- stars: double (nullable = true)
+ |-- state: string (nullable = true)
+ |-- type: string (nullable = true)
+</pre></div>
+
+
+<p>To make SQL queries on this data we need to register the RDD as a temporary table to query.</p>
+<div class="highlight"><pre>yelp_business_schema_rdd.registerTempTable(&#39;yelp_business&#39;)
+</pre></div>
+
+
+<p>Lets say we are traveling to Phoenix and we want to go to a good restaurant that accepts credit cards.  Yahoo for reimbursement of travel expenses!   We can perform an sql query on this data that looks like the following.</p>
+<div class="highlight"><pre>hive_contxt.sql(&quot;&quot;&quot;
+                SELECT name FROM yelp_business 
+                LATERAL VIEW explode(categories) c as category
+                WHERE
+                    stars = 5 AND
+                    city = &#39;Phoenix&#39; AND 
+                    attributes.`Accepts Credit Cards` = &#39;true&#39; AND
+                    category = &#39;Restaurants&#39;
+                &quot;&quot;&quot;).collect()
+
+
+
+
+[Row(name=u&#39;Auslers Grill&#39;),
+ Row(name=u&quot;Mulligan&#39;s Restaurant&quot;),
+ Row(name=u&#39;Sunfare&#39;),
+ Row(name=u&#39;Subway&#39;),
+ Row(name=u&quot;Lil Cal&#39;s&quot;),
+ Row(name=u&quot;Ed&#39;s&quot;),
+ Row(name=u&#39;Frenchys Caribbean Dogs&#39;),
+ Row(name=u&#39;WY Market&#39;),
+ Row(name=u&#39;Pollo Sabroso&#39;),
+ Row(name=u&#39;Queen Creek Olive Mill Oils &amp; Olives Biltmore Fashion Park&#39;),
+ Row(name=u&#39;Gluten Free Creations Bakery&#39;),
+ Row(name=u&#39;Panini Bread and Grill&#39;),
+ Row(name=u&#39;One Eighty Q&#39;),
+ Row(name=u&#39;Saffron JAK Original Stonebread Pizzas&#39;),
+ Row(name=u&#39;Los Primos Carniceria&#39;),
+ Row(name=u&quot;Bertie&#39;s Of Arcadia&quot;),
+ Row(name=u&#39;Little Miss BBQ&#39;),
+ Row(name=u&#39;Las Jicaras Mexican Grill&#39;),
+ Row(name=u&#39;Santos Lucha Libre&#39;),
+ Row(name=u&#39;Taqueria El Chino&#39;),
+ Row(name=u&quot;Filiberto&#39;s Mexican Food&quot;),
+ Row(name=u&#39;Helpings Cafe, Market and Catering&#39;),
+ Row(name=u&#39;Altamimi Restutant&#39;),
+ Row(name=u&#39;Tacos Huicho&#39;),
+ Row(name=u&quot;Jimmy John&#39;s&quot;),
+ Row(name=u&#39;Ten Handcrafted American Fare &amp; Spirits&#39;),
+ Row(name=u&#39;The Brown Bag&#39;),
+ Row(name=u&#39;Coe Casa&#39;),
+ Row(name=u&quot;Adela&#39;s Italian&quot;),
+ Row(name=u&#39;The Loaded Potato&#39;),
+ Row(name=u&#39;Banh Mi Bistro Vietnamese Eatery&#39;),
+ Row(name=u&#39;Couscous Express&#39;)]
+</pre></div>
+
+
+<h2>SparkSQL in Practice</h2>
+<p>In practice we are given data that is not structured in a way that we want, but we would like to query it.  To do this we need to provide the data some structure.  In this case we are going to take user and transcation data, and try to find the 10 users with the most transactions amounts.  </p>
+<p>First we will load in the data:</p>
+<div class="highlight"><pre>user_rdd = sc.textFile(&#39;s3n://&#39;+awskey+&#39;@sparkdatasets/users.txt&#39;)
+transaction_rdd = sc.textFile(&#39;s3n://&#39;+awskey+&#39;@sparkdatasets/transactions.txt&#39;)
+
+
+user_rdd.take(2)
+
+
+
+
+[u&#39;1106214172;Prometheus Barwis;prometheus.barwis@me.com;(533) 072-2779&#39;,
+ u&#39;527133132;Ashraf Bainbridge;ashraf.bainbridge@gmail.com;&#39;]
+</pre></div>
+
+
+<p>The structure for the user data is a user id, a name, an email, and finally a phone number.   Lets make this structured.  First we will split on the ';', then we will map it to a dictionary.  Finally we will dump the dictionary into a json format to be processed by hive_context.</p>
+<div class="highlight"><pre><span class="nt">user_json</span> <span class="o">=</span> <span class="nt">hive_contxt</span><span class="nc">.jsonRDD</span><span class="o">(</span><span class="nt">user_rdd</span><span class="nc">.map</span><span class="o">(</span><span class="nt">lambda</span> <span class="nt">x</span><span class="o">:</span> <span class="nt">x</span><span class="nc">.split</span><span class="o">(</span><span class="s2">&quot;;&quot;</span><span class="o">))</span> <span class="err">\</span>
+        <span class="nc">.map</span><span class="o">(</span><span class="nt">lambda</span> <span class="nt">x</span><span class="o">:</span> <span class="nt">json</span><span class="nc">.dumps</span><span class="o">(</span><span class="p">{</span><span class="s1">&#39;user_id&#39;</span><span class="o">:</span><span class="n">x</span><span class="cp">[</span><span class="mi">0</span><span class="cp">]</span><span class="o">,</span><span class="s1">&#39;name&#39;</span><span class="o">:</span><span class="n">x</span><span class="cp">[</span><span class="mi">1</span><span class="cp">]</span><span class="o">,</span><span class="s1">&#39;email&#39;</span><span class="o">:</span><span class="n">x</span><span class="cp">[</span><span class="mi">2</span><span class="cp">]</span><span class="o">,</span><span class="s1">&#39;phone&#39;</span><span class="o">:</span><span class="n">x</span><span class="cp">[</span><span class="mi">3</span><span class="cp">]</span><span class="p">}</span><span class="o">)))</span>
+
+
+<span class="nt">user_json</span><span class="nc">.take</span><span class="o">(</span><span class="nt">2</span><span class="o">)</span>
+
+
+
+
+<span class="cp">[</span><span class="nx">Row</span><span class="p">(</span><span class="n">email</span><span class="o">=</span><span class="nx">u</span><span class="s1">&#39;prometheus.barwis@me.com&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="nx">u</span><span class="s1">&#39;Prometheus Barwis&#39;</span><span class="p">,</span> <span class="n">phone</span><span class="o">=</span><span class="nx">u</span><span class="s1">&#39;(533) 072-2779&#39;</span><span class="p">,</span> <span class="n">user_id</span><span class="o">=</span><span class="nx">u</span><span class="s1">&#39;1106214172&#39;</span><span class="p">),</span>
+ <span class="nx">Row</span><span class="p">(</span><span class="n">email</span><span class="o">=</span><span class="nx">u</span><span class="s1">&#39;ashraf.bainbridge@gmail.com&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="nx">u</span><span class="s1">&#39;Ashraf Bainbridge&#39;</span><span class="p">,</span> <span class="n">phone</span><span class="o">=</span><span class="nx">u</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">user_id</span><span class="o">=</span><span class="nx">u</span><span class="s1">&#39;527133132&#39;</span><span class="p">)</span><span class="cp">]</span>
+
+
+
+
+<span class="nt">user_json</span><span class="nc">.printSchema</span><span class="o">()</span>
+
+<span class="nt">root</span>
+ <span class="o">|</span><span class="nt">--</span> <span class="nt">email</span><span class="o">:</span> <span class="nt">string</span> <span class="o">(</span><span class="nt">nullable</span> <span class="o">=</span> <span class="nt">true</span><span class="o">)</span>
+ <span class="o">|</span><span class="nt">--</span> <span class="nt">name</span><span class="o">:</span> <span class="nt">string</span> <span class="o">(</span><span class="nt">nullable</span> <span class="o">=</span> <span class="nt">true</span><span class="o">)</span>
+ <span class="o">|</span><span class="nt">--</span> <span class="nt">phone</span><span class="o">:</span> <span class="nt">string</span> <span class="o">(</span><span class="nt">nullable</span> <span class="o">=</span> <span class="nt">true</span><span class="o">)</span>
+ <span class="o">|</span><span class="nt">--</span> <span class="nt">user_id</span><span class="o">:</span> <span class="nt">string</span> <span class="o">(</span><span class="nt">nullable</span> <span class="o">=</span> <span class="nt">true</span><span class="o">)</span>
+
+
+
+
+<span class="nt">user_json</span><span class="nc">.registerTempTable</span><span class="o">(</span><span class="s1">&#39;users&#39;</span><span class="o">)</span>
+</pre></div>
+
+
+<p>Now we need to explore the transaction data:</p>
+<div class="highlight"><pre>transaction_rdd.take(2)
+
+
+
+
+[u&#39;815581247;$144.82;2015-09-05&#39;, u&#39;1534673027;$140.93;2014-03-11&#39;]
+</pre></div>
+
+
+<p>This is similar to the previous data table.  We have a user id, an amount, and a date.   We will split on the ';', make a dict, then dump into json.   The only difference is we want to remove the '$' so we can add up the amounts.</p>
+<div class="highlight"><pre><span class="nt">transaction_json</span> <span class="o">=</span> <span class="nt">hive_contxt</span><span class="nc">.jsonRDD</span><span class="o">(</span><span class="nt">transaction_rdd</span><span class="nc">.map</span><span class="o">(</span><span class="nt">lambda</span> <span class="nt">x</span><span class="o">:</span> <span class="nt">x</span><span class="nc">.replace</span><span class="o">(</span><span class="s2">&quot;$&quot;</span><span class="o">,</span><span class="s2">&quot;&quot;</span><span class="o">)</span><span class="nc">.split</span><span class="o">(</span><span class="s2">&quot;;&quot;</span><span class="o">))</span> <span class="err">\</span>
+               <span class="nc">.map</span><span class="o">(</span><span class="nt">lambda</span> <span class="nt">x</span><span class="o">:</span> <span class="nt">json</span><span class="nc">.dumps</span><span class="o">(</span><span class="p">{</span><span class="s2">&quot;user_id&quot;</span><span class="o">:</span><span class="n">x</span><span class="cp">[</span><span class="mi">0</span><span class="cp">]</span><span class="o">,</span><span class="s2">&quot;amount_paid&quot;</span><span class="o">:</span><span class="k">float</span><span class="p">(</span><span class="n">x</span><span class="cp">[</span><span class="mi">1</span><span class="cp">]</span><span class="p">)</span><span class="o">,</span><span class="s2">&quot;date&quot;</span><span class="o">:</span><span class="n">x</span><span class="cp">[</span><span class="mi">2</span><span class="cp">]</span><span class="p">}</span><span class="o">)))</span>
+<span class="nt">transaction_json</span><span class="nc">.printSchema</span><span class="o">()</span>
+
+<span class="nt">root</span>
+ <span class="o">|</span><span class="nt">--</span> <span class="nt">amount_paid</span><span class="o">:</span> <span class="nt">double</span> <span class="o">(</span><span class="nt">nullable</span> <span class="o">=</span> <span class="nt">true</span><span class="o">)</span>
+ <span class="o">|</span><span class="nt">--</span> <span class="nt">date</span><span class="o">:</span> <span class="nt">string</span> <span class="o">(</span><span class="nt">nullable</span> <span class="o">=</span> <span class="nt">true</span><span class="o">)</span>
+ <span class="o">|</span><span class="nt">--</span> <span class="nt">user_id</span><span class="o">:</span> <span class="nt">string</span> <span class="o">(</span><span class="nt">nullable</span> <span class="o">=</span> <span class="nt">true</span><span class="o">)</span>
+
+
+
+
+<span class="nt">transaction_json</span><span class="nc">.registerTempTable</span><span class="o">(</span><span class="s1">&#39;transactions&#39;</span><span class="o">)</span>
+</pre></div>
+
+
+<h2>Top 10 Users with total transaction amount</h2>
+<p>This is a simple query using a join in sql.</p>
+<div class="highlight"><pre>hive_contxt.sql(&quot;&quot;&quot;
+                SELECT a.name, t.total FROM users a JOIN 
+                (SELECT user_id, SUM(amount_paid) as total FROM transactions
+                GROUP BY user_id) t ON
+                (a.user_id = t.user_id)
+                ORDER BY t.total DESC
+                LIMIT 10
+                &quot;&quot;&quot;).collect()
+
+
+
+
+[Row(name=u&#39;Kashawn Macpherson&#39;, total=21945.300000000003),
+ Row(name=u&#39;Brysten Jeffs&#39;, total=21773.510000000002),
+ Row(name=u&#39;Martez Carlyle&#39;, total=21120.550000000003),
+ Row(name=u&#39;Jaivyn Hoks&#39;, total=20641.109999999997),
+ Row(name=u&#39;Bryanne Stopp&#39;, total=20380.16),
+ Row(name=u&#39;Leanthony Waldegrave&#39;, total=20322.11),
+ Row(name=u&#39;Roosevelt Gooderham&#39;, total=20230.059999999998),
+ Row(name=u&#39;Demont Howell&#39;, total=20172.17),
+ Row(name=u&#39;Nasteha Bister&#39;, total=20163.909999999996),
+ Row(name=u&#39;Analaura Beetham&#39;, total=19998.19)]
+</pre></div>
+
+
+<p>We see that Kashawn Macpherson has the highest transaction amount out of all the customers.  We do not know if this is due to a long history of transaction, large purchases, or something inbetween.   That would now involve SQL type queries on the data, then possible exporting the results.  </p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'bryansmithphd';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=bryansmithphd">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      Bryan Smith, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="http://www.bryantravissmith.com/theme/js/jquery.min.js"></script>
+  <script src="http://www.bryantravissmith.com/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$$','$$'], ['\\(','\\)']]}
+});
+</script>
+</html>
